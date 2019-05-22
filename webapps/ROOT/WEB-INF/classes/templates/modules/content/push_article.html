@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/icon.css">
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<link rel="stylesheet" href="${request.contextPath}/statics/css/content/push_article.css">
+<title>推荐文章</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">推荐文章</div>
+    <div id="push_article" class="cv_page_content">
+        <el-row class="el-row-h50" style="text-align: center;">
+            <el-col :span="11">待推荐列表({{outArrayLeft.length}})</el-col>
+            <el-col :span="12">当前推荐列表({{outArrayRight.length}})</el-col>
+        </el-row>
+        <div class="nestable-lists">
+            <!--待推荐-->
+            <div class="dd" id="nestable" data-uk-nestable="{group:'my-group'}">
+                <ul class="dd-list" >
+                    <li class="dd-item" v-for="item in leftList" :data-id="item.recId" :id="item.recId">
+                        <div class="dd-handle">{{item.recId}}{{item.newsEntity.newsTitle}}</div>
+                        <div class="toDetail" :url="item.newsEntity.newsUrl">详情 ></div>
+                    </li>
+                </ul>
+            </div>
+            <!--已推荐-->
+            <div class="dd" id="nestable2" data-uk-nestable="{group:'my-group'}">
+                <ul class="dd-list" style="overflow:auto">
+                    <li class="dd-item" v-for="item in rightList" :data-id="item.recId" :id="item.recId">
+                        <div class="dd-handle">{{item.recId}}{{item.newsEntity.newsTitle}}</div>
+                        <div class="toDetail" :url="item.newsEntity.newsUrl">详情 ></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- left:{{outArrayLeft}}
+        <br><br>
+        right:{{outArrayRight}} -->
+        <!--保存修改-->
+        <el-row class="el-row-h60" style="margin-top:20px;">
+            <el-col :span="4" :offset="1">
+                <el-button type="primary" style="width:100%" @click="submitPushTest()">保存提交</el-button>
+            </el-col>
+        </el-row>
+        <!-- <textarea id="nestable-output">
+        </textarea>
+        <textarea id="nestable2-output">
+        </textarea> -->
+    
+        <!--用于打开新闻详情的弹出层-->
+        <!-- <div class="newsDetailShow">
+            <div class="news_meng_bg"></div>
+            <div class="news_iframe">
+                <div class="iframe_header">X</div>
+                <iframe id="newsWindow" src=""></iframe>
+            </div>
+        </div> -->
+    
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.min.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.nestable.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/content/push_article.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+<style>
+
+</style>
+
+</html>

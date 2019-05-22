@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+
+<!--富文本编辑器相关JS-->
+<script type="text/javascript" charset="utf-8" src="${request.contextPath}/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="${request.contextPath}/ueditor/ueditor.all.min.js"></script>
+<!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
+<!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
+<script type="text/javascript" charset="utf-8" src="${request.contextPath}/ueditor/lang/zh-cn/zh-cn.js"></script>
+<!--自定义btn-->
+<script type="text/javascript" charset="utf-8" src="${request.contextPath}/ueditor/addCustomizeButton.js"></script>
+
+<title>新建/编辑报告</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">新建/编辑报告</div>
+    <div id="edit_report" class="cv_page_content">
+        <!--报告基本信息区-->
+        <div class="cv_content_square">
+            <el-form :model="reportForm" :rules="reportFormRules" ref="reportForm" status-icon class="demo-ruleForm" label-width="10%" label-position="right">
+                <el-row class="el-row-h70">
+                    <el-col :span="24">
+                        <el-form-item prop="reportTitle" label="报告标题" style="margin:0;">
+                            <el-input
+                            maxlength="36"
+                            clearable
+                            type="text"
+                            v-model="reportForm.reportTitle"
+                            auto-complete="off">
+                            <template slot="append">最多36汉字</template>
+                        </el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h120">
+                    <el-col :span="24">
+                        <el-form-item  prop="reportAbstract" label="报告摘要" style="margin:0;">
+                            <el-input
+                            maxlength="200"
+                            clearable
+                            type="textarea"
+                            :autosize="{ minRows: 4, maxRows: 4}"
+                            placeholder="200个汉字"
+                            v-model="reportForm.reportAbstract"
+                            auto-complete="off">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h120">
+                    <el-col :span="24">
+                        <el-form-item  prop="reportDesc" label="报告描述(SEO)" style="margin:0;">
+                            <el-input
+                            maxlength="200"
+                            clearable
+                            type="textarea"
+                            :autosize="{ minRows: 4, maxRows: 4}"
+                            placeholder="200个汉字"
+                            v-model="reportForm.reportDesc"
+                            auto-complete="off">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <el-col :span="24">
+                        <el-form-item label="关键词" prop="reportKeywords" label-width="10%" style="margin:0;">
+                            <el-select
+                                @change="reportKeywordChange"
+                                style="width:100%;"
+                                v-model="reportKeywordsArray"
+                                multiple
+                                filterable
+                                allow-create
+                                default-first-option
+                                placeholder="请编辑文章标签，不超过3个，不可重复用词">
+                                <el-option
+                                  v-for="item in labelOptions"
+                                  :key="item.value"
+                                  :label="item.label"
+                                  :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <el-col :span="12">
+                        <el-form-item prop="reportFrom" label="来源名称" label-width="20%" style="margin:0;">
+                            <el-input
+                            maxlength="20"
+                            clearable
+                            type="text"
+                            placeholder="来源网站/新媒体号"
+                            v-model="reportForm.reportFrom"
+                            auto-complete="off">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="作者" prop="reportAuthor" label-width="20%" style="margin:0;">
+                            <el-input
+                                maxlength="20"
+                                type="text"
+                                placeholder="请输入作者姓名"
+                                v-model="reportForm.reportAuthor"
+                                auto-complete="off">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <el-col :span="12">
+                        <el-form-item label="主频道" prop="reportChannel" label-width="20%" style="margin:0;">
+                            <el-select v-model="reportForm.reportChannel" placeholder="请选择主频道" style="width:100%;" @change="requestTwoLevelChannel(1)">
+                                <el-option
+                                    v-for="item in channelOptions"
+                                    :key="item.channelId"
+                                    :label="item.channelTitle"
+                                    :value="item.channelId">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <!--类型就是指2级频道-->
+                    <el-col :span="12">
+                        <el-form-item label="类型" prop="reportType" label-width="20%" style="margin:0;">
+                            <el-select v-model="reportForm.reportType" placeholder="请选择类型" style="width:100%;">
+                                <el-option
+                                    v-for="item in reportTypeOptions"
+                                    :key="item.channelId"
+                                    :label="item.channelDesc"
+                                    :value="item.channelId">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h180">
+                    <el-col :span="12">
+                        <el-form-item label="封面图片" prop="reportHeadPic" label-width="20%" style="margin:0;">
+                            <div class="fengmian_show" @click="openAddCoverImg">
+                                <img v-if="reportForm.reportHeadPic" :src="reportForm.reportHeadPic" class="avatar">
+                                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                            </div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="文件上传" prop="" label-width="20%" style="margin:0;">
+                            <!-- <el-upload
+                            class="upload-demo"
+                            :auto-upload="false"
+                            :show-file-list="ifShowFileList"
+                            accept="application/pdf"
+                            :file-list="fileList"
+                            :limit = "1"
+                            action="https://jsonplaceholder.typicode.com/posts/"
+                            :on-remove="handleRemove"
+                            :on-change="handleChange">
+                                <el-button size="small" type="primary">点击上传</el-button>
+                                <div slot="tip" class="el-upload__tip">只能上传pdf格式的文件</div>
+                            </el-upload> -->
+                            <el-upload
+                            class="upload-demo"
+                            :auto-upload="false"
+                            accept="application/pdf"
+                            :show-file-list="false"
+                            :limit = "1"
+                            action="https://jsonplaceholder.typicode.com/posts/"
+                            :on-remove="handleRemove"
+                            :on-change="handleChange">
+                                <el-button size="small" type="primary">点击上传</el-button>
+                                <div slot="tip" class="el-upload__tip">只能上传pdf格式的文件</div>
+                            </el-upload>
+                            <el-row class="reporturl" v-text="reportForm.reportAttachments"></el-row>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+        </div>
+        <!--富文本编辑器-->
+        <div class="editor_zone">
+            <script id="editor" type="text/plain" style="width:100%;height:500px;"></script>
+        </div>
+
+        <!--按钮区-->
+        <el-row class="el-row-h60" style="margin-top:20px;">
+            <el-col :span="4">
+                <el-button type="primary" style="width:100%" @click="saveReportToDraft('reportForm',0)">保存</el-button>
+            </el-col>
+            <el-col :span="4" :offset="1">
+                <el-button type="primary" style="width:100%" @click="saveReportToDraft('reportForm',1)">保存并发布</el-button>
+            </el-col>
+            <el-col :span="4" :offset="1">
+                <el-button type="primary" style="width:100%" @click="closeAndBack()">取消</el-button>
+            </el-col>
+        </el-row>
+        
+        <!--封面图库弹出层开始-->
+        <el-dialog title="封面图库" :visible.sync="showCoverimgLib" width="100%" :fullscreen="true" :show-close="false">
+            <el-form :model="searchCoverimgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right">
+                <el-row class="el-row-h60">
+                    <el-col :span="16">
+                        <el-form-item label="图片名称" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="searchCoverimgForm.picTitle"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchCoverImg()">搜索</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" style="width:100%" @click="backToEdit()">返回</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <el-table :data="coverimgTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="coverimgTableData" stripe>
+                <el-table-column prop="picUrl" label="封面图预览" width="180">
+                    <template v-if="scope.row.picUrl" slot-scope="scope">
+                        <img style="width:80px;height:60px;" :src="scope.row.picUrl">
+                    </template>
+                </el-table-column>
+                <el-table-column prop="picTitle" label="图片名称" width="250"></el-table-column>
+                <el-table-column prop="picEditorName" label="修改人" width="120"></el-table-column>
+                <el-table-column prop="picModTime" label="最后更新时间"></el-table-column>
+                <el-table-column label="操作" width="100" fixed="right">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" @click="addThisCoverImg(scope.row)">添加</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page="pagination1.currPage"
+                    :page-size="pagination1.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination1.totalCount">
+                </el-pagination>
+            </div>
+        </el-dialog>
+        <!--封面图库弹出层结束-->
+
+        <!--内容图弹出层开始-->
+        <el-dialog title="内容图库" :visible.sync="showContentimgLib" width="100%" :fullscreen="true" :show-close="false">
+            <el-form :model="searchContentimgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right">
+                <el-row class="el-row-h60">
+                    <el-col :span="11">
+                        <el-form-item label="图片名称" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="searchContentimgForm.picTitle"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchContentImg()">搜索</el-button>
+                    </el-col>
+                    <el-col :span="4" :offset="1" class="el-row-h40">
+                        <el-button type="primary" icon="el-icon-plus" style="width:100%" @click="addChooseImg">添加选中</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" style="width:100%" @click="backToEdit2()">返回</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <el-table :data="contentimgTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="multipleTable" @selection-change="handleSelectionChange" stripe>
+                <el-table-column prop="picUrl" label="内容图预览" width="180">
+                    <template v-if="scope.row.picUrl" slot-scope="scope">
+                        <img style="width:80px;height:60px;" :src="scope.row.picUrl">
+                    </template>
+                </el-table-column>
+                <el-table-column prop="picTitle" label="图片名称" width="250"></el-table-column>
+                <el-table-column prop="picEditorName" label="修改人" width="120"></el-table-column>
+                <el-table-column prop="picModTime" label="最后更新时间"></el-table-column>
+                <el-table-column
+                    fixed="right"
+                    type="selection"
+                    width="55">
+                </el-table-column>
+            </el-table>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange2"
+                    :current-page="pagination2.currPage"
+                    :page-size="pagination2.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination2.totalCount">
+                </el-pagination>
+            </div>
+        </el-dialog>
+        <!--内容图库弹出层结束-->
+
+
+    </div>
+</body>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.min.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.base64.js"></script>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/content/edit_report.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+<style>
+.fengmian_show{
+    width: 240px;
+    height: 150px;
+    border-radius: 5px;
+    border: 1px dashed #d9d9d9;
+    text-align: center;
+    cursor: pointer;
+    overflow: hidden;
+}
+.avatar-uploader .el-upload {
+    width:240px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+    border-color: #175CE9;
+}
+.avatar-uploader-icon {
+    display: inline-block;
+    font-size: 28px;
+    color: #8c939d;
+    width: 110px;
+    height: 110px;
+    line-height: 150px;
+    text-align: center;
+}
+.fengmian_show:hover{
+    border-color: #175CE9;
+}
+.fengmian_show:hover .avatar-uploader-icon{
+    color: #175CE9;
+}
+.avatar {
+    width: 240px;
+    height: 150px;
+    display: block;
+}
+.reporturl{
+    width: 100%;
+    line-height: 24px;
+    font-size: 14px;
+    overflow: auto;
+}
+</style>
+</html>

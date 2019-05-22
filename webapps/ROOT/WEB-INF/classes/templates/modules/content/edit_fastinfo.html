@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+
+<title>新建/编辑快讯</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">新建/编辑快讯</div>
+    <div id="edit_fastinfo" class="cv_page_content">
+        <!--文章基本信息区-->
+        <div class="cv_content_square">
+            <el-form :model="fastinfoForm" :rules="fastinfoFormRules" ref="fastinfoForm" status-icon class="demo-ruleForm" label-width="10%" label-position="right">
+                <el-row class="el-row-h70">
+                    <el-col :span="24">
+                        <el-form-item prop="flashTitle" label="快讯标题" style="margin:0;">
+                            <el-input
+                            maxlength="36"
+                            clearable
+                            type="text"
+                            v-model="fastinfoForm.flashTitle"
+                            auto-complete="off">
+                            <template slot="append">最多36字</template>
+                        </el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h120">
+                    <el-col :span="24">
+                        <el-form-item  prop="flashDesc" label="快讯摘要" style="margin:0;">
+                            <el-input
+                            maxlength="200"
+                            clearable
+                            type="textarea"
+                            :autosize="{ minRows: 4, maxRows: 4}"
+                            placeholder="限200字"
+                            v-model="fastinfoForm.flashDesc"
+                            auto-complete="off">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <el-col :span="24">
+                        <el-form-item prop="flashSourceName" label="来源名称" style="margin:0;">
+                            <el-input
+                            maxlength="30"
+                            clearable
+                            type="text"
+                            placeholder="来源网站名称，限30字"
+                            v-model="fastinfoForm.flashSourceName"
+                            auto-complete="off">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <el-col :span="24">
+                        <el-form-item  prop="flashSourceUrl" label="原文网址" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            maxlength="50"
+                            placeholder="原文章链接详情地址，限50字"
+                            v-model="fastinfoForm.flashSourceUrl"
+                            auto-complete="off">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <!-- <el-col :span="12">
+                        <el-form-item label="作者" prop="userName" label-width="20%" style="margin:0;">
+                            <el-input
+                                maxlength="20"
+                                type="text"
+                                placeholder="请输入作者姓名，限20字"
+                                v-model="fastinfoForm.userName"
+                                auto-complete="off">
+                            </el-input>
+                        </el-form-item>
+                    </el-col> -->
+                    <el-col :span="24">
+                        <el-form-item label="发布时间" prop="flashReleaseTime" label-width="10%" style="margin:0;">
+                            <el-date-picker
+                                style="width:100%;"
+                                v-model="fastinfoForm.flashCrtTime"
+                                type="datetime"
+                                placeholder=""
+                                :disabled="true">
+                            </el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+        </div>
+
+        <!--按钮区-->
+        <el-row class="el-row-h60" style="margin-top:20px;">
+            <el-col :span="4">
+                <el-button type="primary" style="width:100%" @click="saveFastinfoToDraft(0,'fastinfoForm')">保存</el-button>
+            </el-col>
+            <el-col :span="4" :offset="1">
+                <el-button type="primary" style="width:100%" @click="saveFastinfoToDraft(1,'fastinfoForm')">保存并发布</el-button>
+            </el-col>
+            <el-col :span="4" :offset="1">
+                <el-button type="primary" plain style="width:100%" @click="closeAndBack()">取消</el-button>
+            </el-col>
+        </el-row>
+        
+        
+
+
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/content/edit_fastinfo.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+</html>

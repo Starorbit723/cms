@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chinaventure.modules.sys.dao.NewsDao">
+
+    <select id="getNewsList" parameterType="com.chinaventure.modules.sys.vo.NewsVo" resultType="com.chinaventure.modules.sys.dto.NewsDto">
+        SELECT n.*,c.channel_title FROM cms_channels c, cms_news n
+         <where>
+             c.channel_id= n.news_channel
+             <if test="newsId != null and newsId != '' ">
+                 and news_id = #{newsId}
+             </if>
+             <if test="newsChannel != null and newsChannel != '' ">
+                 and news_channel = #{newsChannel}
+             </if>
+             <if test="newsTitle != null and newsTitle != '' ">
+                 and news_title like "%"#{newsTitle}"%"
+             </if>
+             <if test="newsAuthor != null and newsAuthor != '' ">
+                 and news_author  like "%"#{newsAuthor}"%"
+             </if>
+             <if test="newsFrom != null and newsFrom != '' ">
+                 and news_from = #{newsFrom}
+             </if>
+             <if test="recommendStatus != null and recommendStatus != '' ">
+                 and recommend_status = #{recommendStatus}
+             </if>
+
+             <if test="newsEditor != null and newsEditor != '' ">
+                 and news_editor = #{newsEditor}
+             </if>
+             <if test="startTime != null and startTime != '' ">
+                 and news_crt_time &gt;= #{startTime},
+             </if>
+             <if test="endTime != null and endTime != '' ">
+                 and news_crt_time &lt;= #{endTime},
+             </if>
+         </where>
+        <if test="pageNo!=null">
+            limit #{pageNo},#{pageNum}
+        </if>
+    </select>
+
+</mapper>

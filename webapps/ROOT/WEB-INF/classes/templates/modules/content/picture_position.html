@@ -1,0 +1,505 @@
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/icon.css">
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>图位管理</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">图位管理</div>
+    <div id="picture_position" class="cv_page_content">
+        <!-------主页面-------图位管理开始------->
+        <div v-show="showChildPage == 0">
+            <!--列表搜索区-->
+            <div class="cv_content_square">
+                <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="10">
+                            <el-form-item label="图位名称" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchForm.name"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" icon="el-icon-search" @click="startSearch(0)">搜索</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--功能按钮区-->
+            <el-row class="el-row-h50">
+                <el-col :span="3">
+                    <el-button type="primary" plain style="width:100%" icon="el-icon-plus" @click="openCreatPicPos">新建图位</el-button>
+                </el-col>
+                <el-col :span="3" :offset="1">
+                    <el-button type="primary" plain style="width:100%" icon="el-icon-delete" @click="batchDeletePicPos">批量删除</el-button>
+                </el-col>
+                <el-col :span="3" :offset="1">
+                    <el-button type="primary" plain style="width:100%" icon="el-icon-circle-check-outline" @click="batchEnablePicPos">批量启用</el-button>
+                </el-col>
+                <el-col :span="3" :offset="1">
+                    <el-button type="primary" plain style="width:100%" icon="el-icon-circle-close-outline" @click="batchDisablePicPos">批量禁用</el-button>
+                </el-col>
+            </el-row>
+            <!--表格查询结果区-->
+            <div class="cv_content_square">
+                <el-table :data="picPosTableData" style="width: 100%; margin:30px auto;" ref="multipleTable" stripe @selection-change="handleSelectionChange">
+                    <el-table-column type="selection" width="55"></el-table-column>
+                    <el-table-column prop="name" label="图位名称" width="200"></el-table-column>
+                    <el-table-column prop="width" width="70" label="宽度"></el-table-column>
+                    <el-table-column prop="height" width="70" label="高度"></el-table-column>
+                    <el-table-column prop="userName" label="修改人"></el-table-column>
+                    <el-table-column prop="status" label="状态">
+                        <template v-if="scope.row.status !== ''"  slot-scope="scope">
+                            <el-tag v-if="scope.row.status == 0" type="danger">已禁用</el-tag>
+                            <el-tag v-if="scope.row.status == 1" type="success">已启用</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="modTime" label="最后修改时间"></el-table-column>
+                    <el-table-column label="操作" width="200" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="attributeThisPosition(scope.row)">属性</el-button>
+                            <el-button type="text" size="small" @click="editThisPosition(scope.row)">编辑</el-button>
+                            <el-button type="text" size="small" v-if="scope.row.status == 0" @click="togglestatusThisPosition(scope.row)">启用</el-button>
+                            <el-button type="text" size="small" v-if="scope.row.status == 1" @click="togglestatusThisPosition(scope.row)">禁用</el-button>
+                            <el-button type="text" size="small" @click="deleteThisPosition(scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page="pagination1.currPage"
+                    :page-size="pagination1.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination1.totalCount">
+                </el-pagination>
+            </div>
+
+            <!--新建图位弹出层开始-->
+            <el-dialog title="新建图位" :visible.sync="showCreatPicPos" width="80%">
+                <el-form :model="creatNewPicPosForm" :rules="creatNewPicPosFormRules" ref="creatNewPicPosForm" status-icon class="demo-ruleForm" label-width="15%" label-position="right">
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item label="图位名称" prop="name" style="margin:0;">
+                                <el-input
+                                clearable
+                                maxlength="36"
+                                placeholder="限36字"
+                                type="text"
+                                v-model="creatNewPicPosForm.name"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="设备类型" prop="showType" style="margin:0;">
+                                <el-radio-group style="margin-top: 15px;" v-model="creatNewPicPosForm.showType">
+                                    <el-radio label="0">Website</el-radio>
+                                    <el-radio label="1">Wap H5</el-radio>
+                                    <el-radio label="2" disabled>App</el-radio>
+                                </el-radio-group>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="设备类型" prop="mediaType" style="margin:0;" >
+                                <el-radio-group style="margin-top: 15px;" v-model="creatNewPicPosForm.mediaType">
+                                    <el-radio label="0">图文</el-radio>
+                                    <el-radio label="1" disabled>文字</el-radio>
+                                    <el-radio label="2" disabled>视频</el-radio>
+                                    <el-radio label="3" disabled>代码</el-radio>
+                                </el-radio-group>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="12">
+                            <el-form-item label-width="30%" label="图位总宽" prop="width" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="creatNewPicPosForm.width"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label-width="30%" label="图位总高" prop="height" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="creatNewPicPosForm.height"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item label="标题" prop="title" style="margin:0;">
+                                <el-input
+                                clearable
+                                maxlength="36"
+                                placeholder="限36字"
+                                type="text"
+                                v-model="creatNewPicPosForm.title"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item label="图位描述" prop="desc" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    maxlength="200"
+                                    placeholder="限200字"
+                                    type="textarea"
+                                    :autosize="{ minRows: 2, maxRows: 4}"
+                                    placeholder="请输入内容"
+                                    v-model="creatNewPicPosForm.desc">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h60" style="margin-top:30px;">
+                        <el-col :span="4" :offset="7">
+                            <el-button type="primary" style="width:100%" @click="submitCreatPicPos('creatNewPicPosForm')">确认</el-button>
+                        </el-col>
+                        <el-col :span="4" :offset="2">
+                            <el-button type="primary" style="width:100%" @click="closeCreatPicPos('creatNewPicPosForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </el-dialog>
+            <!--新建图位弹出层结束-->
+
+            <!--修改图位弹出层开始-->
+            <el-dialog title="修改图位" :visible.sync="showEditPicPos" width="80%">
+                <el-form :model="editNewPicPosForm" :rules="editNewPicPosFormRules"  ref="editNewPicPosForm" status-icon class="demo-ruleForm" label-width="15%" label-position="right">
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item label="图位名称" prop="name" style="margin:0;">
+                                <el-input
+                                clearable
+                                maxlength="36"
+                                placeholder="限36字"
+                                type="text"
+                                v-model="editNewPicPosForm.name"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="设备类型" prop="showType" style="margin:0;">
+                                <el-radio-group style="margin-top: 15px;" v-model="editNewPicPosForm.showType">
+                                    <el-radio label="0">Website</el-radio>
+                                    <el-radio label="1">Wap H5</el-radio>
+                                    <el-radio label="2" disabled>App</el-radio>
+                                </el-radio-group>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="设备类型" prop="mediaType" style="margin:0;" >
+                                <el-radio-group style="margin-top: 15px;" v-model="editNewPicPosForm.mediaType">
+                                    <el-radio label="0">图文</el-radio>
+                                    <el-radio label="1" disabled>文字</el-radio>
+                                    <el-radio label="2" disabled>视频</el-radio>
+                                    <el-radio label="3" disabled>代码</el-radio>
+                                </el-radio-group>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="12">
+                            <el-form-item label-width="30%" label="图位总宽" prop="width" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="editNewPicPosForm.width"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label-width="30%" label="图位总高" prop="height" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="editNewPicPosForm.height"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item label="标题" prop="title" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="editNewPicPosForm.title"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item label="图位描述" prop="desc" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    maxlength="200"
+                                    placeholder="限200字"
+                                    type="textarea"
+                                    :autosize="{ minRows: 2, maxRows: 4}"
+                                    placeholder="请输入内容"
+                                    v-model="creatNewPicPosForm.desc">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h60" style="margin-top:30px;">
+                        <el-col :span="4" :offset="7">
+                            <el-button type="primary" style="width:100%" @click="submitEditPicPos('editNewPicPosForm')">确认</el-button>
+                        </el-col>
+                        <el-col :span="4" :offset="2">
+                            <el-button type="primary" style="width:100%" @click="closeEditPicPos('editNewPicPosForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </el-dialog>
+            <!--修改图位弹出层结束-->
+            
+        </div>
+        <!-------主页面-------图位管理结束------->
+
+
+        <!-------子页面-------图片管理开始------->
+        <div v-show="showChildPage == 1">
+            <div class="cv_content_square">
+                <el-row class="el-row-h50" style="font-weight:700; font-size:16px;">
+                    <el-col :span="2">图位：</el-col>
+                    <el-col :span="10">{{saveNowPosTitle}}</el-col>
+                </el-row>
+            </div>
+            <!--功能按钮区-->
+            <el-row class="el-row-h50">
+                <el-col :span="3">
+                    <el-button type="primary" style="width:100%" icon="el-icon-plus" @click="addNewPosItem">新建条目</el-button>
+                </el-col>
+                <el-col :span="3" :offset="18">
+                    <el-button type="primary" plain style="width:100%" @click="backToMainPage">返回</el-button>
+                </el-col>
+            </el-row>
+            <!--表格查询结果区-->
+            <div class="cv_content_square">
+                <el-table :data="currentPosContentList" style="width: 100%; margin:10px auto;" stripe>
+                    <el-table-column type="index" width="50"></el-table-column>
+                    <el-table-column prop="picUrl" label="封面" width="130">
+                        <template v-if="scope.row.picUrl" slot-scope="scope">
+                            <img style="width:100px;height:70px;" :src="scope.row.picUrl">
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="picTitle" label="标题"></el-table-column>
+                    <el-table-column prop="picEditorName" label="修改人"  width="90"></el-table-column>
+                    <el-table-column prop="picModTime" label="最后修改时间" width="200"></el-table-column>
+                    <el-table-column label="操作" width="100" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="editThisPosItem(scope.row)">编辑</el-button>
+                            <el-button type="text" size="small" @click="deleteThisPosItem(scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+        </div>
+        <!-------子页面-------图位管理结束------->
+
+        <!-------子页面-------新建修改广告条目开始---->
+        <div v-show="showChildPage == 2">
+            <div class="cv_content_square">
+                <el-form :model="posItemForm" :rules="posItemFormRules" ref="posItemForm" status-icon class="demo-ruleForm" label-width="10%" label-position="right">
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item prop="picTitle" label="标题" style="margin:0;">
+                                <el-input
+                                    maxlength="36"
+                                    type="text"
+                                    v-model="posItemForm.picTitle"
+                                    auto-complete="off">
+                                    <template slot="append">最多36字</template>
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h180">
+                        <el-col :span="24">
+                            <el-form-item label="封面图片" prop="picUrl" label-width="10%" style="margin:0;">
+                                <div class="fengmian_show" @click="openAddPosImg">
+                                    <img v-if="posItemForm.picUrl" :src="posItemForm.picUrl" class="avatar">
+                                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                </div>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item prop="picSourceUrl" label="跳转链接" label-width="10%" style="margin:0;">
+                                <el-input
+                                maxlength="100"
+                                type="text"
+                                placeholder="跳转链接"
+                                v-model="posItemForm.picSourceUrl"
+                                auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h120">
+                        <el-col :span="24">
+                            <el-form-item  prop="picDesc" label="描述" style="margin:0;">
+                                <el-input
+                                maxlength="200"
+                                placeholder="限200字"
+                                type="textarea"
+                                :autosize="{ minRows: 4, maxRows: 4}"
+                                placeholder="限100字符"
+                                v-model="posItemForm.picDesc"
+                                auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--按钮区-->
+            <el-row class="el-row-h60" style="margin-top:20px;">
+                <el-col :span="4">
+                    <el-button type="primary" style="width:100%" @click="creatOrSaveItem('posItemForm')">保存</el-button>
+                </el-col>
+                <el-col :span="4" :offset="1">
+                    <el-button type="primary" style="width:100%" @click="closeToContentList('posItemForm')">取消</el-button>
+                </el-col>
+            </el-row>
+            
+            <!--图位图库弹出层开始-->
+            <el-dialog title="图位图库" :visible.sync="showPosimgLib" width="100%" :fullscreen="true" :show-close="false">
+                    <!-- <el-row>
+                        <el-upload
+                            class="upload-demo"
+                            action="https://jsonplaceholder.typicode.com/posts/"
+                            :on-change="userUploadImg"
+                            :limit="1"
+                            :auto-upload="false"
+                            :file-list="fileList">
+                            <el-button size="small" type="primary">点击上传</el-button>
+                            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                        </el-upload>
+                    </el-row> -->
+                <el-form :model="searchPosimgForm" style="margin-top:20px;" status-icon class="demo-ruleForm" label-width="20%" label-position="right">
+                    <el-row class="el-row-h60">
+                        <el-col :span="11">
+                            <el-form-item label="图片名称" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchPosimgForm.picTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchPosImg()">搜索</el-button>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" @click="closePosimgLib()">返回</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <el-table :data="posimgTableData" max-height="450" style="width: 100%; margin:10px auto;" stripe>
+                    <el-table-column prop="picUrl" label="内容图预览" width="120">
+                        <template v-if="scope.row.picUrl" slot-scope="scope">
+                            <img style="width:80px;height:60px;" :src="scope.row.picUrl">
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="picTitle" label="图片名称"></el-table-column>
+                    <el-table-column prop="picEditorName" label="修改人" width="80"></el-table-column>
+                    <el-table-column prop="picModTime" label="最后更新时间" width="220"></el-table-column>
+                    <el-table-column label="操作" width="80" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="addThisImgToForm(scope.row)">添加</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <!--分页器-->
+                <div class="cv_page_zone">
+                    <el-pagination
+                        @current-change="handleCurrentChange2"
+                        :current-page="pagination2.currPage"
+                        :page-size="pagination2.pageSize"
+                        layout="total, prev, pager, next, jumper"
+                        :total="pagination2.totalCount">
+                    </el-pagination>
+                </div>
+            </el-dialog>
+            <!--内容图库弹出层结束-->
+
+
+        </div>
+        <!-------子页面-------新建修改广告条目结束---->
+
+
+
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/content/picture_position.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+<style>
+.fengmian_show{
+    width: 240px;
+    height: 150px;
+    border-radius: 5px;
+    border: 1px dashed #d9d9d9;
+    text-align: center;
+    cursor: pointer;
+}
+.avatar-uploader .el-upload {
+    width:240px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+    border-color: #175CE9;
+}
+.avatar-uploader-icon {
+    display: inline-block;
+    font-size: 28px;
+    color: #8c939d;
+    width: 110px;
+    height: 110px;
+    line-height: 150px;
+    text-align: center;
+}
+.fengmian_show:hover{
+    border-color: #175CE9;
+}
+.fengmian_show:hover .avatar-uploader-icon{
+    color: #175CE9;
+}
+.avatar {
+    width: 240px;
+    height: 150px;
+    display: block;
+}
+</style>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>24h快讯管理</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">24h快讯管理</div>
+    <div id="fastinfo_list" class="cv_page_content">
+        <!--列表搜索区-->
+        <div class="cv_content_square">
+            <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right" @submit.native.prevent>
+                <el-row class="el-row-h60">
+                    <el-col :span="8">
+                        <el-form-item label="标题" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="searchForm.flashTitle"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="16">
+                        <el-form-item label="发布时间" label-width="20%" style="margin:0;">
+                            <el-date-picker
+                                clearable
+                                style="width:100%;"
+                                v-model="timeRange"
+                                type="datetimerange"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                                :picker-options="pickerOptions"
+                                value-format="yyyy-MM-dd HH:mm:ss"
+                                :default-time="['00:00:00', '00:00:00']">
+                            </el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h60">
+                    <el-col :span="8">
+                        <el-form-item label="创建人" style="margin:0;">
+                            <el-select style="width:100%;" v-model="searchForm.flashCrtUser" clearable>
+                                <el-option
+                                    v-for="item in editorOptions"
+                                    :key="item.userId"
+                                    :label="item.username"
+                                    :value="item.userId">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>     
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label-width="27%" label="发布状态" style="margin:0;">
+                            <el-checkbox-group v-model="searchForm.flashStatus">
+                                <el-checkbox label="2">已发布</el-checkbox>
+                                <el-checkbox label="1">待发布</el-checkbox>
+                                <el-checkbox label="0">未发布</el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>    
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h50">
+                        <el-button type="primary" style="width:100%" @click="startSearch">搜索</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+        </div>
+
+        <!--功能按钮区-->
+        <el-row class="el-row-h50">
+            <el-col :span="3">
+                <el-button type="primary" plain style="width:100%" icon="el-icon-plus" @click="creatFastinfo">新建快讯</el-button>
+            </el-col>
+        </el-row>
+
+        <!--表格查询结果区-->
+        <div class="cv_content_square">
+            <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
+                <el-table-column prop="flashTitle" label="标题" width="220"></el-table-column>
+                <el-table-column prop="flashSourceUrl" label="原文链接" width="200"></el-table-column>
+                <el-table-column prop="flashStatus" label="发布状态">
+                    <!--0未发布，1是待发布，2是已发布 3是发布失败 4是待删除 5 删除-->
+                    <template slot-scope="scope">
+                        <el-tag v-if="scope.row.flashStatus == 0">未发布</el-tag>
+                        <el-tag v-if="scope.row.flashStatus == 1" type="warning">待发布</el-tag>
+                        <el-tag v-if="scope.row.flashStatus == 2" type="success">已发布</el-tag>
+                        <el-tag v-if="scope.row.flashStatus == 3" type="danger">发布失败 </el-tag>
+                        <el-tag v-if="scope.row.flashStatus == 4" type="warning">待删除</el-tag>
+                        <el-tag v-if="scope.row.flashStatus == 5" type="danger">已删除</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="flashReleaseTime" label="发布时间" width="95"></el-table-column>
+                <el-table-column prop="userName" label="创建人"></el-table-column>
+                <el-table-column label="操作" width="150" fixed="right">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" v-if="scope.row.flashStatus == 0 || scope.row.flashStatus == 3"  @click="editThisFastinfo(scope.row)">编辑</el-button>
+                        <el-button type="text" size="small" v-if="scope.row.flashStatus == 0 || scope.row.flashStatus == 3" @click="togglestatusFastinfo(scope.row)">发布</el-button>
+                        <el-button type="text" size="small" v-if="scope.row.flashStatus == 2" @click="togglestatusFastinfo(scope.row)">下线</el-button>
+                        <el-button type="text" size="small" v-if="scope.row.flashStatus == 0 || scope.row.flashStatus == 3" @click="deleteThisFastinfo(scope.row)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+
+        <!--分页器-->
+        <div class="cv_page_zone">
+            <el-pagination
+                @current-change="handleCurrentChange"
+                :current-page="pagination1.currPage"
+                :page-size="pagination1.pageSize"
+                layout="total, prev, pager, next, jumper"
+                :total="pagination1.totalCount">
+            </el-pagination>
+        </div>
+        
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/content/fastinfo_list.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+</html>

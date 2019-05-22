@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/icon.css">
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>专栏管理</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">专栏管理</div>
+    <div id="special_column" class="cv_page_content">
+
+        <!-------主页面-------专栏列表开始------->
+        <div v-show="!showChildPage">
+            <!--列表搜索区-->
+            <div class="cv_content_square">
+                <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="11">
+                            <el-form-item label="专栏名称" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchForm.columnTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" icon="el-icon-search" @click="startSearch(0)">搜索</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--功能按钮区-->
+            <el-row class="el-row-h50">
+                <el-col :span="3">
+                    <el-button type="primary" plain style="width:100%" icon="el-icon-plus" @click="addOrEditColumn(0)">新建专栏</el-button>
+                </el-col>
+            </el-row>
+            <!--表格查询结果区-->
+            <div class="cv_content_square">
+                <el-table :data="specialColumnTableData" style="width: 100%; margin:30px auto;" stripe>
+                    <el-table-column prop="columnTitle" label="专栏名称" width="200"></el-table-column>
+                    <el-table-column prop="columnStatus" label="状态">
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.columnStatus == 0">下线</span>
+                            <span v-if="scope.row.columnStatus == 1">上线</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="newsCount" label="已发布文章数"></el-table-column>
+                    <el-table-column prop="columnCount" label="阅读量"></el-table-column>
+                    <el-table-column prop="arrays[0].username" label="作者"></el-table-column>
+                    <el-table-column label="操作" width="200" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="addOrEditColumn(scope.row)">修改</el-button>
+                            <!-- <el-button type="text" size="small" @click="delThisColumn(scope.row)">删除</el-button> -->
+                            <el-button type="text" size="small" v-if="scope.row.columnStatus == 0" @click="togglestatusThisColumn(scope.row)">上线</el-button>
+                            <el-button type="text" size="small" v-if="scope.row.columnStatus == 1" @click="togglestatusThisColumn(scope.row)">下线</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page="pagination1.currPage"
+                    :page-size="pagination1.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination1.totalCount">
+                </el-pagination>
+            </div>
+
+        </div>
+        <!-------主页面-------专栏列表结束------->
+        
+        <!-------子页面-------新建编辑专栏开始------->
+        <div v-show="showChildPage">
+            <!--专栏基本信息-->
+            <div class="cv_content_square">
+                <el-form :model="editColumnForm" :rules="editColumnFormRules"  ref="editColumnForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
+                    <el-row class="el-row-h70">
+                        <el-col :span="8">
+                            <el-form-item label="专栏名称" prop="columnTitle" style="margin:0;">
+                                <el-input
+                                :maxlength="10"
+                                clearable
+                                type="text"
+                                v-model="editColumnForm.columnTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="所属频道" prop="columnChannel" style="margin:0;">
+                                <el-select v-model="editColumnForm.columnChannel">
+                                    <el-option
+                                        v-for="item in channelOptions"
+                                        :key="item.channelId"
+                                        :label="item.channelTitle"
+                                        :value="item.channelId">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="专栏作者" prop="columnEditor" style="margin:0;">
+                                <el-select v-model="columnEditorChange" multiple @change="authorChange">
+                                    <el-option
+                                        v-for="item in editorOptions"
+                                        :key="item.userId"
+                                        :label="item.username"
+                                        :value="item.userId">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--功能按钮区-->
+            <el-row class="el-row-h50" v-if="creatOrEdit == 1">
+                <el-col :span="3">
+                    <el-button type="primary" plain style="width:100%" icon="el-icon-plus" @click="addArticleToColumn">添加文章</el-button>
+                </el-col>
+            </el-row>
+            <!--表格查询结果区-->
+            <div class="cv_content_square"  v-if="creatOrEdit == 1">
+                <el-table :data="belongArticleTableData" style="width: 100%; margin:10px auto;" stripe>
+                    <el-table-column prop="cover" label="封面" width="110">
+                        <template v-if="scope.row.newsHeadPic" slot-scope="scope">
+                            <img style="width:100px;height:70px;" :src="scope.row.newsHeadPic">
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="newsTitle" label="标题" width="220"></el-table-column>
+                    <el-table-column prop="channelTitle" label="频道" width="90"></el-table-column>
+                    <el-table-column prop="newsModTime" label="发布时间" width="100"></el-table-column>
+                    <el-table-column prop="newsAuthor" label="作者"></el-table-column>
+                    <el-table-column prop="userName" label="发布人"></el-table-column>
+                    <el-table-column prop="newsCount" label="阅读量"></el-table-column>
+                    <el-table-column prop="newsStatus" label="发布状态"></el-table-column>
+                    <el-table-column label="操作" width="100" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="editThisArticle(scope.row)">修改</el-button>
+                            <el-button type="text" size="small" @click="removeThisArticle(scope.row)">移除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <!--分页器-->
+            <div class="cv_page_zone"  v-if="creatOrEdit == 1">
+                <el-pagination
+                    @current-change="handleCurrentChange2"
+                    :current-page="pagination2.currPage"
+                    :page-size="pagination2.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination2.totalCount">
+                </el-pagination>
+            </div>
+            <!--保存基本信息修改-->
+            <el-row class="el-row-h60" style="margin-top:20px;">
+                <el-col :span="3">
+                    <el-button type="primary" style="width:100%" @click="submitEditSpecialColumn('editColumnForm')">保存</el-button>
+                </el-col>
+                <el-col :span="3" :offset="1">
+                    <el-button type="primary" style="width:100%" @click="closeEditSpecialColumn('editColumnForm')">取消</el-button>
+                </el-col>
+            </el-row>
+
+            <!--搜索添加文章弹出层开始-->
+            <el-dialog title="添加专栏文章" :fullscreen="true" :show-close="false" :visible.sync="showAddArticleDialog">
+                <el-row class="el-row-h70">
+                    <el-col :span="12">
+                        <el-input
+                            clearable
+                            type="text"
+                            placeholder="请输入文章标题"
+                            v-model="searchArticleStr"
+                            auto-complete="off"></el-input>
+                    </el-col>
+                    <el-col :span="3" :offset="1">
+                        <el-button type="primary" style="width:100%" icon="el-icon-search" @click="startSearchArticle()">查询</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1">
+                        <el-button type="primary" style="width:100%" icon="el-icon-check" @click="addUserSelect()">添加选中</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1">
+                        <el-button type="primary" style="width:100%" @click="backToEditPage()">返回</el-button>
+                    </el-col>
+                </el-row>
+                <div class="cv_content_square">
+                    <el-table 
+                        ref="multipleTable"
+                        :data="searchArticleTableData" 
+                        @selection-change="handleSelectionChange" 
+                        style="width: 100%; margin:10px auto;" 
+                        stripe>
+                        <el-table-column type="selection" width="55"></el-table-column>
+                        <el-table-column prop="newsTitle" label="文章标题"></el-table-column>
+                    </el-table>
+                </div>
+            </el-dialog>
+            <!--搜索添加文章弹出层结束-->
+
+
+        </div>
+        <!-------子页面-------新建编辑专栏结束------->
+
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/content/special_column.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+<style>
+
+</style>
+
+</html>

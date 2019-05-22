@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>所有模板</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">所有模板</div>
+    <div id="template_list" class="cv_page_content">
+        <!-------主页面---------->
+        <div v-show="showChildPage == 0">
+            <!--列表搜索区-->
+            <div class="cv_content_square">
+                <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="7">
+                            <el-form-item label="模板名称" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchForm.name"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="13">
+                            <el-form-item label="发布时间" label-width="20%" style="margin:0;">
+                                <el-date-picker
+                                    clearable
+                                    style="width:100%;"
+                                    v-model="timeRange"
+                                    type="datetimerange"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    value-format="yyyy-MM-dd HH:mm:ss"
+                                    :default-time="['00:00:00', '00:00:00']">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" @click="startSearch(0)">搜索</el-button>
+                        </el-col>
+                    </el-row>    
+                </el-form>
+            </div>
+            <!--功能按钮区-->
+            <el-row class="el-row-h50">
+                <el-col :span="3">
+                    <el-button type="primary" plain style="width:100%" icon="el-icon-plus" @click="creatNewTemplate">新建模板</el-button>
+                </el-col>
+            </el-row>
+            <!--表格查询结果区-->
+            <div class="cv_content_square">
+                <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
+                    <el-table-column prop="name" label="标题"></el-table-column>
+                    <el-table-column prop="type" label="分类" width="90"></el-table-column>
+                    <el-table-column prop="crtTime" label="创建时间" width="160"></el-table-column>
+                    <el-table-column prop="modTime" label="修改时间" width="160"></el-table-column>
+                    <el-table-column label="操作" width="100" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="editThisTemplate(scope.row)">编辑</el-button>
+                            <el-button type="text" size="small" @click="deleteThisTemplate(scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page="pagination1.currentPage"
+                    :page-size="pagination1.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination1.totalCount">
+                </el-pagination>
+            </div>
+        </div>
+        <!-------主页面---------->
+
+        <!-------子页面----新建修改模板开始基本信息------>
+        <div v-show="showChildPage == 1">
+            <div class="cv_content_square">
+                <el-form :model="templateForm" :rules="templateFormRules"  ref="templateForm" status-icon class="demo-ruleForm" label-width="25%" label-position="right" >
+                    <el-row class="el-row-h70">
+                        <el-col :span="12">
+                            <el-form-item label="模板名称" prop="name" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="templateForm.name"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="模板ID" prop="id" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="templateForm.id"
+                                auto-complete="off"
+                                :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="24">
+                            <el-form-item label="模板内容" prop="content" style="margin:0;" label-width="12.5%">
+                                <el-input
+                                type="textarea"
+                                :autosize="{ minRows: 3}"
+                                placeholder="请输入模板HTML"
+                                v-model="templateForm.content"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <!--功能按钮区-->
+                    <el-row class="el-row-h50"  v-if="creatOrEdit == 'edit'" style="margin-top:30px;">
+                        <el-col :span="3">
+                            <el-button type="primary" plain style="width:100%" icon="el-icon-plus" @click="addIncToTemplate">添加INC</el-button>
+                        </el-col>
+                    </el-row>
+                    <!--表格查询结果区-->
+                    <div v-if="creatOrEdit == 'edit'" class="cv_content_square">
+                        <el-table :data="incTableData" style="width: 100%; margin:10px auto;" stripe>
+                            <el-table-column prop="name" label="INC名称"></el-table-column>
+                            <el-table-column prop="type" label="分类" width="90"></el-table-column>
+                            <el-table-column prop="crtTime" label="创建时间" width="160"></el-table-column>
+                            <el-table-column prop="modTime" label="修改时间" width="160"></el-table-column>
+                            <el-table-column label="操作" width="100" fixed="right">
+                                <template slot-scope="scope">          
+                                    <el-button type="text" size="small" @click="removeThisInc(scope.row)">移除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                    <el-row class="el-row-h60" style="margin-top:30px;">
+                        <el-col :span="4" :offset="7">
+                            <el-button type="primary" style="width:100%" @click="creatOrEditTemplate('templateForm')">保存</el-button>
+                        </el-col>
+                        <el-col :span="4" :offset="2">
+                            <el-button type="primary" style="width:100%" @click="closeToMainpage('templateForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            
+        </div>
+        <!-------子页面----新建修改模板结束------>
+
+        <!-------子页面----选择INC开始------>
+        <div v-show="showChildPage == 2">
+            <!--列表搜索区-->
+            <div class="cv_content_square">
+                <el-form :model="incsearchForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
+                    <el-row class="el-row-h60">
+                        <el-col :span="12">
+                            <el-form-item label="INC名称" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="incsearchForm.name"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" @click="startSearchInc(0)">搜索</el-button>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" icon="el-icon-plus" @click="addIncToRelative()">添加到模板</el-button>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" @click="backToPage2()">返回</el-button>
+                        </el-col>
+                    </el-row>    
+                </el-form>
+            </div>
+            <!--表格查询结果区-->
+            <div class="cv_content_square">
+                <el-table :data="incSearchTableData" ref="incSearchTableData" @selection-change="handleSelectionChange" style="width: 100%; margin:10px auto;" stripe>
+                    <el-table-column prop="name" label="标题"></el-table-column>
+                    <el-table-column prop="type" label="分类" width="90"></el-table-column>
+                    <el-table-column prop="crtTime" label="创建时间" width="160"></el-table-column>
+                    <el-table-column prop="modTime" label="修改时间" width="160"></el-table-column>
+                    <el-table-column type="selection" width="55" fixed="right"></el-table-column>
+                </el-table>
+            </div>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page="pagination2.currentPage"
+                    :page-size="pagination2.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination2.totalCount">
+                </el-pagination>
+            </div>
+        </div>
+        <!-------子页面----选择INC结束------>
+
+
+        
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/template/template_list.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+</html>

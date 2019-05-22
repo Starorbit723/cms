@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/icon.css">
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>频道管理</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">频道管理</div>
+    <div id="channel_list" class="cv_page_content">
+        <!-------主页面-------频道列表开始------->
+        <div v-show="!showChildPage">
+            <!--列表搜索区-->
+            <div class="cv_content_square">
+                <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="10">
+                            <el-form-item label="频道名称" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchForm.channelTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" icon="el-icon-search" @click="searchChannleList">搜索</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--功能按钮区-->
+            <el-row class="el-row-h50">
+                <el-col :span="3">
+                    <el-button type="primary" plain style="width:100%" icon="el-icon-plus" @click="openCreatChannelBox">新建频道</el-button>
+                </el-col>
+            </el-row>
+            <!--表格查询结果区-->
+            <div class="cv_content_square">
+                <el-table :data="tableData" style="width: 100%; margin:30px auto;" stripe>
+                    <el-table-column prop="channelPriority" label="序列" width="60"></el-table-column>
+                    <el-table-column prop="channelTitle" label="频道名称" ></el-table-column>
+                    <el-table-column prop="channelStatus" label="状态" width="120">
+                        <template slot-scope="scope" v-if="scope.row.channelStatus !== ''">
+                            <el-tag v-if="scope.row.channelStatus == 2" type="warning">上线-不显示</el-tag>
+                            <el-tag v-if="scope.row.channelStatus == 1" type="success">上线-显示</el-tag>
+                            <el-tag v-if="scope.row.channelStatus == 0" type="danger">下线</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="editorName" label="创建人" width="100"></el-table-column>
+                    <el-table-column prop="channelCrtTime" label="创建时间" width="160"></el-table-column>
+                    <el-table-column prop="newsCount" label="总文章数" width="120"></el-table-column>
+                    <el-table-column label="操作" width="200" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="editThisChannel(scope.row)">修改</el-button>
+                            <!-- <el-button type="text" size="small" @click="moveUp(scope.$index)" :disabled="scope.$index===0">上移</el-button>
+                            <el-button type="text" size="small" @click="moveDown(scope.$index)" :disabled="scope.$index === (tableData.length-1)">下移</el-button> -->
+                            <el-button type="text" size="small" v-if="scope.row.channelStatus == 0 || scope.row.channelStatus == 2" @click="togglestatusThisChannel(scope.row,1)">上线并显示</el-button>
+                            <el-button type="text" size="small" v-if="scope.row.channelStatus == 0 || scope.row.channelStatus == 1" @click="togglestatusThisChannel(scope.row,2)">上线不显示</el-button>
+                            <el-button type="text" size="small" v-if="scope.row.channelStatus == 1 || scope.row.channelStatus == 2" @click="togglestatusThisChannel(scope.row,0)">下线</el-button>
+                            
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <!--分页器-->
+            <!-- <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page="pagination1.currentPage"
+                    :page-size="20"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination1.totalCount">
+                </el-pagination>
+            </div> -->
+            <!--保存频道顺序修改-->
+            <el-row class="el-row-h60">
+                <el-col :span="3">
+                    <el-button type="primary" style="width:100%" @click="saveChannelIndex">保存</el-button>
+                </el-col>
+            </el-row>
+            <!--新建频道弹出层开始-->
+            <el-dialog title="新建频道" :visible.sync="showCreatChannel" width="60%" @close="clearCreatChannelBox('creatNewChannelForm')">
+                <el-form :model="creatNewChannelForm" :rules="creatNewChannelFormRules"  ref="creatNewChannelForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right">
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item label="频道名称" prop="channelTitle" style="margin:0;">
+                                <el-input
+                                maxlength="20"
+                                placeholder="限20字"
+                                type="text"
+                                v-model="creatNewChannelForm.channelTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h40">
+                        <el-col :span="24">
+                            <el-form-item label="备注" prop="channelDesc" style="margin:0;">
+                                <el-input
+                                    type="textarea"
+                                    maxlength="200"
+                                    :autosize="{ minRows: 2, maxRows: 4}"
+                                    placeholder="限200字"
+                                    v-model="creatNewChannelForm.channelDesc">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h60" style="margin-top:30px;">
+                        <el-col :span="4" :offset="7">
+                            <el-button type="primary" style="width:100%" @click="submitCreatChannel('creatNewChannelForm')">确认</el-button>
+                        </el-col>
+                        <el-col :span="4" :offset="2">
+                            <el-button type="primary" style="width:100%" @click="closeCreatChannelBox('creatNewChannelForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </el-dialog>
+            <!--新建频道弹出层结束-->
+        </div>
+        <!-------主页面-------频道列表结束------->
+
+        <!-------子页面-------频道编辑开始------->
+        <div v-show="showChildPage">
+            <!--频道基本信息-->
+            <div class="cv_content_square">
+                <el-form :model="editChannelForm" :rules="editChannelFormRules"  ref="editChannelForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right">
+                    <el-row class="el-row-h70">
+                        <el-col :span="12">
+                            <el-form-item label="频道名称" prop="channelTitle" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="editChannelForm.channelTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h40">
+                        <el-col :span="12">
+                            <el-form-item label="备注" prop="channelDesc" style="margin:0;">
+                                <el-input
+                                    clearable
+                                    type="textarea"
+                                    :autosize="{ minRows: 2, maxRows: 4}"
+                                    placeholder="请输入内容"
+                                    v-model="editChannelForm.channelDesc">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--功能按钮区-->
+            <el-row class="el-row-h50" style="margin-top:20px;">
+                <el-col :span="3">
+                    <el-button type="primary" plain style="width:100%" icon="el-icon-plus" @click="addArticleToChannel">添加文章</el-button>
+                </el-col>
+            </el-row>
+            <!--频道下的文章列表-->
+            <div class="cv_content_square">
+                <el-table :data="channelInnerData" style="width: 100%; margin:10px auto;" stripe>
+                    <el-table-column prop="coverImg" label="封面" width="120">
+                        <template slot-scope="scope">
+                            <img style="width:100px;height:70px;border:1px solid #dadada;" :src="scope.row.newsHeadPic">
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="newsTitle" label="文章标题" width="200"></el-table-column>
+                    <el-table-column prop="newsCrtTime" label="发布时间" width="100"></el-table-column>
+                    <el-table-column prop="userName" label="作者" width="90"></el-table-column>
+                    <el-table-column prop="newsCount" label="阅读量"></el-table-column>
+                    <el-table-column prop="newsStatus" label="发布状态">
+                        <template slot-scope="scope">
+                            <el-tag v-if="scope.row.newsStatus == 0">未发布</el-tag>
+                            <el-tag v-if="scope.row.newsStatus == 1" type="warning">待发布</el-tag>
+                            <el-tag v-if="scope.row.newsStatus == 2" type="success">已发布</el-tag>
+                            <el-tag v-if="scope.row.newsStatus == 3" type="danger">发布失败 </el-tag>
+                            <el-tag v-if="scope.row.newsStatus == 4" type="warning">待删除</el-tag>
+                            <el-tag v-if="scope.row.newsStatus == 5" type="danger">已删除</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="100" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="removeArticleFromChannel(scope.row)">移除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange2"
+                    :current-page="pagination2.currentPage"
+                    layout="total, prev, pager, next"
+                    :total="pagination2.totalCount">
+                </el-pagination>
+            </div>
+            <!--保存频道基本信息修改-->
+            <el-row class="el-row-h60">
+                <el-col :span="3">
+                    <el-button type="primary" style="width:100%" @click="submitEditChannel('editChannelForm')">保存</el-button>
+                </el-col>
+                <el-col :span="3" :offset="1">
+                    <el-button type="primary" style="width:100%" @click="closeEditChannelBox('editChannelForm')">取消</el-button>
+                </el-col>
+            </el-row>
+
+
+            <!--搜索添加文章弹出层开始-->
+            <el-dialog title="添加频道文章" :fullscreen="true" :show-close="false" :visible.sync="showAddArticleDialog">
+                <el-row class="el-row-h70">
+                    <el-col :span="12">
+                        <el-input
+                            clearable
+                            type="text"
+                            placeholder="请输入文章标题"
+                            v-model="searchArticleStr"
+                            auto-complete="off"></el-input>
+                    </el-col>
+                    <el-col :span="3" :offset="1">
+                        <el-button type="primary" style="width:100%" icon="el-icon-search" @click="startSearchArticle(0)">查询</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1">
+                        <el-button type="primary" style="width:100%" icon="el-icon-check" @click="addUserSelect()">添加选中</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1">
+                        <el-button type="primary" style="width:100%" @click="backToEditPage()">返回</el-button>
+                    </el-col>
+                </el-row>
+                <div class="cv_content_square">
+                    <el-table 
+                        ref="multipleTable"
+                        :data="searchArticleTableData" 
+                        @selection-change="handleSelectionChange" 
+                        style="width: 100%; margin:10px auto;" 
+                        stripe>
+                        <el-table-column type="selection" width="55"></el-table-column>
+                        <el-table-column prop="newsTitle" label="文章标题"></el-table-column>
+                    </el-table>
+                </div>
+                <!--分页器-->
+                <!-- <div class="cv_page_zone">
+                    <el-pagination
+                        @current-change="handleCurrentChange3"
+                        :current-page="pagination3.currentPage"
+                        layout="total, prev, pager, next"
+                        :total="pagination3.totalCount">
+                    </el-pagination>
+                </div> -->
+            </el-dialog>
+            <!--搜索添加文章弹出层结束-->
+
+
+
+
+        </div>
+        <!-------子页面-------频道编辑结束------->
+
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/content/channel_list.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+</html>

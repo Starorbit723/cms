@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>所有文章</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">所有文章</div>
+    <div id="article_list" class="cv_page_content">
+        <!--列表搜索区-->
+        <div class="cv_content_square">
+            <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
+                <el-row class="el-row-h60">
+                    <el-col :span="6">
+                        <el-form-item label="标题" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="searchForm.newsTitle"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-form-item label="频道" style="margin:0;">
+                            <el-select v-model="searchForm.newsChannel" style="width:100%;" clearable>
+                                <el-option
+                                    v-for="item in channelOptions"
+                                    :key="item.channelId"
+                                    :label="item.channelTitle"
+                                    :value="item.channelId">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="发布时间" label-width="20%" style="margin:0;">
+                            <el-date-picker
+                                clearable
+                                style="width:100%;"
+                                v-model="timeRange"
+                                type="datetimerange"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                                :picker-options="pickerOptions"
+                                value-format="yyyy-MM-dd HH:mm:ss"
+                                :default-time="['00:00:00', '00:00:00']">
+                            </el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h60">
+                    <el-col :span="6">
+                        <el-form-item label="来源" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="searchForm.newsFrom"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-form-item label="作者" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="searchForm.newsAuthor"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="推荐状态" label-width="20%" style="margin:0;">
+                            <el-select style="width:100%;" v-model="searchForm.recommendStatus" clearable>
+                                <el-option
+                                    v-for="item in recommendOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h60">
+                    <el-col :span="6">
+                        <el-form-item label="创建人" style="margin:0;">
+                            <el-select style="width:100%;" v-model="searchForm.newsCrtUserId" clearable>
+                                <el-option
+                                    v-for="item in editorOptions"
+                                    :key="item.userId"
+                                    :label="item.username"
+                                    :value="item.userId">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>     
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label-width="17%" label="发布状态" style="margin:0;">
+                            <el-checkbox-group v-model="searchForm.newsStatus">
+                                <el-checkbox label="2">已发布</el-checkbox>
+                                <el-checkbox label="1">待发布</el-checkbox>
+                                <el-checkbox label="0">未发布</el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>    
+                    </el-col>
+                    <el-col :span="3" :offset="3" class="el-row-h50">
+                        <el-button type="primary" style="width:100%" @click="startSearch(0)">搜索</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+        </div>
+
+        <!--功能按钮区-->
+        <el-row class="el-row-h50">
+            <el-col :span="3">
+                <el-button type="primary" plain style="width:100%" icon="el-icon-plus" @click="creatArticle">新建文章</el-button>
+            </el-col>
+        </el-row>
+
+        <!--表格查询结果区-->
+        <div class="cv_content_square">
+            <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
+                <el-table-column prop="newsHeadPic" label="封面" width="110">
+                    <template v-if="scope.row.newsHeadPic" slot-scope="scope">
+                        <img style="width:100px;height:70px;" :src="scope.row.newsHeadPic">
+                    </template>
+                </el-table-column>
+                <el-table-column prop="newsTitle" label="标题" width="280">
+                    <template v-if="scope.row.newsTitle" slot-scope="scope">
+                        <div v-text="scope.row.newsTitle" @click="openUrlArticlePage(scope.row.newsUrl)"></div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="channelTitle" label="频道" width="90"></el-table-column>
+                <el-table-column prop="newsStatus" label="发布状态"  width="110">
+                    <!--0未发布，1是待发布，2是已发布 3是发布失败 4是待删除 5 删除-->
+                    <template slot-scope="scope">
+                        <el-tag v-if="scope.row.newsStatus == 0">未发布</el-tag>
+                        <el-tag v-if="scope.row.newsStatus == 1" type="warning">待发布</el-tag>
+                        <el-tag v-if="scope.row.newsStatus == 2" type="success">已发布</el-tag>
+                        <el-tag v-if="scope.row.newsStatus == 3" type="danger">发布失败 </el-tag>
+                        <el-tag v-if="scope.row.newsStatus == 4" type="warning">待删除</el-tag>
+                        <el-tag v-if="scope.row.newsStatus == 5" type="danger">已删除</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="newsReleaseTime" label="发布时间" width="95"></el-table-column>
+                <el-table-column prop="newsAuthor" label="作者"></el-table-column>
+                <el-table-column prop="userName" label="发布人"></el-table-column>
+                <el-table-column prop="newsCount" label="阅读量">
+                    <template slot-scope="scope">
+                        <div v-if="scope.row.newsCount == ''">0</div>
+                        <div v-if="scope.row.newsCount !== ''">{{scope.row.newsCount}}</div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" width="200" fixed="right">
+                    <template slot-scope="scope" v-if="scope.row.newsStatus !== 1 && scope.row.newsStatus !== 4">
+                        <el-button type="text" size="small" v-if="scope.row.newsStatus == 0 || scope.row.newsStatus == 2 || scope.row.newsStatus == 3" @click="editThisArticle(scope.row)">编辑</el-button>
+                        <el-button type="text" size="small" v-if="scope.row.newsStatus == 0 || scope.row.newsStatus == 3"  @click="deleteThisArticle(scope.row)">删除</el-button>
+                        <el-button type="text" v-if="scope.row.newsStatus == 0 || scope.row.newsStatus == 3" size="small" @click="onlineThisArticle(scope.row)">发布</el-button>
+                        <el-button type="text" size="small" @click="offlineThisArticle(scope.row)" v-if="scope.row.newsStatus == 2 &&scope.row.recommendStatus !== 1">下线</el-button>
+                        <el-button type="text" size="small" @click="togglePushThisArticle(scope.row)" v-if="scope.row.newsStatus == 2 && scope.row.recommendStatus == 2">推荐</el-button>
+                        <!-- <el-button type="text" size="small" @click="togglePushThisArticle(scope.row)" v-if="scope.row.newsStatus == 2 && scope.row.recommendStatus == 1">不推荐</el-button> -->
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+
+        <!--分页器-->
+        <div class="cv_page_zone">
+            <el-pagination
+                @current-change="handleCurrentChange"
+                :current-page="pagination1.currPage"
+                :page-size="10"
+                layout="total, prev, pager, next, jumper"
+                :total="pagination1.totalCount">
+            </el-pagination>
+        </div>
+        
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/content/article_list.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+</html>

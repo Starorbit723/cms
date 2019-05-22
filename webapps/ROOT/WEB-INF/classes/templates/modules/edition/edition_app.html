@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>App版本管理</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">App版本管理</div>
+    <div id="edition_app" class="cv_page_content">
+        <!--列表搜索区-->
+        <div class="cv_content_square">
+            <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right" @submit.native.prevent>
+                <el-row class="el-row-h50">
+                    <el-col :span="10">
+                        <el-form-item label="版本名称" label-width="20%" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="searchForm.versionName"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-form-item label="所属平台" style="margin:0;">
+                            <el-select style="width:100%;" v-model="searchForm.platformType" clearable>
+                                <el-option
+                                    v-for="item in platformOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>    
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" style="width:100%" @click="startSearch">搜索</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+        </div>
+
+        <!--功能按钮区-->
+        <el-row class="el-row-h50">
+            <el-col :span="3">
+                <el-button type="primary" plain style="width:100%" icon="el-icon-plus" @click="creatNewEdition">新建版本</el-button>
+            </el-col>
+        </el-row>
+
+        <!--表格查询结果区-->
+        <div class="cv_content_square">
+            <el-table :data="tableData" style="width: 100%; margin:15px auto;">
+                <el-table-column prop="versionNumber" label="版本号" width="110"></el-table-column>
+                <el-table-column prop="platformType" label="平台" width="90">
+                    <template slot-scope="scope" v-if="scope.row.platformType !== ''">
+                        <el-tag v-if="scope.row.platformType == 0" type="success">安卓</el-tag>
+                        <el-tag v-if="scope.row.platformType == 1">IOS</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="versionChannel" label="渠道" width="170">
+                    <template slot-scope="scope" v-if="scope.row.versionChannel !== ''">
+                        <el-col v-for="(item,index) in appChannelOptions" v-if="scope.row.versionChannel == appChannelOptions[index].value">{{appChannelOptions[index].label}}</el-col>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="versionName" label="版本名称"></el-table-column>
+                <el-table-column prop="upgrade" label="升级方式" width="110">
+                    <template slot-scope="scope" v-if="scope.row.upgrade !== ''">
+                        <el-tag v-if="scope.row.upgrade == 0" type="warning">提示升级</el-tag>
+                        <el-tag v-if="scope.row.upgrade == 1" type="danger">强制升级</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="modUserId" label="更新人" width="120"></el-table-column>
+                <el-table-column prop="modTime" label="更新时间" width="95"></el-table-column>
+                <el-table-column label="操作" width="100" fixed="right">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" @click="editThisVersiion(scope.row)">编辑</el-button>
+                        <!-- <el-button type="text" size="small" @click="deleteThisVersiion(scope.row)">删除</el-button> -->
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+
+        <!--分页器-->
+        <div class="cv_page_zone">
+            <el-pagination
+                @current-change="handleCurrentChange"
+                :current-page="pagination1.currentPage"
+                :page-size="pagination1.pageSize"
+                layout="total, prev, pager, next, jumper"
+                :total="pagination1.totalCount">
+            </el-pagination>
+        </div>
+
+        <!--新建版本弹出层开始-->
+        <el-dialog title="新建/编辑版本" :visible.sync="showCreatEdtion" width="70%" @close="cancelEdition()" :fullscreen="true" :show-close="false">
+            <el-form :model="edtionForm" :rules="edtionFormRules"  ref="edtionForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
+                <el-row class="el-row-h70">
+                    <el-col :span="12">
+                        <el-form-item label="所属平台" prop="platformType" style="margin:0;">
+                            <el-select style="width:100%;" v-model="edtionForm.platformType" @change="changePlatform">
+                                <el-option
+                                    v-for="item in platformOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="升级方式" prop="upgrade" style="margin:0;">
+                            <el-select style="width:100%;" v-model="edtionForm.upgrade">
+                                <el-option
+                                    v-for="item in uplevelWayOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <el-col :span="12">
+                        <el-form-item label="版本名称" prop="versionName" style="margin:0;">
+                            <el-input
+                                placeholder="请输入版本中文名称"
+                                v-model="edtionForm.versionName">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="所属渠道" prop="versionChannel" style="margin:0;">
+                            <el-select style="width:100%;" v-model="edtionForm.versionChannel">
+                                <el-option
+                                    v-for="item in appChannelOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <el-col :span="12">
+                        <el-form-item label="版本号" prop="versionNumber" style="margin:0;">
+                            <el-input
+                                placeholder="格式为“v1.0.0”"
+                                v-model="edtionForm.versionNumber">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="向下兼容版本" prop="versionIds" style="margin:0;">
+                            <el-select style="width:100%;" v-model="edtionForm.versionIds">
+                                <el-option
+                                    v-for="item in confitableVersion"
+                                    :key="item.id"
+                                    :label="item.versionNumber"
+                                    :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <el-col :span="24">
+                        <el-form-item label-width="15%" label="下载地址(安卓)" prop="versionUrl" style="margin:0;">
+                            <el-input
+                                placeholder="请输入安卓包资源地址"
+                                v-model="edtionForm.versionUrl">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <el-col :span="24">
+                        <el-form-item label-width="15%" label="更新内容" style="margin:0;">
+                            <el-row class="el-row-h40" style="margin-bottom: 10px;" v-for="(item,index) in updateDescList" :key="index">
+                                <el-col :span="20">
+                                    <el-input placeholder="请输入更新内容" v-model="item.str"></el-input>
+                                </el-col>
+                                <el-col :span="3" :offset="1">
+                                    <el-button style="width:100%" type="primary" @click="deleteThisItem(index)">删除</el-button>
+                                </el-col>
+                            </el-row>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row style="padding-left:15%;">
+                    <el-col :span="24">
+                        <el-button style="width:100%" @click="addNewItem">+ 添加新条目</el-button>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h60" style="margin-top:30px;">
+                    <el-col :span="4" :offset="7">
+                        <el-button type="primary" style="width:100%" @click="ensureEdition">确认</el-button>
+                    </el-col>
+                    <el-col :span="4" :offset="2">
+                        <el-button type="primary" style="width:100%" @click="cancelEdition">取消</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+        </el-dialog>
+        <!--新建频道弹出层结束-->
+
+
+        
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/edition/edition_app.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+</html>

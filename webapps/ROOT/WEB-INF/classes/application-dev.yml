@@ -1,0 +1,90 @@
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    druid:
+      first:  #数据源1
+        url: jdbc:mysql://119.254.13.245:3306/cmsdct?useUnicode=true&characterEncoding=utf8&autoReconnect=true&rewriteBatchedStatements=true&=false
+        username: root
+        password: chinacv#2019
+      second:  #数据源2
+        url: jdbc:mysql://119.254.13.245:3306/cmsdct?useUnicode=true&characterEncoding=utf8&autoReconnect=true&rewriteBatchedStatements=true&=false
+        username: root
+        password: chinacv#2019
+      initial-size: 10
+      max-active: 100
+      min-idle: 10
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      #validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        #login-username: admin
+        #login-password: admin
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: false
+        wall:
+          config:
+            multi-statement-allow: true
+redis:
+  maxTotal: 30
+  maxIdle: 10
+  numTestsPerEvictionRun: 1024
+  timeBetweenEvictionRunsMillis: 30000
+  minEvictableIdleTimeMillis: 1800000
+  softMinEvictableIdleTimeMillis: 10000
+  maxWaitMillis: 1500
+  testOnBorrow: true
+  testWhileIdle: true
+  blockWhenExhausted: false
+  Cluster:
+    host: 119.254.13.82
+    port: 6379
+    host1: 119.254.13.82
+    port1: 6380
+    host2: 119.254.13.83
+    port2: 6379
+    host3: 119.254.13.83
+    port3: 6380
+    host4: 119.254.13.84
+    port4: 6379
+    host5: 119.254.13.84
+    port5: 6380
+rocket:
+  nameServer: 119.254.13.86:9876;119.254.13.87:9876
+  basePackage: com.chinaventure
+localUrl: /image/
+esUrl: http://119.254.13.85:8220/cv-sensitive/api/sensitive/internally/check
+abstractUrl: http://172.10.2.203:8080/lexer
+redisUrl: http://119.254.13.82:8080
+newsUrl: /cms/api/updateNewsDetail
+channelUrl: /cms/api/updateChannelList
+subjectUrl: /cms/api/updateSubject
+columnUrl: /cms/api/updateColumn
+mediaUrl: /cms/api/updateSsoMedia
+pictureUrl: /cms/api/updatePictureList
+focusUrl: /cms/api/updateFocusDetail
+flashUrl: /cms/api/updateFlashList
+reportUrl: /cms/api/updateReportDetail
+recommendUrl: /cms/api/updateRecommendNewsList
+dictUrl: /cms/api/updateSysDict
+pvUrl: /cms/api/getAllPageView
+channelNewsList: /cms/api/updateChannelNewsList
+subjectNewsList: /cms/api/updateSubjectNewsList
+pvRedisUrl: /cms/api/updateCountNewsList
+versionUrl: /cms/api/updateAppVersion
+endPoint: https://obs.cn-north-1.myhuaweicloud.com
+ak: 2FBSHRRFZ5YLE3VPBMDK
+sk: vqYIdh3xmKfjlhcM0qEwCeuY8QfRKHYnGYHWoDBx
+local: cn-north-1
+bucketName: cvinfo-test

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/icon.css">
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>专题管理</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">专题管理</div>
+    <div id="special_list" class="cv_page_content">
+        <!------------------专题列表开始------------------>
+        <div v-show="!showChildPage">
+            <!--列表搜索区-->
+            <div class="cv_content_square">
+                <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="10">
+                            <el-form-item label="专题名称" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchForm.subjectTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="startSearch(0)">搜索</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--功能按钮区-->
+            <el-row class="el-row-h50">
+                <el-col :span="3">
+                    <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addEditSpecial(0)">新建专题</el-button>
+                </el-col>
+            </el-row>
+            <!--表格查询结果区-->
+            <div class="cv_content_square">
+                <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
+                    <el-table-column prop="subjectTitle" label="专题名称"></el-table-column>
+                    <el-table-column prop="subjectAppPic" label="专题封面图" width="180">
+                        <template v-if="scope.row.subjectAppPic !== ''" slot-scope="scope">
+                            <img style="width:160px;height:100px;" :src="scope.row.subjectAppPic">
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="subjectStatus" label="状态" width="90">
+                        <template slot-scope="scope" v-if="scope.row.subjectStatus !== ''">
+                            <el-tag v-if="scope.row.subjectStatus == 1" type="success">上线</el-tag>
+                            <el-tag v-if="scope.row.subjectStatus == 0" type="danger">下线</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="subjectPriority" label="专题优先级" width="90"></el-table-column>
+                    <el-table-column prop="newsCount" label="文章数" width="110"></el-table-column>
+                    <el-table-column label="操作" width="100" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="addEditSpecial(scope.row)">修改</el-button>
+                            <el-button type="text" size="small" v-if="scope.row.subjectStatus == 0" @click="togglestatusThisSpecial(scope.row)">上线</el-button>
+                            <el-button type="text" size="small" v-if="scope.row.subjectStatus == 1" @click="togglestatusThisSpecial(scope.row)">下线</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page="pagination1.currPage"
+                    :page-size="pagination1.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination1.totalCount">
+                </el-pagination>
+            </div>
+        </div>
+        <!------------------专题列表结束------------------>
+
+        <!------------------新建编辑专题开始------------------>
+        <div v-show="showChildPage">
+            <!--基本信息-->
+            <div class="cv_content_square">
+                <el-form :model="specialInfoForm" :rules="specialInfoFormRules"  ref="specialInfoForm" status-icon class="demo-ruleForm" label-width="16.5%" label-position="right">
+                    <el-row class="el-row-h80">
+                        <el-col :span="24">
+                            <el-form-item label="专题标题" prop="subjectTitle" style="margin:0;">
+                                <el-input
+                                maxlength="36"
+                                type="text"
+                                v-model="specialInfoForm.subjectTitle"
+                                auto-complete="off">
+                                    <template slot="append">最多36字</template>
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h80">
+                        <el-col :span="24">
+                            <el-form-item label="专题简介" prop="subjectDesc" style="margin:0;">
+                                <el-input
+                                maxlength="200"
+                                type="textarea"
+                                :autosize="{ minRows: 2, maxRows: 4}"
+                                placeholder="限200字"
+                                v-model="specialInfoForm.subjectDesc"
+                                auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h80">
+                        <el-col :span="24">
+                            <el-form-item label="专题权重" prop="subjectPriority" style="margin:0;">
+                                <el-input
+                                maxlength="5"
+                                v-model="specialInfoForm.subjectPriority"
+                                auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h100">
+                        <el-col :span="24">
+                            <el-form-item label="专题封面" prop="subjectAppPic" style="margin:0;">
+                                <div class="avatar-uploader2" @click="openAddCoverImg()">
+                                    <img v-if="specialInfoForm.subjectAppPic" :src="specialInfoForm.subjectAppPic" class="avatar2">
+                                    <i v-else class="el-icon-plus avatar-uploader-icon2"></i>
+                                </div>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--功能按钮-->
+            <el-row class="el-row-h50" v-if="creatOrEdit == 1">
+                <el-col :span="3">
+                    <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="openAddEditArticle()">添加文章</el-button>
+                </el-col>
+            </el-row>
+            <!--该专题下的文章列表-->
+            <div class="cv_content_square" v-if="creatOrEdit == 1">
+                <el-table :data="articleData" style="width: 100%; margin:10px auto;" stripe>
+                    <el-table-column prop="newsTitle" label="文章标题" width="450"></el-table-column>
+                    <el-table-column prop="newsAuthor" label="作者" width=""></el-table-column>
+                    <el-table-column prop="newsCount" label="阅读量" width=""></el-table-column>
+                    <el-table-column label="操作" width="150" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="deleteThisArticle(scope.row)">移除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <!--分页器-->
+            <div class="cv_page_zone" v-if="creatOrEdit == 1">
+                <el-pagination
+                    @current-change="handleCurrentChange2"
+                    :current-page="pagination2.currPage"
+                    :page-size="pagination2.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination2.totalCount">
+                </el-pagination>
+            </div>
+            <!--按钮区-->
+            <el-row class="el-row-h60">
+                <el-col :span="3" :offset="4">
+                    <el-button type="primary" style="width:100%" @click="saveThisSpecial('specialInfoForm')">保存</el-button>
+                </el-col>
+                <el-col :span="3" :offset="1">
+                    <el-button type="primary" style="width:100%" plain @click="cancelAddSpecial">取消</el-button>
+                </el-col>
+            </el-row>
+
+            <!--封面图库弹出层开始-->
+            <el-dialog title="封面图库" :visible.sync="showCoverimgLib" width="100%" :fullscreen="true" :show-close="false">
+                <el-form :model="searchCoverimgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right">
+                    <el-row class="el-row-h60">
+                        <el-col :span="16">
+                            <el-form-item label="图片名称" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchCoverimgForm.picTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchCoverImg()">搜索</el-button>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" @click="backToEdit()">返回</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <el-table :data="coverimgTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="coverimgTableData" stripe>
+                    <el-table-column prop="picUrl" label="封面图预览" width="180">
+                        <template v-if="scope.row.picUrl" slot-scope="scope">
+                            <img style="width:80px;height:60px;" :src="scope.row.picUrl">
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="picTitle" label="图片名称" width="250"></el-table-column>
+                    <el-table-column prop="picEditorName" label="修改人" width="120"></el-table-column>
+                    <el-table-column prop="picModTime" label="最后更新时间"></el-table-column>
+                    <el-table-column label="操作" width="100" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="addThisCoverImg(scope.row)">添加</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <!--分页器-->
+                <div class="cv_page_zone">
+                    <el-pagination
+                        @current-change="handleCurrentChange3"
+                        :current-page="pagination3.currPage"
+                        :page-size="pagination3.pageSize"
+                        layout="total, prev, pager, next, jumper"
+                        :total="pagination3.totalCount">
+                    </el-pagination>
+                </div>
+            </el-dialog>
+            <!--封面图库弹出层结束-->
+
+            <!--搜索添加文章弹出层开始-->
+            <el-dialog title="添加专题文章" :fullscreen="true" :show-close="false" :visible.sync="showAddArticleDialog">
+                <el-row class="el-row-h70">
+                    <el-col :span="12">
+                        <el-input
+                            clearable
+                            type="text"
+                            placeholder="请输入文章标题"
+                            v-model="searchArticleStr"
+                            auto-complete="off"></el-input>
+                    </el-col>
+                    <el-col :span="3" :offset="1">
+                        <el-button type="primary" style="width:100%" icon="el-icon-search" @click="startSearchArticle()">查询</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1">
+                        <el-button type="primary" style="width:100%" icon="el-icon-check" @click="addUserSelect()">添加选中</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1">
+                        <el-button type="primary" style="width:100%" @click="backToEditPage()">返回</el-button>
+                    </el-col>
+                </el-row>
+                <div class="cv_content_square">
+                    <el-table 
+                        ref="multipleTable"
+                        :data="searchArticleTableData" 
+                        @selection-change="handleSelectionChange" 
+                        style="width: 100%; margin:10px auto;" 
+                        stripe>
+                        <el-table-column type="selection" width="55"></el-table-column>
+                        <el-table-column prop="newsTitle" label="文章标题"></el-table-column>
+                    </el-table>
+                </div>
+            </el-dialog>
+            <!--搜索添加文章弹出层结束-->
+
+        </div>
+        <!------------------新建专题结束------------------>
+
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/libs/fang_utils.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/content/special_list.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+<style>
+.avatar-uploader{
+    width:720px;
+    height: 200px;
+    border-radius: 6px;
+    border: 1px dashed #d9d9d9;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader:hover{
+    border-color: #175CE9;
+}
+.avatar-uploader:hover .avatar-uploader-icon{
+    color: #175CE9;
+}
+.avatar-uploader-icon {
+    display: block;
+    font-size: 28px;
+    color: #8c939d;
+    width: 200px;
+    height: 200px;
+    line-height: 200px;
+    text-align: center;
+    margin: 0 auto;
+}
+.avatar-uploader-icon:hover{
+    color: #175CE9;
+}
+.avatar {
+    position: absolute;
+    width:720px;
+    height: 200px;
+}
+.avatar-uploader2{
+    width:320px;
+    height: 200px;
+    border-radius: 6px;
+    border: 1px dashed #d9d9d9;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader2:hover{
+    border-color: #175CE9;
+}
+.avatar-uploader2:hover .avatar-uploader-icon{
+    color: #175CE9;
+}
+.avatar-uploader-icon2 {
+    display: block;
+    font-size: 28px;
+    color: #8c939d;
+    width: 200px;
+    height: 200px;
+    line-height: 200px;
+    text-align: center;
+    margin: 0 auto;
+}
+.avatar-uploader-icon2:hover{
+    color: #175CE9;
+}
+.avatar2{
+    position: absolute;
+    width:320px;
+    height: 200px;
+}
+</style>
+</html>

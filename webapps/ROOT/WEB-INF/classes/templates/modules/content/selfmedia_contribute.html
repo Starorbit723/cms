@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/icon.css">
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>自媒体投稿</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">自媒体投稿</div>
+    <div id="selfmedia_contribute" class="cv_page_content">
+
+        <!-------主页面-------列表开始------->
+        <div v-show="!showChildPage">
+            <!--列表搜索区-->
+            <div class="cv_content_square">
+                <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h50">
+                        <el-col :span="8">
+                            <el-form-item label="标题" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchForm.draftTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="投稿时间" style="margin:0;">
+                                <el-date-picker
+                                    clearable
+                                    style="width:100%"
+                                    v-model="uploadTime"
+                                    type="datetimerange"
+                                    value-format="yyyy-MM-dd HH:mm:ss"
+                                    :picker-options="pickerOptions"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    :default-time="['00:00:00', '08:00:00']">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" icon="el-icon-search" @click="startSearch">搜索</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--表格查询结果区-->
+            <div class="cv_content_square">
+                <el-table :data="articleData" style="width: 100%; margin:10px auto;" stripe>
+                    <el-table-column prop="draftTitle" label="文章标题" width="350"></el-table-column>
+                    <el-table-column prop="draftAuthor" label="作者" width=""></el-table-column>
+                    <el-table-column prop="draftSourceName" label="来源" width=""></el-table-column>
+                    <el-table-column prop="draftCrtTime" label="投稿时间" width=""></el-table-column>
+                    <el-table-column prop="draftPhone" label="联系方式" width=""></el-table-column>
+                    <el-table-column prop="draftOriginal" label="是否原创">
+                        <template slot-scope="scope">
+                            <el-tag v-if="scope.row.draftOriginal == 0" type="warning">非原创</el-tag>
+                            <el-tag v-if="scope.row.draftOriginal == 1">原&nbsp;&nbsp;&nbsp;创</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="150" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="readThisArticle(scope.row)">审阅</el-button>
+                            <el-button type="text" size="small" @click="deleteThisArticle(scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page="pagination1.currPage"
+                    :page-size="pagination1.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination1.totalCount">
+                </el-pagination>
+            </div>
+
+            <!--审阅弹出层开始-->
+            <el-dialog title="审阅文章" :fullscreen="true" :visible.sync="showReadArticleDialog" @close="clearArticleContent">
+                <el-row class="el-row-h70">
+                    <el-col :span="3">文章标题</el-col>
+                    <el-col :span="21">
+                        <el-input
+                            maxlength="24"
+                            type="text"
+                            v-model="lookedArticle.draftTitle"
+                            auto-complete="off">
+                        </el-input>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="3">文章内容</el-col>
+                    <el-col :span="21">
+                        <el-input
+                            type="textarea"
+                            :autosize="{ minRows: 2}"
+                            v-model="lookedArticle.draftContent"
+                            auto-complete="off">
+                        </el-input>
+                    </el-col>
+                </el-row>
+                <el-row style="margin-top:10px;">
+                    <el-col :span="3">文章配图</el-col>
+                    <el-col :span="21">
+                        <el-row v-for="item in lookedArticle.draftImg" class="el-row-h60">
+                            <img class="imglist_img" :src="item.src" />
+                            <el-input
+                                type="text"
+                                v-model="item.src"
+                                auto-complete="off">
+                            </el-input>
+                        </el-row>
+                    </el-col>
+                </el-row>
+            </el-dialog>
+            <!--审阅弹出层弹出层结束-->
+
+
+        </div>
+        <!-------主页面-------专栏列表结束------->
+        
+
+        <!-------子页面-------新建修改自媒体开始------->
+        <div v-show="showChildPage">
+            
+        </div>
+        <!-------子页面-------新建修改自媒体结束------->
+
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/content/selfmedia_contribute.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+</html>

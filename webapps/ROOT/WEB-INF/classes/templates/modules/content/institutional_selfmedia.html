@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/icon.css">
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>机构自媒体管理</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">机构自媒体管理</div>
+    <div id="institutional_selfmedia" class="cv_page_content">
+
+        <!-------主页面-------列表开始------->
+        <div v-show="!showChildPage">
+            <!--列表搜索区-->
+            <div class="cv_content_square">
+                <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="16">
+                            <el-form-item label="自媒体名称" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchForm.mediaName"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="类型" style="margin:0;">
+                                <el-select v-model="searchForm.mediaType" style="width:100%" clearable>
+                                    <el-option
+                                        v-for="item in selfmediaOptions"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h50">
+                        <el-col :span="16">
+                            <el-form-item label="发文时间" style="margin:0;">
+                                <el-date-picker
+                                    clearable
+                                    style="width:100%"
+                                    v-model="uploadTime"
+                                    type="datetimerange"
+                                    value-format="yyyy-MM-dd HH:mm:ss"
+                                    :picker-options="pickerOptions"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    :default-time="['00:00:00', '08:00:00']">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="5" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" icon="el-icon-search" @click="startSearch">搜索</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--功能按钮区-->
+            <el-row class="el-row-h50">
+                <el-col :span="3">
+                    <el-button type="primary" plain style="width:100%" icon="el-icon-plus" @click="openCreatEditSelfMedia(0)">新建自媒体</el-button>
+                </el-col>
+            </el-row>
+            <!--表格查询结果区-->
+            <div class="cv_content_square">
+                <el-table :data="selfMediaTableData" style="width: 100%; margin:10px auto;" stripe>
+                    <el-table-column prop="mediaImg" label="头像" width="110">
+                        <template slot-scope="scope">
+                            <img style="width:70px;height:70px;" :src="scope.row.mediaImg">
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="mediaName" label="自媒体名称" width="200"></el-table-column>
+                    <el-table-column prop="mediaType" label="类型" width="100">
+                        <template slot-scope="scope" v-if="scope.row.mediaType !== ''">
+                            <el-tag v-if="scope.row.mediaType == 1">专栏作者</el-tag>
+                            <el-tag v-if="scope.row.mediaType == 2">机构作者</el-tag>
+                            <el-tag v-if="scope.row.mediaType == 3">专家</el-tag>
+                            <el-tag v-if="scope.row.mediaType == 4">评论员</el-tag>
+                            <el-tag v-if="scope.row.mediaType == 5">其他</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="newsCount" label="文章数" width="100"></el-table-column>
+                    <el-table-column prop="mediaStatus" label="状态" width="90">
+                        <template slot-scope="scope" v-if="scope.row.mediaStatus !== ''">
+                            <el-tag v-if="scope.row.mediaStatus == 1" type="success">上线</el-tag>
+                            <el-tag v-if="scope.row.mediaStatus == 0" type="danger">下线</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="mediaReleaseTime" label="最新发文日期"></el-table-column>
+                    <el-table-column prop="mediaPriority" label="权重" width="100"></el-table-column>
+                    <el-table-column label="操作" width="100" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="openCreatEditSelfMedia(scope.row)">修改</el-button>
+                            <el-button type="text" size="small" v-if="scope.row.mediaStatus == 0" @click="toggleThisSelfMedia(scope.row)">上线</el-button>
+                            <el-button type="text" size="small" v-if="scope.row.mediaStatus == 1" @click="toggleThisSelfMedia(scope.row)">下线</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page="pagination1.currPage"
+                    :page-size="pagination1.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination1.totalCount">
+                </el-pagination>
+            </div>
+        </div>
+        <!-------主页面-------专栏列表结束------->
+        
+
+        <!-------子页面-------新建修改自媒体开始------->
+        <div v-show="showChildPage">
+            <!--自媒体基本信息-->
+            <div class="cv_content_square">
+                <!--基本信息-->
+                <div class="cv_content_square">
+                    <el-form :model="selfmediaForm" :rules="selfmediaFormRules"  ref="selfmediaForm" status-icon class="demo-ruleForm" label-width="25%" label-position="right">
+                        <el-row class="el-row-h70">
+                            <el-col :span="24">
+                                <el-form-item label="自媒体名称" prop="mediaName" style="margin:0;" label-width="12.5%">
+                                    <el-input
+                                    clearable
+                                    maxlength="10"
+                                    type="text"
+                                    v-model="selfmediaForm.mediaName"
+                                    auto-complete="off">
+                                        <template slot="append">最多10字</template>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="12">
+                                <el-form-item label="类型" prop="mediaType" style="margin:0;">
+                                    <el-select v-model="selfmediaForm.mediaType" placeholder="请选择类型" style="width:100%;">
+                                        <el-option
+                                            v-for="item in selfmediaOptions"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="权重" prop="mediaPriority" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        maxlength="10"
+                                        type="text"
+                                        v-model="selfmediaForm.mediaPriority"
+                                        auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h120">
+                            <el-col :span="24">
+                                <el-form-item prop="mediaIntroduction" label="描述" style="margin:0;" label-width="12.5%">
+                                    <el-input
+                                    maxlength="200"
+                                    clearable
+                                    :autosize="{ minRows: 4, maxRows: 4}"
+                                    type="textarea"
+                                    placeholder="限200字符"
+                                    v-model="selfmediaForm.mediaIntroduction"
+                                    auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h200">
+                            <el-col :span="24">
+                                <el-form-item label="自媒体头像" prop="mediaImg" label-width="12.5%" style="margin:0;">
+                                    <div class="avatar-uploader" @click="openSelfmediaImgLib">
+                                        <img v-if="selfmediaForm.mediaImg" :src="selfmediaForm.mediaImg" class="avatar">
+                                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                    </div>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                </div>
+                <!--该自媒体下的投稿文章-->
+                <div class="cv_content_square">
+                    <el-table :data="articleData" style="width: 100%; margin:30px auto;" stripe>
+                        <el-table-column prop="newsTitle" label="文章标题" width="450"></el-table-column>
+                        <el-table-column prop="newsAuthor" label="作者" width=""></el-table-column>
+                        <el-table-column prop="newsCount" label="阅读量" width=""></el-table-column>
+                        <!-- <el-table-column label="操作" width="150" fixed="right">
+                            <template slot-scope="scope">
+                                <el-button type="text" size="small" @click="deleteThisArticle(scope.row)">移除</el-button>
+                            </template>
+                        </el-table-column> -->
+                    </el-table>
+                </div>
+                <!--分页器-->
+                <div class="cv_page_zone">
+                    <el-pagination
+                        @current-change="handleCurrentChange2"
+                        :current-page="pagination2.currPage"
+                        :page-size="pagination2.pageSize"
+                        layout="total, prev, pager, next, jumper"
+                        :total="pagination2.totalCount">
+                    </el-pagination>
+                </div>
+                <!--保存基本信息修改-->
+                <el-row class="el-row-h60" style="margin-top:20px;">
+                    <el-col :span="3">
+                        <el-button type="primary" style="width:100%" @click="submitEditSelfMedia('selfmediaForm')">保存</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1">
+                        <el-button type="primary" style="width:100%" @click="closeEditSelfMedia('selfmediaForm')">取消</el-button>
+                    </el-col>
+                </el-row>
+
+            
+                <!--自媒体图库弹出层开始-->
+                <el-dialog title="自媒体图库" :visible.sync="showMeidaLibDialog" width="100%" :fullscreen="true" :show-close="false">
+                    <el-form :model="searchSelfmediaimgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right">
+                        <el-row class="el-row-h60">
+                            <el-col :span="16">
+                                <el-form-item label="图片名称" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    type="text"
+                                    v-model="searchSelfmediaimgForm.picTitle"
+                                    auto-complete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="3" :offset="1" class="el-row-h40">
+                                <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchSelfmediaImg()">搜索</el-button>
+                            </el-col>
+                            <el-col :span="3" :offset="1" class="el-row-h40">
+                                <el-button type="primary" style="width:100%" @click="backToEdit()">返回</el-button>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                    <el-table :data="selfmediaimgTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="selfmediaimgTableData" stripe>
+                        <el-table-column prop="picUrl" label="自媒体图片预览" width="180">
+                            <template v-if="scope.row.picUrl" slot-scope="scope">
+                                <img style="width:80px;height:60px;" :src="scope.row.picUrl">
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="picTitle" label="图片名称" width="250"></el-table-column>
+                        <el-table-column prop="picEditorName" label="修改人" width="120"></el-table-column>
+                        <el-table-column prop="picModTime" label="最后更新时间"></el-table-column>
+                        <el-table-column label="操作" width="100" fixed="right">
+                            <template slot-scope="scope">
+                                <el-button type="text" size="small" @click="addThisImg(scope.row)">添加</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <!--分页器-->
+                    <div class="cv_page_zone">
+                        <el-pagination
+                            @current-change="handleCurrentChange"
+                            :current-page="pagination3.currPage"
+                            :page-size="pagination3.pageSize"
+                            layout="total, prev, pager, next, jumper"
+                            :total="pagination3.totalCount">
+                        </el-pagination>
+                    </div>
+                </el-dialog>
+                <!--自媒体图库弹出层结束-->
+
+            </div>
+        </div>
+        <!-------子页面-------新建修改自媒体结束------->
+
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/content/institutional_selfmedia.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+<style>
+    .avatar-uploader{
+        width:200px;
+        height: 200px;
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    .avatar-uploader:hover{
+        border-color: #175CE9;
+    }
+    .avatar-uploader:hover .avatar-uploader-icon{
+        color: #175CE9;
+    }
+    .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 200px;
+        height: 200px;
+        line-height: 200px;
+        text-align: center;
+    }
+    .avatar {
+        width: 200px;
+        height: 200px;
+        display: block;
+    }
+    .imglist_img{
+        display: block;
+        width: 80%;
+        margin: 0 auto;
+    }
+    .selfmedia_head{
+        width:200px;
+        height: 200px;
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+</style>
+
+</html>

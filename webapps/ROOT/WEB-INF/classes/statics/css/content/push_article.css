@@ -1,0 +1,124 @@
+@charset 'utf-8';
+.cf:after { visibility: hidden; display: block; font-size: 0; content: " "; clear: both; height: 0; }
+* html .cf { zoom: 1; }
+*:first-child+html .cf { zoom: 1; }
+html { margin: 0; padding: 0; }
+body { font-size: 100%; margin: 0; font-family: 'Helvetica Neue', Arial, sans-serif; }
+h1 { font-size: 1.75em; margin: 0 0 0.6em 0; }
+a { color: #2996cc; }
+a:hover { text-decoration: none; }
+p { line-height: 1.5em; }
+.small { color: #666; font-size: 0.875em; }
+.large { font-size: 1.25em; }
+
+
+/* Nestable */
+
+.dd { position: relative; display: block; margin: 0 2.5%; padding: 0; width:45%;min-height: 40px;float:left; max-width: 600px; list-style: none; font-size: 13px; line-height: 20px; box-shadow: 0 2px 2px #eaeaea;}
+.dd-list { display: block; position: relative; max-height: 440px; min-height: 40px; margin: 0; padding: 0; list-style: none; overflow-y: scroll; }
+.dd-collapsed .dd-list { display: none; }
+.dd-item,.dd-empty,.dd-placeholder { display: block; position: relative; margin: 0; padding: 0; min-height: 20px; font-size: 13px; line-height: 20px; cursor: move;}
+.dd-handle { display: block; width: 85%; height: 30px; margin: 5px 0; padding: 5px 10px; color: #333; text-decoration: none; font-weight: 400; border: 1px solid #ccc;background: #fafafa;
+background: -webkit-linear-gradient(top, #fafafa 0%, #eee 100%);background:    -moz-linear-gradient(top, #fafafa 0%, #eee 100%);background:linear-gradient(top, #fafafa 0%, #eee 100%);-webkit-border-radius: 3px;border-radius: 3px;box-sizing: border-box; -moz-box-sizing: border-box; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+.dd-handle:hover { color: #175CE9; background: #fff; }
+.toDetail{
+    display: block;
+    position: absolute;
+    width: 15%;
+    top: 0;
+    right: 0;
+    height: 30px;
+    line-height: 30px;
+    font-size: 12px;
+    text-align: center;
+    font-weight: 400;
+    color: #175CE9;
+}
+.dd-placeholder,.dd-empty { margin: 5px 0; padding: 0; min-height: 30px; background: #fff; border: 1px dashed #fff; box-sizing: border-box; -moz-box-sizing: border-box; }
+.dd-empty { border: 1px dashed #fff; min-height: 30px; background-color: #fff;}
+.dd-dragel { position: absolute; pointer-events: none; z-index: 9999; }
+.dd-dragel > .dd-item .dd-handle { margin-top: 0; }
+.dd-dragel .dd-handle {-webkit-box-shadow: 2px 4px 6px 0 rgba(0,0,0,.1);box-shadow: 2px 4px 6px 0 rgba(0,0,0,0.1);background: #f30; color: #FFF;}
+
+/* Nestable Extras */
+
+
+#nestable-menu { padding: 0; margin: 20px 0; }
+#nestable-output,#nestable2-output { width: 100%; height: 7em; font-size: 0.75em; line-height: 1.333333em; font-family: Consolas, monospace; padding: 5px; box-sizing: border-box; -moz-box-sizing: border-box; }
+#nestable2 .dd-handle {color: #fff;border: 1px solid rgb(59, 120, 241);background: rgb(59, 120, 241);}
+#nestable2 .dd-handle:hover { background: rgb(59, 120, 241); }
+#nestable2 .dd-item > button:before { color: #fff; }
+.dd-hover > .dd-handle { background: #2ea8e5 !important; }
+
+
+.nestable-lists { 
+    display: block; 
+    clear: both; 
+    width: 100%; 
+    border: 0;
+}
+.nestable-lists:after{
+    visibility: hidden; 
+    display: block; 
+    font-size: 0; 
+    content: " "; 
+    clear: both; 
+    height: 0;
+}
+
+
+
+
+/*用于打开新闻详情蒙版及内容CSS*/
+.newsDetailShow{
+    display: none;
+    position: fixed;
+    top:0;
+    bottom:0;
+    left:0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+}
+.news_meng_bg{
+    position: absolute;
+    z-index: 99;
+    top:0;
+    bottom:0;
+    left:0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3)
+}
+.news_iframe{
+    position: absolute;
+    z-index: 199;
+    display: block;
+    width: 80%;
+    height: 500px;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%,-250px);
+    -moz-transform: translate(-50%,-250px);
+    -webkit-transform: translate(-50%,-250px);
+    transform: translate(-50%,-250px);
+    position: absolute;
+    background: #ccc;
+}
+.news_iframe .iframe_header{
+    padding-right: 10px;
+    height: 30px;
+    font-size: 12px;
+    line-height: 30px;
+    color: #FFF;
+    text-align: right;
+    cursor: pointer;
+    background: #00255d;
+}
+.news_iframe iframe{
+    border: 0;
+    width: 100%;
+    height: 100%;
+    background: #FFF;
+}

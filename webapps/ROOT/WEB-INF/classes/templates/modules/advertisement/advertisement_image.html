@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/icon.css">
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>广告图库</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">广告图库</div>
+    <div id="advertisement_image" class="cv_page_content">
+        <!------------------封面图列表开始------------------>
+        <div v-show="!showChildPage">
+            <!--列表搜索区-->
+            <div class="cv_content_square">
+                <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="9">
+                            <el-form-item label="图片名称" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchForm.picTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="11">
+                            <el-form-item label="上传时间" style="margin:0;">
+                                <el-date-picker
+                                    style="width:100%;"
+                                    v-model="timeRange"
+                                    type="datetimerange"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    :picker-options="pickerOptions"
+                                    value-format="yyyy-MM-dd HH:mm:ss"
+                                    :default-time="['00:00:00', '00:00:00']">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="startSearch(0)">搜索</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--功能按钮区-->
+            <el-row class="el-row-h50">
+                <el-col :span="3">
+                    <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addEditImg(0)">上传图片</el-button>
+                </el-col>
+                <el-col :span="3" :offset="1" v-show="multipleSelection.length !== 0">
+                    <el-button type="primary" plain style="width:100%" icon="el-icon-delete" @click="batchDeletePicPos">批量删除</el-button>
+                </el-col>
+            </el-row>
+            <!--表格查询结果区-->
+            <div class="cv_content_square">
+                <el-table :data="tableData" style="width: 100%; margin:10px auto;" ref="multipleTable" @selection-change="handleSelectionChange" stripe>
+                    <el-table-column
+                        type="selection"
+                        width="55">
+                    </el-table-column>
+                    <el-table-column prop="picUrl" label="图片预览" width="160">
+                        <template v-if="scope.row.picUrl" slot-scope="scope">
+                            <img style="width:100px;height:70px;" :src="scope.row.picUrl">
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="picTitle" label="图片名称" width="250"></el-table-column>
+                    <el-table-column prop="picEditorName" label="创建人" width="120"></el-table-column>
+                    <el-table-column prop="picCrtTime" label="创建时间"></el-table-column>
+                    <el-table-column label="操作" width="100" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="addEditImg(scope.row)">修改</el-button>
+                            <el-button type="text" size="small" @click="deleteThisImg(scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page="pagination1.currentPage"
+                    :page-size="pagination1.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination1.totalCount">
+                </el-pagination>
+            </div>
+
+        </div>
+        <!------------------封面图列表结束------------------>
+
+        <!------------------新增修改列表结束------------------>
+        <div v-show="showChildPage">
+            <!--表单信息-->
+            <div class="cv_content_square">
+                <el-form :model="advImgForm" :rules="advImgFormRules"  ref="advImgForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
+                    <el-row class="el-row-h70">
+                        <el-col :span="12">
+                            <el-form-item label="图片标题" prop="picTitle" style="margin:0;">
+                                <el-input
+                                maxlength="20"
+                                placeholder="限20字"
+                                type="text"
+                                v-model="advImgForm.picTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="图片描述" prop="picDesc" style="margin:0;">
+                                <el-input
+                                maxlength="20"
+                                placeholder="限20字"
+                                type="text"
+                                v-model="advImgForm.picDesc"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="12">
+                            <el-form-item label="图片分类" prop="picType" style="margin:0;">
+                                <el-select v-model="advImgForm.picType" style="width:100%;" disabled>
+                                    <el-option
+                                      v-for="item in picTypeOptions"
+                                      :key="item.value"
+                                      :label="item.label"
+                                      :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="图片状态" prop="picStatus" style="margin:0;">
+                                <el-select v-model="advImgForm.picStatus" style="width:100%;" placeholder="" disabled>
+                                    <el-option
+                                      v-for="item in picStatusOptions"
+                                      :key="item.value"
+                                      :label="item.label"
+                                      :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-form-item label="广告图片" prop="picUrl" label-width="15%" style="margin:0;">
+                            <el-upload
+                                class="avatar-uploader"
+                                action="https://jsonplaceholder.typicode.com/posts/"
+                                :show-file-list="false"
+                                :auto-upload="false"
+                                :on-change="coverImgFileChange"
+                                :before-upload="beforeAvatarUpload">
+                                <img v-if="advImgForm.picUrl" :src="advImgForm.picUrl" class="avatar">
+                                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                            </el-upload>
+                        </el-form-item>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--新建保存修改-->
+            <el-row class="el-row-h60" style="margin-top:20px;">
+                <el-col :span="3" :offset="8">
+                    <el-button type="primary" style="width:100%" @click="submitCreatEdit('advImgForm')">保存</el-button>
+                </el-col>
+                <el-col :span="3" :offset="2">
+                    <el-button type="primary" style="width:100%" @click="closeEditCreatEdit('advImgForm')">取消</el-button>
+                </el-col>
+            </el-row>
+        </div>
+        <!------------------新增修改列表结束------------------>
+
+
+    </div>
+</body>
+
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/advertisement/advertisement_image.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+<style>
+.avatar-uploader .el-upload {
+    width:240px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+    border-color: #175CE9;
+}
+.avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 148px;
+    height: 148px;
+    line-height: 148px;
+    text-align: center;
+}
+.avatar {
+    width: 240px;
+    height: 150px;
+    display: block;
+}
+</style>
+
+</html>

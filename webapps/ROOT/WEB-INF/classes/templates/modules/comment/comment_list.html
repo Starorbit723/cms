@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>所有评论</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">所有评论</div>
+    <div id="commont_list" class="cv_page_content">
+        <!--列表搜索区-->
+        <div class="cv_content_square">
+            <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right" @submit.native.prevent>
+                <el-row class="el-row-h60">
+                    <el-col :span="16">
+                        <el-form-item label="评论内容" label-width="20%" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="searchForm.content"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-form-item label="发布状态" style="margin:0;">
+                            <el-select style="width:100%;" v-model="searchForm.deleted"  @change="toggleBtnStatus">
+                                <el-option
+                                    v-for="item in recommendOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>    
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h60">
+                    <el-col :span="16">
+                        <el-form-item label="发布时间" label-width="20%" style="margin:0;">
+                            <el-date-picker
+                                clearable
+                                style="width:100%;"
+                                v-model="timeRange"
+                                type="datetimerange"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                                :picker-options="pickerOptions"
+                                value-format="yyyy-MM-dd HH:mm:ss"
+                                :default-time="['00:00:00', '00:00:00']">
+                            </el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" :offset="5" class="el-row-h50">
+                        <el-button type="primary" style="width:100%" @click="startSearch">搜索</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+        </div>
+
+        <!--功能按钮区-->
+        <el-row class="el-row-h50"  v-if="showMutiPass && showMutiDel">
+            <el-col v-if="showMutiPass" :span="3">
+                <el-button type="primary" plain style="width:100%" icon="el-icon-check" @click="mutiUpline">批量通过</el-button>
+            </el-col>
+            <el-col v-if="showMutiDel" :span="3" :offset="1">
+                <el-button type="primary" plain style="width:100%" icon="el-icon-delete" @click="mutiDelete">批量删除</el-button>
+            </el-col>
+        </el-row>
+
+        <!--表格查询结果区-->
+        <div class="cv_content_square">
+            <el-table :data="tableData" style="width: 100%; margin:15px auto;" ref="multipleTable" @selection-change="handleSelectionChange">
+                <el-table-column type="selection" width="50"></el-table-column>
+                <el-table-column prop="" label="评论内容">
+                    <template slot-scope="scope" v-if="scope.row.newsTitle !== ''">
+                        <div class="comment_item">
+                            <div class="item_line1">
+                                <img class="headpic" src="/statics/images/default_userheadpic.png">
+                                <div class="userId">{{scope.row.userName}}</div>
+                                <div class="time">{{scope.row.createDate}}</div>
+                            </div>
+                            <div class="item_line2">{{scope.row.content}}</div>
+                            <div class="item_line3">
+                                <i class="el-icon-document"></i>
+                                <span>{{scope.row.newsTitle}}</span>
+                            </div>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column width="90" label="发布状态">
+                    <template slot-scope="scope">
+                        <!-- 0已发布 1已删除 2待审核 -->
+                        <el-tag v-if="scope.row.deleted == 0" type="success">已发布</el-tag>
+                        <el-tag v-if="scope.row.deleted == 1" type="danger">已删除</el-tag>
+                        <el-tag v-if="scope.row.deleted == 2" type="warning">待审核</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" width="150" fixed="right">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" v-if="scope.row.deleted == 2"  @click="uplineThisComment(scope.row)">通过上线</el-button>
+                        <el-button type="text" size="small" v-if="scope.row.deleted == 0" @click="offlineThisComment(scope.row)">评论下线</el-button>
+                        <el-button type="text" size="small" v-if="scope.row.deleted == 2" @click="deleteThisComment(scope.row)">删除评论</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+
+        <!--分页器-->
+        <div class="cv_page_zone">
+            <el-pagination
+                @current-change="handleCurrentChange"
+                :current-page="pagination1.currentPage"
+                :page-size="pagination1.pageSize"
+                layout="total, prev, pager, next, jumper"
+                :total="pagination1.totalCount">
+            </el-pagination>
+        </div>
+        
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/comment/comment_list.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+<style>
+.comment_item{
+    width: 100%;
+}
+.item_line1 .headpic{
+    display: block;
+    float: left;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+}
+.item_line1 .userId{
+    float: left;
+    margin-left: 15px;
+    height: 20px;
+    line-height: 20px;
+}
+.item_line1 .time{
+    float: left;
+    margin-left: 15px;
+    height: 20px;
+    line-height: 20px;
+}
+.item_line2{
+    clear: both;
+    padding:10px 0;
+}
+.item_line3{
+    padding:5px 10px;
+    background: #fcfcfc;
+    cursor: pointer;
+}
+.item_line3 span{
+    margin-left: 10px;
+}
+</style>
+</html>

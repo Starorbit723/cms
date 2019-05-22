@@ -1,0 +1,302 @@
+html { overflow-x:hidden; }
+input,button{outline: none;}
+.content-header {
+    position: relative;
+    padding: 0;
+}
+.content-header >.breadcrumb {
+    position: relative;
+    top: 0;
+    right: 0;
+    height: 60px;
+    line-height: 60px;
+    float: none;
+    margin-top: 0px;
+    padding: 0 0 0 20px;
+    background: rgba(251,251,253,1)
+}
+.breadcrumb .active{
+    font-size: 16px;
+    color: #333;
+}
+.logo-lg{
+    padding: 0;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-indent: 30px;
+    background: url(../images/logo.png) no-repeat;
+    background-size: 30px;
+    background-position: 12px 10px;
+}
+.logo-mini{
+    width:50px;
+    height: 50px;
+    background: url(../images/logo.png) no-repeat center;
+    background-size: 30px;
+}
+.main-sidebar{
+    border: 1px solid rgba(234,237,243,1);
+    color: #333333;
+}
+.sidebar-menu>li.active>a{
+    color:#2967E6;
+}
+.sidebar-menu>li.active>a i{
+    color:#2967E6;
+}
+.sidebar-menu>li.active>a span{
+    color:#2967E6;
+}
+.sidebar-menu>li>a i{
+    margin-right: 5px;
+}
+
+/*部分ui设计规范的样式*/
+.cv_page_content{
+    box-shadow:0px 1px 3px 0px rgba(0,0,0,0.04);
+    border-radius:4px;
+    background: #fff;
+    border:1px solid rgba(234,237,243,1);
+    padding: 20px;
+    margin: 0 20px;
+}
+.cv_content_square{
+    margin-bottom: 20px;
+    clear: both;
+}
+.cv_page_zone{
+    margin: 10px 0 0 0;
+}
+.cvpage_title_common{
+    width: 100%;
+    margin: 0 22px;
+    height: 60px;
+    line-height: 60px;
+    font-weight: 600;
+    font-size: 16px;
+    color: #333;
+}
+
+/*element-ui 样式重置*/
+.el-button--primary{
+  background: #175CE9!important;
+  border: 1px solid #175CE9!important;
+}
+.el-button--primary:hover{
+  background: rgb(34, 104, 245)!important;
+  border: 1px solid rgb(34, 104, 245)!important;
+}
+.el-button--primary.is-plain{
+    color:#175CE9!important;
+    background: #fff!important;
+    border: 1px solid rgba(23,92,233,1)!important;
+}
+.el-button--primary.is-plain:hover{
+    color:#fff!important;
+    background: #175CE9!important;
+  border: 1px solid #175CE9!important;
+  }
+.el-collapse-item__header{
+  font-size: 14px!important;
+  background: #eeeeee!important;
+  text-indent: 20px!important;
+  color: #175CE9!important;
+  font-weight: 700!important;
+}
+.el-radio__input.is-checked .el-radio__inner{
+  border-color: #175CE9!important;
+  background: #175CE9!important;
+}
+.el-radio__label{
+  font-size: 14px!important;
+}
+.el-radio__input.is-checked+.el-radio__label{
+  color: #175CE9!important;
+  font-size: 14px!important;
+}
+.el-checkbox__label{
+  font-size: 14px!important;
+}
+.el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+  border-color: #175CE9!important;
+  background: #175CE9!important;
+}
+.el-checkbox__input.is-checked+.el-checkbox__label{
+  color: #175CE9!important;
+}
+.el-pagination.is-background .el-pager li:not(.disabled).active{
+  background: #175CE9!important;
+}
+
+.el-switch__label.is-active {
+  color: #175CE9!important;
+  font-weight: 600!important;
+}
+.el-switch.is-checked .el-switch__core {
+  border-color: #175CE9!important;
+  background-color: #175CE9!important;
+}
+.el-form-item__label{
+    color: #555!important;
+    font-family:PingFangSC-Regular!important;
+}
+.el-button--text{
+    color: #175CE9!important;
+}
+.el-button--text:hover{
+    color: rgb(34, 104, 245)!important;
+}
+.el-table thead tr th{
+    color:#333!important;
+    font-weight: 700!important;
+    background: #F2F4F7!important;
+}
+.el-upload__input{
+    display: none!important;
+}
+.el-dialog__header{
+    padding: 15px!important;
+    font-size: 16px!important;
+}
+.el-dialog__body{
+    padding: 0 15px 15px 15px!important;
+}
+
+
+
+/* 针对栅格布局的每一行常用高度设置 */
+.el-row-h20{min-height: 20px;line-height: 20px;}
+.el-row-h30{min-height: 30px;line-height: 30px;}
+.el-row-h40{min-height: 40px;line-height: 40px;}
+.el-row-h50{min-height: 50px;line-height: 50px;}
+.el-row-h60{min-height: 60px;line-height: 60px;}
+.el-row-h70{min-height: 70px;line-height: 70px;}
+.el-row-h80{min-height: 80px;line-height: 80px;}
+.el-row-h90{min-height: 90px;line-height: 90px;}
+.el-row-h100{min-height: 100px;line-height: 100px;}
+.el-row-h110{min-height: 110px;line-height: 110px;}
+.el-row-h120{min-height: 120px;line-height: 120px;}
+.el-row-h130{min-height: 130px;line-height: 130px;}
+.el-row-h140{min-height: 140px;line-height: 140px;}
+.el-row-h150{min-height: 150px;line-height: 150px;}
+.el-row-h160{min-height: 160px;line-height: 160px;}
+.el-row-h170{min-height: 170px;line-height: 170px;}
+.el-row-h180{min-height: 180px;line-height: 180px;}
+.el-row-h190{min-height: 190px;line-height: 190px;}
+.el-row-h200{min-height: 200px;line-height: 200px;}
+.el-row-h210{min-height: 210px;line-height: 210px;}
+.el-row-h220{min-height: 220px;line-height: 220px;}
+.el-row-h230{min-height: 230px;line-height: 230px;}
+.el-row-h240{min-height: 240px;line-height: 240px;}
+/* login 页面相关CSS*/
+
+#container{
+    width: 100%;
+    height: 100vh;
+    /* background-image: url(../images/loginbg/bg4.jpg); */
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: 100% 100%;
+}
+.login_zone{
+    width: 350px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%,-60%);
+    -moz-transform: translate(-50%,-60%);
+    transform: translate(-50%,-60%);
+}
+.page_title{
+    text-align: center;
+    height: 50px;
+    line-height: 50px;
+    margin-bottom: 30px;
+    font-size: 32px;
+    color: rgb(255, 255, 255);
+    text-shadow: 0px 2px 2px #333;
+}
+.login_board{
+    width: 100%;
+    background: rgba(255,255,255,0.7);
+    box-shadow: 0px 1px 1px #444;
+    padding: 30px 20px;
+    border-radius: 4px;
+}
+.picture_test_zone{
+    position: relative;
+    width: 100%;
+}
+.common_btn{
+    display: block;
+    border:none;
+    width: 100%;
+    height: 42px;
+    letter-spacing: 10px;
+    border-radius: 4px;
+    background: #175CE9;
+    cursor: pointer;
+    color: #fff;
+    font-size: 16px;
+}
+.cv_logintips{
+    height: 20px;
+    line-height: 20px;
+    font-size: 12px;
+    color: rgba(221, 29, 3, 0.918);
+    text-indent: 70px;
+}
+.common_btn:hover{
+    background: rgb(38, 107, 243);
+}
+.sendcode_btn{
+    width: 100%; 
+    background: #175CE9; 
+    border-color: #175CE9;
+    color: #FFF;
+}
+.sendcode_btn.disable{
+    color: #999;
+    background:rgba(245,245,245,1);
+}
+
+/* 之前页面相关CSS---勿删*/
+.main-footer {
+    padding: 7px;
+    color: #444;
+    border-top: 1px solid #eee;
+}
+
+[v-cloak] {
+  display: none;
+}
+
+.grid-btn{
+	margin-bottom:12px;
+}
+.grid-btn .btn{
+	margin-right:10px;
+}
+.pointer{cursor: pointer;}
+
+.ml-10 { margin-left:0 !important; }
+@media (min-width: 768px) {
+	.ml-10 { margin-left:10px !important; }
+	.col-sm-10 {width: 70%;padding-left: 0px;}
+	.col-sm-2 {width: 24%;}
+}
+tbody > tr > th {font-weight: normal; }
+.panel .table { margin:0 0; }
+.panel .pagination { margin:0; }
+.panel-default>.panel-heading {background-color: #f5f5f5;}
+.row{
+	border-top: 1px solid #ddd;
+	margin:0;
+	padding:20px 2px 0px 2px;
+}
+.col-xs-6{padding-left: 0px;padding-right: 0px;}
+.form-horizontal .form-group {margin-left:0px;margin-right:0px;}
+.form-horizontal{
+	width:550px;padding-top:20px;
+}

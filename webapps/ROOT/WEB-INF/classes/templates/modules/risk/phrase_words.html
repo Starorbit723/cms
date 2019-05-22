@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/icon.css">
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>分词管理</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">分词管理</div>
+    <div id="phrase_words" class="cv_page_content">
+
+        <!-------主页面-------分词列表开始------->
+        <div v-show="!showChildPage">
+            <!--列表搜索区-->
+            <div class="cv_content_square">
+                <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="11">
+                            <el-form-item label="分词" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchForm.terms"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" icon="el-icon-search" @click="startSearch(0)">搜索</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--功能按钮区-->
+            <el-row class="el-row-h50">
+                <el-col :span="4">
+                    <el-button type="primary" plain style="width:100%" icon="el-icon-plus" @click="addSensitiveWord">新增分词</el-button>
+                </el-col>
+                <el-col :span="4" :offset="1">
+                    <el-button type="primary" plain style="width:100%" icon="el-icon-delete" @click="batchDeleteWord">批量删除</el-button>
+                </el-col>
+            </el-row>
+            <!--表格查询结果区-->
+            <div class="cv_content_square">
+                <el-table :data="phraseWordTableData" style="width: 100%; margin:30px auto;" stripe @selection-change="handleSelectionChange">
+                    <el-table-column type="selection" width="55"></el-table-column>
+                    <el-table-column prop="terms" label="分词" width="200"></el-table-column>
+                    <el-table-column prop="crtUserId" label="创建人编号"></el-table-column>
+                    <el-table-column prop="crtTime" label="创建时间"></el-table-column>
+                    <el-table-column label="操作" width="90" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="delThisWord(scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page="pagination1.currPage"
+                    :page-size="pagination1.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination1.totalCount">
+                </el-pagination>
+            </div>
+
+            <!--新增分词弹框-->
+            <el-dialog title="新增分词" :visible.sync="showAddBox" width="50%">
+                <el-form :model="creatForm" :rules="creatFormRules"  ref="creatForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right">
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item label="新增词汇" prop="terms" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="creatForm.terms"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h60" style="margin-top:10px;">
+                        <el-col :span="4" :offset="7">
+                            <el-button type="primary" style="width:100%" @click="submitCreat('creatForm')">确认</el-button>
+                        </el-col>
+                        <el-col :span="4" :offset="2">
+                            <el-button type="primary" style="width:100%" @click="closeCreat('creatForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </el-dialog>
+            
+        </div>
+        <!-------主页面-------专栏列表结束------->
+        
+        <!-------子页面-------新建编辑开始------->
+        <div v-show="showChildPage">
+            
+        </div>
+        <!-------子页面-------新建编辑结束------->
+
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/risk/phrase_words.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+<style>
+
+</style>
+
+</html>
