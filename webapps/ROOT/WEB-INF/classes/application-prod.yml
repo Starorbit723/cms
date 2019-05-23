@@ -15,7 +15,7 @@ spring:
       max-active: 100
       min-idle: 10
       max-wait: 60000
-      pool-prepared-statements: true
+      pool-prepared-statements: false
       max-pool-prepared-statement-per-connection-size: 20
       time-between-eviction-runs-millis: 60000
       min-evictable-idle-time-millis: 300000
@@ -36,6 +36,7 @@ spring:
         wall:
           config:
             multi-statement-allow: true
+      remove-abandoned: false
 redis:
   maxTotal: 30
   maxIdle: 10

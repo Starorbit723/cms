@@ -68,6 +68,8 @@ var vm = new Vue({
             recommendStatus:'2',//推荐状态： 1：推荐 2：非推荐
             newsFlashStatus:'',//是否快讯 0 否 1 是
             newsOrderCount:'',//手工点击量
+            newsContentNumber:'',//正文字数
+            newsContentReadTime:'',//阅读时间
             pictureEntity:{},//封面图的item全部信息
             newsContentList:[{//新闻内容图片列表
                 srcName:'',//图片地址
@@ -532,6 +534,12 @@ var vm = new Vue({
             } else {
                 var reqUrl = '/news/modify'
             }
+            //字数统计时间算法
+            var contentStr = UE.getEditor('editor').getContentTxt().replace(/[\ |\，|\。|\！|\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\'|\,|\<|\.|\>|\/|\?]/g,"").replace(/\s/g,"");
+            var min =  Math.ceil((contentStr.length)/300)
+            console.log('阅读字数统计', contentStr.length, '阅读时间', min)
+            self.articleForm.newsContentNumber = contentStr.length.toString(),  
+            self.articleForm.newsContentReadTime = min,  
             //給洋哥临时增加一个冗余字段
             self.articleForm.newsMediaId = self.articleForm.newsMedia
             self.articleForm.newsEditor = getCookie('userId') || ''
