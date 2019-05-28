@@ -38,7 +38,7 @@ var vm = new Vue({
             newsType:'',//新闻类型,普通新闻，组图新闻，高清新闻，视频新闻
             newsPriority:'',//新闻优先级
             newsContent:'',//新闻内容
-            newsMedia:'',//需要单独的媒体表关联
+            newsMedia:'',//该字段废弃
             newsMediaId:'',//需要单独的媒体表关联
             newsKeywords:'',//新闻关键字
             newsAuthor:'',//新闻作者
@@ -233,6 +233,7 @@ var vm = new Vue({
                     if(res.code == 200){
                         console.log('自媒体下拉列表返回：', res)
                         self.selfmediaOptions = res.page.list
+
                     } else {
                         mapErrorStatus(res)
                         vm.error = true;
@@ -540,8 +541,6 @@ var vm = new Vue({
             console.log('阅读字数统计', contentStr.length, '阅读时间', min)
             self.articleForm.newsContentNumber = contentStr.length.toString(),  
             self.articleForm.newsContentReadTime = min,  
-            //給洋哥临时增加一个冗余字段
-            self.articleForm.newsMediaId = self.articleForm.newsMedia
             self.articleForm.newsEditor = getCookie('userId') || ''
                 $.ajax({
                     type: "POST",
@@ -647,8 +646,8 @@ var vm = new Vue({
                 this.newsTagArray = tempObj.newsKeywords.split(',')
             }
             //回显自媒体和专栏缺省状态
-            if (tempObj.newsMedia == -1) {
-                tempObj.newsMedia = ''
+            if (tempObj.newsMediaId == -1) {
+                tempObj.newsMediaId = ''
             }
             if (tempObj.newsColumn == -1) {
                 tempObj.newsColumn = ''

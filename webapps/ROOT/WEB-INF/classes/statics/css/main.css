@@ -59,7 +59,7 @@ input,button{outline: none;}
     background: #fff;
     border:1px solid rgba(234,237,243,1);
     padding: 20px;
-    margin: 0 20px;
+    margin: 0 20px 20px;
 }
 .cv_content_square{
     margin-bottom: 20px;
