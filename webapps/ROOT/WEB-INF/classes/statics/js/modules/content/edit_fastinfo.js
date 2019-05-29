@@ -23,7 +23,8 @@ var vm = new Vue({
         },
         fastinfoFormRules:{
             flashTitle: [
-                { required: true, message: '快讯标题不能为空', trigger: 'change' }
+                { required: true, message: '快讯标题不能为空', trigger: 'change' },
+                { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
             ],
             flashDesc:[
                 { required: true, message: '摘要不能为空', trigger: 'change' }

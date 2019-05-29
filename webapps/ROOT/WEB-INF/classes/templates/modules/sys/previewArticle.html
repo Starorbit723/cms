@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="x-rim-auto-match" content="none">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>新闻详情页-预览</title>
+    <!--SEO优化-->
+    <meta name="description" content="投中网是中国股权投资行业主流信息门户。隶属于投中信息（股票代码：835562）。网站致力于连接人、信息与资产，为所有关注私募股权行业的用户提供专业的资讯、数据、研究、会议等。关注网站请访问：www.chinaventure.com.cn">
+    <meta name="keywords" content="投中网,ChinaVenture,投中,风险投资,私募股权投资,股权投资,投行,VC,PE,私募股权基金,风投, Venture Capital,创业,融资,商业计划书">
+    <link rel="icon" href="https://www.chinaventure.com.cn/images/logo/logo_tiny.png" sizes="30x30">
+    <!--css-->
+    <link rel="stylesheet" href="https://www.chinaventure.com.cn/css/reset.v1.css">
+    <link rel="stylesheet" href="https://www.chinaventure.com.cn/css/common.css">
+    <link rel="stylesheet" href="https://www.chinaventure.com.cn/css/inc_pc.css">
+    <link rel="stylesheet" href="https://www.chinaventure.com.cn/css/page/articledetail.css">
+    <!--js-->
+    <script type="text/javascript" src="https://www.chinaventure.com.cn/js/utils.js"></script>
+    <script type="text/javascript" src="https://www.chinaventure.com.cn/js/jquery-3.0.0.min.js"></script>
+    <script type="text/javascript" src="https://www.chinaventure.com.cn/js/common.js"></script>
+    <script type="text/javascript" src="https://www.chinaventure.com.cn/js/vue.min@2.5.16.js"></script>
+</head>
+
+<body>
+    <div id="page_content" class="page_content">
+        
+        <!--主体1100-->
+        <div class="content_wrapper_min mrg_t90 clearfix">
+            <!--主体730-->
+            <div class="content_left_pc clearfix">
+                <div class="share_zone_pc">
+                    <!-- <ul>
+                        <li>
+                            <span class="wechat_share_pc"></span>
+                        </li>
+                        <li>
+                            <span class="sina_weibo_pc"></span>
+                        </li>
+                        <li>
+                            <span class="add_comment_pc"></a>
+                        </li>
+                        <li>
+                            <span class="shoucang_pc"></span>
+                        </li>
+                    </ul> -->
+                </div>
+                <div class="article_comment_pc">
+                    <!--文章主体-->
+                    <div class="article_warpper_pc">
+                        <h1 class="maintitle_pc" v-text="articleObj.newsTitle"></h1>
+                        <div class="author_keyword clearfix">
+                            <div class="vc_fl"><span v-if="articleObj.newsFrom">来源：{{articleObj.newsFrom}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span v-if="articleObj.newsAuthor" v-text="articleObj.newsAuthor"></span>&nbsp;·&nbsp;<span>46分钟前</span></div>
+                        </div>
+                        <h2 class="describe_text" v-text="articleObj.newsAbstract">互联网世界流行语言的变化，往往反映了公众意见的转向。<br>互联网世界流行语言的变化，往往反映了公众意见的转向。互联网世界流行语言的变化，往往反映了公众意见的转向。<br>互联网世界流行语言的变化，往往反映了公众意见的转向。</h2>
+                        <div class="article_slice_pc clearfix" v-html="articleObj.newsContent"></div>
+                    </div>
+                    <!--点赞区-->
+                    <div id="articledetail_pointLike" class="thumbsup_zone_pc">
+                        <button class="thumb_btn_pc"></button>
+                        <p id="pointLikeNumber">246</p>
+                    </div>
+                    <!--二维码区-->
+                    <div class="articledetail_ercode_pc">
+                        <img class="ercode" src="https://www.chinaventure.com.cn//images/article_ercode.png">
+                        <p>第一时间获取股权投资行业新鲜资讯和深度商业分析，请在微信公众账号中搜索投中网，或用手机扫描左侧二维码，即可获得投中网每日精华内容推送。</p>
+                    </div>
+                    
+                    
+                </div>
+            </div>
+            <!--侧边栏340-->
+            <div class="content_right_pc">
+                
+            </div>
+        </div>
+
+
+    </div>
+</body>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.min.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.base64.js"></script>
+<script type="text/javascript">
+    var vm = new Vue({
+    el: '#page_content',
+    data: {
+        articleObj:{}
+    },
+    created () {
+        var self = this
+        $.ajax({
+            type: "GET",
+            url: '/news/previewGet',
+            //contentType: "application/json",
+            data: 'key=' + self.getQueryString('previewId'),
+            dataType: "json",
+            success: function(res){
+                if(res.code == 200){
+                    self.articleObj = res.news
+                    $.base64.utf8encode = true;
+                    //var html64 = $.base64.btoa(html)
+                    self.articleObj.newsContent = $.base64.atob(self.articleObj.newsContent, true)
+                    console.log(self.articleObj)
+                }else{
+                    vm.error = true;
+                    vm.errorMsg = res.msg;
+                }
+            },
+            error:function(res){
+            }
+            
+        });
+    },
+    mounted () {
+    },
+    methods: {
+        //获取链接中字段
+        getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if(r != null) {
+                return decodeURIComponent(r[2]);
+            }
+            return '';
+        }
+       
+        
+        
+    }
+})
+
+
+
+
+
+</script>
+</html>

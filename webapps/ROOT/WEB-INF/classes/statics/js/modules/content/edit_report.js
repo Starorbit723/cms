@@ -66,7 +66,8 @@ var vm = new Vue({
         },
         reportFormRules:{
             reportTitle: [
-                { required: true, message: '标题不能为空', trigger: 'change' }
+                { required: true, message: '标题不能为空', trigger: 'change' },
+                { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
             ],
             reportAbstract:[
                 { required: true, message: '摘要不能为空', trigger: 'change' }

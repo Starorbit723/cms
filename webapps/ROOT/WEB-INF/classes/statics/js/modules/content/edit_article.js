@@ -24,6 +24,7 @@ var vm = new Vue({
         baiduWordSuggest:'',
         newsTagArray:[],
         ifOrignCheck: false, //1：原创 2：非原创, 默认为2非原创
+        ifReserveTime: false, //是否开启定时发布
         articleForm:{
             newsId:'',
             newsTitle:'',//标题
@@ -35,6 +36,7 @@ var vm = new Vue({
             newsUrl:'',//新闻url地址
             newsTemplateMid:'1',//新闻M站模板编号
             newsDesc:'',//描述
+            newsEditorName:'',//新闻编辑中文名
             newsType:'',//新闻类型,普通新闻，组图新闻，高清新闻，视频新闻
             newsPriority:'',//新闻优先级
             newsContent:'',//新闻内容
@@ -55,7 +57,7 @@ var vm = new Vue({
             newsFrom:'',//新闻来源
             newsSourceUrl:'',//新闻来源地址
             newsPara:'',//json参数
-            newsCompDelay:'',//延时编译，0代表不需要延时编译，1代表需要延时编译
+            newsCompDelay:'0',//延时编译，0代表不需要延时编译，1代表需要延时编译
             newsCompTime:'',//新闻预编译时间
             newsCrtUserId:'',//创建人编号
             newsCrtTime:'',//新闻数据建立时间
@@ -70,6 +72,7 @@ var vm = new Vue({
             newsOrderCount:'',//手工点击量
             newsContentNumber:'',//正文字数
             newsContentReadTime:'',//阅读时间
+            newsReleaseTime:'',
             pictureEntity:{},//封面图的item全部信息
             newsContentList:[{//新闻内容图片列表
                 srcName:'',//图片地址
@@ -79,7 +82,8 @@ var vm = new Vue({
         },
         articleFormRules:{
             newsTitle: [
-                { required: true, message: '文章标题不能为空', trigger: 'change' }
+                { required: true, message: '文章标题不能为空', trigger: 'change' },
+                { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
             ],
             newsAbstract:[
                 { required: true, message: '摘要不能为空', trigger: 'change' }
@@ -87,8 +91,8 @@ var vm = new Vue({
             newsDesc:[
                 { required: true, message: '描述不能为空', trigger: 'change' }
             ],
-            newsAuthor: [
-                { required: true, message: '作者不能为空', trigger: 'change' }
+            newsEditorName: [
+                { required: true, message: '编辑姓名不能为空', trigger: 'change' }
             ],
             newsFrom: [
                 { required: true, message: '来源名称不能为空', trigger: 'change' }
@@ -141,6 +145,17 @@ var vm = new Vue({
                 this.articleForm.newsFrom = ''
             }
             console.log(this.articleForm.originalStatus)
+        },
+        ifReserveTime (val) {
+            console.log('是否定时发布',val)
+            //定时发布状态  0 不定时  1定时
+            if (val) {
+                this.articleForm.newsCompDelay = 1
+            } else {
+                this.articleForm.newsCompDelay = 0
+                //取消定时发布，发布时间清空
+                this.articleForm.newsCompTime = ''
+            }
         }
     },
     created () {
@@ -419,8 +434,17 @@ var vm = new Vue({
                 pageSize:10
             }
         },
-        //新建或修改新闻
-        saveArticleToDraft (formName,type) {
+        /*新建或修改新闻    type 发布流程标识
+        
+        0： 实时新建保存            敏感词——insert            releaseTime:前端赋值
+            实时新建保存并发布      敏感词——insert——push       releaseTime:前端赋值
+        1： 实时编辑保存            敏感词——modify             releaseTime:前端赋值
+            实时编辑保存并发布       敏感词——modify——push      releaseTime:前端赋值
+        2:  定时新建保存            敏感词——insert——delay      releaseTime:用户选择值
+            定时编辑保存            敏感词——modify——delay      releaseTime:用户选择值
+
+        */
+        combineArticleData (formName,type) {
             var self = this 
             //针对非必填字段验证
             var urlReg = /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
@@ -539,8 +563,9 @@ var vm = new Vue({
             var contentStr = UE.getEditor('editor').getContentTxt().replace(/[\ |\，|\。|\！|\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\'|\,|\<|\.|\>|\/|\?]/g,"").replace(/\s/g,"");
             var min =  Math.ceil((contentStr.length)/300)
             console.log('阅读字数统计', contentStr.length, '阅读时间', min)
-            self.articleForm.newsContentNumber = contentStr.length.toString(),  
-            self.articleForm.newsContentReadTime = min,  
+            self.articleForm.newsContentNumber = contentStr.length.toString();
+            self.articleForm.newsContentReadTime = min;
+            //编辑前端赋值
             self.articleForm.newsEditor = getCookie('userId') || ''
                 $.ajax({
                     type: "POST",
@@ -558,7 +583,9 @@ var vm = new Vue({
                                 setCookie ('createdit', '', 1) 
                                 window.parent.location.href = '/index.html#modules/content/article_list.html'
                             } else if (type == 1) {//新建保存--并发布
-                                self.submitArticle()
+                                self.submitArticle(type)
+                            } else if (type == 2) {
+                                self.submitDelayArticle(type)
                             }
                         } else {
                             self.ajaxController = true
@@ -573,12 +600,20 @@ var vm = new Vue({
                 });
             
         },
-        // 保存并发布新闻
-        submitArticle () {
+        // 保存并实时发布新闻
+        submitArticle (type) {
             var self = this
+            /*
+                发布时间前端赋值   0：保存   1：保存并发布   2：定时
+                立即发布时前端将发布时间赋当前直
+            */
+            var _now = new Date().getTime()
             var data = {
                 newsId: self.articleForm.newsId.toString(),
-                newsStatus: 1
+                newsStatus: 1,
+                newsReleaseTime: _now,
+                newsCompDelay: 0,
+                newsCompTime: _now,
             }
             $.ajax({
                 type: "POST",
@@ -592,6 +627,41 @@ var vm = new Vue({
                         self.$message.success('发布成功')
                         setCookie ('createdit', '', 1)
                         window.parent.location.href = '/index.html#modules/content/article_list.html'
+                    }else{
+                        mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });         
+        },
+        //定时发布接口
+        submitDelayArticle (type) {
+            var self = this
+            /*
+                发布时间前端赋值   0：保存   1：保存并发布   2：定时
+                定时发布时前端将定时发布时间赋当前用户手动选择的定时值
+            */
+            var data = {
+                newsId: self.articleForm.newsId.toString(),
+                newsCompDelay: self.articleForm.newsCompDelay,
+                newsCompTime: self.articleForm.newsCompTime
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: '/news/delay',
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    self.ajaxController = true
+                    if(res.code == 200){
+                        self.$message.success('定时发布提交成功')
+                        //setCookie ('createdit', '', 1)
+                        //window.parent.location.href = '/index.html#modules/content/article_list.html'
                     }else{
                         mapErrorStatus(res)
 						vm.error = true;
@@ -641,6 +711,17 @@ var vm = new Vue({
         //文章数据转换反显
         editArticleFilter (tempObj) {
             console.log('tempObj',tempObj)
+            /*
+                回显定时发布时间:
+                已上线文章 status = 2, 不能修改定时时间---不显示,HTML v-if进行判断
+                非已上线文章 status !== 2, 如果想修改定时时间---先要取消之前定时发布
+            */
+            if (tempObj.newsStatus == 2) {
+
+            }
+            // if (tempObj.newsCompDelay == 0) {
+            //     tempObj.newsCompTime = ''
+            // }
             //回显新闻关键词
             if (tempObj.newsKeywords !== '') {
                 this.newsTagArray = tempObj.newsKeywords.split(',')
@@ -659,6 +740,14 @@ var vm = new Vue({
                 this.ifOrignCheck = false
             } else {
                 this.$message.error('原创状态，后台反显回传不能为0或空')
+            }
+            //回显原创状态  0.不定时   1.定时
+            if (tempObj.newsCompDelay == '0') {
+                this.ifReserveTime = false
+            } else if (tempObj.newsCompDelay == '1') {
+                this.ifReserveTime = true
+            } else {
+                this.$message.error('定时发布状态，后台反显回传不能为空')
             }
             //UE.getEditor('editor').execCommand('insertHtml', tempObj.newsContent)
             //UE.getEditor('editor').setContent(tempObj.newsContent, true)
@@ -702,9 +791,53 @@ var vm = new Vue({
                         mapErrorStatus(res)
                     }
                     
-                });        
+                });
             }
         },
+        //预览文章
+        previewArticle (formName) {
+            var self = this
+            //获取html文本
+            var html = UE.getEditor('editor').getContent()
+            if (html !== '') {
+                $.base64.utf8encode = true;
+                var html64 = $.base64.btoa(html)
+                self.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        //预览提交接口
+                        self.articleForm.newsContent = html64
+                        $.ajax({
+                            type: "POST",
+                            url: '/news/previewSet',
+                            contentType: "application/json",
+                            data: JSON.stringify(self.articleForm),
+                            dataType: "json",
+                            success: function(res){
+                                if(res.code == 200){
+                                    console.log(res.previewId)
+                                    window.open("/modules/sys/previewArticle.html?previewId=" + res.previewId);
+                                    
+                                }else{
+                                    mapErrorStatus(res)
+                                    vm.error = true;
+                                    vm.errorMsg = res.msg;
+                                }
+                            },
+                            error:function(res){
+                                mapErrorStatus(res)
+                            }
+                            
+                        });
+
+                        
+                    }
+                })
+            } else {
+                self.$message.error('新闻正文内容不能为空')
+                return
+            }
+            
+        }
     },
     beforeDestroy () {
         setCookie ('createdit', '', 1)
