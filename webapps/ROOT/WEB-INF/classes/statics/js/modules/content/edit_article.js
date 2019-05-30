@@ -15,6 +15,10 @@ var vm = new Vue({
         showCoverimgLib:false,
         //切换内容图库
         showContentimgLib:false,
+        //是否展示定时任务的选择器
+        showChangeReserveTime: true,
+        //提交保存按钮状态
+        submitBtnStatus:'0', //0实时发布   1定时发布   2全部隐藏
         //初始化数据
         channelOptions:[],
         columnOptions:[],
@@ -146,17 +150,19 @@ var vm = new Vue({
             }
             console.log(this.articleForm.originalStatus)
         },
-        ifReserveTime (val) {
-            console.log('是否定时发布',val)
-            //定时发布状态  0 不定时  1定时
-            if (val) {
-                this.articleForm.newsCompDelay = 1
-            } else {
-                this.articleForm.newsCompDelay = 0
-                //取消定时发布，发布时间清空
-                this.articleForm.newsCompTime = ''
-            }
-        }
+        // ifReserveTime (val) {
+            // console.log('是否定时发布',val)
+            // //定时发布状态  0 不定时  1定时
+            // if (val) {
+            //     this.articleForm.newsCompDelay = 1
+            //     this.submitBtnStatus = 1
+            // } else {
+            //     this.articleForm.newsCompDelay = 0
+            //     this.submitBtnStatus = 0
+            //     //取消定时发布，发布时间清空
+            //     this.articleForm.newsCompTime = ''
+            // }
+        // }
     },
     created () {
         this.getColumnList()
@@ -434,6 +440,19 @@ var vm = new Vue({
                 pageSize:10
             }
         },
+        //切换定时发布勾选状态
+        toggleIfReserveTime () {
+            //定时发布状态  0 不定时  1定时
+            if (this.ifReserveTime) {
+                this.articleForm.newsCompDelay = 1
+                this.submitBtnStatus = 1
+            } else {
+                this.articleForm.newsCompDelay = 0
+                this.submitBtnStatus = 0
+                //取消定时发布，发布时间清空
+                this.articleForm.newsCompTime = ''
+            }
+        },
         /*新建或修改新闻    type 发布流程标识
         
         0： 实时新建保存            敏感词——insert            releaseTime:前端赋值
@@ -450,6 +469,11 @@ var vm = new Vue({
             var urlReg = /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
             if (self.articleForm.newsSourceUrl.toString().trim() !=='' && !urlReg.test(self.articleForm.newsSourceUrl)) {
                 self.$message.error('来源网址不合法，非链接格式')
+                return
+            }
+            //如果选择了定时发布，时间就必须选择
+            if (self.articleForm.newsCompDelay == 1 && (self.articleForm.newsCompTime == '' || self.articleForm.newsCompTime == 0)) {
+                self.$message.error('请选择定时发布时间')
                 return
             }
             //获取html文本
@@ -567,6 +591,10 @@ var vm = new Vue({
             self.articleForm.newsContentReadTime = min;
             //编辑前端赋值
             self.articleForm.newsEditor = getCookie('userId') || ''
+            //如果是定时任务，发布时间=定时时间
+            if (type == 2) {
+                self.articleForm.newsReleaseTime = self.articleForm.newsCompTime
+            }
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
@@ -660,8 +688,8 @@ var vm = new Vue({
                     self.ajaxController = true
                     if(res.code == 200){
                         self.$message.success('定时发布提交成功')
-                        //setCookie ('createdit', '', 1)
-                        //window.parent.location.href = '/index.html#modules/content/article_list.html'
+                        setCookie ('createdit', '', 1)
+                        window.parent.location.href = '/index.html#modules/content/article_list.html'
                     }else{
                         mapErrorStatus(res)
 						vm.error = true;
@@ -673,6 +701,40 @@ var vm = new Vue({
                 }
                 
             });         
+        },
+        //取消定时任务
+        cancelReserveTime () {
+            var self = this
+            var data = {
+                newsId: self.articleForm.newsId.toString(),
+                newsCompDelay: 0
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: '/news/cancelDelay',
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    self.ajaxController = true
+                    if(res.code == 200){
+                        self.$message.success('取消定时发布成功')
+                        self.articleForm.newsCompDelay = 0
+                        self.ifReserveTime = false
+                        self.articleForm.newsCompTime = ''
+                        self.showChangeReserveTime = true
+                        self.submitBtnStatus = 0
+                    }else{
+                        mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+                
+            });        
         },
         //返回取消编辑
         closeAndBack () {
@@ -713,15 +775,22 @@ var vm = new Vue({
             console.log('tempObj',tempObj)
             /*
                 回显定时发布时间:
-                已上线文章 status = 2, 不能修改定时时间---不显示,HTML v-if进行判断
+                已上线文章 status = 2, 不能修改定时时间---不显示
                 非已上线文章 status !== 2, 如果想修改定时时间---先要取消之前定时发布
+                submitBtnStatus: '0', //0实时发布   1定时发布   2全部隐藏
             */
-            if (tempObj.newsStatus == 2) {
-
+            if (tempObj.newsCompDelay !== 0) { //目前正在定时中
+                //显示取消定时按钮
+                this.showChangeReserveTime = false
+                //隐藏提交按钮
+                this.submitBtnStatus = '2'
+            } else if (tempObj.newsCompDelay == 0) {
+                //显示选择定时按钮
+                this.showChangeReserveTime = true
+                //后台会回传定newsCompTime = 0，因为表里不能记空，前端转化为空反显
+                this.ifReserveTime = false
+                tempObj.newsCompTime = ''
             }
-            // if (tempObj.newsCompDelay == 0) {
-            //     tempObj.newsCompTime = ''
-            // }
             //回显新闻关键词
             if (tempObj.newsKeywords !== '') {
                 this.newsTagArray = tempObj.newsKeywords.split(',')
@@ -741,14 +810,7 @@ var vm = new Vue({
             } else {
                 this.$message.error('原创状态，后台反显回传不能为0或空')
             }
-            //回显原创状态  0.不定时   1.定时
-            if (tempObj.newsCompDelay == '0') {
-                this.ifReserveTime = false
-            } else if (tempObj.newsCompDelay == '1') {
-                this.ifReserveTime = true
-            } else {
-                this.$message.error('定时发布状态，后台反显回传不能为空')
-            }
+            
             //UE.getEditor('editor').execCommand('insertHtml', tempObj.newsContent)
             //UE.getEditor('editor').setContent(tempObj.newsContent, true)
             setTimeout(function(){

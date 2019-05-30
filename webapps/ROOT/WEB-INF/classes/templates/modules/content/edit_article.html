@@ -220,7 +220,7 @@
                     新闻状态为已上线，不能显示定时器 newsStatus = 2
                 -->
                 <el-row class="el-row-h60" style="margin-top:30px;" v-if="articleForm.newsStatus !== 2">
-                    <el-col :span="10">
+                    <el-col :span="10" v-show="showChangeReserveTime">
                         <el-form-item label="发布时间" prop="newsCompTime" label-width="25%" style="margin:0;">
                             <el-date-picker
                                 style="width:100%;"
@@ -232,12 +232,12 @@
                             </el-date-picker>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col :span="6" v-show="showChangeReserveTime">
                         <el-form-item prop="newsCompDelay" label="定时发布" label-width="50%" style="margin:0;">
-                            <el-checkbox v-model="ifReserveTime"></el-checkbox>
+                            <el-checkbox v-model="ifReserveTime" @change="toggleIfReserveTime"></el-checkbox>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="10">
+                    <el-col :span="10" v-show="!showChangeReserveTime">
                         <el-form-item label="发布时间" prop="newsCompTime" label-width="25%" style="margin:0;">
                             <el-date-picker
                                 style="width:100%;"
@@ -249,8 +249,8 @@
                             </el-date-picker>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="3" :offset="1" class="el-row-h40">
-                        <el-button type="primary" style="width:100%">取消定时</el-button>
+                    <el-col :span="3" :offset="1" class="el-row-h40" v-show="!showChangeReserveTime">
+                        <el-button type="primary" style="width:100%" @click="cancelReserveTime">取消定时</el-button>
                     </el-col>
                 </el-row>
             </el-form>
@@ -260,13 +260,13 @@
         <el-row class="el-row-h60">
             <!--当勾选”定时任务”时发布操作按扭为:定时发布和取消
             当未勾选”定时任务”时发布操作按扭为:保存,保存并发布,取消-->
-            <el-col :span="4" v-if="articleForm.newsCompDelay == '1'">
+            <el-col :span="4" v-if="submitBtnStatus == '1'">
                 <el-button type="primary" style="width:100%" @click="combineArticleData('articleForm',2)">定时发布</el-button>
             </el-col>
-            <el-col :span="4" v-if="articleForm.newsCompDelay == '0'">
+            <el-col :span="4" v-if="submitBtnStatus == '0'">
                 <el-button type="primary" style="width:100%" @click="combineArticleData('articleForm',0)">保存</el-button>
             </el-col>
-            <el-col :span="4" :offset="1"  v-if="articleForm.newsCompDelay == '0'">
+            <el-col :span="4" :offset="1" v-if="submitBtnStatus == '0'">
                 <el-button type="primary" style="width:100%" @click="combineArticleData('articleForm',1)">保存并发布</el-button>
             </el-col>
             <el-col :span="4" :offset="1">
