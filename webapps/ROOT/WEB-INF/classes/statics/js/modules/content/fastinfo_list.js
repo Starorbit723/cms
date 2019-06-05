@@ -145,7 +145,7 @@ var vm = new Vue({
                         flashId: item.flashId.toString(),
                         flashStatus: '0'
                     }
-                    requrl = '/flash/update'
+                    requrl = '/flash/offline'
                 } else if (item.flashStatus == 0 || item.flashStatus == 3) {
                     var data = {
                         flashId: item.flashId.toString(),
@@ -190,7 +190,7 @@ var vm = new Vue({
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: "/flash/update",
+                    url: "/flash/delete",
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res){

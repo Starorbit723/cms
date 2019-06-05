@@ -1,27 +1,31 @@
 var vm = new Vue({
-    el: '#edit_fastinfo',
+    el: '#edit_meeting',
     data: {
         //新建或修改
         typeOfPage:'creat',
         //文章基本信息
         newsTagArray:[],
-        fastinfoForm:{
-            flashId:'',//快讯主键
-            flashTitle:'',//快讯标题
-            flashDesc:'',//快讯摘要
-            flashSourceUrl:'',//快讯原文url
-            flashSourceName:'',//快讯原文名称
-            flashStatus:'',//快讯状态 0未发布，1是待发布，2是已发布3是发布失败 4是待删除 5 删除
-            flashCrtTime:'',//创建时间
-            flashCrtTimeMill:'',//创建时间毫秒值
-            flashCrtUserId:'',//快讯创建人
-            flashCount:'',//点击量
-            flashImg:'',//快讯图片
-            userName:'',//创建人名称
-            flashSourceLink:'',//快讯来源机构名称地址
-            flashReleaseTime:''//发布时间
+        meetingForm:{
+            meetingId:'',//主键
+            meetingTitle:'',//标题
+            meetingStarTime:'',//开始时间
+            meetingEndTime:'',//结束时间
+            meetingImg:'',//封面图
+            meetingType:'',//类型
+            meetingUrl:'',//会议链接
+            meetingProvince:'',//省
+            meetingCity:'',//市
+            meetingArea:'',//区
+            meetingAddress:'',//详细地址
+            meetingOrganizers:'',//举办方
+            meetingDesc:'',//简介
+            meetingCrtUserId:'',//创建人编号
+            meetingCrtTime:'',//创建时间
+            meetingModUserId:'',//更新人编号
+            meetingModTime:'',//更新时间
+            meetingStatus:'',//会议状态(龙哥洗数据后定)
         },
-        fastinfoFormRules:{
+        meetingFormRules:{
             flashTitle: [
                 { required: true, message: '快讯标题不能为空', trigger: 'change' },
                 { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
@@ -51,20 +55,20 @@ var vm = new Vue({
             var self = this
             //针对非必填字段验证
             var urlReg = /^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~\/])+$/;
-            if (self.fastinfoForm.flashSourceUrl.toString().trim() !=='' && !urlReg.test(self.fastinfoForm.flashSourceUrl)) {
+            if (self.meetingForm.flashSourceUrl.toString().trim() !=='' && !urlReg.test(self.meetingForm.flashSourceUrl)) {
                 self.$message.error('原文网址链接不合法')
                 return
-            } else if (self.fastinfoForm.flashSourceUrl.toString().trim() =='') {
-                self.fastinfoForm.flashSourceUrl = '#'
+            } else if (self.meetingForm.flashSourceUrl.toString().trim() =='') {
+                self.meetingForm.flashSourceUrl = '#'
             }
             if (self.typeOfPage == 'creat') {
                 var reqUrl = '/flash/save'
-                var data = JSON.parse(JSON.stringify(self.fastinfoForm))
+                var data = JSON.parse(JSON.stringify(self.meetingForm))
                 data.flashStatus = '0'
                 console.log('data',data, data.flashStatus)
             } else {
                 var reqUrl = '/flash/update'
-                var data = JSON.parse(JSON.stringify(self.fastinfoForm))
+                var data = JSON.parse(JSON.stringify(self.meetingForm))
             }
             self.$refs[formName].validate((valid) => {
                 if (valid) {
@@ -82,7 +86,7 @@ var vm = new Vue({
                                     setCookie ('createditfastinfo', '', 1)
                                     window.parent.location.href = '/index.html#modules/content/fastinfo_list.html'
                                 } else if (opt == 1) {
-                                    self.fastinfoForm.flashId = res.flashId
+                                    self.meetingForm.flashId = res.flashId
                                     self.submitFastinfo()
                                 }
                                 
@@ -104,7 +108,7 @@ var vm = new Vue({
         submitFastinfo () {
             var self = this
             var data = {
-                flashId: self.fastinfoForm.flashId.toString(),
+                flashId: self.meetingForm.flashId.toString(),
                 flashStatus: '2'
             }
             $.ajax({
@@ -145,7 +149,7 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){
-                        self.fastinfoForm = res.dict
+                        self.meetingForm = res.dict
                     }else{
                         mapErrorStatus(res)
 						vm.error = true;
@@ -156,14 +160,6 @@ var vm = new Vue({
                     mapErrorStatus(res)
                 }
             });
-        },
-        //替换引号
-        replaceDqm (str) {
-            var val=str.replace(/"([^"]*)"/g ,"“$1”");
-            if(val.indexOf('"')<0){
-                return val;
-            }
-            return replaceDqm(val);
         }
     }
     

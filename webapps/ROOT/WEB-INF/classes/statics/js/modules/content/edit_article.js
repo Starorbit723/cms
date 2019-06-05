@@ -317,7 +317,6 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){
-                        self.searchCoverimgForm.picTitle = ''
                         self.coverimgTableData = res.page.list
                         self.pagination1 = {
                             currPage: res.page.currPage,
@@ -391,7 +390,6 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){
-                        self.searchContentimgForm.picTitle = ''
                         self.contentimgTableData = res.page.list
                         self.pagination2 = {
                             currPage: res.page.currPage,
@@ -724,7 +722,7 @@ var vm = new Vue({
                         self.articleForm.newsCompTime = ''
                         self.showChangeReserveTime = true
                         self.submitBtnStatus = 0
-                    }else{
+                    } else {
                         mapErrorStatus(res)
 						vm.error = true;
 						vm.errorMsg = res.msg;

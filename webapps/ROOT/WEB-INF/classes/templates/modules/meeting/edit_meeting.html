@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+
+<title>新建/编辑会议</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">新建/编辑会议</div>
+    <div id="edit_meeting" class="cv_page_content">
+        <!--文章基本信息区-->
+        <div class="cv_content_square">
+            <el-form :model="meetingForm" :rules="meetingFormRules" ref="meetingForm" status-icon class="demo-ruleForm" label-width="10%" label-position="right">
+                <el-row class="el-row-h70">
+                    <el-col :span="24">
+                        <el-form-item prop="meetingTitle" label="会议标题" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="meetingForm.meetingTitle"
+                            auto-complete="off">
+                            <template slot="append">最多36字</template>
+                        </el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <el-col :span="12">
+                        <el-form-item prop="meetingTitle" label="会议标题" style="margin:0;">
+                            
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <el-col :span="24">
+                        <el-form-item prop="flashSourceName" label="来源名称" style="margin:0;">
+                            <el-input
+                            maxlength="30"
+                            clearable
+                            type="text"
+                            placeholder="来源网站名称，限30字"
+                            v-model="meetingForm.flashSourceName"
+                            auto-complete="off">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <el-col :span="24">
+                        <el-form-item  prop="flashSourceUrl" label="原文网址" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            maxlength="50"
+                            placeholder="原文章链接详情地址，限50字"
+                            v-model="meetingForm.flashSourceUrl"
+                            auto-complete="off">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <!-- <el-col :span="12">
+                        <el-form-item label="作者" prop="userName" label-width="20%" style="margin:0;">
+                            <el-input
+                                maxlength="20"
+                                type="text"
+                                placeholder="请输入作者姓名，限20字"
+                                v-model="meetingForm.userName"
+                                auto-complete="off">
+                            </el-input>
+                        </el-form-item>
+                    </el-col> -->
+                    <el-col :span="24">
+                        <el-form-item label="发布时间" prop="flashReleaseTime" label-width="10%" style="margin:0;">
+                            <el-date-picker
+                                style="width:100%;"
+                                v-model="meetingForm.flashCrtTime"
+                                type="datetime"
+                                placeholder=""
+                                :disabled="true">
+                            </el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+        </div>
+
+        <!--按钮区-->
+        <el-row class="el-row-h60" style="margin-top:20px;">
+            <el-col :span="4">
+                <el-button type="primary" style="width:100%" @click="saveFastinfoToDraft(0,'meetingForm')">保存</el-button>
+            </el-col>
+            <el-col :span="4" :offset="1">
+                <el-button type="primary" style="width:100%" @click="saveFastinfoToDraft(1,'meetingForm')">保存并发布</el-button>
+            </el-col>
+            <el-col :span="4" :offset="1">
+                <el-button type="primary" plain style="width:100%" @click="closeAndBack()">取消</el-button>
+            </el-col>
+        </el-row>
+        
+        
+
+
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/meeting/edit_meeting.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+</html>

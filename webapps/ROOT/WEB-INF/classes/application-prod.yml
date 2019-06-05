@@ -75,7 +75,7 @@ columnUrl: /cms/api/updateColumn
 mediaUrl: /cms/api/updateSsoMedia
 pictureUrl: /cms/api/updatePictureList
 focusUrl: /cms/api/updateFocusDetail
-flashUrl: /cms/api/updateFlashList
+flashUrl: /cms/api/updateFlashDetail
 reportUrl: /cms/api/updateReportDetail
 recommendUrl: /cms/api/updateRecommendNewsList
 dictUrl: /cms/api/updateSysDict

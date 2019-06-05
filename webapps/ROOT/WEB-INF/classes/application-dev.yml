@@ -65,7 +65,7 @@ rocket:
   basePackage: com.chinaventure
 localUrl: /image/
 esUrl: http://119.254.13.85:8220/cv-sensitive/api/sensitive/internally/check
-abstractUrl: http://172.10.2.203:8080/lexer
+abstractUrl: http://119.254.13.85:8320/cv-tokenizer/lexer
 redisUrl: http://119.254.13.82:8080
 newsUrl: /cms/api/updateNewsDetail
 channelUrl: /cms/api/updateChannelList
@@ -74,7 +74,7 @@ columnUrl: /cms/api/updateColumn
 mediaUrl: /cms/api/updateSsoMedia
 pictureUrl: /cms/api/updatePictureList
 focusUrl: /cms/api/updateFocusDetail
-flashUrl: /cms/api/updateFlashList
+flashUrl: /cms/api/updateFlashDetail
 reportUrl: /cms/api/updateReportDetail
 recommendUrl: /cms/api/updateRecommendNewsList
 dictUrl: /cms/api/updateSysDict
