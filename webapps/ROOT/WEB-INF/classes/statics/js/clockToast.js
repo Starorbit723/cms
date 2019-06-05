@@ -91,7 +91,7 @@ var mapErrorStatus = function(res){
         window.parent.location.href = '/login.html'
         break;
         default:
-        vm.$message.error('系统错误，请联系管理员');
+        vm.$message.error(res.msg);
     }
     
 }
