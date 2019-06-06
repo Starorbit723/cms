@@ -138,18 +138,18 @@ var vm = new Vue({
         },
     },
     watch:{
-        ifOrignCheck (val) {
-            console.log('是否原创切换',val)
-            //原创状态 1：原创 2：非原创
-            if (val) {
-                this.articleForm.originalStatus = 1
-                this.articleForm.newsFrom = '投中网'
-            } else {
-                this.articleForm.originalStatus = 2
-                this.articleForm.newsFrom = ''
-            }
-            console.log(this.articleForm.originalStatus)
-        },
+        // ifOrignCheck (val) {
+        //     //console.log('是否原创切换',val)
+        //     //原创状态 1：原创 2：非原创
+        //     if (val) {
+        //         this.articleForm.originalStatus = 1
+        //         this.articleForm.newsFrom = '投中网'
+        //     } else {
+        //         this.articleForm.originalStatus = 2
+        //         this.articleForm.newsFrom = ''
+        //     }
+        //     //console.log(this.articleForm.originalStatus)
+        // },
         // ifReserveTime (val) {
             // console.log('是否定时发布',val)
             // //定时发布状态  0 不定时  1定时
@@ -273,6 +273,17 @@ var vm = new Vue({
         handleCurrentChange2 (val) {
             this.pagination2.currPage = val
             this.searchContentImg()
+        },
+        //切换原创状态
+        changeIfOrign(val){
+            //原创状态 1：原创 2：非原创
+            if (val) {
+                this.articleForm.originalStatus = 1
+                this.articleForm.newsFrom = '投中网'
+            } else {
+                this.articleForm.originalStatus = 2
+                this.articleForm.newsFrom = ''
+            }
         },
         //新闻标签改变
         newsTagChange (val) {

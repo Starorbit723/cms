@@ -138,7 +138,7 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <el-row class="el-row-h180">
+                <el-row class="el-row-h190">
                     <el-col :span="12">
                         <el-form-item label="封面图片" prop="reportHeadPic" label-width="20%" style="margin:0;">
                             <div class="fengmian_show" @click="openAddCoverImg">
@@ -163,9 +163,12 @@
                                 <div slot="tip" class="el-upload__tip">只能上传pdf格式的文件</div>
                             </el-upload> -->
                             <el-upload
+                            v-show="reportForm.reportAttachments == ''"
+                            ref="upload"
                             class="upload-demo"
                             :auto-upload="false"
                             accept="application/pdf"
+                            :file-list="fileList"
                             :show-file-list="false"
                             :limit = "1"
                             action="https://jsonplaceholder.typicode.com/posts/"
@@ -174,6 +177,7 @@
                                 <el-button size="small" type="primary">点击上传</el-button>
                                 <div slot="tip" class="el-upload__tip">只能上传pdf格式的文件</div>
                             </el-upload>
+                            <el-button size="small" type="primary" v-show="reportForm.reportAttachments !== ''" @click="deletReportPdf">删除文件</el-button>
                             <el-row class="reporturl" v-text="reportForm.reportAttachments"></el-row>
                         </el-form-item>
                     </el-col>

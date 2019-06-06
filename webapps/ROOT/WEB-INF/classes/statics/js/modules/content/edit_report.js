@@ -147,7 +147,14 @@ var vm = new Vue({
     methods:{
         //用户移除报告
         handleRemove(file, fileList) {
-            this.ifShowFileList = false
+            // this.ifShowFileList = false
+            // this.reportForm.reportAttachments = ''
+            // this.pdfFormData = {}
+        },
+        //删除报告
+        deletReportPdf () {
+            console.log('待删除的pdf',this.fileList)
+            this.$refs.upload.clearFiles();
             this.reportForm.reportAttachments = ''
             this.pdfFormData = {}
         },

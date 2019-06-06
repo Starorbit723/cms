@@ -57,6 +57,7 @@ var vm = new Vue({
             } else if (self.fastinfoForm.flashSourceUrl.toString().trim() =='') {
                 self.fastinfoForm.flashSourceUrl = '#'
             }
+            //判断是新建还是修改
             if (self.typeOfPage == 'creat') {
                 var reqUrl = '/flash/save'
                 var data = JSON.parse(JSON.stringify(self.fastinfoForm))
@@ -66,6 +67,8 @@ var vm = new Vue({
                 var reqUrl = '/flash/update'
                 var data = JSON.parse(JSON.stringify(self.fastinfoForm))
             }
+            //标题中出现英文双引号修改为中文双引号，否则造成标签属性不闭合
+            data.flashTitle = self.replaceDqm(data.flashTitle)
             self.$refs[formName].validate((valid) => {
                 if (valid) {
                     $.ajax({

@@ -183,7 +183,7 @@
                     </el-col>
                     <el-col :span="4">
                         <el-form-item prop="originalStatus" label="是否原创" label-width="50%" style="margin:0;">
-                            <el-checkbox v-model="ifOrignCheck"></el-checkbox>
+                            <el-checkbox v-model="ifOrignCheck" @change="changeIfOrign"></el-checkbox>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">

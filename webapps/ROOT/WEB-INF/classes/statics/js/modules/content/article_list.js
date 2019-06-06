@@ -323,7 +323,8 @@ var vm = new Vue({
             }).then(() => {
                 var data = {
                     newsId: item.newsId,
-                    newsStatus:'1'
+                    newsStatus:'1',
+                    newsReleaseTime: new Date().getTime()
                 }
                 $.ajax({
                     type: "POST",
