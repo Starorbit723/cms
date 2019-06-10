@@ -155,7 +155,8 @@ var vm = new Vue({
         deletReportPdf () {
             console.log('待删除的pdf',this.fileList)
             this.$refs.upload.clearFiles();
-            this.reportForm.reportAttachments = ''
+            //空的话传一个空格
+            this.reportForm.reportAttachments = ' '
             this.pdfFormData = {}
         },
         //上传报告
@@ -473,6 +474,7 @@ var vm = new Vue({
             }
             //把当前用户的id作为发布人添加到提交中
             self.reportForm.reportEditor = getCookie('userId') || ''
+            console.log('提交前===>', self.reportForm)
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
@@ -575,6 +577,10 @@ var vm = new Vue({
                 if (tempObj.reportKeywords !== ''){
                     this.reportKeywordsArray = tempObj.reportKeywords.split(',')
                 }
+            }
+            //回显报告pdf地址--空格符代表没有pdf文件
+            if (tempObj.reportAttachments == ' ') {
+                tempObj.reportAttachments = ''
             }
             setTimeout(function(){
                 //首先获得焦点可以使得初始的空格行前插入正式内容
