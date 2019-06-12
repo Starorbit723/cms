@@ -50,7 +50,8 @@ var vm = new Vue({
         saveFastinfoToDraft (opt,formName){
             var self = this
             //针对非必填字段验证
-            var urlReg = /^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~\/])+$/;
+            //var urlReg = /^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~\/])+$/;
+            var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/
             if (self.fastinfoForm.flashSourceUrl.toString().trim() !=='' && !urlReg.test(self.fastinfoForm.flashSourceUrl)) {
                 self.$message.error('原文网址链接不合法')
                 return

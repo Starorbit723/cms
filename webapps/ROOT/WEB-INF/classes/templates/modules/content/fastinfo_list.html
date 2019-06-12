@@ -50,17 +50,17 @@
                             </el-select>
                         </el-form-item>     
                     </el-col>
-                    <el-col :span="12">
+                    <!-- <el-col :span="12">
                         <el-form-item label-width="27%" label="发布状态" style="margin:0;">
                             <el-checkbox-group v-model="searchForm.flashStatus">
                                 <el-checkbox label="2">已发布</el-checkbox>
                                 <el-checkbox label="1">待发布</el-checkbox>
                                 <el-checkbox label="0">未发布</el-checkbox>
                             </el-checkbox-group>
-                        </el-form-item>    
-                    </el-col>
-                    <el-col :span="3" :offset="1" class="el-row-h50">
-                        <el-button type="primary" style="width:100%" @click="startSearch">搜索</el-button>
+                        </el-form-item>
+                    </el-col> -->
+                    <el-col :span="3" :offset="13" class="el-row-h50">
+                        <el-button type="primary" style="width:100%" @click="startSearch(0)">搜索</el-button>
                     </el-col>
                 </el-row>
             </el-form>

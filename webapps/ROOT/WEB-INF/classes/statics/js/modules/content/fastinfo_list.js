@@ -16,7 +16,7 @@ var vm = new Vue({
         ],
         searchForm:{
             flashTitle:'',//标题
-            flashStatus:[],// array[number] 状态 0未发布，1是待发布，2是已发布3是发布失败 4是待删除 5 删除
+            flashStatus:['0','1','2','3','4'],// array[number] 状态 0未发布，1是待发布，2是已发布3是发布失败 4是待删除 5 删除
             flashCrtUser:'',//创建人编号
             startTime:'',
             endTime:''

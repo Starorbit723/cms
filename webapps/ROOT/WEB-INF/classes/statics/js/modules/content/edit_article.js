@@ -98,6 +98,9 @@ var vm = new Vue({
             newsEditorName: [
                 { required: true, message: '编辑姓名不能为空', trigger: 'change' }
             ],
+            newsAuthor:[
+                { required: true, message: '作者不能为空', trigger: 'change' }
+            ],
             newsFrom: [
                 { required: true, message: '来源名称不能为空', trigger: 'change' }
             ],
