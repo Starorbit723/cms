@@ -26,49 +26,35 @@
                     </el-col>
                 </el-row>
                 <el-row class="el-row-h70">
-                    <el-col :span="12">
-                        <el-form-item  label-width="30%" prop="meetingStarTime" label="会议开始时间" style="margin:0;">
+                    <el-col :span="24">
+                        <el-form-item  label-width="15%" prop="meetingTimes" label="会议时间" style="margin:0;">
                             <el-date-picker
+                                clearable
                                 style="width:100%;"
-                                v-model="meetingForm.meetingStarTime"
-                                type="datetime"
+                                v-model="meetingForm.meetingTimes"
+                                type="datetimerange"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
                                 value-format="timestamp"
-                                placeholder="选择日期时间">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label-width="30%" prop="meetingEndTime" label="会议结束时间" style="margin:0;">
-                            <el-date-picker
-                                style="width:100%;"
-                                v-model="meetingForm.meetingEndTime"
-                                type="datetime"
-                                value-format="timestamp"
-                                placeholder="选择日期时间">
+                                :default-time="['00:00:00', '00:00:00']"
+                                @change="handleMeetingTimesChange">
                             </el-date-picker>
                         </el-form-item>
                     </el-col>
                 </el-row>
                 <el-row class="el-row-h70">
-                    <el-col :span="12">
-                        <el-form-item  label-width="30%" prop="meetingEnrollStarTime" label="报名开始时间" style="margin:0;">
+                    <el-col :span="24">
+                        <el-form-item  label-width="15%" prop="meetingBaomingTimes" label="会议报名时间" style="margin:0;">
                             <el-date-picker
+                                clearable
                                 style="width:100%;"
-                                v-model="meetingForm.meetingEnrollStarTime"
-                                type="datetime"
+                                v-model="meetingForm.meetingBaomingTimes"
+                                type="datetimerange"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
                                 value-format="timestamp"
-                                placeholder="选择日期时间">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label-width="30%" prop="meetingEnrollEndTime" label="报名结束时间" style="margin:0;">
-                            <el-date-picker
-                                style="width:100%;"
-                                v-model="meetingForm.meetingEnrollEndTime"
-                                type="datetime"
-                                value-format="timestamp"
-                                placeholder="选择日期时间">
+                                :default-time="['00:00:00', '00:00:00']"
+                                @change="handleMeetingBaomingTimesChange">
                             </el-date-picker>
                         </el-form-item>
                     </el-col>
@@ -90,9 +76,9 @@
                             <el-select v-model="meetingForm.meetingType" placeholder="请选择会议类型" style="width:100%;">
                                 <el-option
                                     v-for="item in meetingTypeOptions"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value">
+                                    :key="item.code"
+                                    :label="item.value"
+                                    :value="item.code">
                                 </el-option>
                             </el-select>
                         </el-form-item>
@@ -100,20 +86,9 @@
                 </el-row>
                 <el-row class="el-row-h70">
                     <el-col :span="24">
-                        <el-form-item prop="meetingUrl" label="会议链接" style="margin:0;">
-                            <el-input
-                                clearable
-                                type="text"
-                                v-model="meetingForm.meetingUrl"
-                                auto-complete="on">
-                            </el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row class="el-row-h70">
-                    <el-col :span="24">
                         <el-form-item prop="meetingAddress" label="详细地址" style="margin:0;">
                             <el-input
+                                :maxlength="100"
                                 clearable
                                 type="text"
                                 v-model="meetingForm.meetingAddress"
@@ -124,8 +99,22 @@
                 </el-row>
                 <el-row class="el-row-h70">
                     <el-col :span="24">
+                        <el-form-item prop="meetingUrl" label="会议链接" style="margin:0;">
+                            <el-input
+                                :maxlength="500"
+                                clearable
+                                type="text"
+                                v-model="meetingForm.meetingUrl"
+                                auto-complete="on">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <el-col :span="24">
                         <el-form-item prop="meetingOrganizers" label="举办方" style="margin:0;">
                             <el-input
+                                :maxlength="50"
                                 clearable
                                 type="text"
                                 v-model="meetingForm.meetingOrganizers"
@@ -228,9 +217,12 @@
     </div>
 </body>
 
+<script type="text/javascript" src="${request.contextPath}/statics/js/region.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/modules/meeting/edit_meeting.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+
 <style>
 .fengmian_show{
     width: 240px;

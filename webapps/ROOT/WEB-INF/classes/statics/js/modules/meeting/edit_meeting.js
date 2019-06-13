@@ -11,251 +11,17 @@ var vm = new Vue({
                 callback();
             }
         }
-        var validateMeetingStarTime = (rule, value, callback) => {
-            console.log('start:',this.meetingForm.meetingStarTime,'end:',this.meetingForm.meetingEndTime)
-            if (value =='') {
-                callback(new Error('会议开始时间不能为空'));
-            } else if (this.meetingForm.meetingEndTime !=='' && (value > this.meetingForm.meetingEndTime)) {
-                callback(new Error('会议开始时间不能大于会议结束时间'));
-            } else {
-                callback();
-            }
-        }
-        var validateMeetingEndTime = (rule, value, callback) => {
-            console.log('start:',this.meetingForm.meetingStarTime,'end:',this.meetingForm.meetingEndTime)
-            if (value =='') {
-                callback(new Error('会议结束时间不能为空'));
-            } else if (this.meetingForm.meetingStartTime !=='' && (value < this.meetingForm.meetingStartTime)) {
-                callback(new Error('会议开始时间不能大于会议结束时间'));
-            } else {
-                callback();
-            }
-        }
-        var validateMeetingEnrollStarTime = (rule, value, callback) => {
-            console.log('start:',this.meetingForm.meetingEnrollStarTime,'end:',this.meetingForm.meetingEnrollEndTime)
-            if (this.meetingForm.meetingEnrollEndTime !=='' && (value > this.meetingForm.meetingEnrollEndTime)) {
-                callback(new Error('报名开始时间不能大于会议结束时间'));
-            } else {
-                callback();
-            }
-        }
-        var validateMeetingEnrollEndTime = (rule, value, callback) => {
-            console.log('start:',this.meetingForm.meetingEnrollStarTime,'end:',this.meetingForm.meetingEnrollEndTime)
-            if (this.meetingForm.meetingEnrollStarTime !=='' && (value < this.meetingForm.meetingEnrollStarTime)) {
-                callback(new Error('报名开始时间不能大于会议结束时间'));
-            } else {
-                callback();
-            }
-        }
         return {
             //新建或修改
             typeOfPage:'creat',
+            //按钮请求开关
+            ajaxController:true,
             //切换展示封面图库
             showCoverimgLib:false,
             //省市区选项
-            RegionOptions: [{
-                value: 'zhinan',
-                label: '指南',
-                children: [{
-                value: 'shejiyuanze',
-                label: '设计原则',
-                children: [{
-                    value: 'yizhi',
-                    label: '一致'
-                }, {
-                    value: 'fankui',
-                    label: '反馈'
-                }, {
-                    value: 'xiaolv',
-                    label: '效率'
-                }, {
-                    value: 'kekong',
-                    label: '可控'
-                }]
-                }, {
-                value: 'daohang',
-                label: '导航',
-                children: [{
-                    value: 'cexiangdaohang',
-                    label: '侧向导航'
-                }, {
-                    value: 'dingbudaohang',
-                    label: '顶部导航'
-                }]
-                }]
-            }, {
-            value: 'zujian',
-            label: '组件',
-            children: [{
-                value: 'basic',
-                label: 'Basic',
-                children: [{
-                value: 'layout',
-                label: 'Layout 布局'
-                }, {
-                value: 'color',
-                label: 'Color 色彩'
-                }, {
-                value: 'typography',
-                label: 'Typography 字体'
-                }, {
-                value: 'icon',
-                label: 'Icon 图标'
-                }, {
-                value: 'button',
-                label: 'Button 按钮'
-                }]
-            }, {
-                value: 'form',
-                label: 'Form',
-                children: [{
-                value: 'radio',
-                label: 'Radio 单选框'
-                }, {
-                value: 'checkbox',
-                label: 'Checkbox 多选框'
-                }, {
-                value: 'input',
-                label: 'Input 输入框'
-                }, {
-                value: 'input-number',
-                label: 'InputNumber 计数器'
-                }, {
-                value: 'select',
-                label: 'Select 选择器'
-                }, {
-                value: 'cascader',
-                label: 'Cascader 级联选择器'
-                }, {
-                value: 'switch',
-                label: 'Switch 开关'
-                }, {
-                value: 'slider',
-                label: 'Slider 滑块'
-                }, {
-                value: 'time-picker',
-                label: 'TimePicker 时间选择器'
-                }, {
-                value: 'date-picker',
-                label: 'DatePicker 日期选择器'
-                }, {
-                value: 'datetime-picker',
-                label: 'DateTimePicker 日期时间选择器'
-                }, {
-                value: 'upload',
-                label: 'Upload 上传'
-                }, {
-                value: 'rate',
-                label: 'Rate 评分'
-                }, {
-                value: 'form',
-                label: 'Form 表单'
-                }]
-            }, {
-                value: 'data',
-                label: 'Data',
-                children: [{
-                value: 'table',
-                label: 'Table 表格'
-                }, {
-                value: 'tag',
-                label: 'Tag 标签'
-                }, {
-                value: 'progress',
-                label: 'Progress 进度条'
-                }, {
-                value: 'tree',
-                label: 'Tree 树形控件'
-                }, {
-                value: 'pagination',
-                label: 'Pagination 分页'
-                }, {
-                value: 'badge',
-                label: 'Badge 标记'
-                }]
-            }, {
-                value: 'notice',
-                label: 'Notice',
-                children: [{
-                value: 'alert',
-                label: 'Alert 警告'
-                }, {
-                value: 'loading',
-                label: 'Loading 加载'
-                }, {
-                value: 'message',
-                label: 'Message 消息提示'
-                }, {
-                value: 'message-box',
-                label: 'MessageBox 弹框'
-                }, {
-                value: 'notification',
-                label: 'Notification 通知'
-                }]
-            }, {
-                value: 'navigation',
-                label: 'Navigation',
-                children: [{
-                value: 'menu',
-                label: 'NavMenu 导航菜单'
-                }, {
-                value: 'tabs',
-                label: 'Tabs 标签页'
-                }, {
-                value: 'breadcrumb',
-                label: 'Breadcrumb 面包屑'
-                }, {
-                value: 'dropdown',
-                label: 'Dropdown 下拉菜单'
-                }, {
-                value: 'steps',
-                label: 'Steps 步骤条'
-                }]
-            }, {
-                value: 'others',
-                label: 'Others',
-                children: [{
-                value: 'dialog',
-                label: 'Dialog 对话框'
-                }, {
-                value: 'tooltip',
-                label: 'Tooltip 文字提示'
-                }, {
-                value: 'popover',
-                label: 'Popover 弹出框'
-                }, {
-                value: 'card',
-                label: 'Card 卡片'
-                }, {
-                value: 'carousel',
-                label: 'Carousel 走马灯'
-                }, {
-                value: 'collapse',
-                label: 'Collapse 折叠面板'
-                }]
-            }]
-            }, {
-            value: 'ziyuan',
-            label: '资源',
-            children: [{
-                value: 'axure',
-                label: 'Axure Components'
-            }, {
-                value: 'sketch',
-                label: 'Sketch Templates'
-            }, {
-                value: 'jiaohu',
-                label: '组件交互文档'
-            }]
-            }],
+            RegionOptions: [],
             //会议类型下拉选项
-            meetingTypeOptions:[{
-                value:'0',
-                label:'v-talk'
-            },{
-                value:'1',
-                label:'年会'
-            }],
+            meetingTypeOptions:[],
             //文章基本信息
             meetingForm:{
                 meetingId:'',//主键
@@ -266,6 +32,8 @@ var vm = new Vue({
                 meetingType:'',//类型
                 meetingUrl:'http://www.baid.com',//会议链接
                 meetingRegion:[],//会议所在区域-----前端自用字段
+                meetingTimes:[],//会议时间数组-----前端自用字段
+                meetingBaomingTimes:[], //会议报名时间-----前端自用字段
                 meetingProvince:'',//省
                 meetingCity:'',//市
                 meetingArea:'',//区
@@ -276,26 +44,17 @@ var vm = new Vue({
                 meetingCrtTime:'',//创建时间
                 meetingModUserId:'',//更新人编号
                 meetingModTime:'',//更新时间
-                meetingStatus:'',//会议状态(龙哥洗数据后定)
+                meetingStatus:'',//会议状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
                 meetingEnrollStarTime:'',//报名开始时间
                 meetingEnrollEndTime:'',//报名结束时间
             },
             meetingFormRules:{
                 meetingTitle: [
-                    { required: true, message: '快讯标题不能为空', trigger: 'change' },
+                    { required: true, message: '会议标题不能为空', trigger: 'change' },
                     { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
                 ],
-                meetingStarTime:[
-                    { required: true, validator:validateMeetingStarTime, trigger: 'change' }
-                ],
-                meetingEndTime:[
-                    { required: true, validator:validateMeetingEndTime, trigger: 'change' }
-                ],
-                meetingEnrollStarTime:[
-                    { required: false, validator:validateMeetingEnrollStarTime, trigger: 'change' }
-                ],
-                meetingEnrollEndTime:[
-                    { required: false, validator:validateMeetingEnrollEndTime, trigger: 'change' }
+                meetingTimes:[
+                    { type: 'array', required: true, message: '会议时间为必填项', trigger: 'change' }
                 ],
                 meetingRegion:[
                     { type: 'array', required: true, message: '所在区域不能为空', trigger: 'change' }
@@ -325,20 +84,61 @@ var vm = new Vue({
         }
        
     },
+    created () {
+       this.RegionOptions = regionJSON
+       this.getMeetingType()
+    },
     mounted () {
-        var type = getCookie('createditfastinfo')
+        var type = getCookie('createditmeeting')
         if (type == '' || type == undefined) {
             this.typeOfPage = 'creat'
         } else {
             this.typeOfPage = 'edit'
-            this.getEditFastinfoOrign(type)
+            this.getEditMeetingOrign(type)
         }
         console.log('type',this.typeOfPage)
     },
     methods:{
         //省市区发生变化时
         handleRegionChange(val){
-            console.log('省市区发生变化',val)
+            for (let i = 0; i < this.RegionOptions.length; i++) {
+                if (this.RegionOptions[i].value == val[0]) {
+                    this.meetingForm.meetingProvince = this.RegionOptions[i].label
+                    for (let j = 0; j <this.RegionOptions[i].children.length; j ++) {
+                        if (this.RegionOptions[i].children[j].value == val[1]) {
+                            this.meetingForm.meetingCity = this.RegionOptions[i].children[j].label
+                            for (let k = 0; k < this.RegionOptions[i].children[j].children.length; k++) {
+                                if (this.RegionOptions[i].children[j].children[k].value == val[2]) {
+                                    this.meetingForm.meetingArea = this.RegionOptions[i].children[j].children[k].label
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            console.log('省市区发生变化',this.meetingForm.meetingProvince,this.meetingForm.meetingCity,this.meetingForm.meetingArea)
+        },
+        //会议起止时间变化
+        handleMeetingTimesChange(val){
+            if (val !== null) {
+                this.meetingForm.meetingStarTime = val[0]
+                this.meetingForm.meetingEndTime = val[1]
+            } else {
+                this.meetingForm.meetingStarTime = ''
+                this.meetingForm.meetingEndTime = ''
+            }
+            console.log('会议时间变化',val,this.meetingForm.meetingStarTime,this.meetingForm.meetingEndTime)
+        },
+        //会议报名时间变化
+        handleMeetingBaomingTimesChange(val){
+            if (val !== null) {
+                this.meetingForm.meetingEnrollStarTime = val[0]
+                this.meetingForm.meetingEnrollEndTime = val[1]
+            } else {
+                this.meetingForm.meetingEnrollStarTime = ''
+                this.meetingForm.meetingEnrollEndTime = ''
+            }
+            console.log('报名时间变化',val,this.meetingForm.meetingEnrollStarTime,this.meetingForm.meetingEnrollEndTime)
         },
         handleCurrentChange (val) {
             this.pagination1.currPage = val
@@ -419,14 +219,178 @@ var vm = new Vue({
         //保存会议 formName---表单名称   type----提交类型
         testMeetingInfo(type,formName) {
             var self = this
-            console.log(formName)
+            //判断报名时间和开始时间规则
+            console.log(self.meetingForm)
+            if (self.meetingForm.meetingEnrollEndTime > self.meetingForm.meetingStarTime) {
+                self.$message.error('会议报名截至时间不能大于会议开始时间')
+                return
+            }
             self.$refs[formName].validate((valid) =>{
                 if (valid) {
-                    //校验敏感词
-                    console.log(self.meetingForm)
+                    self.saveMeeting(type)
                 }
             })
-        }
+        },
+        //新建或修改保存会议
+        saveMeeting (type) {
+            var self = this
+            if (self.ajaxController) {
+                //关闭请求开关
+                self.ajaxController = false
+                if (self.typeOfPage == 'creat') {
+                    var reqUrl = '/meeting/save'
+                    self.meetingForm.meetingStatus = '3'
+                } else if (self.typeOfPage == 'edit') {
+                    var reqUrl = '/meeting/update'
+                }
+                $.ajax({
+                    type: "POST",
+                    url: reqUrl,
+                    contentType: "application/json",
+                    data: JSON.stringify(self.meetingForm),
+                    dataType: "json",
+                    success: function(res){
+                        if(res.code == 200){
+                            self.$message.success('保存成功')
+                            console.log('保存会议返回',res)
+                            if (self.typeOfPage == 'creat') {
+                                if (type == 0) { // 0保存不发布
+                                    setCookie ('createditmeeting', '', 1) 
+                                    window.parent.location.href = '/index.html#modules/meeting/meeting_list.html'
+                                } else if (type == 1) { // 1保存并发布
+                                    //回传id
+                                    self.meetingForm.meetingId = res.meetingId
+                                    self.submitMeeting()
+                                }
+                            } else if (self.typeOfPage == 'edit') {
+                                if (type == 0) { // 0保存不发布
+                                    setCookie ('createditmeeting', '', 1) 
+                                    window.parent.location.href = '/index.html#modules/meeting/meeting_list.html'
+                                } else if (type == 1) { // 1保存并发布
+                                    self.submitMeeting()
+                                }
+                            }  
+                        }else{
+                            self.ajaxController = true
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+            }
+        },
+        //提交会议--更新发布状态即可
+        submitMeeting () {
+            var self = this
+            //不走CMS逻辑，只需要改状态即可  meetingStatus=1 已发布
+            self.meetingForm.meetingStatus = '1' 
+            $.ajax({
+                type: "POST",
+                url: "/meeting/update",
+                contentType: "application/json",
+                data: JSON.stringify(self.meetingForm),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.$message.success('发布成功')
+                        setCookie ('createditmeeting', '', 1) 
+                        window.parent.location.href = '/index.html#modules/meeting/meeting_list.html'
+                    }else{
+                        self.ajaxController = true
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        //编辑会议---数据反显
+        getEditMeetingOrign(type) {
+            var self = this
+            $.ajax({
+                type: "POST",
+                url: "/meeting/info/"+ type.toString(),
+                contentType: "application/json",
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        console.log('请求修改的会议返回结果：',res.dict)
+                        self.editMeetingFilter(res.dict)
+                    }else{
+                        mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        //编辑反显前数据过滤
+        editMeetingFilter (tempObj) {
+            console.log('tempObj',tempObj)
+            //省市区反显
+            tempObj.meetingRegion = []
+            for (let i = 0; i < this.RegionOptions.length; i++) {
+                if (this.RegionOptions[i].label == tempObj.meetingProvince) {
+                    tempObj.meetingRegion[0] = this.RegionOptions[i].value
+                    for (let j = 0; j <this.RegionOptions[i].children.length; j ++) {
+                        if (this.RegionOptions[i].children[j].label == tempObj.meetingCity) {
+                            tempObj.meetingRegion[1] = this.RegionOptions[i].children[j].value
+                            for (let k = 0; k < this.RegionOptions[i].children[j].children.length; k++) {
+                                if (this.RegionOptions[i].children[j].children[k].label == tempObj.meetingArea) {
+                                    tempObj.meetingRegion[2] = this.RegionOptions[i].children[j].children[k].value
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //会议时间反显
+            tempObj.meetingTimes = [parseInt(tempObj.meetingStarTime),parseInt(tempObj.meetingEndTime)]
+            //会议报名时间反显--非必填项
+            if (tempObj.meetingEnrollStarTime !== '') {
+                tempObj.meetingBaomingTimes = [parseInt(tempObj.meetingEnrollStarTime),parseInt(tempObj.meetingEnrollEndTime)]
+            }
+            //会议类型转换
+            tempObj.meetingType = tempObj.meetingType.toString()
+            this.meetingForm = tempObj
+        },
+        //返回列表页
+        closeAndBack () {
+            setCookie ('createditmeeting', '', 1) 
+            window.parent.location.href = '/index.html#modules/meeting/meeting_list.html'
+        },
+        //获取会议类型
+        getMeetingType () {
+            var self = this
+            $.ajax({
+				type: "POST",
+                url: "/sys/dict/list?type=meetingType" ,
+			    dataType: "json",
+			    success: function(res){
+					if(res.code == 200){
+                        self.meetingTypeOptions = res.page.list
+					} else {
+						mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+			});
+        },
+
         
     }
     
