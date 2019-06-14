@@ -64,7 +64,6 @@ var vm = new Vue({
     methods:{
         handleCurrentChange (val) {
             this.pagination1.currPage = val
-            alert(111)
             this.startSearch() 
         },
         //开始搜索
@@ -132,29 +131,104 @@ var vm = new Vue({
         //删除会议
         deleteThisMeeting (item) {
             var self = this
-            var data = {
-                meetingId: item.meetingId.toString(),
-                meetingStatus: '4'
-            }
-            $.ajax({
-                type: "POST",
-                url: reqUrl,
-                contentType: "application/json",
-                data: JSON.stringify(data),
-                dataType: "json",
-                success: function(res){
-                    if(res.code == 200){
-                        self.$message.success('修改成功')
-                    }else{
-                        mapErrorStatus(res)
-                        vm.error = true;
-                        vm.errorMsg = res.msg;
-                    }
-                },
-                error:function(res){
-                    mapErrorStatus(res)
+            self.$confirm('确实要删除此会议吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = {
+                    meetingId: item.meetingId.toString(),
+                    meetingStatus: '4'
                 }
-            });
+                $.ajax({
+                    type: "POST",
+                    url: "/meeting/update",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res){
+                        if(res.code == 200){
+                            self.$message.success('删除成功')
+                            self.startSearch()
+                        }else{
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+            })
+        },
+        //发布会议
+        onlineThisMeeting (item) {
+            var self = this
+            self.$confirm('确实要发布此会议吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = {
+                    meetingId: item.meetingId.toString(),
+                    meetingStatus: '1'
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/meeting/update",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res){
+                        if(res.code == 200){
+                            self.$message.success('发布成功')
+                            self.startSearch()
+                        }else{
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+            })
+        },
+        //下线会议
+        offlineThisMeeting (item) {
+            var self = this
+            self.$confirm('确实要下线此会议吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = {
+                    meetingId: item.meetingId.toString(),
+                    meetingStatus: '2'
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/meeting/update",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res){
+                        if(res.code == 200){
+                            self.$message.success('下线成功')
+                            self.startSearch()
+                        }else{
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+            })
         },
         //获取会议类型
         getMeetingType () {

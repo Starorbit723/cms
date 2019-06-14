@@ -30,7 +30,7 @@ var vm = new Vue({
                 meetingEndTime:'',//结束时间
                 meetingImg:'',//封面图
                 meetingType:'',//类型
-                meetingUrl:'http://www.baid.com',//会议链接
+                meetingUrl:'',//会议链接
                 meetingRegion:[],//会议所在区域-----前端自用字段
                 meetingTimes:[],//会议时间数组-----前端自用字段
                 meetingBaomingTimes:[], //会议报名时间-----前端自用字段
