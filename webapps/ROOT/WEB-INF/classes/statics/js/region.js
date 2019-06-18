@@ -13939,7 +13939,7 @@ var regionJSON =  [
     },
     {
       'value': '710000',
-      'label': '台湾省',
+      'label': '台湾',
       'children': [
         {
           'value': '710100',

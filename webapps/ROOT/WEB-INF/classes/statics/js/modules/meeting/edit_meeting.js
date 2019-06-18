@@ -11,6 +11,29 @@ var vm = new Vue({
                 callback();
             }
         }
+        var validateMeetingTimes = (rule, value, callback) => {
+            console.log(value)
+            if (value !== null) {
+                if (value !== [] && (value[0] == value[1])) {
+                    callback(new Error('会议开始时间不能与会议结束时间相同'));
+                } else {
+                    callback();
+                }
+            } else {
+                callback(new Error('会议时间为必填项'));
+            }
+            
+        }
+        var validateMeetingBaomingTimes = (rule, value, callback) => {
+            console.log(value)
+            if (value !== null) {
+                if (value !== [] && (value[0] == value[1])) {
+                    callback(new Error('会议开始时间不能与会议结束时间相同'));
+                } else {
+                    callback();
+                }
+            }
+        }
         return {
             //新建或修改
             typeOfPage:'creat',
@@ -54,7 +77,10 @@ var vm = new Vue({
                     { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
                 ],
                 meetingTimes:[
-                    { type: 'array', required: true, message: '会议时间为必填项', trigger: 'change' }
+                    { type: 'array', required: true, validator: validateMeetingTimes, trigger: 'change' }
+                ],
+                meetingBaomingTimes:[
+                    { type: 'array', validator: validateMeetingBaomingTimes, trigger: 'change' }
                 ],
                 meetingRegion:[
                     { type: 'array', required: true, message: '所在区域不能为空', trigger: 'change' }
@@ -67,6 +93,9 @@ var vm = new Vue({
                 ],
                 meetingImg:[
                     { required: true, message: '请选择会议封面图', trigger: 'change' }
+                ],
+                meetingDesc:[
+                    { required: true, message: '请填写会议简介', trigger: 'change' }
                 ]
             },
             //封面图库相关
@@ -178,7 +207,8 @@ var vm = new Vue({
         //搜索封面图库
         searchCoverImg (type){
             var self = this
-            var data = self.searchCoverimgForm
+            var data = JSON.parse(JSON.stringify(self.searchCoverimgForm))
+            data.picTitle = data.picTitle.trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
