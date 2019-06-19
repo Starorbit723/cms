@@ -25,13 +25,14 @@ var vm = new Vue({
             
         }
         var validateMeetingBaomingTimes = (rule, value, callback) => {
-            console.log(value)
-            if (value !== null) {
-                if (value !== [] && (value[0] == value[1])) {
-                    callback(new Error('会议开始时间不能与会议结束时间相同'));
+            if (value !== null && value !== undefined) {
+                if (value[0] !== '#' && value[0] !== undefined && (value[0] == value[1])) {
+                    callback(new Error('报名开始时间不能与报名结束时间相同'));
                 } else {
                     callback();
                 }
+            } else {
+                callback();
             }
         }
         return {
@@ -164,8 +165,8 @@ var vm = new Vue({
                 this.meetingForm.meetingEnrollStarTime = val[0]
                 this.meetingForm.meetingEnrollEndTime = val[1]
             } else {
-                this.meetingForm.meetingEnrollStarTime = ''
-                this.meetingForm.meetingEnrollEndTime = ''
+                this.meetingForm.meetingEnrollStarTime = '#'
+                this.meetingForm.meetingEnrollEndTime = '#'
             }
             console.log('报名时间变化',val,this.meetingForm.meetingEnrollStarTime,this.meetingForm.meetingEnrollEndTime)
         },
@@ -387,12 +388,15 @@ var vm = new Vue({
             //会议时间反显
             tempObj.meetingTimes = [parseInt(tempObj.meetingStarTime),parseInt(tempObj.meetingEndTime)]
             //会议报名时间反显--非必填项
-            if (tempObj.meetingEnrollStarTime !== '') {
+            if (tempObj.meetingEnrollStarTime !== '#') {
                 tempObj.meetingBaomingTimes = [parseInt(tempObj.meetingEnrollStarTime),parseInt(tempObj.meetingEnrollEndTime)]
+            } else {
+                tempObj.validateMeetingBaomingTimes = []
             }
             //会议类型转换
             tempObj.meetingType = tempObj.meetingType.toString()
             this.meetingForm = tempObj
+            this.$refs['meetingForm'].resetFields()
         },
         //返回列表页
         closeAndBack () {

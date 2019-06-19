@@ -31,7 +31,7 @@ var vm = new Vue({
             timeRange:[], //时间需要特殊处理,并且同步到searchForm
             searchForm:{
                 talkTitle:'',//标题
-                starTime:'',//开始时间
+                startTime:'',//开始时间
                 endTime:'',//结束时间
                 talkStatus: ['0','1']
             },
@@ -81,9 +81,6 @@ var vm = new Vue({
                     { required: true, message: '标题不能为空', trigger: 'change' },
                     { max: 100, message: '您输入的字数超过100个字', trigger: 'change' }
                 ],
-                talkLabel: [
-                    { required: true, message: '标签不能为空', trigger: 'change' },
-                ],
                 talkImg:[
                     { required: true, message: '请选择封面图', trigger: 'change' },
                 ],
@@ -115,10 +112,10 @@ var vm = new Vue({
         timeRange (val) {
             console.log(val)
             if (val) {
-                this.searchForm.starTime = val[0]
+                this.searchForm.startTime = val[0]
                 this.searchForm.endTime = val[1]
             } else {
-                this.searchForm.starTime = ''
+                this.searchForm.startTime = ''
                 this.searchForm.endTime = ''
             }
             console.log(this.searchForm)
@@ -188,10 +185,33 @@ var vm = new Vue({
                 this.showCreatEditDialogTitle = '新建内容'
                 this.showCreatEditDialog = true
             } else if (type == 'edit') {
-                this.showCreatEditDialogTitle = '编辑内容'
-                this.showCreatEditDialog = true
-                this.creatEditForm = JSON.parse(JSON.stringify(item))
+                //请求item原始数据,相关时间字段已经转换成标准格式不能提交
+                this.reqItemOrign(item.talkId)
             }
+        },
+        //请求单条原始数据
+        reqItemOrign(id){
+            var self = this
+            $.ajax({
+                type: "POST",
+                url: '/talk/info/' + id.toString(),
+                contentType: "application/json",
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.showCreatEditDialogTitle = '编辑内容'
+                        self.showCreatEditDialog = true
+                        self.creatEditForm = res.dict
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
         },
         //新建/编辑Vtalk列表项   type:0  保存，  type:1 保存并发布
         saveVtalkForm (formName,type){
@@ -250,6 +270,7 @@ var vm = new Vue({
             var self = this
             var data = {
                 talkId: self.creatEditForm.talkId.toString(),
+                talkReleaseTime: new Date().getTime(),
                 talkStatus: '0'
             }
             $.ajax({
@@ -339,6 +360,7 @@ var vm = new Vue({
             }).then(() => {
                 var data = {
                     talkId: item.talkId.toString(),
+                    talkReleaseTime: new Date().getTime(),
                     talkStatus: '0'
                 }
                 $.ajax({
@@ -464,6 +486,11 @@ var vm = new Vue({
                     mapErrorStatus(res)
                 }
             });
+        },
+        //跳转至详情
+        openUrlPage(url){
+            console.log('url',url)
+            window.open(url) 
         },
         //时间格式转换工具
         transformTime (timestamp = +new Date()) {

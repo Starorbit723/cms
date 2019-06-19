@@ -251,6 +251,11 @@ var vm = new Vue({
                 }
 			});
         },
+        //跳转至详情
+        openUrlPage(url){
+            console.log('url',url)
+            window.open(url) 
+        },
         //时间格式转换工具
         transformTime (timestamp = +new Date()) {
             if (timestamp) {

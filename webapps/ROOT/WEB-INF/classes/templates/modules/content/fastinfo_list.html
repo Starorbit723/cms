@@ -76,6 +76,7 @@
         <!--表格查询结果区-->
         <div class="cv_content_square">
             <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
+                <el-table-column prop="flashId" label="ID" width="90"></el-table-column>
                 <el-table-column prop="flashTitle" label="标题" width="220"></el-table-column>
                 <el-table-column prop="flashSourceUrl" label="原文链接" width="200"></el-table-column>
                 <el-table-column prop="flashStatus" label="发布状态">
