@@ -83,6 +83,7 @@ channelNewsList: /cms/api/updateChannelNewsList
 subjectNewsList: /cms/api/updateSubjectNewsList
 pvRedisUrl: /cms/api/updateCountNewsList
 versionUrl: /cms/api/updateAppVersion
+talkUrl: /cms/api/updateVtalkList
 endPoint: https://obs.cn-north-1.myhuaweicloud.com
 ak: 2FBSHRRFZ5YLE3VPBMDK
 sk: vqYIdh3xmKfjlhcM0qEwCeuY8QfRKHYnGYHWoDBx
