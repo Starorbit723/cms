@@ -55,7 +55,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="3" :offset="5" class="el-row-h40">
-                            <el-button type="primary" style="width:100%" icon="el-icon-search" @click="startSearch">搜索</el-button>
+                            <el-button type="primary" style="width:100%" icon="el-icon-search" @click="startSearch(0)">搜索</el-button>
                         </el-col>
                     </el-row>
                 </el-form>
@@ -262,7 +262,7 @@
                     <!--分页器-->
                     <div class="cv_page_zone">
                         <el-pagination
-                            @current-change="handleCurrentChange"
+                            @current-change="handleCurrentChange3"
                             :current-page="pagination3.currPage"
                             :page-size="pagination3.pageSize"
                             layout="total, prev, pager, next, jumper"

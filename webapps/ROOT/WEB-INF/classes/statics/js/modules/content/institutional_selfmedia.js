@@ -143,7 +143,7 @@ var vm = new Vue({
         },
         handleCurrentChange3 (val) {
             this.pagination3.currPage = val
-            this.searchSelfmediaimgForm()
+            this.searchSelfmediaImg()
         },
         //搜索自媒体列表
         startSearch () {
