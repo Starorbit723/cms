@@ -42,10 +42,14 @@ var vm = new Vue({
             ajaxController:true,
             //切换展示封面图库
             showCoverimgLib:false,
+            //切换展示内容图库
+            showContentImgLib:false,
             //省市区选项
             RegionOptions: [],
             //会议类型下拉选项
             meetingTypeOptions:[],
+            //折叠面板组件实例
+            activeNames: ['1','2','3','4'],
             //文章基本信息
             meetingForm:{
                 meetingId:'',//主键
@@ -71,6 +75,25 @@ var vm = new Vue({
                 meetingStatus:'',//会议状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
                 meetingEnrollStarTime:'',//报名开始时间
                 meetingEnrollEndTime:'',//报名结束时间
+                meetingCrtUserName:'',//创建人姓名
+                meetingJsonData:{ //前端渲染大数据
+                    headPic:{
+                        isShow: true,
+                        picUrl: '',
+                        isShowSelfConfig: true,
+                        selfConfigHeadpic:[{
+                            type:'text',
+                            titleCn:'标题',
+                            titleEn:'TITLE',
+                            innerText:'内容',
+                        },{
+                            type:'img',
+                            titleCn:'标题',
+                            titleEn:'TITLE',
+                            imgUrl:'https://cvinfo-test.obs.cn-north-1.myhuaweicloud.com/head/6546992352198656.jpg',
+                        }]
+                    }
+                }
             },
             meetingFormRules:{
                 meetingTitle: [
@@ -100,12 +123,27 @@ var vm = new Vue({
                 ]
             },
             //封面图库相关
+            chooseImgType:'',
             searchCoverimgForm:{
                 picTitle:'',
                 picType:'0'//0封面图库 1内容图库 2图为图库
             },
             coverimgTableData:[],
             pagination1: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //内容图库相关
+            chooseImgObjName:'',
+            chooseImgObjIndex:'',
+            searchContentImgForm:{
+                picTitle:'',
+                picType:'1'//0封面图库 1内容图库 2图为图库
+            },
+            contentImgTableData:[],
+            pagination2: {
                 currPage: 1,
                 totalCount:0,
                 totalPage:0,
@@ -170,23 +208,33 @@ var vm = new Vue({
             }
             console.log('报名时间变化',val,this.meetingForm.meetingEnrollStarTime,this.meetingForm.meetingEnrollEndTime)
         },
+        //折叠面板改变
+        handleChangeCollapse(){
+        },
+        //封面图页面变化
         handleCurrentChange (val) {
             this.pagination1.currPage = val
             this.searchCoverImg()
         },
-        //打开封面图库弹层
-        openAddCoverImg () {
+        //打开封面图库弹层  type：0  封面图  1会议头图
+        openAddCoverImg (type) {
             this.showCoverimgLib = true
             this.searchCoverImg(0)
+            this.chooseImgType = type
         },
         //选择了某一张封面图片
         addThisCoverImg (item) {
             this.$refs['meetingForm'].clearValidate();
-            this.meetingForm.meetingImg = item.picUrl
+            if (this.chooseImgType == 0) {
+                this.meetingForm.meetingImg = item.picUrl
+            } else if (this.chooseImgType == 1) {
+                this.meetingForm.meetingJsonData.headPic.picUrl = item.picUrl
+            }
             this.backToEdit()
         },
         //返回编辑页
         backToEdit (){
+            this.chooseImgType = ''
             this.showCoverimgLib = false
             this.searchCoverimgForm = {
                 picTitle:'',
@@ -200,15 +248,10 @@ var vm = new Vue({
                 pageSize:10
             }
         },
-        //打开内容图库弹层
-        openAddContentImg () {
-            this.showContentimgLib = true
-            this.searchContentImg(0)
-        },
         //搜索封面图库
         searchCoverImg (type){
             var self = this
-            var data = JSON.parse(JSON.stringify(self.searchCoverimgForm))
+            var data = JSON.parse(JSON.stringify(self.searchContentImgForm))
             data.picTitle = data.picTitle.trim()
             if (type == 0) {
                 Object.assign(data,{
@@ -246,6 +289,83 @@ var vm = new Vue({
                     mapErrorStatus(res)
                 }
             });
+        },
+        //内容图页面变化
+        handleCurrentChange2 (val) {
+            this.pagination2.currPage = val
+            this.searchContentImg()
+        },
+        //修改某一张内容图片
+        chooseContentImg(objName,index){
+            console.log(objName,index)
+            this.showContentImgLib = true
+            this.chooseImgObjName = objName
+            this.chooseImgObjIndex = index
+            this.searchContentImg(0)
+        },
+        //搜索内容图库
+        searchContentImg(type){
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchCoverimgForm))
+            data.picTitle = data.picTitle.trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination2.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination2.currPage.toString(),
+                    limit: self.pagination2.pageSize.toString()
+                })
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/picture/list",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.contentImgTableData = res.page.list
+                        self.pagination2 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage:res.page.totalPage,
+                            pageSize:res.page.pageSize
+                        }
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        //选择了某一张封面图片
+        addThisContentImg (item) {
+            this.meetingForm.meetingJsonData[this.chooseImgObjName].selfConfigHeadpic[this.chooseImgObjIndex].imgUrl = item.picUrl
+            this.backToEdit2()
+        },
+        //返回编辑页
+        backToEdit2 (){
+            this.showContentImgLib = false
+            this.chooseImgObjName = ''
+            this.chooseImgObjIndex = ''
+            this.searchContentImgForm = {
+                picTitle:'',
+                picType:'1'//0封面图库 1内容图库 2图为图库
+            }
+            this.contentImgTableData = [],
+            this.pagination2 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
         },
         //保存会议 formName---表单名称   type----提交类型
         testMeetingInfo(type,formName) {

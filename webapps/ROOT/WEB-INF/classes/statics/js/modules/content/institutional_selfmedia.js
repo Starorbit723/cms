@@ -130,7 +130,7 @@ var vm = new Vue({
         }
     },
     created () {
-        this.startSearch()
+        this.startSearch(0)
     },
     methods:{
         handleCurrentChange (val) {
@@ -146,15 +146,22 @@ var vm = new Vue({
             this.searchSelfmediaImg()
         },
         //搜索自媒体列表
-        startSearch () {
+        startSearch (type) {
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.mediaName = data.mediaName.toString().trim()
             data.mediaType = data.mediaType.toString()
-            Object.assign( data ,{
-                page: self.pagination1.currPage.toString(),
-                limit: self.pagination1.pageSize.toString()
-            })
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination1.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination1.currPage.toString(),
+                    limit: self.pagination1.pageSize.toString()
+                })
+            }
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
