@@ -81,7 +81,7 @@ var vm = new Vue({
                         isShow: true,
                         picUrl: '',
                         isShowSelfConfig: true,
-                        selfConfigHeadpic:[{
+                        selfConfigZone:[{
                             type:'text',
                             titleCn:'标题',
                             titleEn:'TITLE',
@@ -211,11 +211,24 @@ var vm = new Vue({
         //折叠面板改变
         handleChangeCollapse(){
         },
+        //新增文案楼层
+        addNewSelfConfigFloor(objName,type){
+            let currentLength = this.meetingForm.meetingJsonData[objName].selfConfigZone.length
+            if (currentLength !== 0) {
+                let lastItem = this.meetingForm.meetingJsonData[objName].selfConfigZone[currentLength - 1]
+                console.log('lastItem',lastItem)
+                //
+                if (type == 'text') {
+                    
+                }
+            }
+            
+        },
         //移除某一个自定义条目
         removeSelfConfigItem (objName,index){
-            console.log(objName,index,this.meetingForm.meetingJsonData[objName].selfConfigHeadpic)
-            this.meetingForm.meetingJsonData[objName].selfConfigHeadpic.splice(index, 1); 
-            console.log(this.meetingForm.meetingJsonData[objName].selfConfigHeadpic)
+            console.log(objName,index,this.meetingForm.meetingJsonData[objName].selfConfigZone)
+            this.meetingForm.meetingJsonData[objName].selfConfigZone.splice(index, 1); 
+            console.log(this.meetingForm.meetingJsonData[objName].selfConfigZone)
         },
         //封面图页面变化
         handleCurrentChange (val) {
@@ -353,7 +366,7 @@ var vm = new Vue({
         },
         //选择了某一张封面图片
         addThisContentImg (item) {
-            this.meetingForm.meetingJsonData[this.chooseImgObjName].selfConfigHeadpic[this.chooseImgObjIndex].imgUrl = item.picUrl
+            this.meetingForm.meetingJsonData[this.chooseImgObjName].selfConfigZone[this.chooseImgObjIndex].imgUrl = item.picUrl
             this.backToEdit2()
         },
         //返回编辑页

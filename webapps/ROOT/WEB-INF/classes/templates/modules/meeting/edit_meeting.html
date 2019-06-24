@@ -191,7 +191,7 @@
                         </el-col>
                     </el-row>
                     <el-row v-if="meetingForm.meetingJsonData.headPic.isShowSelfConfig">
-                        <div v-for="(item,index) in meetingForm.meetingJsonData.headPic.selfConfigHeadpic">
+                        <div v-for="(item,index) in meetingForm.meetingJsonData.headPic.selfConfigZone">
 
                             <el-row v-if="item.type == 'img'" :span="24" class="el-row-h230">
                                 <el-col :span="18">
@@ -228,10 +228,10 @@
                         </div>
                         <el-row :span="24">
                             <el-col :span="5" style="margin-left:15%;">
-                                <el-button style="width: 100%;">新增文案</el-button>
+                                <el-button style="width: 100%;" @click="addNewSelfConfigFloor('headPic','text')">新增文案</el-button>
                             </el-col>
                             <el-col :span="5" :offset="2">
-                                <el-button style="width: 100%;">新增图片</el-button>
+                                <el-button style="width: 100%;"@click="addNewSelfConfigFloor('headPic','img')">新增图片</el-button>
                             </el-col>
                         </el-row>
 

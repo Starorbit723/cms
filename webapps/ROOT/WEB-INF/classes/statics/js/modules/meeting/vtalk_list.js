@@ -16,7 +16,7 @@ var vm = new Vue({
             if (value !== '' && value == '-1') {
                 callback();
             } else if (value !== '' && !urlReg.test(value)) {
-                callback(new Error('权重需改为正整数'));
+                callback(new Error('权重需改为正整数或-1,-1代表权重最低'));
             } else {
                 callback();
             }
@@ -223,6 +223,10 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) =>{
                 if (valid) {
+                    //如果保存时权重为'',变成'-1'
+                    if (self.creatEditForm.talkPriority.trim() == '') {
+                        self.creatEditForm.talkPriority = '-1'
+                    }
                     if (self.showCreatEditDialogTitle == '新建内容') {
                         var reqUrl = '/talk/save'
                     } else if (self.showCreatEditDialogTitle == '编辑内容') {
