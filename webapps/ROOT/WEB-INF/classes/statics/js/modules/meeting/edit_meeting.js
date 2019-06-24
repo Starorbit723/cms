@@ -213,12 +213,13 @@ var vm = new Vue({
         },
         //新增文案楼层
         addNewSelfConfigFloor(objName,type){
+            var self = this
             let currentLength = this.meetingForm.meetingJsonData[objName].selfConfigZone.length
-            if (currentLength !== 0) {
+            if (currentLength >= 1) { //现有一条以上数据
                 let lastItem = this.meetingForm.meetingJsonData[objName].selfConfigZone[currentLength - 1]
                 console.log('lastItem',lastItem)
-                //
-                if (type == 'text') {
+                //判断上一篇内容是否填入，如果没填入不能进行后续新建
+                if (lastItem.type == 'text' && (lastItem.titleCn.trim() == '' || lastItem.titleEn.trim() == '' || lastItem.innerText.trim() == '')) {
                     
                 }
             }
