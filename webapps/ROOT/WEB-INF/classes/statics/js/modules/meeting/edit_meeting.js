@@ -211,6 +211,12 @@ var vm = new Vue({
         //折叠面板改变
         handleChangeCollapse(){
         },
+        //移除某一个自定义条目
+        removeSelfConfigItem (objName,index){
+            console.log(objName,index,this.meetingForm.meetingJsonData[objName].selfConfigHeadpic)
+            this.meetingForm.meetingJsonData[objName].selfConfigHeadpic.splice(index, 1); 
+            console.log(this.meetingForm.meetingJsonData[objName].selfConfigHeadpic)
+        },
         //封面图页面变化
         handleCurrentChange (val) {
             this.pagination1.currPage = val

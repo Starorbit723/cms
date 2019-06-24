@@ -51,6 +51,7 @@ var vm = new Vue({
                 talkReleaseTime:'',//发布时间
                 talkPriority:'',//权重
                 talkMLink:'',//M站链接
+                talkDate:''//自定义发布时间
             }],
             //分页器相关
             pagination1: {
@@ -75,6 +76,7 @@ var vm = new Vue({
                 talkReleaseTime:'',//发布时间
                 talkPriority:'',//权重
                 talkMLink:'',//M站链接
+                talkDate:''//自定义发布时间
             },
             creatEditFormRules:{
                 talkTitle: [
@@ -93,6 +95,9 @@ var vm = new Vue({
                 talkPriority:[
                     { validator: validatePriority, trigger: 'change' }
                 ],
+                talkDate:[
+                    { required: true, message: '发布时间不能为空', trigger: 'change' }
+                ]
             },
             //封面图库相关
             searchCoverimgForm:{

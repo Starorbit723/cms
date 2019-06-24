@@ -194,20 +194,38 @@
                         <div v-for="(item,index) in meetingForm.meetingJsonData.headPic.selfConfigHeadpic">
 
                             <el-row v-if="item.type == 'img'" :span="24" class="el-row-h230">
-                                <el-row>
-                                    <el-form-item label="自定义内容图" label-width="15%" style="margin:0;">
+                                <el-col :span="18">
+                                    <el-form-item label="自定义内容图" label-width="20%" style="margin:0;">
                                         <div class="fengmian_show2" @click="chooseContentImg('headPic',index)">
                                             <img v-if="item.imgUrl" :src="item.imgUrl" class="avatar2">
                                             <i v-else class="el-icon-plus avatar-uploader-icon iconadd"></i>
                                         </div>
                                     </el-form-item>
-                                </el-row>
-                                
+                                </el-col>
+                                <el-col :span="5" :offset="1" class="el-row-h40">
+                                    <el-button @click="removeSelfConfigItem('headPic',index)">移除</el-button>
+                                </el-col>
+                            </el-row>
+                            <el-row v-else-if="item.type == 'text'" :span="24" class="el-row-h160">
+                                <el-col :span="18">
+                                    <el-form-item label="自定义文案" label-width="20%" style="margin:0;">
+                                        <el-input
+                                            maxlength=""
+                                            clearable
+                                            type="textarea"
+                                            :autosize="{ minRows: 4, maxRows: 4}"
+                                            placeholder="请输入自定义文案"
+                                            v-model="item.innerText"
+                                            auto-complete="off">
+                                        </el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="5" :offset="1" class="el-row-h40">
+                                    <el-button @click="removeSelfConfigItem('headPic',index)">移除</el-button>
+                                </el-col>
                             </el-row>
 
                         </div>
-                        
-
                         <el-row :span="24">
                             <el-col :span="5" style="margin-left:15%;">
                                 <el-button style="width: 100%;">新增文案</el-button>
