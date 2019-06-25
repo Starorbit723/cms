@@ -227,6 +227,8 @@ var vm = new Vue({
                     if (self.creatEditForm.talkPriority.trim() == '') {
                         self.creatEditForm.talkPriority = '-1'
                     }
+                    //去掉标题头尾空格
+                    self.creatEditForm.talkTitle = self.creatEditForm.talkTitle.trim()
                     if (self.showCreatEditDialogTitle == '新建内容') {
                         var reqUrl = '/talk/save'
                     } else if (self.showCreatEditDialogTitle == '编辑内容') {

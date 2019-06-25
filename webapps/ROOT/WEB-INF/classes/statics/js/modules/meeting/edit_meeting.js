@@ -49,7 +49,7 @@ var vm = new Vue({
             //会议类型下拉选项
             meetingTypeOptions:[],
             //折叠面板组件实例
-            activeNames: ['1','2','3','4'],
+            activeNames: ['1','2','3','4','5','6','7','8','9','10'],
             //文章基本信息
             meetingForm:{
                 meetingId:'',//主键
@@ -92,6 +92,28 @@ var vm = new Vue({
                             titleEn:'TITLE',
                             imgUrl:'https://cvinfo-test.obs.cn-north-1.myhuaweicloud.com/head/6546992352198656.jpg',
                         }]
+                    },
+                    introduce:{
+                        isShow: true,
+                        isShowSelfConfig: true,
+                        selfConfigZone:[]
+                    },
+                    guest:{
+                        isShow: true,
+                        isShowSelfConfig: true,
+                        selfConfigZone:[]
+                    },
+                    timeLine:{
+                        isShow: true,
+                        timeConfig:[{
+                            singleDate:'',
+                            list:[{
+                                time:'',
+                                text:''
+                            }]
+                        }],
+                        isShowSelfConfig: true,
+                        selfConfigZone:[]
                     }
                 }
             },
@@ -220,8 +242,27 @@ var vm = new Vue({
                 console.log('lastItem',lastItem)
                 //判断上一篇内容是否填入，如果没填入不能进行后续新建
                 if (lastItem.type == 'text' && (lastItem.titleCn.trim() == '' || lastItem.titleEn.trim() == '' || lastItem.innerText.trim() == '')) {
-                    
+                    self.$message.error('上一项内容未填写完成，无法新建新内容条目')
+                    return
+                } else if (lastItem.type == 'img' && (lastItem.titleCn.trim() == '' || lastItem.titleEn.trim() == '' || lastItem.imgUrl.trim() == '')) {
+                    self.$message.error('上一项内容未填写完成，无法新建新内容条目')
+                    return
                 }
+            }
+            if (type == 'text') {
+                self.meetingForm.meetingJsonData[objName].selfConfigZone.push({
+                    type:'text',
+                    titleCn:'',
+                    titleEn:'',
+                    innerText:'',
+                })
+            } else if (type == 'img') {
+                self.meetingForm.meetingJsonData[objName].selfConfigZone.push({
+                    type:'img',
+                    titleCn:'',
+                    titleEn:'',
+                    imgUrl:'',
+                })
             }
             
         },
