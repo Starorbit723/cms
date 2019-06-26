@@ -272,6 +272,10 @@ var vm = new Vue({
             this.meetingForm.meetingJsonData[objName].selfConfigZone.splice(index, 1); 
             console.log(this.meetingForm.meetingJsonData[objName].selfConfigZone)
         },
+        //会议日程——删除某一天日程中的某一条
+        delCalendar(index){
+
+        },
         //封面图页面变化
         handleCurrentChange (val) {
             this.pagination1.currPage = val

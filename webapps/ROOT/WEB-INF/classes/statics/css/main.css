@@ -191,6 +191,13 @@ input,button{outline: none;}
 .el-row-h240{min-height: 240px;line-height: 240px;}
 /* login 页面相关CSS*/
 
+.el-mart10{margin-top:10px;}
+.el-mart15{margin-top:15px;}
+.el-mart20{margin-top:20px;}
+.el-mart25{margin-top:25px;}
+.el-mart30{margin-top:30px;}
+
+
 #container{
     width: 100%;
     height: 100vh;

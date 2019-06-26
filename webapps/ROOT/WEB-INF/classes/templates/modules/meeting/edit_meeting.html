@@ -586,8 +586,8 @@
                         </el-col>
                     </el-row>
                     <el-row class="" v-if="meetingForm.meetingJsonData.timeLine.isShow">
-                        <div v-for="item in meetingForm.meetingJsonData.timeLine.timeConfig">
-                            <el-row>
+                        <div v-for="(item,index) in meetingForm.meetingJsonData.timeLine.timeConfig">
+                            <el-row class="el-row-h60">
                                 <el-form-item label="会议日期" prop="" label-width="15%" style="margin:0;">
                                     <el-date-picker
                                         v-model="item.singleDate"
@@ -596,7 +596,38 @@
                                     </el-date-picker>
                                 </el-form-item>
                             </el-row>
+                            <div v-for="(item2,index2) in item.list">
+                                <el-row class="el-row-h60">
+                                    <el-col :span="8" :offset="2">
+                                        <el-form-item label="时间" prop="" label-width="20%" style="margin:0;">
+                                            <el-time-select
+                                                v-model="item2.time"
+                                                placeholder="选择时间">
+                                            </el-time-select>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="10">
+                                        <el-form-item label="安排" prop="" label-width="10%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                placeholder="请输入日程安排"
+                                                v-model="item2.text"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="3" :offset="1" class="el-row-h40">
+                                        <el-button style="width: 100%;" @click="delCalendar(index2)">删除条目</el-button>
+                                    </el-col>
+                                </el-row>
+                            </div>
                         </div>
+                        <el-row class="el-row-h60">
+                            <el-col style="width:85%; margin-left:15%;">
+                                <el-button style="width: 100%;" @click="addNewDateCalendar()" icon="el-icon-plus">添加新的日程</el-button>
+                            </el-col>
+                        </el-row>
                         
                     </el-row>
                     <el-row class="el-row-h60">

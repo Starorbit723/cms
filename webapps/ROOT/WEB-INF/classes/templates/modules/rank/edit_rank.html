@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+
+<title>新建/编辑榜单</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">新建/编辑榜单</div>
+    <div id="edit_rank" class="cv_page_content">
+        <!--文章基本信息区-->
+        <div class="cv_content_square">
+            <el-form :model="rankinfoForm" :rules="rankinfoFormRules" ref="rankinfoForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right">
+                <!--1级-->
+                <div v-for="(item,index) in rankDataTree" style="margin-bottom:15px;">
+                    <el-row class="el-row-h60">
+                        <el-col :span="12">
+                            <el-form-item label="榜单名称" style="margin:0;">
+                                <el-input clearable type="text" v-model="item.rankTitle" auto-complete="off">
+                                    <template slot="append">{{item.rankLevel}}级</template>
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" @click="addTwoLevel(index)">添加二级榜单</el-button>
+                        </el-col>
+                        <el-col :span="2" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" @click="delThisLevel1(index)">删除</el-button>
+                        </el-col>
+                    </el-row>
+                    <!--2级-->
+                    <div v-if="item2.rankLevel == 2" v-for="(item2,index2) in item.children">
+                        <el-row class="el-row-h60">
+                            <el-col :span="12" :offset="3">
+                                <el-form-item label="榜单名称" style="margin:0;">
+                                    <el-input clearable type="text" v-model="item2.rankTitle"auto-complete="off">
+                                        <template slot="append">{{item2.rankLevel}}级</template>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="2" :offset="1" class="el-row-h40">
+                                <el-button type="primary" style="width:100%" @click="addThreeLevel(index2)">+3级</el-button>
+                            </el-col>
+                            <el-col :span="2" :offset="1" class="el-row-h40">
+                                <el-button type="primary" style="width:100%" @click="delThisLevel2(index,index2)">删除</el-button>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <!--3级-->
+                    <div v-if="item2.rankLevel == 3" v-for="(item2,index2) in item.children">
+                        <el-row class="el-row-h60">
+                            <el-col :span="12" :offset="6">
+                                <el-form-item label="榜单名称" style="margin:0;">
+                                    <el-input clearable type="text" v-model="item2.rankTitle"auto-complete="off">
+                                        <template slot="append">{{item2.rankLevel}}级</template>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="2" :offset="1" class="el-row-h40">
+                                <el-button type="primary" style="width:100%" @click="addRankLevel(index2)">+排行</el-button>
+                            </el-col>
+                            <el-col :span="2" :offset="1" class="el-row-h40">
+                                <el-button type="primary" style="width:100%" @click="delThisLevel2(index,index2)">删除</el-button>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <!--4级排行-->
+                    <div v-if="item2.rankLevel == 4" v-for="(item2,index2) in item.children">
+                        <el-row class="el-row-h60">
+                            <el-col :span="12" :offset="6">
+                                <el-form-item label="榜单名称" style="margin:0;">
+                                    <el-input clearable type="text" v-model="item2.rankTitle"auto-complete="off">
+                                        <template slot="append">{{item2.rankLevel}}级</template>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="2" :offset="1" class="el-row-h40">
+                                <el-button type="primary" style="width:100%" @click="addRankLevel(index2)">编辑</el-button>
+                            </el-col>
+                            <el-col :span="2" :offset="1" class="el-row-h40">
+                                <el-button type="primary" style="width:100%" @click="delThisLevel2(index,index2)">删除</el-button>
+                            </el-col>
+                        </el-row>
+                    </div>
+                </div>
+                <el-row>
+                    <el-col :span="24">
+                        <el-button type="primary" icon="el-icon-plus" style="width:100%" @click="addNewRank()">新增榜单</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+        </div>
+
+        <!--按钮区-->
+        <el-row class="el-row-h60" style="margin-top:20px;">
+            <el-col :span="4">
+                <el-button type="primary" style="width:100%" @click="saveFastinfoToDraft(0,'rankinfoForm')">保存</el-button>
+            </el-col>
+            <el-col :span="4" :offset="1">
+                <el-button type="primary" style="width:100%" @click="saveFastinfoToDraft(1,'rankinfoForm')">保存并发布</el-button>
+            </el-col>
+            <el-col :span="4" :offset="1">
+                <el-button type="primary" plain style="width:100%" @click="closeAndBack()">取消</el-button>
+            </el-col>
+        </el-row>
+        
+        
+
+
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/rank/edit_rank.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+<style>
+.custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right: 8px;
+}
+</style>
+</html>
