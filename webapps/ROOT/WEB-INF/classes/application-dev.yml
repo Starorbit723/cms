@@ -36,6 +36,7 @@ spring:
         wall:
           config:
             multi-statement-allow: true
+      remove-abandoned: false
 redis:
   maxTotal: 30
   maxIdle: 10

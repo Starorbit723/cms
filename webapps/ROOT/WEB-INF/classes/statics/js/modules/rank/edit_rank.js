@@ -1,5 +1,3 @@
-let id = 1000;
-
 var vm = new Vue({
     el: '#edit_rank',
     data: {
