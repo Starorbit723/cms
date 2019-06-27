@@ -23,7 +23,7 @@
                                     <el-input
                                     clearable
                                     type="text"
-                                    v-model="searchForm.agendaId"
+                                    v-model="searchForm.meetingAgendaId"
                                     auto-complete="off"></el-input>
                                 </el-form-item>
                             </el-col>
@@ -55,17 +55,13 @@
                 <!--表格查询结果区-->
                 <div class="cv_content_square">
                     <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
-                        <el-table-column prop="picUrl" label="图片预览" width="160">
-                            <template v-if="scope.row.picUrl" slot-scope="scope">
-                                <img style="width:100px;height:70px;" :src="scope.row.picUrl">
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="picTitle" label="图片名称" width="250"></el-table-column>
-                        <el-table-column prop="picEditorName" label="创建人" width="120"></el-table-column>
-                        <el-table-column prop="picCrtTime" label="创建时间"></el-table-column>
+                        <el-table-column prop="meetingAgendaId" label="会议Id" width="160"></el-table-column>
+                        <el-table-column prop="meetingAgendaMeetingId" label="所属会议编号" width="250"></el-table-column>
+                        <el-table-column prop="meetingAgendaCrtTime" label="创建时间" width="120"></el-table-column>
+                        <el-table-column prop="meetingAgendaModTime" label="修改时间"></el-table-column>
                         <el-table-column label="操作" width="100" fixed="right">
                             <template slot-scope="scope">
-                                <el-button type="text" size="small" @click="addOrEditCalendar('1',scope.row)">修改</el-button>
+                                <el-button type="text" size="small" @click="addOrEditCalendar(1,scope.row)">修改</el-button>
                                 <el-button type="text" size="small" @click="">删除</el-button>
                             </template>
                         </el-table-column>
@@ -95,11 +91,11 @@
                         <!--日程--1级维度开始-->
                         <el-row class="el-row-h80">
                             <el-col :span="16">
-                                <el-form-item label="日程标题" prop="agendaId" style="margin:0;">
+                                <el-form-item label="日程标题" prop="meetingAgendaId" style="margin:0;">
                                     <el-input
                                         clearable
                                         type="text"
-                                        v-model="calendarForm.agendaId"
+                                        v-model="calendarForm.meetingAgendaId"
                                         auto-complete="off"></el-input>
                                 </el-form-item>
                             </el-col>
@@ -107,10 +103,10 @@
                                 <el-button type="primary" style="width:100%" @click="submitCreatEdit('calendarForm')">保存</el-button>
                             </el-col>
                             <el-col class="el-row-h40" :span="3" :offset="1">
-                                <el-button type="primary" style="width:100%" @click="closeEditCreatEdit('calendarForm')">取消</el-button>
+                                <el-button type="primary" style="width:100%" @click="closeCreatOrEdit('calendarForm')">取消</el-button>
                             </el-col>
                         </el-row>
-                        <div v-for="(item,index) in calendarForm.agendaJsonjson">
+                        <div v-for="(item,index) in calendarForm.meetingAgendaJson">
                             <el-row class="el-row-h60">
                                 <el-col :span="9">
                                     <el-form-item label-width="30%" label="日程" prop="labelText" style="margin:0;">
@@ -250,6 +246,8 @@
         </div>
     </div>
 </body>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.min.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.base64.js"></script>
 
 <script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/modules/meeting/calendar_list.js"></script>
