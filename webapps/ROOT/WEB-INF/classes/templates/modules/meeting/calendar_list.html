@@ -18,26 +18,13 @@
                 <div class="cv_content_square">
                     <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
                         <el-row class="el-row-h60">
-                            <el-col :span="9">
-                                <el-form-item label="日程名称" style="margin:0;">
+                            <el-col :span="14">
+                                <el-form-item label="所属会议编号" style="margin:0;">
                                     <el-input
                                     clearable
                                     type="text"
-                                    v-model="searchForm.meetingAgendaId"
+                                    v-model="searchForm.meetingAgendaMeetingId"
                                     auto-complete="off"></el-input>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="11">
-                                <el-form-item label="创建时间" style="margin:0;">
-                                    <el-date-picker
-                                        style="width:100%;"
-                                        v-model="timeRange"
-                                        type="datetimerange"
-                                        start-placeholder="开始日期"
-                                        end-placeholder="结束日期"
-                                        value-format="yyyy-MM-dd HH:mm:ss"
-                                        :default-time="['00:00:00', '00:00:00']">
-                                    </el-date-picker>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="3" :offset="1" class="el-row-h40">
@@ -55,14 +42,13 @@
                 <!--表格查询结果区-->
                 <div class="cv_content_square">
                     <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
-                        <el-table-column prop="meetingAgendaId" label="会议Id" width="160"></el-table-column>
-                        <el-table-column prop="meetingAgendaMeetingId" label="所属会议编号" width="250"></el-table-column>
+                        <el-table-column prop="meetingAgendaMeetingId" label="所属会议编号" ></el-table-column>
                         <el-table-column prop="meetingAgendaCrtTime" label="创建时间" width="120"></el-table-column>
-                        <el-table-column prop="meetingAgendaModTime" label="修改时间"></el-table-column>
+                        <el-table-column prop="meetingAgendaModTime" label="修改时间" width="120"></el-table-column>
                         <el-table-column label="操作" width="100" fixed="right">
                             <template slot-scope="scope">
                                 <el-button type="text" size="small" @click="addOrEditCalendar(1,scope.row)">修改</el-button>
-                                <el-button type="text" size="small" @click="">删除</el-button>
+                                <el-button type="text" size="small" @click="deleteThisCalendar(scope.row)">删除</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -91,11 +77,11 @@
                         <!--日程--1级维度开始-->
                         <el-row class="el-row-h80">
                             <el-col :span="16">
-                                <el-form-item label="日程标题" prop="meetingAgendaId" style="margin:0;">
+                                <el-form-item label="所属会议编号" label-width="20%" prop="meetingAgendaMeetingId" style="margin:0;">
                                     <el-input
                                         clearable
                                         type="text"
-                                        v-model="calendarForm.meetingAgendaId"
+                                        v-model="calendarForm.meetingAgendaMeetingId"
                                         auto-complete="off"></el-input>
                                 </el-form-item>
                             </el-col>

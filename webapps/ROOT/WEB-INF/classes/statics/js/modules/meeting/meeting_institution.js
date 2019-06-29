@@ -1,77 +1,87 @@
 var vm = new Vue({
     el: '#meeting_institution',
-    data: {
-        showChildPage: true,
-        creatOrEdit:0,//0新建  1修改
-        //搜索提交
-        searchForm:{
-            meetingCooperationMeetingId:'',
-            meetingCooperationStatus:'0',//图片分类查询 0封面 1内容  2图位 3广告 4自媒体头像
-        },
-        //列表查询结果
-        tableData: [{
-            meetingCooperationId:'',//主键
-            meetingCooperationMeetingId:'',//所属会议编号
-            meetingCooperationCrtUserId:'',//
-            meetingCooperationModUserId:'',//
-            meetingCooperationCrtTime:'',//
-            meetingCooperationModTime:'',//
-            meetingCooperationStatus:'',//状态 0正常 1删除
-            meetingCooperationJson:'',//
-        }],
-        //分页器相关
-        pagination1: {
-            currPage: 1,
-            totalCount:0,
-            totalPage:0,
-            pageSize:10
-        },
-        //会议合作机构表单
-        meetingCopForm:{
-            meetingCooperationId:'',//主键
-            meetingCooperationMeetingId:'',//所属会议编号
-            meetingCooperationCrtUserId:'',//
-            meetingCooperationModUserId:'',//
-            meetingCooperationCrtTime:'',//
-            meetingCooperationModTime:'',//
-            meetingCooperationStatus:'',//状态 0正常 1删除
-            meetingCooperationJson:[{ //JSON数据
-                type:'titleLv1',
-                labelText:'',
-                children:[{
-                    type:'titleLv2',
+    data () {
+        var validateId = (rule, value, callback) => {
+            var urlReg = /^[0-9]*[1-9][0-9]*$/;
+            if (value !== '' && !urlReg.test(value)) {
+                callback(new Error('所属会议编号只能为正整数'));
+            } else {
+                callback();
+            }
+        }
+        return {
+            showChildPage: false,
+            creatOrEdit:0,//0新建  1修改
+            //搜索提交
+            searchForm:{
+                meetingCooperationMeetingId:'',
+                meetingCooperationStatus:'0',//图片分类查询 0封面 1内容  2图位 3广告 4自媒体头像
+            },
+            //列表查询结果
+            tableData: [{
+                meetingCooperationId:'',//主键
+                meetingCooperationMeetingId:'',//所属会议编号
+                meetingCooperationCrtUserId:'',//
+                meetingCooperationModUserId:'',//
+                meetingCooperationCrtTime:'',//
+                meetingCooperationModTime:'',//
+                meetingCooperationStatus:'',//状态 0正常 1删除
+                meetingCooperationJson:'',//
+            }],
+            //分页器相关
+            pagination1: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //会议合作机构表单
+            meetingCopForm:{
+                meetingCooperationId:'',//主键
+                meetingCooperationMeetingId:'',//所属会议编号
+                meetingCooperationCrtUserId:'',//
+                meetingCooperationModUserId:'',//
+                meetingCooperationCrtTime:'',//
+                meetingCooperationModTime:'',//
+                meetingCooperationStatus:'',//状态 0正常 1删除
+                meetingCooperationJson:[{ //JSON数据
+                    type:'titleLv1',
                     labelText:'',
                     children:[{
-                        title:'',
-                        picUrl:''
+                        type:'titleLv2',
+                        labelText:'',
+                        children:[{
+                            title:'',
+                            picUrl:''
+                        }]
                     }]
-                }]
-            }],
-        
-        },
-        meetingCopFormRules:{
-            meetingCooperationMeetingId: [
-                { required: true, message: '所属会议编号不能为空', trigger: 'change' }
-            ]
+                }],
             
-        },
-        //当前打开图库时的索引记录
-        chooseIndex:'',
-        chooseIndex2:'',
-        multipleSelection: [],
-        //自媒体图库弹出层相关
-        showMeidaLibDialog:false,
-        searchSelfmediaimgForm:{
-            picTitle:'',
-            picType:'4'//0封面图库 1内容图库 2图为图库 3广告  4自媒体
-        },
-        selfmediaimgTableData:[],
-        pagination3: {
-            currPage: 1,
-            totalCount:0,
-            totalPage:0,
-            pageSize:10
-        },
+            },
+            meetingCopFormRules:{
+                meetingCooperationMeetingId: [
+                    { required: true, validator: validateId, trigger: 'change' }
+                ]
+                
+            },
+            //当前打开图库时的索引记录
+            chooseIndex:'',
+            chooseIndex2:'',
+            multipleSelection: [],
+            //自媒体图库弹出层相关
+            showMeidaLibDialog:false,
+            searchSelfmediaimgForm:{
+                picTitle:'',
+                picType:'4'//0封面图库 1内容图库 2图为图库 3广告  4自媒体
+            },
+            selfmediaimgTableData:[],
+            pagination3: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+        }
     },
     watch: {
     },
@@ -292,34 +302,54 @@ var vm = new Vue({
             }
         },
         //新增或修改嘉宾
-        addOrEditGuest(type,item) {
+        addOrEditCoper(type,item) {
             var self = this
+            self.creatOrEdit = type
             if(type == 0){
                 self.showChildPage = true
-                self.creatOrEdit = 0
-                console.log('新增嘉宾')
+                console.log('新增机构')
             } else {
-                self.showChildPage = true
-                self.creatOrEdit = 1
-                self.meetingCopForm = JSON.parse(JSON.stringify(item))
-                self.originUrl = self.meetingCopForm.picUrl
-                console.log('修改嘉宾','原始',self.originUrl,'表单',self.meetingCopForm.picUrl)
+                $.ajax({
+                    type: "POST",
+                    url: "/meeting/cooperation/info/" + item.meetingCooperationId.toString(),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function(res){
+                        if(res.code == 200){
+                            //json64反解
+                            let data = res.dict
+                            let map = $.base64.atob(data.meetingCooperationJson, true)
+                            data.meetingCooperationJson = JSON.parse(map)
+                            console.log(data)
+                            self.meetingCopForm = data
+                            self.showChildPage = true
+                        }else{
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+                console.log('修改机构',self.meetingCopForm.picUrl)
             }
         },
-        //删除图片
-        deleteThisGuest (item){
+        //删除
+        deleteThisCoper (item){
             var self = this
-            self.$confirm('确实要删除该嘉宾吗?', '提示', {
+            self.$confirm('确实要删除该合作机构数据吗?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
                 var data = JSON.parse(JSON.stringify(item))
-                data.guestStatus = 1  //0 正常  1 删除
+                data.meetingCooperationStatus = 1  //0 正常  1 删除
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: "/guest/update",
+                    url: "/meeting/cooperation/update",
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res) {
@@ -344,89 +374,29 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
-                    //新建,图片新上传
                     if (self.creatOrEdit == 0) {
-                        $.ajax({
-                            type: "POST",
-                            contentType: false,
-                            processData: false,
-                            mimeType:"multipart/form-data",
-                            url: "/upload/headPicture",
-                            data: self.imgFormData,
-                            success: function(res) {
-                                if(res.code == 200){
-                                    console.log('图片上传返回',res)
-                                    self.meetingCopForm.guestImg = res.url
-                                    console.log('接受到图片改变后的form',self.meetingCopForm)
-                                    self.submitForm()
-                                }else{
-                                    self.$message.error('图片上传失败,请联系管理员')
-                                    mapErrorStatus(res)
-                                    vm.error = true;
-                                    vm.errorMsg = res.msg;
-                                }
-                            },
-                            error:function(res){
-                                mapErrorStatus(res)
-                            }
-                        });
-                    //修改，图片发生了改变
-                    } else if (self.creatOrEdit == 1 && (self.meetingCopForm.guestImg !== self.originUrl )) {
-                        console.log('当前',self.meetingCopForm.guestImg,'原始：',self.originUrl)
-                        $.ajax({
-                            type: "POST",
-                            contentType: false,
-                            processData: false,
-                            mimeType:"multipart/form-data",
-                            url: "/upload/headPicture",
-                            data: self.imgFormData,
-                            success: function(res){
-                                if(res.code == 200){
-                                    console.log('图片上传返回',res)
-                                    self.meetingCopForm.guestImg = res.url
-                                    console.log('接受到图片改变后的form',self.meetingCopForm)
-                                    self.submitForm()
-                                }else{
-                                    self.$message.error('图片上传失败,请联系管理员')
-                                    mapErrorStatus(res)
-                                    vm.error = true;
-                                    vm.errorMsg = res.msg;
-                                }
-                            },
-                            error:function(res){
-                                mapErrorStatus(res)
-                            }
-                        });
-                    //修改，图片未改变
-                    } else {
-                        console.log('当前',self.meetingCopForm.guestImg,'原始：',self.originUrl)
-                        self.submitForm()
+                        var reqUrl = '/meeting/cooperation/save'
+                    } else if (self.creatOrEdit == 1) {
+                        var reqUrl = '/meeting/cooperation/update'
                     }
-                }
-            })
-        },
-        //提交表单
-        submitForm () {
-            var self = this
-            self.$refs['meetingCopForm'].validate((valid) => {
-                if (valid) {
-                    if (self.creatOrEdit == 0) {
-                        var reqUrl = '/guest/save'
-                    } else if (self.creatOrEdit == 1){
-                        var reqUrl = '/guest/update'
-                    }
+                    var data = JSON.parse(JSON.stringify(self.meetingCopForm))
+                    $.base64.utf8encode = true;
+                    var jsonString = JSON.stringify(data.meetingCooperationJson);
+                    var json64 = $.base64.btoa(jsonString);
+                    data.meetingCooperationJson = json64
+                    console.log('6464',jsonString,json64)
                     $.ajax({
                         type: "POST",
-                        contentType: "application/json",
                         url: reqUrl,
-                        data: JSON.stringify(self.meetingCopForm),
+                        contentType: "application/json",
+                        data: JSON.stringify(data),
                         dataType: "json",
                         success: function(res){
-                            if (res.code == 200) {
-                                self.$message.success('保存成功');
-                                self.startSearch() //列表回显
-                                self.closeEditCreatEdit('meetingCopForm')
-                            } else {
+                            if(res.code == 200){
+                                self.$message.success('保存成功')
+                                self.startSearch()
+                                self.closeCreatOrEdit('meetingCopForm')
+                            }else{
                                 mapErrorStatus(res)
                                 vm.error = true;
                                 vm.errorMsg = res.msg;
@@ -435,29 +405,26 @@ var vm = new Vue({
                         error:function(res){
                             mapErrorStatus(res)
                         }
-                    });         
+                    });
                 }
             })
         },
         //取消编辑返回列表页
-        closeEditCreatEdit (formName) {
-            this.originUrl = ''
-            this.imgFormData = ''
+        closeCreatOrEdit (formName) {
             this.$refs[formName].resetFields();
             this.meetingCopForm = {
-                guestId:'',//主键编号
-                guestName:'',//嘉宾名称
-                guestPosition:'',//嘉宾职位
-                guestCompany:'',//嘉宾公司
-                guestImg:'',//嘉宾头像
-                guestPriority:'',//嘉宾顺序
-                guestCrtUserId:'',//创建人用户编号
-                guestModUserId:'',//更新人用户编号
-                guestCrtTime:'',//创建时间
-                guestModTime:'',//更新时间
-                guestStatus:'',//嘉宾 状态 0正常 1删除
-                guestCrtUserName:'',//创建人名称
-                guestModUserName:'',//更新人名称
+                meetingCooperationId:'',//主键
+                meetingCooperationMeetingId:'',//所属会议编号
+                meetingCooperationCrtUserId:'',//
+                meetingCooperationModUserId:'',//
+                meetingCooperationCrtTime:'',//
+                meetingCooperationModTime:'',//
+                meetingCooperationStatus:'',//状态 0正常 1删除
+                meetingCooperationJson:[{ //JSON数据
+                    type:'titleLv1',
+                    labelText:'',
+                    children:[]
+                }],
             }
             this.showChildPage = false
             this.creatOrEdit = 0

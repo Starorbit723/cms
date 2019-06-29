@@ -1,60 +1,72 @@
 var vm = new Vue({
     el: '#calendar_list',
-    data: {
-        //是否显示子页面
-        showChildPage: false,
-        creatOrEdit:0,//0新建  1修改
-        timeRange:[],
-        searchForm:{
-            meetingAgendaMeetingId:'',
-            meetingAgendaStatus:'0',
-            startTime:'',
-            endTime:''
-        },
-        tableData:[{
+    data(){
+        var validateId = (rule, value, callback) => {
+            var urlReg = /^[0-9]*[1-9][0-9]*$/;
+            if (value !== '' && !urlReg.test(value)) {
+                callback(new Error('所属会议编号只能为正整数'));
+            } else {
+                callback();
+            }
+        }
+        return {
+            //是否显示子页面
+            showChildPage: false,
+            creatOrEdit:0,//0新建  1修改
+            timeRange:[],
+            searchForm:{
+                meetingAgendaMeetingId:'',
+                meetingAgendaStatus:'0',
+                startTime:'',
+                endTime:''
+            },
+            tableData:[{
 
-        }],
-        //分页器相关
-        pagination1: {
-            currPage: 1,
-            totalCount:0,
-            totalPage:0,
-            pageSize:10
-        },
-        //日程对象
-        calendarForm:{
-            meetingAgendaId:'',//主键
-            meetingAgendaMeetingId:'',//所属会议编号
-            meetingAgendaCrtUserId:'',//
-            meetingAgendaModUserId:'',//
-            meetingAgendaCrtTime:'',//
-            meetingAgendaModTime:'',//
-            meetingAgendaStatus:'',//状态 0正常 1删除
-            meetingAgendaJson:[{//日程JSON数据
-                type:'date',
-                labelText:'',
-                timeValue:'',
-                children:[
-                //     {
-                //     type:'place',
-                //     labelText:'',
-                //     children:[{
-                //         type:'theme',
-                //         labelText:'',
-                //         children:[{
-                //             type:'issue',
-                //             timeRange:'',
-                //             labelText:'',        
-                //             contentText:''
-                //         }]
-                //     }]
-                // }
-                ]
             }],
-        },
-        calendarFormRules:{
-        },
-       
+            //分页器相关
+            pagination1: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //日程对象
+            calendarForm:{
+                meetingAgendaId:'',//主键
+                meetingAgendaMeetingId:'',//所属会议编号
+                meetingAgendaCrtUserId:'',//
+                meetingAgendaModUserId:'',//
+                meetingAgendaCrtTime:'',//
+                meetingAgendaModTime:'',//
+                meetingAgendaStatus:'',//状态 0正常 1删除
+                meetingAgendaJson:[{//日程JSON数据
+                    type:'date',
+                    labelText:'',
+                    timeValue:'',
+                    children:[
+                    //     {
+                    //     type:'place',
+                    //     labelText:'',
+                    //     children:[{
+                    //         type:'theme',
+                    //         labelText:'',
+                    //         children:[{
+                    //             type:'issue',
+                    //             timeRange:'',
+                    //             labelText:'',        
+                    //             contentText:''
+                    //         }]
+                    //     }]
+                    // }
+                    ]
+                }],
+            },
+            calendarFormRules:{
+                meetingAgendaMeetingId: [
+                    { required: true, validator: validateId, trigger: 'change' }
+                ]
+            },
+        }
     },
     watch:{
         timeRange (val) {
@@ -240,11 +252,6 @@ var vm = new Vue({
                 }],
             }
         },
-
-
-
-
-
         //切换页码
         handleCurrentChange (val) {
             this.pagination1.currPage = val
@@ -254,7 +261,7 @@ var vm = new Vue({
         startSearch(type){
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
-            //data.calendarTitle = data.calendarTitle.toString().trim()
+            data.meetingAgendaMeetingId = data.meetingAgendaMeetingId.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -328,6 +335,38 @@ var vm = new Vue({
                     }
                 });
             }
+        },
+        //删除
+        deleteThisCalendar (item) {
+            var self = this
+            self.$confirm('确实要删除该日程数据吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = JSON.parse(JSON.stringify(item))
+                data.meetingAgendaStatus = 1  //0 正常  1 删除
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/meeting/agenda/update",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res) {
+                        if (res.code == 200) {
+                            self.startSearch()
+                            self.$message.success('删除成功')
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+            })
         },
         //时间格式转换工具
         transformTime (timestamp = +new Date()) {
