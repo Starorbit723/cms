@@ -66,6 +66,7 @@
         <!--表格查询结果区-->
         <div class="cv_content_square">
             <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
+                <el-table-column prop="meetingId" label="会议编号" width="80"></el-table-column>
                 <el-table-column prop="meetingTitle" label="会议标题" width="">
                     <template v-if="scope.row.meetingTitle" slot-scope="scope">
                         <div v-text="scope.row.meetingTitle" @click="openUrlPage(scope.row.meetingUrl)"></div>

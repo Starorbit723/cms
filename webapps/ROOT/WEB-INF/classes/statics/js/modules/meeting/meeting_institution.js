@@ -3,7 +3,9 @@ var vm = new Vue({
     data () {
         var validateId = (rule, value, callback) => {
             var urlReg = /^[0-9]*[1-9][0-9]*$/;
-            if (value !== '' && !urlReg.test(value)) {
+            if (value.trim() == '') {
+                callback(new Error('所属会议编号为必填项'));
+            } else if (value !== '' && !urlReg.test(value)) {
                 callback(new Error('所属会议编号只能为正整数'));
             } else {
                 callback();

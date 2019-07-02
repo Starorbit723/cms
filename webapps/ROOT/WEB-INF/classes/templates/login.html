@@ -79,7 +79,7 @@
                         <el-col :span="24">
                             <el-form-item label="验证码" style="margin:0;">
                                 <el-input
-                                    maxlength="6"
+                                    maxlength="10"
                                     clearable
                                     type="text"
                                     v-model="messageCode"
@@ -221,8 +221,8 @@ var vm = new Vue({
             if (self.messageCode == '') {
                 self.messageCode_tips = '验证码不能为空'
                 return false; 
-            } else if (!(/^\d{10}$/.test(self.messageCode))) {
-                self.messageCode_tips = '验证码为10位'
+            } else if (!(/^\w{10}$/.test(self.messageCode))) {
+                self.messageCode_tips = '验证码格式不正确'
                 return false;
             } else {
                 self.messageCode_tips = ''

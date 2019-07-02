@@ -595,6 +595,10 @@ var vm = new Vue({
             } else {
                 var reqUrl = '/news/modify'
             }
+            //trim处理
+            self.articleForm.newsFrom = self.articleForm.newsFrom.toString().trim();
+            self.articleForm.newsEditorName = self.articleForm.newsEditorName.toString().trim();
+            self.articleForm.newsAuthor = self.articleForm.newsAuthor.toString().trim();
             //字数统计时间算法
             var contentStr = UE.getEditor('editor').getContentTxt().replace(/[\ |\，|\。|\！|\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\'|\,|\<|\.|\>|\/|\?]/g,"").replace(/\s/g,"");
             var min =  Math.ceil((contentStr.length)/300)

@@ -3,7 +3,9 @@ var vm = new Vue({
     data () {
         var validateId = (rule, value, callback) => {
             var urlReg = /^[0-9]*[1-9][0-9]*$/;
-            if (value !== '' && !urlReg.test(value)) {
+            if (value.trim() == '') {
+                callback(new Error('所属会议编号为必填项'));
+            } else if (value !== '' && !urlReg.test(value)) {
                 callback(new Error('所属会议编号只能为正整数'));
             } else {
                 callback();
@@ -44,10 +46,14 @@ var vm = new Vue({
                 meetingGuestCrtTime:'',
                 meetingGuestModTime:'',
                 meetingGuestStatu:'',//状态 0正常 1删除
-                meetingGuestJson:[{
-
-                }],//json
-            
+                meetingGuestJson:[
+                    // {
+                    //    guestName:'',
+                    //    guestImg:'',
+                    //    guestPosition:'',//嘉宾职位
+                    //    guestCompany:'',//嘉宾公司
+                    // }
+                ],//json
             },
             meetingGuestFormRules:{
                 meetingGuestMeetingId: [
@@ -59,13 +65,29 @@ var vm = new Vue({
             chooseIndex:'',
             chooseIndex2:'',
             multipleSelection: [],
-            //自媒体图库弹出层相关
-            showMeidaLibDialog:false,
-            searchSelfmediaimgForm:{
-                picTitle:'',
-                picType:'4'//0封面图库 1内容图库 2图为图库 3广告  4自媒体
+            //嘉宾库弹出层相关
+            showGuestLibDialog:false,
+            searchGuestForm:{
+                guestName:'',
+                guestStatus:'0'
             },
-            selfmediaimgTableData:[],
+            guestTableData:[
+                //{
+                // guestId:'',//主键编号
+                // guestName:'',//嘉宾名称
+                // guestPosition:'',//嘉宾职位
+                // guestCompany:'',//嘉宾公司
+                // guestImg:'',//嘉宾头像
+                // guestPriority:'',//嘉宾顺序
+                // guestCrtUserId:'',//创建人用户编号
+                // guestModUserId:'',//更新人用户编号
+                // guestCrtTime:'',//创建时间
+                // guestModTime:'',//更新时间
+                // guestStatus:'',//嘉宾 状态 0正常 1删除
+                // guestCrtUserName:'',//创建人名称
+                // guestModUserName:'',//更新人名称
+                //}
+            ],
             pagination3: {
                 currPage: 1,
                 totalCount:0,
@@ -86,7 +108,7 @@ var vm = new Vue({
         },
         handleCurrentChange3 (val) {
             this.pagination3.currPage = val
-            this.searchSelfmediaImg()
+            this.searchGuest()
         },
         //开始搜索专题列表
         startSearch (type) {
@@ -131,27 +153,32 @@ var vm = new Vue({
             });
         },
         //前移
-        moveUp(index,index2,index3){
-            var moveArr = JSON.parse(JSON.stringify(this.meetingGuestForm.meetingGuestJson[index].children[index2].children))
-            let temp = moveArr[index3 - 1]
-            let temp2 = moveArr[index3]
-            moveArr[index3 - 1] = temp2
-            moveArr[index3] = temp
-            this.meetingGuestForm.meetingGuestJson[index].children[index2].children = moveArr
+        moveUp(index){
+            var moveArr = JSON.parse(JSON.stringify(this.meetingGuestForm.meetingGuestJson))
+            let temp = moveArr[index - 1]
+            let temp2 = moveArr[index]
+            moveArr[index - 1] = temp2
+            moveArr[index] = temp
+            this.meetingGuestForm.meetingGuestJson = moveArr
         },
         //后移
-        moveDown(index,index2,index3){
-            var moveArr = JSON.parse(JSON.stringify(this.meetingGuestForm.meetingGuestJson[index].children[index2].children))
-            let temp = moveArr[index3]
-            let temp2 = moveArr[index3 + 1]
-            moveArr[index3 + 1] = temp
-            moveArr[index3] = temp2
-            this.meetingGuestForm.meetingGuestJson[index].children[index2].children = moveArr
+        moveDown(index){
+            var moveArr = JSON.parse(JSON.stringify(this.meetingGuestForm.meetingGuestJson))
+            let temp = moveArr[index]
+            let temp2 = moveArr[index + 1]
+            moveArr[index + 1] = temp
+            moveArr[index] = temp2
+            this.meetingGuestForm.meetingGuestJson = moveArr
         },
-        //搜索图库
-        searchSelfmediaImg (type){
+        //添加嘉宾
+        addGuestToList(){
+            this.searchGuest(0)
+            this.showGuestLibDialog = true
+        },
+        //搜索嘉宾库
+        searchGuest (type){
             var self = this
-            var data = self.searchSelfmediaimgForm
+            var data = self.searchGuestForm
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -166,13 +193,13 @@ var vm = new Vue({
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
-                url: "/picture/list",
+                url: "/guest/list",
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){
-                        self.searchSelfmediaimgForm.picTitle = ''
-                        self.selfmediaimgTableData = res.page.list
+                        self.searchGuestForm.guestName = ''
+                        self.guestTableData = res.page.list
                         self.pagination3 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
@@ -193,23 +220,23 @@ var vm = new Vue({
         //添加图片至页面
         addThisImg (item) {
             console.log('单个选择添加某个logo',item)
-            this.meetingGuestForm.meetingGuestJson[this.chooseIndex].children[this.chooseIndex2].children.push({
-                title: item.picTitle,
-                picUrl: item.picUrl
+            this.meetingGuestForm.meetingGuestJson.push({
+                guestName: this.multipleSelection[i].guestName,
+                guestImg: this.multipleSelection[i].guestImg
             });
             this.backToEdit()
         },
         //删除所选的logo
-        delThisLogo(index,index2,index3){
-            this.meetingGuestForm.meetingGuestJson[index].children[index2].children.splice(index3, 1); 
+        delThisGuest(index){
+            this.meetingGuestForm.meetingGuestJson.splice(index, 1); 
         },
         //批量添加图片至列表
-        batchAddLogo () {
+        batchAddGuest () {
             console.log(this.multipleSelection)
             for (let i=0; i < this.multipleSelection.length; i++) {
-                this.meetingGuestForm.meetingGuestJson[this.chooseIndex].children[this.chooseIndex2].children.push({
-                    title: this.multipleSelection[i].picTitle,
-                    picUrl: this.multipleSelection[i].picUrl
+                this.meetingGuestForm.meetingGuestJson.push({
+                    guestName: this.multipleSelection[i].guestName,
+                    guestImg: this.multipleSelection[i].guestImg
                 });
             }
             this.backToEdit()
@@ -221,15 +248,15 @@ var vm = new Vue({
         },
         //返回编辑页
         backToEdit (){
-            this.showMeidaLibDialog = false
+            this.showGuestLibDialog = false
             this.multipleSelection = []
             this.chooseIndex = ''
             this.chooseIndex2 = ''
-            this.searchSelfmediaimgForm = {
+            this.searchGuestForm = {
                 picTitle:'',
                 picType:'4'
             }
-            this.selfmediaimgTableData = []
+            this.guestTableData = []
             this.pagination3 = {
                 currPage: 1,
                 totalCount:0,
@@ -238,7 +265,7 @@ var vm = new Vue({
             }
         },
         //新增或修改嘉宾
-        addOrEditCoper(type,item) {
+        addOrEditGuest(type,item) {
             var self = this
             self.creatOrEdit = type
             if(type == 0){
@@ -273,9 +300,9 @@ var vm = new Vue({
             }
         },
         //删除
-        deleteThisCoper (item){
+        deleteThisGuest (item){
             var self = this
-            self.$confirm('确实要删除该合作机构数据吗?', '提示', {
+            self.$confirm('确实要删除该嘉宾数据吗?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
@@ -285,7 +312,7 @@ var vm = new Vue({
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: "/meeting/cooperation/update",
+                    url: "/meeting/guest/update",
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res) {
@@ -311,9 +338,9 @@ var vm = new Vue({
             self.$refs[formName].validate((valid) => {
                 if (valid) {
                     if (self.creatOrEdit == 0) {
-                        var reqUrl = '/meeting/cooperation/save'
+                        var reqUrl = '/meeting/guest/save'
                     } else if (self.creatOrEdit == 1) {
-                        var reqUrl = '/meeting/cooperation/update'
+                        var reqUrl = '/meeting/guest/update'
                     }
                     var data = JSON.parse(JSON.stringify(self.meetingGuestForm))
                     $.base64.utf8encode = true;
@@ -349,18 +376,14 @@ var vm = new Vue({
         closeCreatOrEdit (formName) {
             this.$refs[formName].resetFields();
             this.meetingGuestForm = {
-                meetingCooperationId:'',//主键
+                meetingGuestId:'',//主键
                 meetingGuestMeetingId:'',//所属会议编号
-                meetingCooperationCrtUserId:'',//
-                meetingCooperationModUserId:'',//
-                meetingCooperationCrtTime:'',//
-                meetingCooperationModTime:'',//
-                meetingGuestStatus:'',//状态 0正常 1删除
-                meetingGuestJson:[{ //JSON数据
-                    type:'titleLv1',
-                    labelText:'',
-                    children:[]
-                }],
+                meetingGuestCrtUserId:'',
+                meetingGuestModUserId:'',
+                meetingGuestCrtTime:'',
+                meetingGuestModTime:'',
+                meetingGuestStatu:'',//状态 0正常 1删除
+                meetingGuestJson:[],//json
             }
             this.showChildPage = false
             this.creatOrEdit = 0

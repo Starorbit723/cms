@@ -33,7 +33,7 @@
             <!--功能按钮区-->
             <el-row class="el-row-h50">
                 <el-col :span="4">
-                    <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addOrEditCoper(0)">新增嘉宾列表</el-button>
+                    <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addOrEditGuest(0)">新增嘉宾列表</el-button>
                 </el-col>
             </el-row>
             <!--表格查询结果区-->
@@ -46,8 +46,8 @@
                     <el-table-column prop="meetingGuestModTime" label="更新时间" width="200"></el-table-column>
                     <el-table-column label="操作" width="100" fixed="right">
                         <template slot-scope="scope">
-                            <el-button type="text" size="small" @click="addOrEditCoper(1,scope.row)">修改</el-button>
-                            <el-button type="text" size="small" @click="deleteThisCoper(scope.row)">删除</el-button>
+                            <el-button type="text" size="small" @click="addOrEditGuest(1,scope.row)">修改</el-button>
+                            <el-button type="text" size="small" @click="deleteThisGuest(scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -73,76 +73,34 @@
                 <el-form :model="meetingGuestForm" :rules="meetingGuestFormRules"  ref="meetingGuestForm" status-icon class="demo-ruleForm" label-width="15%" label-position="right">
                     <el-row class="el-row-h80">
                         <el-col :span="24">
-                            <el-form-item label-width="13%" prop="meetingCooperationMeetingId" label="所属会议编号" style="margin:0;">
+                            <el-form-item label-width="13%" prop="meetingGuestMeetingId" label="所属会议编号" style="margin:0;">
                                 <el-input
                                 clearable
                                 type="text"
-                                v-model="meetingGuestForm.meetingCooperationMeetingId"
+                                v-model="meetingGuestForm.meetingGuestMeetingId"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
 
-                    <!--一级机构列表数据开始-->
-                    <div v-for="(item,index) in meetingGuestForm.meetingCooperationJson">
-                        <el-row class="el-row-h60">
-                            <el-col :span="17">
-                                <el-form-item label="一级标题" style="margin:0;">
-                                    <el-input
-                                    clearable
-                                    type="text"
-                                    v-model="item.labelText"
-                                    auto-complete="off"></el-input>
-                                </el-form-item>
-                            </el-col>
-                            <el-col class="el-row-h40" :span="3" :offset="1">
-                                <el-button type="primary" icon="el-icon-plus" style="width:100%" @click="addCopLv2(index)">二级标题</el-button>
-                            </el-col>
-                            <el-col class="el-row-h40" :span="2" :offset="1">
-                                <el-button style="width:100%" icon="el-icon-circle-close" @click="delCopLv1(index)"></el-button>
-                            </el-col>
-                        </el-row>
-
-                        <!--二级标题开始-->
-                        <div v-for="(item2,index2) in item.children">
-                            <el-row class="el-row-h60">
-                                <el-col :span="15" :offset="2">
-                                    <el-form-item label="二级标题" style="margin:0;">
-                                        <el-input
-                                        clearable
-                                        type="text"
-                                        v-model="item2.labelText"
-                                        auto-complete="off"></el-input>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col class="el-row-h40" :span="3" :offset="1">
-                                    <el-button type="primary" icon="el-icon-plus" style="width:100%" @click="addCopLv3(index,index2)">机构媒体</el-button>
-                                </el-col>
-                                <el-col class="el-row-h40" :span="2" :offset="1">
-                                    <el-button style="width:100%" icon="el-icon-circle-close" @click="delCopLv2(index,index2)"></el-button>
-                                </el-col>
-                            </el-row>
-
-                            <!--三级机构列表开始-->
-                            <div class="logo_list clearfix">
-                                <div class="logo_list_item" v-for="(item3,index3) in item2.children">
-                                    <img :src="item3.picUrl">
-                                    <div class="delbtn el-icon-circle-close" @click="delThisLogo(index,index2,index3)"></div>
-                                    <div class="movebtn" v-if="index3 !== 0" @click="moveUp(index,index2,index3)">前移</div>
-                                    <div class="movebtn" v-if="index3 !== (item2.children.length - 1)" @click="moveDown(index,index2,index3)">后移</div>
-                                </div>
-                            </div>
-                            <!--三级机构列表结束--> 
+                    <!--嘉宾列表数据开始-->
+                    <div class="guest_list clearfix">
+                        <div class="guest_list_item" v-for="(item,index) in meetingGuestForm.meetingGuestJson">
+                            <img :src="item.guestImg">
+                            <div class="delbtn el-icon-circle-close" @click="delThisGuest(index)"></div>
+                            <div class="nametext" v-text="item.guestName"></div>
+                            <div class="movebtn" v-if="index !== 0" @click="moveUp(index)">前移</div>
+                            <div class="movebtn" v-if="index !== (meetingGuestForm.meetingGuestJson.length - 1)" @click="moveDown(index)">后移</div>
                         </div>
-                        <!--二级标题结束-->
                     </div>
-                    <!--一级机构列表数据结束-->
+                    
 
                     <el-row style="margin-top: 15px;">
                         <el-col class="el-row-h40" :span="24">
-                            <el-button type="primary" style="width:100%" icon="el-icon-plus" @click="addCopLv1()">添加一级标题</el-button>
+                            <el-button type="primary" style="width:100%" icon="el-icon-plus" @click="addGuestToList()">添加嘉宾</el-button>
                         </el-col>
                     </el-row>
+
                 </el-form>
             </div>
             <!--新建保存修改-->
@@ -156,43 +114,41 @@
             </el-row>
 
 
-            <!--自媒体图库弹出层开始-->
-            <el-dialog title="机构自媒体图库" :visible.sync="showMeidaLibDialog" width="100%" :fullscreen="true" :show-close="false">
-                <el-form :model="searchSelfmediaimgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right"  >
+            <!--嘉宾库弹出层开始-->
+            <el-dialog title="嘉宾列表" :visible.sync="showGuestLibDialog" width="100%" :fullscreen="true" :show-close="false">
+                <el-form :model="searchGuestForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right"  >
                     <el-row class="el-row-h60">
                         <el-col :span="12">
-                            <el-form-item label="图片名称" style="margin:0;">
+                            <el-form-item label="嘉宾名称" style="margin:0;">
                                 <el-input
                                 clearable
                                 type="text"
-                                v-model="searchSelfmediaimgForm.picTitle"
+                                v-model="searchGuestForm.guestName"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="3" :offset="1" class="el-row-h40">
-                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchSelfmediaImg(0)">搜索</el-button>
+                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchGuest(0)">搜索</el-button>
                         </el-col>
                         <el-col :span="3" :offset="1" class="el-row-h40">
-                            <el-button type="primary" style="width:100%" icon="el-icon-plus" @click="batchAddLogo">批量添加</el-button>
+                            <el-button type="primary" style="width:100%" icon="el-icon-plus" @click="batchAddGuest">批量添加</el-button>
                         </el-col>
                         <el-col :span="3" :offset="1" class="el-row-h40">
                             <el-button type="primary"  style="width:100%" @click="backToEdit()">返回</el-button>
                         </el-col>
                     </el-row>
                 </el-form>
-                <el-table :data="selfmediaimgTableData" max-height="450" style="width: 100%; margin:10px auto;" @selection-change="handleSelectionChange"  ref="multipleTable" stripe>
+                <el-table :data="guestTableData" max-height="450" style="width: 100%; margin:10px auto;" @selection-change="handleSelectionChange"  ref="multipleTable" stripe>
                     <el-table-column
                         type="selection"
                         width="55">
                     </el-table-column>
-                    <el-table-column prop="picUrl" label="图片预览" width="180">
-                        <template v-if="scope.row.picUrl" slot-scope="scope">
-                            <img style="width:80px;height:60px;" :src="scope.row.picUrl">
+                    <el-table-column prop="guestImg" label="嘉宾头像" width="180">
+                        <template v-if="scope.row.guestImg" slot-scope="scope">
+                            <img style="width:60px;height:60px;" :src="scope.row.guestImg">
                         </template>
                     </el-table-column>
-                    <el-table-column prop="picTitle" label="图片名称" width="250"></el-table-column>
-                    <el-table-column prop="picEditorName" label="修改人" width="120"></el-table-column>
-                    <el-table-column prop="picModTime" label="最后更新时间"></el-table-column>
+                    <el-table-column prop="guestName" label="嘉宾姓名"></el-table-column>
                     <el-table-column label="操作" width="100" fixed="right">
                         <template slot-scope="scope">
                             <el-button type="text" size="small" @click="addThisImg(scope.row)">添加</el-button>
@@ -210,7 +166,7 @@
                     </el-pagination>
                 </div>
             </el-dialog>
-            <!--自媒体图库弹出层结束-->
+            <!--嘉宾库弹出层结束-->
 
 
         </div>
@@ -233,24 +189,24 @@
     font-size: 16px!important;
     color: rgb(214, 32, 8)!important;
 }
-.logo_list{
-    padding:0 0 0 18%;
+.guest_list{
+    padding:0;
 }
-.logo_list_item{
+.guest_list_item{
     display: block;
     float: left;
     position: relative;
-    width: 150px;
-    height: 80px;
+    width: 130px;
+    height: 190px;
     margin: 0 20px 20px 0;
 }
-.logo_list_item img{
+.guest_list_item img{
     display: block;
-    width: 148px;
-    height: 58px;
+    width: 130px;
+    height: 130px;
     border:1px solid #dadada;
 }
-.logo_list_item .delbtn{
+.guest_list_item .delbtn{
     display: block;
     position: absolute;
     top:5px;
@@ -259,6 +215,14 @@
     height: 15px;
     cursor: pointer;
     color: rgb(0, 0, 0)!important;
+}
+.guest_list_item .nametext{
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    background: #175CE9;
+    text-align: center;
+    color: #FFF;
 }
 .movebtn{
     width:50%;
