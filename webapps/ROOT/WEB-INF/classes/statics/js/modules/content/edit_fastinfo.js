@@ -23,7 +23,8 @@ var vm = new Vue({
         },
         fastinfoFormRules:{
             flashTitle: [
-                { required: true, message: '快讯标题不能为空', trigger: 'change' }
+                { required: true, message: '快讯标题不能为空', trigger: 'change' },
+                { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
             ],
             flashDesc:[
                 { required: true, message: '摘要不能为空', trigger: 'change' }
@@ -49,13 +50,15 @@ var vm = new Vue({
         saveFastinfoToDraft (opt,formName){
             var self = this
             //针对非必填字段验证
-            var urlReg = /^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~\/])+$/;
+            //var urlReg = /^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~\/])+$/;
+            var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/
             if (self.fastinfoForm.flashSourceUrl.toString().trim() !=='' && !urlReg.test(self.fastinfoForm.flashSourceUrl)) {
                 self.$message.error('原文网址链接不合法')
                 return
             } else if (self.fastinfoForm.flashSourceUrl.toString().trim() =='') {
                 self.fastinfoForm.flashSourceUrl = '#'
             }
+            //判断是新建还是修改
             if (self.typeOfPage == 'creat') {
                 var reqUrl = '/flash/save'
                 var data = JSON.parse(JSON.stringify(self.fastinfoForm))
@@ -65,6 +68,8 @@ var vm = new Vue({
                 var reqUrl = '/flash/update'
                 var data = JSON.parse(JSON.stringify(self.fastinfoForm))
             }
+            //标题中出现英文双引号修改为中文双引号，否则造成标签属性不闭合
+            data.flashTitle = self.replaceDqm(data.flashTitle)
             self.$refs[formName].validate((valid) => {
                 if (valid) {
                     $.ajax({
@@ -155,6 +160,14 @@ var vm = new Vue({
                     mapErrorStatus(res)
                 }
             });
+        },
+        //替换引号
+        replaceDqm (str) {
+            var val=str.replace(/"([^"]*)"/g ,"“$1”");
+            if(val.indexOf('"')<0){
+                return val;
+            }
+            return replaceDqm(val);
         }
     }
     

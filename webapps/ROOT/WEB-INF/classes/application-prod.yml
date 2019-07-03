@@ -75,7 +75,7 @@ columnUrl: /cms/api/updateColumn
 mediaUrl: /cms/api/updateSsoMedia
 pictureUrl: /cms/api/updatePictureList
 focusUrl: /cms/api/updateFocusDetail
-flashUrl: /cms/api/updateFlashList
+flashUrl: /cms/api/updateFlashDetail
 reportUrl: /cms/api/updateReportDetail
 recommendUrl: /cms/api/updateRecommendNewsList
 dictUrl: /cms/api/updateSysDict
@@ -84,8 +84,13 @@ channelNewsList: /cms/api/updateChannelNewsList
 subjectNewsList: /cms/api/updateSubjectNewsList
 pvRedisUrl: /cms/api/updateCountNewsList
 versionUrl: /cms/api/updateAppVersion
+talkUrl: /cms/api/updateVtalkList
 endPoint: https://obs.cn-north-1.myhuaweicloud.com
 ak: 2FBSHRRFZ5YLE3VPBMDK
 sk: vqYIdh3xmKfjlhcM0qEwCeuY8QfRKHYnGYHWoDBx
 local: cn-north-1
 bucketName: chinaventure-static
+baiduUrl: http://data.zz.baidu.com/urls?site=https://www.chinaventure.com.cn&token=EAN4cqLpc6TbSSFO
+cvinfoUrl: https://www.chinaventure.com.cn
+cvinfoMUrl: https://m.chinaventure.com.cn
+baiduToken: EAN4cqLpc6TbSSFO

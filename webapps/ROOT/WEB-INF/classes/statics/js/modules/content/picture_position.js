@@ -525,6 +525,7 @@ var vm = new Vue({
             var data = {
                 picType:'3',//图位用图
                 picTypeId:id.toString(),
+                picStatus: '1',
                 page: '1',
                 limit: '1000'//目前不做分页
             }
@@ -562,16 +563,21 @@ var vm = new Vue({
         //删除图位中某一条项目
         deleteThisPosItem(item){
             var self = this
+            console.log('要删除的item',item)
             self.$confirm('确实要删除此条内容吗?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                var data = [item.picId]
+                var data = {
+                    picId: item.picId.toString(),
+                    picTypeId: item.picTypeId,
+                    picStatus: '0'
+                }
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url:'/picture/delete',
+                    url:'/picture/update',
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res){

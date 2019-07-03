@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/icon.css">
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>会议榜单</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">会议榜单</div>
+    <div id="meeting_rank" class="cv_page_content">
+        <!------------------列表开始------------------>
+        <div v-show="!showChildPage">
+            <!--列表搜索区-->
+            <div class="cv_content_square">
+                <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="14">
+                            <el-form-item label="所属会议编号" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchForm.meetingRankMeetingId"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="startSearch(0)">搜索</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--功能按钮区-->
+            <el-row class="el-row-h50">
+                <el-col :span="4">
+                    <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addOrEditRank(0)">新增会议榜单</el-button>
+                </el-col>
+            </el-row>
+            <!--表格查询结果区-->
+            <div class="cv_content_square">
+                <el-table :data="tableData" style="width: 100%; margin:10px auto;" ref="multipleTable" stripe>
+                    <el-table-column prop="meetingRankMeetingId" label="所属会议编号" width=""></el-table-column>
+                    <el-table-column prop="meetingRankCrtUserId" label="创建人" width="90"></el-table-column>
+                    <el-table-column prop="meetingRankCrtTime" label="创建时间" width="200"></el-table-column>
+                    <el-table-column prop="meetingRankModUserId" label="更新人" width="90"></el-table-column>
+                    <el-table-column prop="meetingRankModTime" label="更新时间" width="200"></el-table-column>
+                    <el-table-column label="操作" width="100" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="addOrEditRank(1,scope.row)">修改</el-button>
+                            <el-button type="text" size="small" @click="deleteThisRank(scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page="pagination1.currPage"
+                    :page-size="pagination1.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination1.totalCount">
+                </el-pagination>
+            </div>
+
+        </div>
+        <!------------------列表结束------------------>
+
+        <!------------------新增修改开始------------------>
+        <div v-show="showChildPage">
+            <!--表单信息-->
+            <div class="cv_content_square">
+                <el-form :model="rankForm" :rules="rankFormRules"  ref="rankForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
+                    <el-row class="el-row-h80">
+                        <el-col :span="16">
+                            <el-form-item label-width="20%" prop="meetingRankMeetingId" label="所属会议编号" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="rankForm.meetingRankMeetingId"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="3" :offset="1">
+                            <el-button type="primary" style="width:100%" @click="submitCreatEdit('rankForm')">保存</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="3" :offset="1">
+                            <el-button type="primary" style="width:100%" @click="closeEditCreatEdit('rankForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+
+                    <!--1级开始-->
+                    <div v-for="(item,index) in rankForm.meetingRankJson" style="margin-bottom:15px;">
+                        <el-row class="el-row-h60">
+                            <el-col :span="12">
+                                <el-form-item label="榜单名称" style="margin:0;" label-width="17.5%">
+                                    <el-input clearable type="text" v-model="item.rankTitle" auto-complete="off">
+                                        <template slot="append">{{item.rankLevel}}级</template>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="2" :offset="1" class="el-row-h40">
+                                <el-button type="primary" style="width:100%" @click="addLv2(index)">+2级</el-button>
+                            </el-col>
+                            <el-col :span="2" :offset="1" class="el-row-h40" v-if="index !== 0">
+                                <el-button type="primary" icon="el-icon-caret-top" style="width:100%" @click="moveUpLv1(index)"></el-button>
+                            </el-col>
+                            <el-col :span="2" :offset="1" class="el-row-h40" v-if="index !== (rankForm.meetingRankJson.length - 1)">
+                                <el-button type="primary" icon="el-icon-caret-bottom" style="width:100%" @click="moveDownLv1(index)"></el-button>
+                            </el-col>
+                            <el-col class="el-row-h40" :span="2" :offset="1">
+                                <el-button style="width:100%" icon="el-icon-circle-close" @click="delLv1(index)"></el-button>
+                            </el-col>
+                        </el-row>
+
+                        <!--2级开始-->
+                        <div v-for="(item2,index2) in item.children">
+                            <el-row class="el-row-h60">
+                                <el-col :span="11" :offset="1">
+                                    <el-form-item label="榜单名称" style="margin:0;" label-width="17.5%">
+                                        <el-input clearable type="text" v-model="item2.rankTitle" auto-complete="off" placeholder="无内容请填写#">
+                                            <template slot="append">{{item2.rankLevel}}级</template>
+                                        </el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="2" :offset="1" class="el-row-h40">
+                                    <el-button type="primary" style="width:100%" @click="addLv3(index,index2)">+3级</el-button>
+                                </el-col>
+                                <el-col :span="2" :offset="1" class="el-row-h40" v-if="index2 !== 0">
+                                    <el-button type="primary" icon="el-icon-caret-top" style="width:100%" @click="moveUpLv2(index,index2)"></el-button>
+                                </el-col>
+                                <el-col :span="2" :offset="1" class="el-row-h40" v-if="index2 !== (item.children.length - 1)">
+                                    <el-button type="primary" icon="el-icon-caret-bottom" style="width:100%" @click="moveDownLv2(index,index2)"></el-button>
+                                </el-col>
+                                <el-col class="el-row-h40" :span="2" :offset="1">
+                                    <el-button style="width:100%" icon="el-icon-circle-close" @click="delLv2(index,index2)"></el-button>
+                                </el-col>
+                            </el-row>
+
+                            <!--3级开始-->
+                            <div v-for="(item3,index3) in item2.children">
+                                <el-row class="el-row-h60">
+                                    <el-col :span="10" :offset="2">
+                                        <el-form-item label="榜单名称" style="margin:0;" label-width="17.5%">
+                                            <el-input clearable type="text" v-model="item3.rankTitle" auto-complete="off" placeholder="无内容请填写#">
+                                                <template slot="append">{{item3.rankLevel}}级</template>
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="2" :offset="1" class="el-row-h40">
+                                        <el-button type="primary" style="width:100%" @click="addLv4(index,index2,index3)">+4级</el-button>
+                                    </el-col>
+                                    <el-col :span="2" :offset="1" class="el-row-h40" v-if="index3 !== 0">
+                                        <el-button type="primary" icon="el-icon-caret-top" style="width:100%" @click="moveUpLv3(index,index2,index3)"></el-button>
+                                    </el-col>
+                                    <el-col :span="2" :offset="1" class="el-row-h40" v-if="index3 !== (item2.children.length - 1)">
+                                        <el-button type="primary" icon="el-icon-caret-bottom" style="width:100%" @click="moveDownLv3(index,index2,index3)"></el-button>
+                                    </el-col>
+                                    <el-col class="el-row-h40" :span="2" :offset="1">
+                                        <el-button style="width:100%" icon="el-icon-circle-close" @click="delLv3(index,index2,index3)"></el-button>
+                                    </el-col>
+                                </el-row>
+
+                                <!--4级开始-->
+                                <div v-for="(item4,index4) in item3.children">
+                                    <el-row class="el-row-h60">
+                                        <el-col :span="12" :offset="3">
+                                            <el-form-item label="榜单名称" style="margin:0;" label-width="17.5%">
+                                                <el-input clearable type="text" v-model="item4.rankTitle" auto-complete="off">
+                                                    <template slot="append">{{item4.rankLevel}}级</template>
+                                                </el-input>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col :span="2" :offset="1" class="el-row-h40" v-if="index4 !== 0">
+                                            <el-button type="primary" icon="el-icon-caret-top" style="width:100%" @click="moveUpLv4(index,index2,index3,index4)"></el-button>
+                                        </el-col>
+                                        <el-col :span="2" :offset="1" class="el-row-h40" v-if="index4 !== (item3.children.length - 1)">
+                                            <el-button type="primary" icon="el-icon-caret-bottom" style="width:100%" @click="moveDownLv4(index,index2,index3,index4)"></el-button>
+                                        </el-col>
+                                        <el-col class="el-row-h40" :span="2" :offset="1">
+                                            <el-button style="width:100%" icon="el-icon-circle-close" @click="delLv4(index,index2,index3,index4)"></el-button>
+                                        </el-col>
+                                    </el-row>
+                                </div>
+                                <!--4级结束-->
+                            </div>
+                            <!--3级结束-->
+                        </div>
+                        <!--2级结束-->
+                    </div>
+                    <!--1级结束-->
+                    <el-row>
+                        <el-col :span="24">
+                            <el-button type="primary" icon="el-icon-plus" style="width:100%" @click="addNewRank()">新增一级榜单</el-button>
+                        </el-col>
+                    </el-row>
+
+
+
+                </el-form>
+            </div>
+            
+        </div>
+        <!------------------新增修改结束------------------>
+
+
+    </div>
+</body>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.min.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.base64.js"></script>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/meeting/meeting_rank.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+<style>
+.clearfix{overflow:hidden;_zoom:1;}
+.clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden;font-size:0;}
+.el-icon-circle-close{
+    font-size: 16px!important;
+    color: rgb(214, 32, 8)!important;
+}
+.avatar-uploader .el-upload {
+    width:150px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+    border-color: #175CE9;
+}
+.avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 148px;
+    height: 148px;
+    line-height: 148px;
+    text-align: center;
+}
+.avatar {
+    width: 150px;
+    height: 150px;
+    display: block;
+}
+</style>
+</html>

@@ -142,6 +142,13 @@
                         <el-tag v-if="scope.row.newsStatus == 5" type="danger">已删除</el-tag>
                     </template>
                 </el-table-column>
+                <el-table-column prop="newsCompDelay" label="定时状态"  width="110">
+                    <!--0未定时，1是已定时-->
+                    <template slot-scope="scope">
+                        <el-tag v-if="scope.row.newsCompDelay == 0" type="warning">否</el-tag>
+                        <el-tag v-if="scope.row.newsCompDelay == 1" type="success">是</el-tag>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="newsReleaseTime" label="发布时间" width="95"></el-table-column>
                 <el-table-column prop="newsAuthor" label="作者"></el-table-column>
                 <el-table-column prop="userName" label="发布人"></el-table-column>
@@ -155,7 +162,8 @@
                     <template slot-scope="scope" v-if="scope.row.newsStatus !== 1 && scope.row.newsStatus !== 4">
                         <el-button type="text" size="small" v-if="scope.row.newsStatus == 0 || scope.row.newsStatus == 2 || scope.row.newsStatus == 3" @click="editThisArticle(scope.row)">编辑</el-button>
                         <el-button type="text" size="small" v-if="scope.row.newsStatus == 0 || scope.row.newsStatus == 3"  @click="deleteThisArticle(scope.row)">删除</el-button>
-                        <el-button type="text" v-if="scope.row.newsStatus == 0 || scope.row.newsStatus == 3" size="small" @click="onlineThisArticle(scope.row)">发布</el-button>
+                        <el-button type="text" v-if="(scope.row.newsStatus == 0 || scope.row.newsStatus == 3) && scope.row.newsCompDelay == 0" size="small" @click="onlineThisArticle(scope.row)">立即发布</el-button>
+                        <el-button type="text" v-if="scope.row.newsStatus == 0 && scope.row.newsCompDelay == 1" size="small" @click="cancelReserveTask(scope.row)">取消定时发布</el-button>
                         <el-button type="text" size="small" @click="offlineThisArticle(scope.row)" v-if="scope.row.newsStatus == 2 &&scope.row.recommendStatus !== 1">下线</el-button>
                         <el-button type="text" size="small" @click="togglePushThisArticle(scope.row)" v-if="scope.row.newsStatus == 2 && scope.row.recommendStatus == 2">推荐</el-button>
                         <!-- <el-button type="text" size="small" @click="togglePushThisArticle(scope.row)" v-if="scope.row.newsStatus == 2 && scope.row.recommendStatus == 1">不推荐</el-button> -->

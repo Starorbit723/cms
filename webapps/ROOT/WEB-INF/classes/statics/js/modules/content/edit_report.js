@@ -66,7 +66,8 @@ var vm = new Vue({
         },
         reportFormRules:{
             reportTitle: [
-                { required: true, message: '标题不能为空', trigger: 'change' }
+                { required: true, message: '标题不能为空', trigger: 'change' },
+                { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
             ],
             reportAbstract:[
                 { required: true, message: '摘要不能为空', trigger: 'change' }
@@ -146,8 +147,16 @@ var vm = new Vue({
     methods:{
         //用户移除报告
         handleRemove(file, fileList) {
-            this.ifShowFileList = false
-            this.reportForm.reportAttachments = ''
+            // this.ifShowFileList = false
+            // this.reportForm.reportAttachments = ''
+            // this.pdfFormData = {}
+        },
+        //删除报告
+        deletReportPdf () {
+            console.log('待删除的pdf',this.fileList)
+            this.$refs.upload.clearFiles();
+            //空的话传一个空格
+            this.reportForm.reportAttachments = ' '
             this.pdfFormData = {}
         },
         //上传报告
@@ -465,6 +474,7 @@ var vm = new Vue({
             }
             //把当前用户的id作为发布人添加到提交中
             self.reportForm.reportEditor = getCookie('userId') || ''
+            console.log('提交前===>', self.reportForm)
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
@@ -567,6 +577,10 @@ var vm = new Vue({
                 if (tempObj.reportKeywords !== ''){
                     this.reportKeywordsArray = tempObj.reportKeywords.split(',')
                 }
+            }
+            //回显报告pdf地址--空格符代表没有pdf文件
+            if (tempObj.reportAttachments == ' ') {
+                tempObj.reportAttachments = ''
             }
             setTimeout(function(){
                 //首先获得焦点可以使得初始的空格行前插入正式内容

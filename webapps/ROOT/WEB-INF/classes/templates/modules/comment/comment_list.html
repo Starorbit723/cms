@@ -51,7 +51,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="3" :offset="5" class="el-row-h50">
-                        <el-button type="primary" style="width:100%" @click="startSearch">搜索</el-button>
+                        <el-button type="primary" style="width:100%" @click="startSearch(0)">搜索</el-button>
                     </el-col>
                 </el-row>
             </el-form>
@@ -98,7 +98,8 @@
                 <el-table-column label="操作" width="150" fixed="right">
                     <template slot-scope="scope">
                         <el-button type="text" size="small" v-if="scope.row.deleted == 2"  @click="uplineThisComment(scope.row)">通过上线</el-button>
-                        <el-button type="text" size="small" v-if="scope.row.deleted == 0" @click="offlineThisComment(scope.row)">评论下线</el-button>
+                        <!-- <el-button type="text" size="small" v-if="scope.row.deleted == 0" @click="offlineThisComment(scope.row)">评论下线</el-button> -->
+                        <el-button type="text" size="small" v-if="false" @click="offlineThisComment(scope.row)">评论下线</el-button>
                         <el-button type="text" size="small" v-if="scope.row.deleted == 2" @click="deleteThisComment(scope.row)">删除评论</el-button>
                     </template>
                 </el-table-column>

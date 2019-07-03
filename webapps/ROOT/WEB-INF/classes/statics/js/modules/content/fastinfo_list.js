@@ -16,7 +16,7 @@ var vm = new Vue({
         ],
         searchForm:{
             flashTitle:'',//标题
-            flashStatus:[],// array[number] 状态 0未发布，1是待发布，2是已发布3是发布失败 4是待删除 5 删除
+            flashStatus:['0','1','2','3','4'],// array[number] 状态 0未发布，1是待发布，2是已发布3是发布失败 4是待删除 5 删除
             flashCrtUser:'',//创建人编号
             startTime:'',
             endTime:''
@@ -145,7 +145,7 @@ var vm = new Vue({
                         flashId: item.flashId.toString(),
                         flashStatus: '0'
                     }
-                    requrl = '/flash/update'
+                    requrl = '/flash/offline'
                 } else if (item.flashStatus == 0 || item.flashStatus == 3) {
                     var data = {
                         flashId: item.flashId.toString(),
@@ -190,7 +190,7 @@ var vm = new Vue({
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: "/flash/update",
+                    url: "/flash/delete",
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res){

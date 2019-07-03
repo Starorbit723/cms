@@ -76,10 +76,10 @@
                     </el-row>
                     <div class="cv_logintips" v-text="phoneNumber_tips"></div>
                     <el-row class="el-row-h40">
-                        <el-col :span="12">
-                            <el-form-item label="验证码" label-width="38.5%" style="margin:0;">
+                        <el-col :span="24">
+                            <el-form-item label="验证码" style="margin:0;">
                                 <el-input
-                                    maxlength="6"
+                                    maxlength="10"
                                     clearable
                                     type="text"
                                     v-model="messageCode"
@@ -87,9 +87,9 @@
                                 </el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col :offset="1" :span="11">
+                        <!-- <el-col :offset="1" :span="11">
                             <el-button class="sendcode_btn" :class="{disable: !ableToSend}" v-text="btnText" @click="sendMessageCode"></el-button>
-                        </el-col>
+                        </el-col> -->
                     </el-row>
                     <div class="cv_logintips" v-text="messageCode_tips"></div>
                     <!--图片拖拽-->
@@ -163,7 +163,7 @@ var vm = new Vue({
                     var data = "phone="+ self.phoneNumber
                     $.ajax({
                         type: "GET",
-                        url: "sys/user/setPhoneSend",
+                        url: "",
                         data: data,
                         dataType: "json",
                         success: function(result){
@@ -221,8 +221,8 @@ var vm = new Vue({
             if (self.messageCode == '') {
                 self.messageCode_tips = '验证码不能为空'
                 return false; 
-            } else if (!(/^\d{6}$/.test(self.messageCode))) {
-                self.messageCode_tips = '验证码为6位数字'
+            } else if (!(/^\w{10}$/.test(self.messageCode))) {
+                self.messageCode_tips = '验证码格式不正确'
                 return false;
             } else {
                 self.messageCode_tips = ''

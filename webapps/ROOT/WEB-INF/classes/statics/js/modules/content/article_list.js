@@ -323,7 +323,8 @@ var vm = new Vue({
             }).then(() => {
                 var data = {
                     newsId: item.newsId,
-                    newsStatus:'1'
+                    newsStatus:'1',
+                    newsReleaseTime: new Date().getTime()
                 }
                 $.ajax({
                     type: "POST",
@@ -392,6 +393,43 @@ var vm = new Vue({
                     }
                 });
             })
+        },
+        //取消定时发布任务
+        cancelReserveTask (item) {
+            var self = this
+            self.$confirm('确认要取消该文章定时发布任务吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = {
+                    newsId: item.newsId.toString(),
+                    newsCompDelay: 0
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: '/news/cancelDelay',
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res){
+                        self.ajaxController = true
+                        if(res.code == 200){
+                            self.$message.success('取消定时发布成功')
+                            self.startSearch()
+                        }else{
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                    
+                });
+            })
+            
         },
         //跳转至新闻详情
         openUrlArticlePage(url){
