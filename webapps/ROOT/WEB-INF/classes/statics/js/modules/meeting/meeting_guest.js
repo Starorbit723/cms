@@ -221,8 +221,8 @@ var vm = new Vue({
         addThisImg (item) {
             console.log('单个选择添加某个logo',item)
             this.meetingGuestForm.meetingGuestJson.push({
-                guestName: this.multipleSelection[i].guestName,
-                guestImg: this.multipleSelection[i].guestImg
+                guestName: item.guestName,
+                guestImg: item.guestImg
             });
             this.backToEdit()
         },
