@@ -201,38 +201,43 @@ var vm = new Vue({
         //保存
         submitCreatEdit (formName) {
             var self = this
-            if (self.creatOrEdit == 0) {
-                var reqUrl = '/meeting/agenda/save'
-            } else if (self.creatOrEdit == 1) {
-                var reqUrl = '/meeting/agenda/update'
-            }
-            var data = JSON.parse(JSON.stringify(self.calendarForm))
-            $.base64.utf8encode = true;
-            var jsonString = JSON.stringify(data.meetingAgendaJson);
-            var json64 = $.base64.btoa(jsonString);
-            data.meetingAgendaJson = json64
-            console.log('6464',jsonString,json64)
-            $.ajax({
-				type: "POST",
-                url: reqUrl,
-                contentType: "application/json",
-			    data: JSON.stringify(data),
-			    dataType: "json",
-			    success: function(res){
-					if(res.code == 200){
-                        self.$message.success('保存成功')
-                        self.startSearch()
-                        self.closeCreatOrEdit('calendarForm')
-					}else{
-						mapErrorStatus(res)
-						vm.error = true;
-						vm.errorMsg = res.msg;
-					}
-                },
-                error:function(res){
-                    mapErrorStatus(res)
+            self.$refs[formName].validate((valid) => {
+                if (valid) {
+                    if (self.creatOrEdit == 0) {
+                        var reqUrl = '/meeting/agenda/save'
+                    } else if (self.creatOrEdit == 1) {
+                        var reqUrl = '/meeting/agenda/update'
+                    }
+                    var data = JSON.parse(JSON.stringify(self.calendarForm))
+                    $.base64.utf8encode = true;
+                    var jsonString = JSON.stringify(data.meetingAgendaJson);
+                    var json64 = $.base64.btoa(jsonString);
+                    data.meetingAgendaJson = json64
+                    console.log('6464',jsonString,json64)
+                    $.ajax({
+                        type: "POST",
+                        url: reqUrl,
+                        contentType: "application/json",
+                        data: JSON.stringify(data),
+                        dataType: "json",
+                        success: function(res){
+                            if(res.code == 200){
+                                self.$message.success('保存成功')
+                                self.startSearch()
+                                self.closeCreatOrEdit('calendarForm')
+                            }else{
+                                mapErrorStatus(res)
+                                vm.error = true;
+                                vm.errorMsg = res.msg;
+                            }
+                        },
+                        error:function(res){
+                            mapErrorStatus(res)
+                        }
+                    });
                 }
-			});
+            })
+            
         },
         //关闭编辑页面
         closeCreatOrEdit(formName){
