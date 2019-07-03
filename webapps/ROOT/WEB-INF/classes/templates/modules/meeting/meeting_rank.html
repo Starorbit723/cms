@@ -92,7 +92,7 @@
                     <!--1级开始-->
                     <div v-for="(item,index) in rankForm.meetingRankJson" style="margin-bottom:15px;">
                         <el-row class="el-row-h60">
-                            <el-col :span="12">
+                            <el-col :span="18">
                                 <el-form-item label="榜单名称" style="margin:0;" label-width="17.5%">
                                     <el-input clearable type="text" v-model="item.rankTitle" auto-complete="off">
                                         <template slot="append">{{item.rankLevel}}级</template>
@@ -102,12 +102,6 @@
                             <el-col :span="2" :offset="1" class="el-row-h40">
                                 <el-button type="primary" style="width:100%" @click="addLv2(index)">+2级</el-button>
                             </el-col>
-                            <el-col :span="2" :offset="1" class="el-row-h40" v-if="index !== 0">
-                                <el-button type="primary" icon="el-icon-caret-top" style="width:100%" @click="moveUpLv1(index)"></el-button>
-                            </el-col>
-                            <el-col :span="2" :offset="1" class="el-row-h40" v-if="index !== (rankForm.meetingRankJson.length - 1)">
-                                <el-button type="primary" icon="el-icon-caret-bottom" style="width:100%" @click="moveDownLv1(index)"></el-button>
-                            </el-col>
                             <el-col class="el-row-h40" :span="2" :offset="1">
                                 <el-button style="width:100%" icon="el-icon-circle-close" @click="delLv1(index)"></el-button>
                             </el-col>
@@ -116,7 +110,7 @@
                         <!--2级开始-->
                         <div v-for="(item2,index2) in item.children">
                             <el-row class="el-row-h60">
-                                <el-col :span="11" :offset="1">
+                                <el-col :span="17" :offset="1">
                                     <el-form-item label="榜单名称" style="margin:0;" label-width="17.5%">
                                         <el-input clearable type="text" v-model="item2.rankTitle" auto-complete="off" placeholder="无内容请填写#">
                                             <template slot="append">{{item2.rankLevel}}级</template>
@@ -126,12 +120,6 @@
                                 <el-col :span="2" :offset="1" class="el-row-h40">
                                     <el-button type="primary" style="width:100%" @click="addLv3(index,index2)">+3级</el-button>
                                 </el-col>
-                                <el-col :span="2" :offset="1" class="el-row-h40" v-if="index2 !== 0">
-                                    <el-button type="primary" icon="el-icon-caret-top" style="width:100%" @click="moveUpLv2(index,index2)"></el-button>
-                                </el-col>
-                                <el-col :span="2" :offset="1" class="el-row-h40" v-if="index2 !== (item.children.length - 1)">
-                                    <el-button type="primary" icon="el-icon-caret-bottom" style="width:100%" @click="moveDownLv2(index,index2)"></el-button>
-                                </el-col>
                                 <el-col class="el-row-h40" :span="2" :offset="1">
                                     <el-button style="width:100%" icon="el-icon-circle-close" @click="delLv2(index,index2)"></el-button>
                                 </el-col>
@@ -140,7 +128,7 @@
                             <!--3级开始-->
                             <div v-for="(item3,index3) in item2.children">
                                 <el-row class="el-row-h60">
-                                    <el-col :span="10" :offset="2">
+                                    <el-col :span="16" :offset="2">
                                         <el-form-item label="榜单名称" style="margin:0;" label-width="17.5%">
                                             <el-input clearable type="text" v-model="item3.rankTitle" auto-complete="off" placeholder="无内容请填写#">
                                                 <template slot="append">{{item3.rankLevel}}级</template>
@@ -150,12 +138,6 @@
                                     <el-col :span="2" :offset="1" class="el-row-h40">
                                         <el-button type="primary" style="width:100%" @click="addLv4(index,index2,index3)">+4级</el-button>
                                     </el-col>
-                                    <el-col :span="2" :offset="1" class="el-row-h40" v-if="index3 !== 0">
-                                        <el-button type="primary" icon="el-icon-caret-top" style="width:100%" @click="moveUpLv3(index,index2,index3)"></el-button>
-                                    </el-col>
-                                    <el-col :span="2" :offset="1" class="el-row-h40" v-if="index3 !== (item2.children.length - 1)">
-                                        <el-button type="primary" icon="el-icon-caret-bottom" style="width:100%" @click="moveDownLv3(index,index2,index3)"></el-button>
-                                    </el-col>
                                     <el-col class="el-row-h40" :span="2" :offset="1">
                                         <el-button style="width:100%" icon="el-icon-circle-close" @click="delLv3(index,index2,index3)"></el-button>
                                     </el-col>
@@ -164,18 +146,12 @@
                                 <!--4级开始-->
                                 <div v-for="(item4,index4) in item3.children">
                                     <el-row class="el-row-h60">
-                                        <el-col :span="12" :offset="3">
+                                        <el-col :span="18" :offset="3">
                                             <el-form-item label="榜单名称" style="margin:0;" label-width="17.5%">
                                                 <el-input clearable type="text" v-model="item4.rankTitle" auto-complete="off">
                                                     <template slot="append">{{item4.rankLevel}}级</template>
                                                 </el-input>
                                             </el-form-item>
-                                        </el-col>
-                                        <el-col :span="2" :offset="1" class="el-row-h40" v-if="index4 !== 0">
-                                            <el-button type="primary" icon="el-icon-caret-top" style="width:100%" @click="moveUpLv4(index,index2,index3,index4)"></el-button>
-                                        </el-col>
-                                        <el-col :span="2" :offset="1" class="el-row-h40" v-if="index4 !== (item3.children.length - 1)">
-                                            <el-button type="primary" icon="el-icon-caret-bottom" style="width:100%" @click="moveDownLv4(index,index2,index3,index4)"></el-button>
                                         </el-col>
                                         <el-col class="el-row-h40" :span="2" :offset="1">
                                             <el-button style="width:100%" icon="el-icon-circle-close" @click="delLv4(index,index2,index3,index4)"></el-button>
