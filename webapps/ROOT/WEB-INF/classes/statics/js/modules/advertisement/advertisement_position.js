@@ -1,12 +1,14 @@
 var vm = new Vue({
     el: '#advertisement_position',
     data () {
-        var validateUrl = (rule, value, callback) => {
+        var searchCoper = (rule, value, callback) => {
             var urlReg = /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
-            if (value =='') {
-                callback(new Error('链接不能为空'));
-            } else if (!urlReg.test(value)) {
-                callback(new Error('链接格式不正确'));
+            if (value) {
+                if (value !== '#' && !urlReg.test(value)) {
+                    callback(new Error('链接格式不正确，如果无链接请填#'));
+                } else {
+                    callback();
+                }
             } else {
                 callback();
             }
@@ -176,7 +178,7 @@ var vm = new Vue({
                     { required: true, message: '描述不能为空', trigger: 'change' }
                 ],
                 focusUrl:[
-                    { required: true, validator: validateUrl, trigger: 'change' }
+                    { required: true, validator: searchCoper, trigger: 'change' }
                 ]
             },
             //广告图库相关
