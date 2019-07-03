@@ -12,7 +12,7 @@ var vm = new Vue({
             }
         }
         return {
-            showChildPage: true,
+            showChildPage:false,
             creatOrEdit:0,//0新建  1修改
             //搜索提交
             searchForm:{
