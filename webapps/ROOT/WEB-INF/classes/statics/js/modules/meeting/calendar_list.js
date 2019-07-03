@@ -3,7 +3,7 @@ var vm = new Vue({
     data(){
         var validateId = (rule, value, callback) => {
             var urlReg = /^[0-9]*[1-9][0-9]*$/;
-            if (value.trim() == '') {
+            if (!value) {
                 callback(new Error('所属会议编号为必填项'));
             } else if (value !== '' && !urlReg.test(value)) {
                 callback(new Error('所属会议编号只能为正整数'));
@@ -93,7 +93,8 @@ var vm = new Vue({
         //添加会场---1级维度
         addDaly () {
             let Lv1Length = this.calendarForm.meetingAgendaJson.length
-            if (this.calendarForm.meetingAgendaJson[Lv1Length - 1].labelText.trim() !== '' && this.calendarForm.meetingAgendaJson[Lv1Length - 1].timeValue !== '') {
+            if (this.calendarForm.meetingAgendaJson[Lv1Length - 1].labelText.trim() !== '' && this.calendarForm.meetingAgendaJson[Lv1Length - 1].timeValue) {
+                console.log(this.calendarForm.meetingAgendaJson[Lv1Length - 1].timeValue)
                 this.calendarForm.meetingAgendaJson.push({
                     type:'date',
                     labelText:'',
@@ -180,7 +181,7 @@ var vm = new Vue({
                     contentText:''
                 })
             } else {
-                if ((currentLv3.children[currentLv3.children.length - 1].labelText.trim() !== '' || currentLv3.children[currentLv3.children.length - 1].labelText.trim() == '#') && currentLv3.children[currentLv3.children.length - 1].timeRange !== '') {
+                if ((currentLv3.children[currentLv3.children.length - 1].labelText.trim() !== '' || currentLv3.children[currentLv3.children.length - 1].labelText.trim() == '#') && currentLv3.children[currentLv3.children.length - 1].timeRange) {
                     this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children.push({
                         type:'issue',
                         timeRange:'',

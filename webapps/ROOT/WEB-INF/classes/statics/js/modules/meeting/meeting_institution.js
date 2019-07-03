@@ -75,11 +75,11 @@ var vm = new Vue({
             multipleSelection: [],
             //自媒体图库弹出层相关
             showMeidaLibDialog:false,
-            searchSelfmediaimgForm:{
-                picTitle:'',
-                picType:'4'//0封面图库 1内容图库 2图为图库 3广告  4自媒体
+            searchCoperForm:{
+                cooperationName:'',
+                cooperationStatus:'0'
             },
-            selfmediaimgTableData:[],
+            coperTableData:[],
             pagination3: {
                 currPage: 1,
                 totalCount:0,
@@ -100,7 +100,7 @@ var vm = new Vue({
         },
         handleCurrentChange3 (val) {
             this.pagination3.currPage = val
-            this.searchSelfmediaImg()
+            this.searchCoper()
         },
         //开始搜索专题列表
         startSearch (type) {
@@ -196,7 +196,7 @@ var vm = new Vue({
         addCopLv3(index,index2) {
             this.chooseIndex = index
             this.chooseIndex2 = index2
-            this.searchSelfmediaImg(0)
+            this.searchCoper(0)
             this.showMeidaLibDialog = true
         },
         //前移
@@ -218,9 +218,9 @@ var vm = new Vue({
             this.meetingCopForm.meetingCooperationJson[index].children[index2].children = moveArr
         },
         //搜索图库
-        searchSelfmediaImg (type){
+        searchCoper (type){
             var self = this
-            var data = self.searchSelfmediaimgForm
+            var data = self.searchCoperForm
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -235,13 +235,13 @@ var vm = new Vue({
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
-                url: "/picture/list",
+                url: "/cooperation/list",
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){
-                        self.searchSelfmediaimgForm.picTitle = ''
-                        self.selfmediaimgTableData = res.page.list
+                        self.searchCoperForm.cooperationName = ''
+                        self.coperTableData = res.page.list
                         self.pagination3 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
@@ -260,11 +260,11 @@ var vm = new Vue({
             });
         },
         //添加图片至页面
-        addThisImg (item) {
+        addThisCoper (item) {
             console.log('单个选择添加某个logo',item)
             this.meetingCopForm.meetingCooperationJson[this.chooseIndex].children[this.chooseIndex2].children.push({
-                title: item.picTitle,
-                picUrl: item.picUrl
+                title: item.cooperationName,
+                picUrl: item.cooperationImg
             });
             this.backToEdit()
         },
@@ -277,8 +277,8 @@ var vm = new Vue({
             console.log(this.multipleSelection)
             for (let i=0; i < this.multipleSelection.length; i++) {
                 this.meetingCopForm.meetingCooperationJson[this.chooseIndex].children[this.chooseIndex2].children.push({
-                    title: this.multipleSelection[i].picTitle,
-                    picUrl: this.multipleSelection[i].picUrl
+                    title: this.multipleSelection[i].cooperationName,
+                    picUrl: this.multipleSelection[i].cooperationImg
                 });
             }
             this.backToEdit()
@@ -294,11 +294,11 @@ var vm = new Vue({
             this.multipleSelection = []
             this.chooseIndex = ''
             this.chooseIndex2 = ''
-            this.searchSelfmediaimgForm = {
-                picTitle:'',
-                picType:'4'
+            this.searchCoperForm = {
+                cooperationName:'',
+                cooperationStatus:'0'
             }
-            this.selfmediaimgTableData = []
+            this.coperTableData = []
             this.pagination3 = {
                 currPage: 1,
                 totalCount:0,

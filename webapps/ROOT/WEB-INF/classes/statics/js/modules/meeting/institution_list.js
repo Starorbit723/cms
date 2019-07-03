@@ -70,10 +70,10 @@ var vm = new Vue({
             },
             coperFormRules:{
                 cooperationName: [
-                    { required: true, message: '嘉宾姓名不能为空', trigger: 'change' }
+                    { required: true, message: '机构姓名不能为空', trigger: 'change' }
                 ],
                 cooperationImg:[
-                    { required: true, message: '请上传嘉宾头像', trigger: 'change' }
+                    { required: true, message: '请上传机构头像', trigger: 'change' }
                 ],
                 cooperationPriority: [
                     { validator: validatePriority, trigger: 'change' }
@@ -139,13 +139,13 @@ var vm = new Vue({
                 }
             });
         },
-        //新增或修改嘉宾
+        //新增或修改机构
         addOrEditCoper(type,item) {
             var self = this
             if(type == 0){
                 self.showChildPage = true
                 self.creatOrEdit = 0
-                console.log('新增嘉宾')
+                console.log('新增机构')
             } else {
                 self.showChildPage = true
                 self.creatOrEdit = 1
@@ -154,7 +154,7 @@ var vm = new Vue({
                 console.log('修改机构','原始',self.originUrl,'表单',self.coperForm.cooperationImg)
             }
         },
-        //删除图片
+        //删除
         deleteThisCoper (item){
             var self = this
             self.$confirm('确实要删除该机构吗?', '提示', {
