@@ -49,14 +49,17 @@ var vm = new Vue({
                 meetingCooperationJson:[{ //JSON数据
                     type:'titleLv1',
                     labelText:'',
-                    children:[{
-                        type:'titleLv2',
-                        labelText:'',
-                        children:[{
-                            title:'',
-                            picUrl:''
-                        }]
-                    }]
+                    children:[
+                        // {
+                        // type:'titleLv2',
+                        // labelText:'',
+                        // children:[{
+                        //     title:'',
+                        //     picUrl:''
+                        // }
+                    //     ]
+                    // }
+                    ]
                 }],
             
             },
