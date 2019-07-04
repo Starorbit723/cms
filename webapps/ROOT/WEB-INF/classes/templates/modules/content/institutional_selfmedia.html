@@ -225,7 +225,7 @@
             
                 <!--自媒体图库弹出层开始-->
                 <el-dialog title="自媒体图库" :visible.sync="showMeidaLibDialog" width="100%" :fullscreen="true" :show-close="false">
-                    <el-form :model="searchSelfmediaimgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right">
+                    <el-form :model="searchSelfmediaimgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
                         <el-row class="el-row-h60">
                             <el-col :span="16">
                                 <el-form-item label="图片名称" style="margin:0;">

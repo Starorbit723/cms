@@ -10,7 +10,7 @@ var vm = new Vue({
                     callback();
                 }
             } else {
-                callback();
+                callback(new Error('链接格式不正确，如果无链接请填#'));
             }
         };
         return {
