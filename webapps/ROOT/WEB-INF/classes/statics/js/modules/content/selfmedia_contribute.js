@@ -13,7 +13,8 @@ var vm = new Vue({
         searchForm:{
             draftTitle:'',
             startTime:'',
-            endTime:''
+            endTime:'',
+            draftStatus:'0'
         },
         //投稿文章列表
         articleData:[
@@ -178,7 +179,7 @@ var vm = new Vue({
             }).then(() => {
                 var data = {
                     draftId: item.draftId.toString(),
-                    draftStatus: '0'
+                    draftStatus: '1'
                 }
                 $.ajax({
                     type: "POST",
