@@ -52,96 +52,22 @@ var vm = new Vue({
             activeNames: ['1','2','3','4','5','6','7','8','9','10'],
             //文章基本信息
             meetingForm:{
-                meetingId:'',//主键
+                meetingId:'',//会议编号
                 meetingTitle:'',//标题
-                meetingStarTime:'',//开始时间
-                meetingEndTime:'',//结束时间
-                meetingImg:'',//封面图
-                meetingType:'',//类型
-                meetingUrl:'',//会议链接
-                meetingRegion:[],//会议所在区域-----前端自用字段
-                meetingTimes:[],//会议时间数组-----前端自用字段
-                meetingBaomingTimes:[], //会议报名时间-----前端自用字段
-                meetingProvince:'',//省
-                meetingCity:'',//市
-                meetingArea:'',//区
-                meetingAddress:'',//详细地址
-                meetingOrganizers:'',//举办方
-                meetingDesc:'',//简介
                 meetingCrtUserId:'',//创建人编号
-                meetingCrtTime:'',//创建时间
                 meetingModUserId:'',//更新人编号
+                meetingCrtTime:'',//创建时间
                 meetingModTime:'',//更新时间
-                meetingStatus:'',//会议状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
-                meetingEnrollStarTime:'',//报名开始时间
-                meetingEnrollEndTime:'',//报名结束时间
-                meetingCrtUserName:'',//创建人姓名
-                meetingJsonData:{ //前端渲染大数据
-                    headPic:{
-                        isShow: true,
-                        picUrl: '',
-                        isShowSelfConfig: true,
-                        selfConfigZone:[{
-                            type:'text',
-                            titleCn:'标题',
-                            titleEn:'TITLE',
-                            innerText:'内容',
-                        },{
-                            type:'img',
-                            titleCn:'标题',
-                            titleEn:'TITLE',
-                            imgUrl:'https://cvinfo-test.obs.cn-north-1.myhuaweicloud.com/head/6546992352198656.jpg',
-                        }]
-                    },
-                    introduce:{
-                        isShow: true,
-                        isShowSelfConfig: true,
-                        selfConfigZone:[]
-                    },
-                    guest:{
-                        isShow: true,
-                        isShowSelfConfig: true,
-                        selfConfigZone:[]
-                    },
-                    timeLine:{
-                        isShow: true,
-                        timeConfig:[{
-                            singleDate:'',
-                            list:[{
-                                time:'',
-                                text:''
-                            }]
-                        }],
-                        isShowSelfConfig: true,
-                        selfConfigZone:[]
-                    }
-                }
+                meetingStatus:'',//状态 0 正常 1下线
+                meetingJson:{
+                    introduce:[{
+                        paragraphText:'1111111'
+                    }]
+                },
             },
             meetingFormRules:{
                 meetingTitle: [
-                    { required: true, message: '会议标题不能为空', trigger: 'change' },
-                    { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
-                ],
-                meetingTimes:[
-                    { type: 'array', required: true, validator: validateMeetingTimes, trigger: 'change' }
-                ],
-                meetingBaomingTimes:[
-                    { type: 'array', validator: validateMeetingBaomingTimes, trigger: 'change' }
-                ],
-                meetingRegion:[
-                    { type: 'array', required: true, message: '所在区域不能为空', trigger: 'change' }
-                ],
-                meetingType:[
-                    { required: true, message: '会议类型不能为空', trigger: 'change' }
-                ],
-                meetingUrl:[
-                    { required: true, validator: validateUrl, trigger: 'change' }
-                ],
-                meetingImg:[
-                    { required: true, message: '请选择会议封面图', trigger: 'change' }
-                ],
-                meetingDesc:[
-                    { required: true, message: '请填写会议简介', trigger: 'change' }
+                    { required: true, message: '会议标题不能为空', trigger: 'change' }
                 ]
             },
             //封面图库相关
@@ -189,92 +115,19 @@ var vm = new Vue({
         console.log('type',this.typeOfPage)
     },
     methods:{
-        //省市区发生变化时
-        handleRegionChange(val){
-            for (let i = 0; i < this.RegionOptions.length; i++) {
-                if (this.RegionOptions[i].value == val[0]) {
-                    this.meetingForm.meetingProvince = this.RegionOptions[i].label
-                    for (let j = 0; j <this.RegionOptions[i].children.length; j ++) {
-                        if (this.RegionOptions[i].children[j].value == val[1]) {
-                            this.meetingForm.meetingCity = this.RegionOptions[i].children[j].label
-                            for (let k = 0; k < this.RegionOptions[i].children[j].children.length; k++) {
-                                if (this.RegionOptions[i].children[j].children[k].value == val[2]) {
-                                    this.meetingForm.meetingArea = this.RegionOptions[i].children[j].children[k].label
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            console.log('省市区发生变化',this.meetingForm.meetingProvince,this.meetingForm.meetingCity,this.meetingForm.meetingArea)
-        },
-        //会议起止时间变化
-        handleMeetingTimesChange(val){
-            if (val !== null) {
-                this.meetingForm.meetingStarTime = val[0]
-                this.meetingForm.meetingEndTime = val[1]
-            } else {
-                this.meetingForm.meetingStarTime = ''
-                this.meetingForm.meetingEndTime = ''
-            }
-            console.log('会议时间变化',val,this.meetingForm.meetingStarTime,this.meetingForm.meetingEndTime)
-        },
-        //会议报名时间变化
-        handleMeetingBaomingTimesChange(val){
-            if (val !== null) {
-                this.meetingForm.meetingEnrollStarTime = val[0]
-                this.meetingForm.meetingEnrollEndTime = val[1]
-            } else {
-                this.meetingForm.meetingEnrollStarTime = '#'
-                this.meetingForm.meetingEnrollEndTime = '#'
-            }
-            console.log('报名时间变化',val,this.meetingForm.meetingEnrollStarTime,this.meetingForm.meetingEnrollEndTime)
-        },
-        //折叠面板改变
-        handleChangeCollapse(){
-        },
-        //新增文案楼层
-        addNewSelfConfigFloor(objName,type){
-            var self = this
-            let currentLength = this.meetingForm.meetingJsonData[objName].selfConfigZone.length
-            if (currentLength >= 1) { //现有一条以上数据
-                let lastItem = this.meetingForm.meetingJsonData[objName].selfConfigZone[currentLength - 1]
-                console.log('lastItem',lastItem)
-                //判断上一篇内容是否填入，如果没填入不能进行后续新建
-                if (lastItem.type == 'text' && (lastItem.titleCn.trim() == '' || lastItem.titleEn.trim() == '' || lastItem.innerText.trim() == '')) {
-                    self.$message.error('上一项内容未填写完成，无法新建新内容条目')
-                    return
-                } else if (lastItem.type == 'img' && (lastItem.titleCn.trim() == '' || lastItem.titleEn.trim() == '' || lastItem.imgUrl.trim() == '')) {
-                    self.$message.error('上一项内容未填写完成，无法新建新内容条目')
-                    return
-                }
-            }
-            if (type == 'text') {
-                self.meetingForm.meetingJsonData[objName].selfConfigZone.push({
-                    type:'text',
-                    titleCn:'',
-                    titleEn:'',
-                    innerText:'',
-                })
-            } else if (type == 'img') {
-                self.meetingForm.meetingJsonData[objName].selfConfigZone.push({
-                    type:'img',
-                    titleCn:'',
-                    titleEn:'',
-                    imgUrl:'',
-                })
-            }
-            
-        },
-        //移除某一个自定义条目
-        removeSelfConfigItem (objName,index){
-            console.log(objName,index,this.meetingForm.meetingJsonData[objName].selfConfigZone)
-            this.meetingForm.meetingJsonData[objName].selfConfigZone.splice(index, 1); 
-            console.log(this.meetingForm.meetingJsonData[objName].selfConfigZone)
-        },
-        //会议日程——删除某一天日程中的某一条
-        delCalendar(index){
+        handleChangeCollapse () {
 
+        },
+        //添加会议介绍段落
+        addParagraph () {
+            let Lv1Length = this.meetingForm.meetingJson.introduce.length
+            if (this.meetingForm.meetingJson.introduce[Lv1Length - 1].paragraphText.trim() !== '') {
+                this.meetingForm.meetingJson.introduce.push({
+                    paragraphText:''
+                })
+            } else {
+                this.$message.error('请完成上一个段落的内容')
+            }
         },
         //封面图页面变化
         handleCurrentChange (val) {
