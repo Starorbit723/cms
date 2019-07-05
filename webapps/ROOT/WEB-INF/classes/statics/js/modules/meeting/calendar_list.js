@@ -22,9 +22,7 @@ var vm = new Vue({
                 startTime:'',
                 endTime:''
             },
-            tableData:[{
-
-            }],
+            tableData:[{}],
             //分页器相关
             pagination1: {
                 currPage: 1,
@@ -46,20 +44,24 @@ var vm = new Vue({
                     labelText:'',
                     timeValue:'',
                     children:[
-                    //     {
-                    //     type:'place',
-                    //     labelText:'',
-                    //     children:[{
-                    //         type:'theme',
-                    //         labelText:'',
-                    //         children:[{
-                    //             type:'issue',
-                    //             timeRange:'',
-                    //             labelText:'',        
-                    //             contentText:''
-                    //         }]
-                    //     }]
-                    // }
+                        //     {
+                        //     type:'place',
+                        //     labelText:'',
+                        //     children:[{
+                        //         type:'theme',
+                        //         labelText:'',
+                        //         children:[{
+                        //             type:'issue',
+                        //             timeRange:'',
+                        //             labelText:'',        
+                        //             children:[{
+                        //                 type:'item',
+                        //                 labelText:'',
+                        //                 labelContent:''
+                        //             }]
+                        //         }]
+                        //     }]
+                        // }
                     ]
                 }],
             },
@@ -178,7 +180,7 @@ var vm = new Vue({
                     type:'issue',
                     timeRange:'',
                     labelText:'',        
-                    contentText:''
+                    children:[]
                 })
             } else {
                 if ((currentLv3.children[currentLv3.children.length - 1].labelText.trim() !== '' || currentLv3.children[currentLv3.children.length - 1].labelText.trim() == '#') && currentLv3.children[currentLv3.children.length - 1].timeRange) {
@@ -186,7 +188,7 @@ var vm = new Vue({
                         type:'issue',
                         timeRange:'',
                         labelText:'',        
-                        contentText:''
+                        children:[]
                     })
                 } else {
                     this.$message.error('请填写上一个议题相关内容')
@@ -198,6 +200,34 @@ var vm = new Vue({
         delIssue (index,index2,index3,index4) {
             console.log(index,index2,index3,index4)
             this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children.splice(index4, 1);
+        },
+        //添加条目
+        addItem(index,index2,index3,index4){
+            console.log(index,index2,index3,index4)
+            let currentLv4 = this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4]
+            console.log(currentLv4)
+            if (currentLv4.children.length == 0) {
+                this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4].children.push({
+                    type:'item',
+                    labelText:'',
+                    labelContent:''
+                })
+            } else {
+                if (currentLv4.children[currentLv4.children.length - 1].labelText.trim() !== '' && currentLv4.children[currentLv4.children.length - 1].labelContent.trim() !== '') {
+                    this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4].children.push({
+                        type:'item',
+                        labelText:'',
+                        labelContent:''
+                    })
+                } else {
+                    this.$message.error('请填写上一个条目相关内容')
+                }
+            }
+        },
+        //删除条目
+        delItem(index,index2,index3,index4,index5){
+            console.log(index,index2,index3,index4,index5)
+            this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4].children.splice(index5, 1);
         },
         //保存
         submitCreatEdit (formName) {

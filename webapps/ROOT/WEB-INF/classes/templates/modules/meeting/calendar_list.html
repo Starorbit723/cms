@@ -165,7 +165,7 @@
                                     <!--议题---4级维度开始-->
                                     <div v-for="(item4,index4) in item3.children">
                                         <el-row class="el-row-h50">
-                                            <el-col :span="9" :offset="3">
+                                            <el-col :span="7" :offset="3">
                                                 <el-form-item label-width="22%" label="议题" prop="labelText" style="margin:0;">
                                                     <el-input
                                                         clearable
@@ -174,7 +174,7 @@
                                                         auto-complete="off"></el-input>
                                                 </el-form-item>
                                             </el-col>
-                                            <el-col class="el-row-h40" :span="8">
+                                            <el-col class="el-row-h40" :span="6">
                                                 <el-form-item label-width="5%" label="" prop="timeRange" style="margin:0;">
                                                     <el-time-picker
                                                         style="width: 100%;"
@@ -189,21 +189,42 @@
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="3" :offset="1" class="el-row-h40">
+                                                <el-button type="primary" style="width:100%" @click="addItem(index,index2,index3,index4)">添加条目</el-button>
+                                            </el-col>
+                                            <el-col :span="3" :offset="1" class="el-row-h40">
                                                 <el-button style="width:100%" @click="delIssue(index,index2,index3,index4)">删除议题</el-button>
                                             </el-col>
                                         </el-row>
-                                        <el-row style="margin-bottom:20px;">
-                                            <el-col :span="19" :offset="5">
-                                                <el-input
-                                                    resize="none"
-                                                    style="width: 100%;"
-                                                    type="textarea"
-                                                    placeholder=""
-                                                    v-model="item4.contentText"
-                                                    :autosize="{minRows: 2, maxRows: 4}">
-                                                </el-input>
-                                            </el-col>
-                                        </el-row>
+
+                                        <!--条目---5级维度开始-->
+                                        <div v-for="(item5,index5) in item4.children">
+                                            <el-row class="el-row-h50">
+                                                <el-col :span="4" :offset="4">
+                                                    <el-form-item label-width="13%" label="" prop="labelText" style="margin:0;">
+                                                        <el-input
+                                                            clearable
+                                                            type="text"
+                                                            placeholder="条目标题"
+                                                            v-model="item5.labelText"
+                                                            auto-complete="off"></el-input>
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="12">
+                                                    <el-form-item label-width="3%" label="" prop="labelContent" style="margin:0;">
+                                                        <el-input
+                                                            clearable
+                                                            type="text"
+                                                            placeholder="条目内容"
+                                                            v-model="item5.labelContent"
+                                                            auto-complete="off"></el-input>
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="3" :offset="1" class="el-row-h40">
+                                                    <el-button style="width:100%" @click="delItem(index,index2,index3,index4,index5)">删除条目</el-button>
+                                                </el-col>
+                                            </el-row>
+                                        </div>
+                                        <!--条目---5级维度结束-->
 
                                     </div>
                                     <!--议题---4级维度结束-->
