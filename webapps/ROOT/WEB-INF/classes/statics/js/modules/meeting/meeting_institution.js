@@ -379,6 +379,13 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
+                    //验证一级表单是否填写完成
+                    for (let i = 0; i < self.meetingCopForm.meetingCooperationJson.length; i++) {
+                        if (self.meetingCopForm.meetingCooperationJson[i].labelText.trim() == '') {
+                            self.$message.error('还有机构未填写完成')
+                            return
+                        }
+                    }
                     if (self.creatOrEdit == 0) {
                         var reqUrl = '/meeting/cooperation/save'
                     } else if (self.creatOrEdit == 1) {

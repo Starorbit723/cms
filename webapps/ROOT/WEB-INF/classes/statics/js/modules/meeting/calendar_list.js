@@ -234,12 +234,20 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
+                    //验证一级表单是否填写完成
+                    for (let i = 0; i < self.calendarForm.meetingAgendaJson.length; i++) {
+                        if (self.calendarForm.meetingAgendaJson[i].labelText.trim() == '' || (!self.calendarForm.meetingAgendaJson[i].timeValue)) {
+                            self.$message.error('还有日程未填写完成')
+                            return
+                        }
+                    }
                     if (self.creatOrEdit == 0) {
                         var reqUrl = '/meeting/agenda/save'
                     } else if (self.creatOrEdit == 1) {
                         var reqUrl = '/meeting/agenda/update'
                     }
                     var data = JSON.parse(JSON.stringify(self.calendarForm))
+                    console.log('准备提交保存的Form',data)
                     $.base64.utf8encode = true;
                     var jsonString = JSON.stringify(data.meetingAgendaJson);
                     var json64 = $.base64.btoa(jsonString);

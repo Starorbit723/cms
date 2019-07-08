@@ -366,6 +366,13 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
+                    //验证一级表单是否填写完成
+                    for (let i = 0; i < self.rankForm.meetingRankJson.length; i++) {
+                        if (self.rankForm.meetingRankJson[i].rankTitle.trim() == '') {
+                            self.$message.error('还有榜单未填写完成')
+                            return
+                        }
+                    }
                     if (self.creatOrEdit == 0) {
                         var reqUrl = '/meeting/rank/save'
                     } else if (self.creatOrEdit == 1){
