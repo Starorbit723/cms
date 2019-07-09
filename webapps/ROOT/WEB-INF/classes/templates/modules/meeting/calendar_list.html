@@ -42,7 +42,10 @@
                 <!--表格查询结果区-->
                 <div class="cv_content_square">
                     <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
-                        <el-table-column prop="meetingAgendaMeetingId" label="所属会议编号" ></el-table-column>
+                        <el-table-column prop="meetingAgendaMeetingId" width="110" label="所属会议编号" ></el-table-column>
+                        <el-table-column prop="meetingTitle" label="所属会议名称" ></el-table-column>
+                        <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
+                        <el-table-column prop="modUserName" label="修改人" width="90"></el-table-column>
                         <el-table-column prop="meetingAgendaCrtTime" label="创建时间" width="200"></el-table-column>
                         <el-table-column prop="meetingAgendaModTime" label="修改时间" width="200"></el-table-column>
                         <el-table-column label="操作" width="100" fixed="right">
@@ -75,9 +78,9 @@
                     <el-form :model="calendarForm" :rules="calendarFormRules"  ref="calendarForm" status-icon class="demo-ruleForm" label-width="13%" label-position="right">
 
                         <!--日程--1级维度开始-->
-                        <el-row class="el-row-h80">
-                            <el-col :span="16">
-                                <el-form-item label="所属会议编号" label-width="20%" prop="meetingAgendaMeetingId" style="margin:0;">
+                        <el-row class="el-row-h70">
+                            <el-col>
+                                <el-form-item label="所属会议编号" label-width="16%" prop="meetingAgendaMeetingId" style="margin:0;">
                                     <el-input
                                         clearable
                                         type="text"
@@ -85,11 +88,17 @@
                                         auto-complete="off"></el-input>
                                 </el-form-item>
                             </el-col>
-                            <el-col class="el-row-h40" :span="3" :offset="1">
-                                <el-button type="primary" style="width:100%" @click="submitCreatEdit('calendarForm')">保存</el-button>
-                            </el-col>
-                            <el-col class="el-row-h40" :span="3" :offset="1">
-                                <el-button type="primary" style="width:100%" @click="closeCreatOrEdit('calendarForm')">取消</el-button>
+                        </el-row>
+                        <el-row class="el-row-h80">
+                            <el-col>
+                                <el-form-item label="所属会议名称" label-width="16%" prop="meetingTitle" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        v-model="calendarForm.meetingTitle"
+                                        auto-complete="off"
+                                        :disabled="true"></el-input>
+                                </el-form-item>
                             </el-col>
                         </el-row>
                         <div v-for="(item,index) in calendarForm.meetingAgendaJson">
@@ -244,6 +253,15 @@
                             </el-col>
                         </el-row>
                     </el-form>
+
+                    <el-row style="margin-top:30px;">
+                        <el-col class="el-row-h40" :span="3" :offset="8">
+                            <el-button type="primary" style="width:100%" @click="submitCreatEdit('calendarForm')">保存</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="3" :offset="2">
+                            <el-button type="primary" style="width:100%" @click="closeCreatOrEdit('calendarForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
                 </div>
             </div>
             <!------------------新增修改日程结束------------------>

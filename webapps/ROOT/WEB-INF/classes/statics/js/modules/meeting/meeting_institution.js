@@ -28,6 +28,9 @@ var vm = new Vue({
                 meetingCooperationCrtTime:'',//
                 meetingCooperationModTime:'',//
                 meetingCooperationStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingCooperationJson:'',//
             }],
             //分页器相关
@@ -46,6 +49,9 @@ var vm = new Vue({
                 meetingCooperationCrtTime:'',//
                 meetingCooperationModTime:'',//
                 meetingCooperationStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingCooperationJson:[{ //JSON数据
                     type:'titleLv1',
                     labelText:'',
@@ -66,8 +72,7 @@ var vm = new Vue({
             meetingCopFormRules:{
                 meetingCooperationMeetingId: [
                     { required: true, validator: validateId, trigger: 'change' }
-                ]
-                
+                ],         
             },
             //当前打开图库时的索引记录
             chooseIndex:'',
@@ -432,6 +437,9 @@ var vm = new Vue({
                 meetingCooperationCrtTime:'',//
                 meetingCooperationModTime:'',//
                 meetingCooperationStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingCooperationJson:[{ //JSON数据
                     type:'titleLv1',
                     labelText:'',

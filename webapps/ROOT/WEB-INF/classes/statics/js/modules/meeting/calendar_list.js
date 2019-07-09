@@ -39,6 +39,9 @@ var vm = new Vue({
                 meetingAgendaCrtTime:'',//
                 meetingAgendaModTime:'',//
                 meetingAgendaStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingAgendaJson:[{//日程JSON数据
                     type:'date',
                     labelText:'',
@@ -290,6 +293,9 @@ var vm = new Vue({
                 agendaCrtTime:'',//
                 agendaModTime:'',//
                 agendaStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingAgendaJson:[{
                     type:'date',
                     labelText:'',

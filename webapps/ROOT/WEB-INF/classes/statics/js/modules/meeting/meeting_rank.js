@@ -28,6 +28,9 @@ var vm = new Vue({
                 meetingRankCrtTime:'',//
                 meetingRankModTime:'',//
                 meetingRankStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingRankJson:[],//
             }],
             //分页器相关
@@ -46,6 +49,9 @@ var vm = new Vue({
                 meetingRankCrtTime:'',//
                 meetingRankModTime:'',//
                 meetingRankStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingRankJson:[{
                         rankLevel:'1',
                         rankTitle:'',
@@ -419,6 +425,9 @@ var vm = new Vue({
                 meetingRankCrtTime:'',//
                 meetingRankModTime:'',//
                 meetingRankStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingRankJson:[{
                         rankLevel:'1',
                         rankTitle:'',

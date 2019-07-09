@@ -27,7 +27,10 @@ var vm = new Vue({
                 meetingGuestModUserId:'',
                 meetingGuestCrtTime:'',
                 meetingGuestModTime:'',
-                meetingGuestStatu:'',//状态 0正常 1删除
+                meetingGuestStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingGuestJson:'',//json
             }],
             //分页器相关
@@ -45,7 +48,10 @@ var vm = new Vue({
                 meetingGuestModUserId:'',
                 meetingGuestCrtTime:'',
                 meetingGuestModTime:'',
-                meetingGuestStatu:'',//状态 0正常 1删除
+                meetingGuestStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingGuestJson:[
                     // {
                     //    guestName:'',
@@ -253,8 +259,8 @@ var vm = new Vue({
             this.chooseIndex = ''
             this.chooseIndex2 = ''
             this.searchGuestForm = {
-                picTitle:'',
-                picType:'4'
+                guestName:'',
+                guestStatus:'0'
             }
             this.guestTableData = []
             this.pagination3 = {
@@ -382,7 +388,10 @@ var vm = new Vue({
                 meetingGuestModUserId:'',
                 meetingGuestCrtTime:'',
                 meetingGuestModTime:'',
-                meetingGuestStatu:'',//状态 0正常 1删除
+                meetingGuestStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingGuestJson:[],//json
             }
             this.showChildPage = false
