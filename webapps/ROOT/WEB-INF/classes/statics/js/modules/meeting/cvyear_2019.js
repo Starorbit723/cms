@@ -329,6 +329,7 @@ var vm = new Vue({
                                 if(res.code == 200){
                                     console.log('保存会议返回',res)
                                     self.$message.success('发布成功')
+                                    self.ajaxController = true
                                 }else{
                                     self.ajaxController = true
                                     mapErrorStatus(res)

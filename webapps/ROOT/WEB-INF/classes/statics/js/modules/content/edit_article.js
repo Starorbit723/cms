@@ -257,7 +257,7 @@ var vm = new Vue({
                     if(res.code == 200){
                         console.log('自媒体下拉列表返回：', res)
                         self.selfmediaOptions = res.page.list
-
+                        
                     } else {
                         mapErrorStatus(res)
                         vm.error = true;
