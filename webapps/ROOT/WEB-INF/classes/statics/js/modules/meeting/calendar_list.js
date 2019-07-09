@@ -52,7 +52,7 @@ var vm = new Vue({
                         //         labelText:'',
                         //         children:[{
                         //             type:'issue',
-                        //             timeRange:'',
+                        //             timeRange:[],
                         //             labelText:'',        
                         //             children:[{
                         //                 type:'item',
@@ -213,7 +213,7 @@ var vm = new Vue({
                     labelContent:''
                 })
             } else {
-                if (currentLv4.children[currentLv4.children.length - 1].labelText.trim() !== '' && currentLv4.children[currentLv4.children.length - 1].labelContent.trim() !== '') {
+                if (currentLv4.children[currentLv4.children.length - 1].labelContent.trim() !== '') {
                     this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4].children.push({
                         type:'item',
                         labelText:'',
