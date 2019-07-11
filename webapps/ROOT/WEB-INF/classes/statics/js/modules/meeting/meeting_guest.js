@@ -228,6 +228,8 @@ var vm = new Vue({
             console.log('单个选择添加某个logo',item)
             this.meetingGuestForm.meetingGuestJson.push({
                 guestName: item.guestName,
+                guestPosition:item.guestPosition,
+                guestCompany:item.guestCompany,
                 guestImg: item.guestImg
             });
             this.backToEdit()
@@ -242,6 +244,8 @@ var vm = new Vue({
             for (let i=0; i < this.multipleSelection.length; i++) {
                 this.meetingGuestForm.meetingGuestJson.push({
                     guestName: this.multipleSelection[i].guestName,
+                    guestPosition:this.multipleSelection[i].guestPosition,
+                    guestCompany:this.multipleSelection.guestCompany,
                     guestImg: this.multipleSelection[i].guestImg
                 });
             }
@@ -339,7 +343,7 @@ var vm = new Vue({
         },
 
         //新建或编辑保存--优先上传图片，再提交保存
-        submitCreatEdit(formName) {
+        testSubmit(formName) {
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
