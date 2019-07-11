@@ -79,7 +79,8 @@
                                 clearable
                                 type="text"
                                 v-model="rankForm.meetingRankMeetingId"
-                                auto-complete="off"></el-input>
+                                auto-complete="off"
+                                :disabled="creatOrEdit == 1"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -204,7 +205,7 @@
 
                     <el-row style="margin-top:30px;">
                         <el-col class="el-row-h40" :span="3" :offset="8">
-                            <el-button type="primary" style="width:100%" @click="submitCreatEdit('rankForm')">保存</el-button>
+                            <el-button type="primary" style="width:100%" @click="testSubmit('rankForm')">保存</el-button>
                         </el-col>
                         <el-col class="el-row-h40" :span="3" :offset="2">
                             <el-button type="primary" style="width:100%" @click="closeEditCreatEdit('rankForm')">取消</el-button>

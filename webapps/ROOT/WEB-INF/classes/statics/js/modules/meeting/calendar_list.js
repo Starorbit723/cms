@@ -233,7 +233,7 @@ var vm = new Vue({
             this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4].children.splice(index5, 1);
         },
         //保存
-        submitCreatEdit (formName) {
+        testSubmit (formName) {
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
@@ -244,42 +244,78 @@ var vm = new Vue({
                             return
                         }
                     }
+                    //验证是否有重复数据
                     if (self.creatOrEdit == 0) {
-                        var reqUrl = '/meeting/agenda/save'
-                    } else if (self.creatOrEdit == 1) {
-                        var reqUrl = '/meeting/agenda/update'
-                    }
-                    var data = JSON.parse(JSON.stringify(self.calendarForm))
-                    console.log('准备提交保存的Form',data)
-                    $.base64.utf8encode = true;
-                    var jsonString = JSON.stringify(data.meetingAgendaJson);
-                    var json64 = $.base64.btoa(jsonString);
-                    data.meetingAgendaJson = json64
-                    console.log('6464',jsonString,json64)
-                    $.ajax({
-                        type: "POST",
-                        url: reqUrl,
-                        contentType: "application/json",
-                        data: JSON.stringify(data),
-                        dataType: "json",
-                        success: function(res){
-                            if(res.code == 200){
-                                self.$message.success('保存成功')
-                                self.startSearch()
-                                self.closeCreatOrEdit('calendarForm')
-                            }else{
-                                mapErrorStatus(res)
-                                vm.error = true;
-                                vm.errorMsg = res.msg;
-                            }
-                        },
-                        error:function(res){
-                            mapErrorStatus(res)
+                        var data = {
+                            meetingAgendaMeetingId:self.calendarForm.meetingAgendaMeetingId,
+                            meetingAgendaStatus:'0',
+                            page: '1',
+                            limit: '100'
                         }
-                    });
+                        $.ajax({
+                            type: "POST",
+                            url: "/meeting/agenda/list",
+                            contentType: "application/json",
+                            data: JSON.stringify(data),
+                            dataType: "json",
+                            success: function(res){
+                                if(res.code == 200){
+                                    if (res.page.list.length == 0) {
+                                        self.submitCreatEdit()
+                                    } else {
+                                        self.$message.error('该会议数据已存在，不能重复创建')
+                                    }
+                                }else{
+                                    mapErrorStatus(res)
+                                    vm.error = true;
+                                    vm.errorMsg = res.msg;
+                                }
+                            },
+                            error:function(res){
+                                mapErrorStatus(res)
+                            }
+                        });
+                    } else if (self.creatOrEdit == 1) {
+                        self.submitCreatEdit()
+                    }
                 }
             })
-            
+        },
+        submitCreatEdit() {
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.calendarForm))
+            console.log('准备提交保存的Form',data)
+            $.base64.utf8encode = true;
+            var jsonString = JSON.stringify(data.meetingAgendaJson);
+            var json64 = $.base64.btoa(jsonString);
+            data.meetingAgendaJson = json64
+            console.log('6464',jsonString,json64)
+            if (self.creatOrEdit == 0) {
+                var reqUrl = '/meeting/agenda/save'
+            } else if (self.creatOrEdit == 1) {
+                var reqUrl = '/meeting/agenda/update'
+            }
+            $.ajax({
+                type: "POST",
+                url: reqUrl,
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.$message.success('保存成功')
+                        self.startSearch()
+                        self.closeCreatOrEdit('calendarForm')
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
         },
         //关闭编辑页面
         closeCreatOrEdit(formName){

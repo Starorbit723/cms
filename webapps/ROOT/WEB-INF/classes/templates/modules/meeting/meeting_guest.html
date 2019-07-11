@@ -79,7 +79,8 @@
                                 clearable
                                 type="text"
                                 v-model="meetingGuestForm.meetingGuestMeetingId"
-                                auto-complete="off"></el-input>
+                                auto-complete="off"
+                                :disabled="creatOrEdit == 1"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -119,7 +120,7 @@
             <!--新建保存修改-->
             <el-row class="el-row-h60" style="margin-top:20px;">
                 <el-col :span="3" :offset="8">
-                    <el-button type="primary" style="width:100%" @click="submitCreatEdit('meetingGuestForm')">保存</el-button>
+                    <el-button type="primary" style="width:100%" @click="testSubmit('meetingGuestForm')">保存</el-button>
                 </el-col>
                 <el-col :span="3" :offset="2">
                     <el-button type="primary" style="width:100%" @click="closeCreatOrEdit('meetingGuestForm')">取消</el-button>

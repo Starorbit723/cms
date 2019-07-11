@@ -380,7 +380,7 @@ var vm = new Vue({
         },
 
         //新建或编辑保存--优先上传图片，再提交保存
-        submitCreatEdit(formName) {
+        testSubmit(formName) {
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
@@ -391,40 +391,78 @@ var vm = new Vue({
                             return
                         }
                     }
+                    //验证是否有重复数据
                     if (self.creatOrEdit == 0) {
-                        var reqUrl = '/meeting/cooperation/save'
-                    } else if (self.creatOrEdit == 1) {
-                        var reqUrl = '/meeting/cooperation/update'
-                    }
-                    var data = JSON.parse(JSON.stringify(self.meetingCopForm))
-                    $.base64.utf8encode = true;
-                    var jsonString = JSON.stringify(data.meetingCooperationJson);
-                    var json64 = $.base64.btoa(jsonString);
-                    data.meetingCooperationJson = json64
-                    console.log('6464',jsonString,json64)
-                    $.ajax({
-                        type: "POST",
-                        url: reqUrl,
-                        contentType: "application/json",
-                        data: JSON.stringify(data),
-                        dataType: "json",
-                        success: function(res){
-                            if(res.code == 200){
-                                self.$message.success('保存成功')
-                                self.startSearch()
-                                self.closeCreatOrEdit('meetingCopForm')
-                            }else{
-                                mapErrorStatus(res)
-                                vm.error = true;
-                                vm.errorMsg = res.msg;
-                            }
-                        },
-                        error:function(res){
-                            mapErrorStatus(res)
+                        var data = {
+                            meetingCooperationMeetingId:self.meetingCopForm.meetingCooperationMeetingId,
+                            meetingCooperationStatus:'0',
+                            page: '1',
+                            limit: '100'
                         }
-                    });
+                        $.ajax({
+                            type: "POST",
+                            url: "/meeting/cooperation/list",
+                            contentType: "application/json",
+                            data: JSON.stringify(data),
+                            dataType: "json",
+                            success: function(res){
+                                if(res.code == 200){
+                                    if (res.page.list.length == 0) {
+                                        self.submitCreatEdit()
+                                    } else {
+                                        self.$message.error('该会议数据已存在，不能重复创建')
+                                    }
+                                }else{
+                                    mapErrorStatus(res)
+                                    vm.error = true;
+                                    vm.errorMsg = res.msg;
+                                }
+                            },
+                            error:function(res){
+                                mapErrorStatus(res)
+                            }
+                        });
+                    } else if (self.creatOrEdit == 1) {
+                        self.submitCreatEdit()
+                    }
                 }
             })
+        },
+        //提交
+        submitCreatEdit(){
+            var self = this
+            if (self.creatOrEdit == 0) {
+                var reqUrl = '/meeting/cooperation/save'
+            } else if (self.creatOrEdit == 1) {
+                var reqUrl = '/meeting/cooperation/update'
+            }
+            var data = JSON.parse(JSON.stringify(self.meetingCopForm))
+            $.base64.utf8encode = true;
+            var jsonString = JSON.stringify(data.meetingCooperationJson);
+            var json64 = $.base64.btoa(jsonString);
+            data.meetingCooperationJson = json64
+            console.log('6464',jsonString,json64)
+            $.ajax({
+                type: "POST",
+                url: reqUrl,
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.$message.success('保存成功')
+                        self.startSearch()
+                        self.closeCreatOrEdit('meetingCopForm')
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
         },
         //取消编辑返回列表页
         closeCreatOrEdit (formName) {

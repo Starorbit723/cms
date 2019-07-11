@@ -79,7 +79,8 @@
                                 clearable
                                 type="text"
                                 v-model="meetingCopForm.meetingCooperationMeetingId"
-                                auto-complete="off"></el-input>
+                                auto-complete="off"
+                                :disabled="creatOrEdit == 1"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -161,7 +162,7 @@
             <!--新建保存修改-->
             <el-row class="el-row-h60" style="margin-top:20px;">
                 <el-col :span="3" :offset="8">
-                    <el-button type="primary" style="width:100%" @click="submitCreatEdit('meetingCopForm')">保存</el-button>
+                    <el-button type="primary" style="width:100%" @click="testSubmit('meetingCopForm')">保存</el-button>
                 </el-col>
                 <el-col :span="3" :offset="2">
                     <el-button type="primary" style="width:100%" @click="closeCreatOrEdit('meetingCopForm')">取消</el-button>
