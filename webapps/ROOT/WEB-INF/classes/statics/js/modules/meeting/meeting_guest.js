@@ -357,7 +357,7 @@ var vm = new Vue({
                         }
                         $.ajax({
                             type: "POST",
-                            url: "/guest/list",
+                            url: "/meeting/guest/list",
                             contentType: "application/json",
                             data: JSON.stringify(data),
                             dataType: "json",
