@@ -245,7 +245,7 @@ var vm = new Vue({
                 this.meetingGuestForm.meetingGuestJson.push({
                     guestName: this.multipleSelection[i].guestName,
                     guestPosition:this.multipleSelection[i].guestPosition,
-                    guestCompany:this.multipleSelection.guestCompany,
+                    guestCompany:this.multipleSelection[i].guestCompany,
                     guestImg: this.multipleSelection[i].guestImg
                 });
             }
