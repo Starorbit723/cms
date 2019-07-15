@@ -45,6 +45,8 @@ var vm = new Vue({
                 meetingCrtTime:'',//创建时间
                 meetingModTime:'',//更新时间
                 meetingStatus:'',//状态 0 正常 1下线
+                meetingImg:'',//封面图
+                meetingDesc:'',//描述
                 meetingJson:{
                     introduce:[{
                         paragraphText:''
@@ -93,6 +95,9 @@ var vm = new Vue({
                 meetingTitle: [
                     { required: true, message: '会议标题不能为空', trigger: 'change' }
                 ],
+                meetingImg:[
+                    { required: true, message: '请选择封面图', trigger: 'change' }
+                ],
                 "meetingJson.signUpLink": [
                     { required: true, validator: validateUrl, trigger: 'change' }
                 ],
@@ -102,6 +107,19 @@ var vm = new Vue({
                 "meetingJson.onlineShowUrl": [
                     { validator: validateUrl2, trigger: 'change' }
                 ],
+            },
+            //封面图库相关
+            showCoverimgLib:false,
+            searchCoverimgForm:{
+                picTitle:'',
+                picType:'0'//0封面图库 1内容图库 2图为图库
+            },
+            coverimgTableData:[],
+            pagination1: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
             },
             //内容图库相关
             chooseImgObjName:'',
@@ -377,8 +395,76 @@ var vm = new Vue({
         closeAndBack () {
             window.parent.location.href = '/index.html#modules/meeting/meeting_list.html'
         },
-       
-
+        //打开封面图库弹层
+        openAddCoverImg () {
+            this.showCoverimgLib = true
+            this.searchCoverImg(0)
+        },
+        //搜索封面图库
+        searchCoverImg (type){
+            var self = this
+            var data = self.searchCoverimgForm
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination1.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination1.currPage.toString(),
+                    limit: self.pagination1.pageSize.toString()
+                })
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/picture/list",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.coverimgTableData = res.page.list
+                        self.pagination1 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage:res.page.totalPage,
+                            pageSize:res.page.pageSize
+                        }
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        //选择了某一张封面图片
+        addThisCoverImg (item) {
+            this.meetingForm.meetingImg = item.picUrl
+            this.backToEdit()
+        },
+        //返回编辑页
+        backToEdit (){
+            this.showCoverimgLib = false
+            this.searchCoverimgForm = {
+                picTitle:'',
+                picType:'0'//0封面图库 1内容图库 2图为图库
+            }
+            this.coverimgTableData = []
+            this.pagination1 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+        },
+        handleCurrentChange (val) {
+            this.pagination1.currPage = val
+            this.searchCoverImg()
+        },
         
     }
     
