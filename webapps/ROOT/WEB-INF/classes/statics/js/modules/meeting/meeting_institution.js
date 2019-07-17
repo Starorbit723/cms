@@ -226,6 +226,7 @@ var vm = new Vue({
         searchCoper (type){
             var self = this
             var data = self.searchCoperForm
+            data.cooperationName = data.cooperationName.trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',

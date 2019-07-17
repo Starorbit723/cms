@@ -185,6 +185,7 @@ var vm = new Vue({
         searchGuest (type){
             var self = this
             var data = self.searchGuestForm
+            data.guestName = data.guestName.trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
