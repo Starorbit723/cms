@@ -132,8 +132,8 @@
                             </el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="主频道" prop="newsChannel" label-width="24%" style="margin:0;">
+                    <el-col :span="7">
+                        <el-form-item label="主频道" prop="newsChannel" label-width="41%" style="margin:0;">
                             <el-select v-model="articleForm.newsChannel" placeholder="请选择主频道" style="width:100%;">
                                 <el-option
                                     v-for="item in channelOptions"
@@ -142,6 +142,11 @@
                                     :value="item.channelId">
                                 </el-option>
                             </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-form-item prop="recommendStatus" label="是否推送" label-width="50%" style="margin:0;">
+                            <el-checkbox v-model="ifPushIndex" @change="changeIfPush" :disabled="ifControllerPush"></el-checkbox>
                         </el-form-item>
                     </el-col>
                 </el-row>

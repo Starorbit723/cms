@@ -350,7 +350,7 @@ var vm = new Vue({
         //切换文章推荐状态
         togglePushThisArticle(item) {
             var self = this
-            self.$confirm('是否推送到首页推荐频道列表中？', '提示', {
+            self.$confirm('是否要修改文章的推送状态？', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
@@ -358,21 +358,20 @@ var vm = new Vue({
                 //0 待推荐   1推荐    2不推荐
                 if (item.recommendStatus == 2) {
                     var data = {
-                        recNewsId: item.newsId.toString(),
-                        recUrl: item.newsUrl,
-                        recStatus : '1'
+                        newsId: item.newsId.toString(),
+                        recommendStatus : '1'
                     }
                 } 
-                // else if (item.recommendStatus == 1) {
-                //     var data = [{
-                //         newsId: item.newsId.toString(),
-                //         recommendStatus : '2'
-                //     }]
-                // }
+                else if (item.recommendStatus == 1 || item.recommendStatus == 0) {
+                    var data = {
+                        newsId: item.newsId.toString(),
+                        recommendStatus : '2'
+                    }
+                }
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: "/indexRecommendSrc/save",
+                    url: "/news/recommend",
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res) {
