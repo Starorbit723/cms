@@ -939,6 +939,11 @@ var vm = new Vue({
                 return
             }
             
+        },
+        //替换sention标签
+        replaceSectionTag () {
+            var html = UE.getEditor('editor').getContent()
+            ue.setContent(html.replace(/section/g, 'p'));
         }
     },
     beforeDestroy () {
