@@ -59,16 +59,8 @@ var vm = new Vue({
                         title:'',
                         desc:'',
                         imgUrl:''
-                    },{
-                        title:'',
-                        desc:'',
-                        imgUrl:''
                     }],
                     instituteShow:[{
-                        title:'',
-                        desc:'',
-                        imgUrl:''
-                    },{
                         title:'',
                         desc:'',
                         imgUrl:''
@@ -184,10 +176,10 @@ var vm = new Vue({
         //删除图文栏目
         delLPGP(index) {
             let Lv2Length = this.meetingForm.meetingJson.lpgpShow.length
-            if (Lv2Length >= 4) {
+            if (Lv2Length >= 3) {
                 this.meetingForm.meetingJson.lpgpShow.splice(index, 1); 
             } else {
-                this.$message.error('至少保留3个图文')
+                this.$message.error('至少保留2个图文')
             }
         },
         //新增机构展示区图文栏目
@@ -208,10 +200,10 @@ var vm = new Vue({
         //删除机构展示区
         delInstitute(index){
             let Lv3Length = this.meetingForm.meetingJson.instituteShow.length
-            if (Lv3Length >= 3) {
+            if (Lv3Length >= 2) {
                 this.meetingForm.meetingJson.instituteShow.splice(index, 1); 
             } else {
-                this.$message.error('至少保留2个图文')
+                this.$message.error('至少保留1个图文')
             }
         },
         //新增新经济展示区图文栏目
