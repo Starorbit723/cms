@@ -92,10 +92,16 @@
                                 </el-col>
                             </el-row>
                             <el-row class="el-row-h60">
-                                <el-col :span="21">
-                                    <el-form-item prop="" label-width="14.5%" label="" style="margin:0;">
+                                <el-col :span="16">
+                                    <el-form-item prop="" label-width="19%" label="描述" style="margin:0;">
                                         <el-input clearable v-model="item.desc" auto-complete="on" placeholder="图文描述"></el-input>
                                     </el-form-item>
+                                </el-col>
+                                <el-col class="el-row-h40" :span="4" :offset="1">
+                                    <el-button type="primary" icon="el-icon-plus" style="width:100%" @click="addParagraph">新增描述</el-button>
+                                </el-col>
+                                <el-col class="el-row-h40" :span="2" :offset="1">
+                                    <el-button style="width:100%" icon="el-icon-circle-close" @click="delLPGP(index)"></el-button>
                                 </el-col>
                             </el-row>
                             <el-row class="el-row-h200">
