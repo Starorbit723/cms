@@ -84,16 +84,16 @@
                     </el-row>
                     <el-row class="el-row-h60">
                         <el-col :span="24">
-                            <el-form-item label="默认样式" prop="meetingJsonData.headPicBanner.isShow" label-width="15%" style="margin:0;">
+                            <el-form-item label="默认样式" prop="meetingJsonData.headPicBanner.isShowDefaultModel" label-width="15%" style="margin:0;">
                                 <el-switch
-                                    v-model="meetingForm.meetingJsonData.headPicBanner.isShow"
+                                    v-model="meetingForm.meetingJsonData.headPicBanner.isShowDefaultModel"
                                     active-text="显示"
                                     inactive-text="隐藏">
                                 </el-switch>
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-row class="el-row-h230" v-if="meetingForm.meetingJsonData.headPicBanner.isShow">
+                    <el-row class="el-row-h230" v-if="meetingForm.meetingJsonData.headPicBanner.isShowDefaultModel">
                         <el-col :span="18">
                             <el-form-item label="会议头图" prop="meetingJsonData.headPicBanner.picUrl" label-width="20%" style="margin:0;">
                                 <div class="fengmian_show2" @click="openAddCoverImg(1)">
@@ -232,7 +232,7 @@
 
                 </el-collapse-item>
 
-                <!--会议信息-->
+                <!--会议基本信息-->
                 <el-collapse-item title="会议基本信息" name="3">
                     <el-row class="el-row-h60">
                         <el-col :span="24">
@@ -481,44 +481,63 @@
                 <el-collapse-item title="会议简介" name="4">
                     <el-row class="el-row-h60">
                         <el-col :span="24">
-                            <el-form-item label="是否显示模板" prop="meetingJsonData.introduce.isShow" label-width="15%" style="margin:0;">
+                            <el-form-item label="【楼层开关】" prop="meetingJsonData.meetingIntroduce.isShowFloor" label-width="15%" style="margin:0;">
                                 <el-switch
-                                    v-model="meetingForm.meetingJsonData.introduce.isShow"
+                                    v-model="meetingForm.meetingJsonData.meetingIntroduce.isShowFloor"
                                     active-text="显示"
                                     inactive-text="隐藏">
                                 </el-switch>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row class="el-row-h100" v-if="meetingForm.meetingJsonData.introduce.isShow">
-                        <el-col :span="24">
-                            <el-form-item prop="meetingDesc" label="会议简介" style="margin:0;">
-                                <el-input
-                                    clearable
-                                    type="textarea"
-                                    :autosize="{ minRows: 3, maxRows: 3}"
-                                    placeholder="限200个汉字"
-                                    v-model="meetingForm.meetingDesc"
-                                    :maxlength="200"
-                                    auto-complete="on"
-                                    :disabled="true">
-                                </el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-row class="el-row-h60">
                         <el-col :span="24">
-                            <el-form-item label="是否显示自定义" prop="meetingJsonData.introduce.isShowSelfConfig" label-width="15%" style="margin:0;">
+                            <el-form-item label="默认样式" prop="meetingJsonData.meetingIntroduce.isShowDefaultModel" label-width="15%" style="margin:0;">
                                 <el-switch
-                                    v-model="meetingForm.meetingJsonData.introduce.isShowSelfConfig"
+                                    v-model="meetingForm.meetingJsonData.meetingIntroduce.isShowDefaultModel"
                                     active-text="显示"
                                     inactive-text="隐藏">
                                 </el-switch>
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-row v-if="meetingForm.meetingJsonData.introduce.isShowSelfConfig">
-                        <div v-for="(item,index) in meetingForm.meetingJsonData.introduce.selfConfigZone">
+                    <div v-if="meetingForm.meetingJsonData.meetingIntroduce.isShowDefaultModel">
+                        <div v-for="(item,index) in meetingForm.meetingJsonData.meetingIntroduce.paragraph">
+                            <el-row class="el-row-h60">
+                                <el-col :span="18">
+                                    <el-form-item label="段落" prop="meetingJsonData.meetingIntroduce.isShowDefaultModel" label-width="20%" style="margin:0;">
+                                        <el-input
+                                            clearable
+                                            placeholder="请输入段落内容"
+                                            v-model="item.innerText"
+                                            auto-complete="off">
+                                        </el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="2" :offset="1" class="el-row-h40">
+                                    <el-button style="width:100%;" @click="addParagraph(index)">添加</el-button>
+                                    </el-col>
+                                <el-col :span="2" :offset="1" class="el-row-h40">
+                                    <el-button style="width:100%;" @click="removeParagraph(index)">移除</el-button>
+                                </el-col>
+                            </el-row>
+                                
+                        </div>
+                        
+                    </div>
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="是否显示自定义" prop="meetingJsonData.meetingIntroduce.isShowSelfConfig" label-width="15%" style="margin:0;">
+                                <el-switch
+                                    v-model="meetingForm.meetingJsonData.meetingIntroduce.isShowSelfConfig"
+                                    active-text="显示"
+                                    inactive-text="隐藏">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row v-if="meetingForm.meetingJsonData.meetingIntroduce.isShowSelfConfig">
+                        <div v-for="(item,index) in meetingForm.meetingJsonData.meetingIntroduce.selfConfigZone">
                             <!--图片型-->
                             <el-row v-if="item.type == 'img'" :span="24">
                                 <el-row :span="24" class="el-row-h60">
@@ -534,7 +553,7 @@
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="5" :offset="1" class="el-row-h40">
-                                        <el-button @click="removeSelfConfigItem('introduce',index)">移除</el-button>
+                                        <el-button @click="removeSelfConfigItem('meetingIntroduce',index)">移除</el-button>
                                     </el-col>
                                 </el-row>
                                 <el-row :span="24" class="el-row-h60">
@@ -553,7 +572,7 @@
                                 <el-row :span="24" class="el-row-h220">
                                     <el-col :span="18">
                                         <el-form-item label="" label-width="20%" style="margin:0;">
-                                            <div class="fengmian_show2" @click="chooseContentImg('introduce',index)">
+                                            <div class="fengmian_show2" @click="chooseContentImg('meetingIntroduce',index)">
                                                 <img v-if="item.imgUrl" :src="item.imgUrl" class="avatar2">
                                                 <i v-else class="el-icon-plus avatar-uploader-icon iconadd"></i>
                                             </div>
@@ -576,7 +595,7 @@
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="5" :offset="1" class="el-row-h40">
-                                        <el-button @click="removeSelfConfigItem('introduce',index)">移除</el-button>
+                                        <el-button @click="removeSelfConfigItem('meetingIntroduce',index)">移除</el-button>
                                     </el-col>
                                 </el-row>
                                 <el-row :span="24" class="el-row-h60">
@@ -611,10 +630,10 @@
                         </div>
                         <el-row :span="24" class="el-row-h60">
                             <el-col :span="5" style="margin-left:15%;">
-                                <el-button style="width: 100%;" @click="addNewSelfConfigFloor('introduce','text')">新增文案</el-button>
+                                <el-button style="width: 100%;" @click="addNewSelfConfigFloor('meetingIntroduce','text')">新增文案</el-button>
                             </el-col>
                             <el-col :span="5" :offset="2">
-                                <el-button style="width: 100%;" @click="addNewSelfConfigFloor('introduce','img')">新增图片</el-button>
+                                <el-button style="width: 100%;" @click="addNewSelfConfigFloor('meetingIntroduce','img')">新增图片</el-button>
                             </el-col>
                         </el-row>
                     </el-row>

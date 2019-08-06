@@ -82,12 +82,16 @@ var vm = new Vue({
                     basicInformation:{
                         isShowFloor:true,
                         isShowDefaultModel: true,
-                        isShowSelfConfig: true,
+                        isShowSelfConfig: false,
                         selfConfigZone:[]
                     },
-                    introduce:{
-                        isShow:true,
+                    meetingIntroduce:{
+                        isShowFloor:true,
+                        isShowDefaultModel: true,
                         isShowSelfConfig: true,
+                        paragraph:[{
+                            innerText:''
+                        }],
                         selfConfigZone:[]
                     },
                     guest:{
@@ -204,6 +208,26 @@ var vm = new Vue({
             tempStr = this.meetingTagArray.join(',')
             this.meetingForm.meetingKeywords = tempStr
             console.log('当前newsKeywords',this.meetingForm.meetingKeywords)
+        },
+        //添加会议介绍段落
+        addParagraph (index) {
+            for (let i = 0; i < this.meetingForm.meetingJsonData.meetingIntroduce.paragraph.length; i++) {
+                if (this.meetingForm.meetingJsonData.meetingIntroduce.paragraph[i].innerText.trim() == '') {
+                    this.$message.error('您还有未完成的段落');
+                    return 
+                }
+            }
+            this.meetingForm.meetingJsonData.meetingIntroduce.paragraph.splice((index+1), 0, {
+                innerText:''
+            }); 
+        },
+        //移除会议介绍段落
+        removeParagraph (index) {
+            if (this.meetingForm.meetingJsonData.meetingIntroduce.paragraph.length >= 2) {
+                this.meetingForm.meetingJsonData.meetingIntroduce.paragraph.splice(index, 1); 
+            } else {
+                this.$message.error('至少保留一个段落')
+            }
         },
         //折叠面板改变
         handleChangeCollapse(){
