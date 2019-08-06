@@ -1,22 +1,36 @@
 var vm = new Vue({
     el: '#edit_meeting',
     data () {
-        var validateScaleNumber = (rule, value, callback) => {
-            var urlReg = /^[0-9]*[1-9][0-9]*$/;
-            if (!urlReg.test(value)) {
-                callback(new Error('规模人数只能为正整数'));
+        var validateUrl = (rule, value, callback) => {
+            var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
+            if (value =='') {
+                callback(new Error('链接不能为空'));
+            } else if (!urlReg.test(value)) {
+                callback(new Error('链接格式不正确'));
             } else {
                 callback();
             }
         }
-        var validateUrl = (rule, value, callback) => {
-            var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
-            if (value == '') {
-                callback(new Error('链接不能为空'));
-            } else if (value.trim() == '#') {
-                callback();
-            } else if (!urlReg.test(value)) {
-                callback(new Error('链接格式不正确，暂无链接可填写"#"'));
+        var validateMeetingTimes = (rule, value, callback) => {
+            console.log(value)
+            if (value !== null) {
+                if (value !== [] && (value[0] == value[1])) {
+                    callback(new Error('会议开始时间不能与会议结束时间相同'));
+                } else {
+                    callback();
+                }
+            } else {
+                callback(new Error('会议时间为必填项'));
+            }
+            
+        }
+        var validateMeetingBaomingTimes = (rule, value, callback) => {
+            if (value !== null && value !== undefined) {
+                if (value[0] !== '#' && value[0] !== undefined && (value[0] == value[1])) {
+                    callback(new Error('报名开始时间不能与报名结束时间相同'));
+                } else {
+                    callback();
+                }
             } else {
                 callback();
             }
@@ -36,36 +50,37 @@ var vm = new Vue({
             meetingTypeOptions:[],
             //折叠面板组件实例
             activeNames: ['1','2','3','4','5','6','7','8','9','10'],
-            //会议关键词数组
-            meetingTagArray:[],
-            labelOptions:[],
             //文章基本信息
             meetingForm:{
                 meetingId:'',//主键
                 meetingTitle:'',//标题
                 meetingStarTime:'',//开始时间
+                meetingEndTime:'',//结束时间
+                meetingImg:'',//封面图
                 meetingType:'',//类型
                 meetingUrl:'',//会议链接
+                meetingRegion:[],//会议所在区域-----前端自用字段
+                meetingTimes:[],//会议时间数组-----前端自用字段
+                meetingBaomingTimes:[], //会议报名时间-----前端自用字段
+                meetingProvince:'',//省
+                meetingCity:'',//市
+                meetingArea:'',//区
+                meetingAddress:'',//详细地址
+                meetingOrganizers:'',//举办方
                 meetingDesc:'',//简介
                 meetingCrtUserId:'',//创建人编号
                 meetingCrtTime:'',//创建时间
                 meetingModUserId:'',//更新人编号
                 meetingModTime:'',//更新时间
                 meetingStatus:'',//会议状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
+                meetingEnrollStarTime:'',//报名开始时间
+                meetingEnrollEndTime:'',//报名结束时间
                 meetingCrtUserName:'',//创建人姓名
-                meetingKeywords:'', //会议关键词
-                meetingTheme:'',//会议主题
-                meetingOrganizer:'',//主办单位
-                meetingCoOrganizer:'',//协办单位
-                meetingScaleNumer:'',//规模人数
-                meetingHoldTime:'',//举办时间字符串
-                meetingAddress:'',//会议举办地址
                 meetingJsonData:{ //前端渲染大数据
-                    headPicBanner:{
-                        isShowFloor:true,
-                        isShowDefaultModel: true,
-                        isShowSelfConfig: true,
+                    headPic:{
+                        isShow: true,
                         picUrl: '',
+                        isShowSelfConfig: true,
                         selfConfigZone:[{
                             type:'text',
                             titleCn:'标题',
@@ -75,18 +90,11 @@ var vm = new Vue({
                             type:'img',
                             titleCn:'标题',
                             titleEn:'TITLE',
-                            toLinkUrl:"https://www.baidu.com",
                             imgUrl:'https://cvinfo-test.obs.cn-north-1.myhuaweicloud.com/head/6546992352198656.jpg',
                         }]
                     },
-                    basicInformation:{
-                        isShowFloor:true,
-                        isShowDefaultModel: true,
-                        isShowSelfConfig: true,
-                        selfConfigZone:[]
-                    },
                     introduce:{
-                        isShow:true,
+                        isShow: true,
                         isShowSelfConfig: true,
                         selfConfigZone:[]
                     },
@@ -114,30 +122,26 @@ var vm = new Vue({
                     { required: true, message: '会议标题不能为空', trigger: 'change' },
                     { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
                 ],
+                meetingTimes:[
+                    { type: 'array', required: true, validator: validateMeetingTimes, trigger: 'change' }
+                ],
+                meetingBaomingTimes:[
+                    { type: 'array', validator: validateMeetingBaomingTimes, trigger: 'change' }
+                ],
+                meetingRegion:[
+                    { type: 'array', required: true, message: '所在区域不能为空', trigger: 'change' }
+                ],
+                meetingType:[
+                    { required: true, message: '会议类型不能为空', trigger: 'change' }
+                ],
+                meetingUrl:[
+                    { required: true, validator: validateUrl, trigger: 'change' }
+                ],
+                meetingImg:[
+                    { required: true, message: '请选择会议封面图', trigger: 'change' }
+                ],
                 meetingDesc:[
                     { required: true, message: '请填写会议简介', trigger: 'change' }
-                ],
-                meetingKeywords:[
-                    { required: true, message: '请填写会议关键词', trigger: 'change' }
-                ],
-                meetingTheme: [
-                    { required: true, message: '主题不能为空', trigger: 'change' },
-                    { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
-                ],
-                meetingOrganizer:[
-                    { required: true, message: '请填写主办单位', trigger: 'change' }
-                ],
-                meetingScaleNumer:[
-                    { required: true, validator: validateScaleNumber, trigger: 'change' }
-                ],
-                meetingHoldTime:[
-                    { required: true, message: '请填写举办时间', trigger: 'change' }
-                ],
-                meetingAddress:[
-                    { required: true, message: '请填写举办地址', trigger: 'change' }
-                ],
-                meetingSignUpUrl:[
-                    { required: true, validator: validateUrl, trigger: 'change' }
                 ]
             },
             //封面图库相关
@@ -185,25 +189,46 @@ var vm = new Vue({
         console.log('type',this.typeOfPage)
     },
     methods:{
-        //会议标签改变
-        meetingTagChange (val) {
-            console.log('meetingTagChange',val)
-            for (let i = 0; i < this.meetingTagArray.length; i++) {
-                if (this.meetingTagArray[i].length > 20) {
-                    let tempArr = JSON.parse(JSON.stringify(this.meetingTagArray))
-                    tempArr.splice(i,1) 
-                    this.meetingTagArray = tempArr
-                    this.$message.warning('单一标签最多20字')
+        //省市区发生变化时
+        handleRegionChange(val){
+            for (let i = 0; i < this.RegionOptions.length; i++) {
+                if (this.RegionOptions[i].value == val[0]) {
+                    this.meetingForm.meetingProvince = this.RegionOptions[i].label
+                    for (let j = 0; j <this.RegionOptions[i].children.length; j ++) {
+                        if (this.RegionOptions[i].children[j].value == val[1]) {
+                            this.meetingForm.meetingCity = this.RegionOptions[i].children[j].label
+                            for (let k = 0; k < this.RegionOptions[i].children[j].children.length; k++) {
+                                if (this.RegionOptions[i].children[j].children[k].value == val[2]) {
+                                    this.meetingForm.meetingArea = this.RegionOptions[i].children[j].children[k].label
+                                }
+                            }
+                        }
+                    }
                 }
             }
-            if (this.meetingTagArray.length > 5) {
-                this.$message.warning('标签做多可设置为5个')
-                this.meetingTagArray = this.meetingTagArray.splice(0,5)
+            console.log('省市区发生变化',this.meetingForm.meetingProvince,this.meetingForm.meetingCity,this.meetingForm.meetingArea)
+        },
+        //会议起止时间变化
+        handleMeetingTimesChange(val){
+            if (val !== null) {
+                this.meetingForm.meetingStarTime = val[0]
+                this.meetingForm.meetingEndTime = val[1]
+            } else {
+                this.meetingForm.meetingStarTime = ''
+                this.meetingForm.meetingEndTime = ''
             }
-            var tempStr = ''
-            tempStr = this.meetingTagArray.join(',')
-            this.meetingForm.meetingKeywords = tempStr
-            console.log('当前newsKeywords',this.meetingForm.meetingKeywords)
+            console.log('会议时间变化',val,this.meetingForm.meetingStarTime,this.meetingForm.meetingEndTime)
+        },
+        //会议报名时间变化
+        handleMeetingBaomingTimesChange(val){
+            if (val !== null) {
+                this.meetingForm.meetingEnrollStarTime = val[0]
+                this.meetingForm.meetingEnrollEndTime = val[1]
+            } else {
+                this.meetingForm.meetingEnrollStarTime = '#'
+                this.meetingForm.meetingEnrollEndTime = '#'
+            }
+            console.log('报名时间变化',val,this.meetingForm.meetingEnrollStarTime,this.meetingForm.meetingEnrollEndTime)
         },
         //折叠面板改变
         handleChangeCollapse(){
@@ -236,7 +261,6 @@ var vm = new Vue({
                     type:'img',
                     titleCn:'',
                     titleEn:'',
-                    toLinkUrl:'',
                     imgUrl:'',
                 })
             }
@@ -269,7 +293,7 @@ var vm = new Vue({
             if (this.chooseImgType == 0) {
                 this.meetingForm.meetingImg = item.picUrl
             } else if (this.chooseImgType == 1) {
-                this.meetingForm.meetingJsonData.headPicBanner.picUrl = item.picUrl
+                this.meetingForm.meetingJsonData.headPic.picUrl = item.picUrl
             }
             this.backToEdit()
         },
