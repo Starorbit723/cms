@@ -1,1 +1,191 @@
-111111111111111111
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+
+<title>投票管理</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">投票列表</div>
+    <div id="vote_list" class="cv_page_content">
+        <div class="cv_content_square">
+            <!------------------列表开始------------------>
+            <div v-show="!showChildPage">
+                <!--列表搜索区-->
+                <div class="cv_content_square">
+                    <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                        <el-row class="el-row-h60">
+                            <el-col :span="8">
+                                <el-form-item label="投票名称" style="margin:0;" placeholder="输入图位名称">
+                                    <el-input
+                                    clearable
+                                    v-model="searchForm.voteMeetingId"
+                                    type="text"
+                                    auto-complete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="10" :offset="1">
+                                <el-form-item label="投票名称" style="margin:0;">
+                                        <el-date-picker
+                                        v-model="value1"
+                                        type="daterange"
+                                        range-separator="-"
+                                        start-placeholder="开始日期"
+                                        end-placeholder="结束日期">
+                                      </el-date-picker>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="2" :offset="1" class="el-row-h40">
+                                <el-button style="width:100%" @click="startSearch(0)">搜索</el-button>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                </div>
+                <!--功能按钮区-->
+                <el-row class="el-row-h50">
+                    <el-col :span="3">
+                        <el-button type="primary" type="primary" style="width:100%" @click="addOrEditVote(0)">新建投票</el-button>
+                    </el-col>
+                </el-row>
+                <!--表格查询结果区-->
+                <div class="cv_content_square">
+                    <el-table :data="tableData" style="width: 100%; margin: 10px auto;" stripe>
+                        <el-table-column prop="voteMeetingId" width="160" label="所属会议详情编号"></el-table-column>
+                        <el-table-column prop="voteTitle" width="300" label="投票名称"></el-table-column>
+                        <el-table-column prop="voteType" width="110" label="类型"></el-table-column>
+                        <el-table-column prop="voteCrtTime" width="140" label="创建时间"></el-table-column>
+                        <el-table-column prop="userName" width="110" label="创建人"></el-table-column>
+                        <el-table-column label="操作" width="110" fixed="right">
+                            <template slot-scope="scope">
+                                <el-button type="text" size="small">编辑</el-button>
+                                <el-button type="text" size="small">详情</el-button>
+                                <el-button type="text" size="small">删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+                <!--分页器-->
+                <div class="cv_page_zone">
+                    <el-pagination
+                        :page-size="pagination1.pageSize"
+                        layout="total, prev, pager, next, jumper"
+                        :total="pagination1.totalCount">
+                    </el-pagination>
+                </div>
+            </div>
+            <!------------------列表结束------------------>
+
+            <!------------------新增投票开始------------------>
+            <div v-show="showChildPage">
+                <div class="cv_content_square">
+                    <el-form :model="voteForm" :rules="voteFormRules" ref="voteForm" label-position="left" status-icon class="demo-ruleForm" label-width="13%" label-position="right">
+                        <el-row class="el-row-h70">
+                            <el-col :span="18">
+                                <el-form-item label="所属会议详情编号" label-width="20%" prop="voteMeetingId" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        placeholder="请输入所属会议详情编号"
+                                        v-model="voteForm.voteMeetingId"
+                                        auto-complete="off"
+                                        ></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="18">
+                                <el-form-item label="投票类型" label-width="12%" prop="voteType" style="margin:0;">
+                                    <template>
+                                        <el-radio-group v-model="voteForm.voteType">
+                                            <el-radio :label="3" value="singleChoose">多项单选</el-radio>
+                                            <el-radio :label="6" value="PK">观点PK</el-radio>
+                                        </el-radio-group>
+                                    </template>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="18">
+                                <el-form-item label="投票名称" label-width="12%" prop="voteTitle" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        placeholder="请输入投票名称"
+                                        v-model="voteForm.voteTitle"
+                                        auto-complete="off"
+                                        maxlength="36"
+                                        show-word-limit
+                                        ></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="18">
+                                <el-form-item label="投票摘要" label-width="12%" prop="voteAbstract" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="textarea"
+                                        placeholder="请输入投票摘要"
+                                        v-model="voteForm.voteAbstract"
+                                        auto-complete="off"
+                                        maxlength="30"
+                                        show-word-limit
+                                        ></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <div v-for="(item,index) in voteForm.voteOptions">
+                            <el-row class="el-row-h70">
+                                <el-col :span="18">
+                                    <el-form-item label="选项1" label-width="12%" prop="voteOptions" style="margin:0;">
+                                        <el-input
+                                            clearable
+                                            type="text"
+                                            placeholder="请输入选项内容"
+                                            v-model="item.OptionsText"
+                                            auto-complete="off"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row class="el-row-h70">
+                                <el-col :span="18">
+                                    <el-form-item label="选项2" label-width="12%" prop="voteTitle" style="margin:0;">
+                                        <el-input
+                                            clearable
+                                            type="text"
+                                            placeholder="请输入选项内容"
+                                            auto-complete="off"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="4" :offset="1">
+                                    <i class=""></i>
+                                </el-col>
+                            </el-row>
+                        </div>
+                        
+                    </el-form>
+                    <el-row style="margin-top:30px;">
+                        <el-col class="el-row-h40" :span="2">
+                            <el-button type="primary" style="width: 100%">保存</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="2" :offset="1">
+                            <el-button type="primary" style="width: 100%">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+</body>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.min.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.base64.js"></script>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/meeting/vote_list.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+</html>
