@@ -1160,10 +1160,6 @@ var vm = new Vue({
             }
 
         },
-
-
-
-
         //保存会议 formName---表单名称   type----提交类型
         testMeetingInfo(type,formName) {
             var self = this
