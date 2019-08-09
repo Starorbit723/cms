@@ -11,13 +11,13 @@
     <div id="vote_list" class="cv_page_content">
         <div class="cv_content_square">
             <!------------------列表开始------------------>
-            <div v-show="!showChildPage">
+            <div v-show="showVoteList">
                 <!--列表搜索区-->
                 <div class="cv_content_square">
-                    <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-form :model="searchForm" status-icon class="demo-ruleForm" style="width: 100%"  @submit.native.prevent>
                         <el-row class="el-row-h60">
-                            <el-col :span="8">
-                                <el-form-item label="投票名称" style="margin:0;">
+                            <el-col :span="7">
+                                <el-form-item label="投票名称" label-width="25%" style="margin:0;">
                                     <el-input
                                     clearable
                                     v-model="searchForm.voteMeetingId"
@@ -26,8 +26,8 @@
                                     auto-complete="off"></el-input>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="10" :offset="1">
-                                <el-form-item label="创建日期" style="margin:0;">
+                            <el-col :span=11 :offset="1">
+                                <el-form-item label="创建日期" label-width="20%"  style="margin:0; width: 100%">
                                         <el-date-picker
                                         v-model="searchForm.voteTitle"
                                         type="daterange"
@@ -60,7 +60,7 @@
                         <el-table-column label="操作" width="180" fixed="right">
                             <template slot-scope="scope">
                                 <el-button type="text" size="small" @click="addOrEditVote(1,scope.row)">编辑</el-button>
-                                <el-button type="text" size="small">详情</el-button>
+                                <el-button type="text" size="small"@click="checkVoteDetail(scope.row)" >详情</el-button>
                                 <el-button type="text" size="small" @click="deleteThisVote(scope.row)">删除</el-button>
                             </template>
                         </el-table-column>
@@ -80,7 +80,7 @@
             <!------------------列表结束------------------>
 
             <!------------------新增投票开始------------------>
-            <div v-show="showChildPage">
+            <div v-show="showChildList">
                 <div class="cv_content_square">
                     <el-form :model="voteForm" :rules="voteFormRules" ref="voteForm" label-position="left" status-icon class="demo-ruleForm" label-width="13%" label-position="right">
                         <el-row class="el-row-h70">
@@ -118,9 +118,9 @@
                                         placeholder="请输入投票名称"
                                         v-model="voteForm.voteTitle"
                                         auto-complete="off"
-                                        maxlength="36"
-                                        show-word-limit
+                                        
                                         ></el-input>
+                                        <template slot="append">最多36字</template>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -168,6 +168,38 @@
                             <el-button type="primary" style="width: 100%" @click="closeCreatOrEdit('calendarForm')">取消</el-button>
                         </el-col>
                     </el-row>
+                </div>
+            </div>
+            <!----------------- 新增投票结束 ------------------>
+
+            <!----------------- 投票详情开始 ------------------>
+            <div v-show="showDetailPage">
+                <div class="cv_content_square">
+                    <el-form :model="voteForm" status-icon class="demo-ruleForm" @submit.native.prevent>
+                        <el-row class="el-row-h60">
+                            <el-col>
+                                <el-form-item label="投票名称" label-position="left" style="margin:0;"></el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h30"  style="width: 80%" >
+                            <el-col>
+                                <el-input
+                                clearable
+                                v-model="voteForm.voteTitle"
+                                type="text"
+                                auto-complete="off"
+                                :disabled= "true"
+                                ></el-input>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h60" style="margin-top: 30px">
+                            <el-col>
+                                <el-form-item label="投票详情" label-position="left" style="margin:0;"></el-form-item>
+                            </el-col>
+                        </el-row>
+                        
+
+                    </el-form>
                 </div>
             </div>
         </div>
