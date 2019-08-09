@@ -74,14 +74,11 @@ var vm = new Vue({
             this.voteForm.voteType = radioVal
         },
         // 添加选项
-        // addOptions(index) {
-        //     console.log(index)
-        //     let OPtLength = this.voteForm.voteOptions.OPtLength
-        //     console.log(OPtLength)
-        //     if(this.voteForm.voteOptions[OptLength-1].optionsText.trim() !== '') {
-
-        //     }
-        // },
+        addOptions() {
+            console.log(11111)
+            
+            
+        },
         //保存
         testSubmit(formName) {
             var self = this
@@ -148,6 +145,7 @@ var vm = new Vue({
                     console.log(res)
                     if(res.code == 200) {
                         self.$message.success('保存成功')
+                        self.startSearch()
                         self.closeCreatOrEdit('voteForm')
                     } else {
                         mapErrorStatus(res)
@@ -191,8 +189,19 @@ var vm = new Vue({
         startSearch(type) {
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
-            console.log(JSON.stringify(data))
+            console.log(data)
             data.voteMeetingId = data.voteMeetingId.toString().trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination1.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination1.currPage.toString(),
+                    limit: self.pagination1.pageSize.toString()
+                })
+            }
             $.ajax({
                 type: "POST",
                 url: "/vote/list",
@@ -225,11 +234,65 @@ var vm = new Vue({
         // 新建或修改投票type:0  新增   type:1修改
         addOrEditVote(type, item) {
             var self = this
+            self.creatOrEdit = type
             if(type == 0) {
                 self.showChildPage = true
             } else if(type == 1) {
+                $.ajax({
+                    type: "POST",
+                    url: "/vote/info/"+item.voteId.toString(),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function(res) {
+                        if(res.code == 200) {
+                            let data = res.dict
+                            self.voteForm = data
+                            self.showChildPage = true
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error: function(res) {
+                        mapErrorStatus(res)
+                    }
+                })
                 
             }
+        },
+        //删除
+        deleteThisVote(item) {
+            var self = this
+            self.$confirm('确实要删除该投票数据吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = JSON.parse(JSON.stringify(item))
+                console.log(JSON.stringify(data))
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/vote/update",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res) {
+                        if(res.code == 200) {
+                            console.log(res)
+                            self.startSearch()
+                            self.$message.success('删除成功')
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true
+                            vm.errorMsg = res.msg
+                        }
+                    },
+                    error: function(res) {
+                        mapErrorStatus(res)
+                    }
+                })
+            })
         }
     }
    

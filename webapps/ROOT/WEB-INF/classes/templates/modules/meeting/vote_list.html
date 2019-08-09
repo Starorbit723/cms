@@ -17,22 +17,23 @@
                     <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
                         <el-row class="el-row-h60">
                             <el-col :span="8">
-                                <el-form-item label="投票名称" style="margin:0;" placeholder="输入图位名称">
+                                <el-form-item label="投票名称" style="margin:0;">
                                     <el-input
                                     clearable
                                     v-model="searchForm.voteMeetingId"
+                                    placeholder="输入图位名称"
                                     type="text"
                                     auto-complete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="10" :offset="1">
-                                <el-form-item label="投票名称" style="margin:0;">
+                                <el-form-item label="创建日期" style="margin:0;">
                                         <el-date-picker
                                         v-model="searchForm.voteTitle"
                                         type="daterange"
                                         range-separator="-"
-                                        start-placeholder="开始日期"
-                                        end-placeholder="结束日期">
+                                        start-placeholder="Enter Date"
+                                        end-placeholder="Enter Date">
                                       </el-date-picker>
                                 </el-form-item>
                             </el-col>
@@ -58,9 +59,9 @@
                         <el-table-column prop="userName" width=90 label="创建人"></el-table-column>
                         <el-table-column label="操作" width="180" fixed="right">
                             <template slot-scope="scope">
-                                <el-button type="text" size="small">编辑</el-button>
+                                <el-button type="text" size="small" @click="addOrEditVote(1,scope.row)">编辑</el-button>
                                 <el-button type="text" size="small">详情</el-button>
-                                <el-button type="text" size="small">删除</el-button>
+                                <el-button type="text" size="small" @click="deleteThisVote(scope.row)">删除</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -117,13 +118,13 @@
                                         placeholder="请输入投票名称"
                                         v-model="voteForm.voteTitle"
                                         auto-complete="off"
-                                        maxlength="10"
+                                        maxlength="36"
                                         show-word-limit
                                         ></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
-                        <!-- <el-row class="el-row-h70">
+                        <el-row class="el-row-h70">
                             <el-col :span="18">
                                 <el-form-item label="投票摘要" label-width="12%" prop="voteAbstract" style="margin:0;">
                                     <el-input
@@ -135,8 +136,8 @@
                                         ></el-input>
                                 </el-form-item>
                             </el-col>
-                        </el-row> -->
-                        <!-- <div v-for="(item,index) in voteForm.voteOptions" style="margin-top:20px;">
+                        </el-row>
+                        <div v-for="(item,index) in voteForm.voteOptions" style="margin-top:20px;">
                             <el-row>
                                 <el-col :span="18" class="el-row-h70">
                                     <el-form-item label="选项" label-width="12%" prop="voteOptions" style="margin:0;">
@@ -145,17 +146,18 @@
                                             type="text"
                                             placeholder="请输入选项内容"
                                             v-model="item.optionsText"
-                                            auto-complete="off"></el-input>
+                                            auto-complete="off"
+                                            :disabled="true"></el-input>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="2" :offset="1" style="margin-top: 0px">
-                                    <el-button size="medium" type="primary" icon="el-icon-plus" @click="addOptions(index)" circle ></el-button>
+                                    <el-button size="medium" type="primary" icon="el-icon-plus" @click="addOptions()" circle ></el-button>
                                 </el-col>
                                 
                             </el-row>
                             
                             
-                        </div> -->
+                        </div>
                         
                     </el-form>
                     <el-row style="margin-top: 30px">
