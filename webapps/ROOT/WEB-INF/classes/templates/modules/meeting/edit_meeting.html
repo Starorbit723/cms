@@ -1196,7 +1196,7 @@
                                 </el-form-item>
                             </el-col>
                             <el-col class="el-row-h40" :offset="1" :span="3">
-                                <el-button style="width: 100%;" @click="openAddGuestList">修改</el-button>
+                                <el-button style="width: 100%;" @click="openAddVoteList">修改</el-button>
                             </el-col>
                         </el-row>
                     </div>
@@ -1314,6 +1314,621 @@
                     </el-row>
                 </el-collapse-item>
                 
+                <!--文章问答-->
+                <el-collapse-item title="文章问答" name="9">
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="【楼层开关】" prop="" label-width="15%" style="margin:0;">
+                                <el-switch
+                                    v-model="meetingForm.meetingJsonData.articleQuestion.isShowFloor"
+                                    active-text="显示"
+                                    inactive-text="隐藏">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="默认样式" prop="meetingJsonData.articleQuestion.isShowDefaultModel" label-width="15%" style="margin:0;">
+                                <el-switch
+                                    v-model="meetingForm.meetingJsonData.articleQuestion.isShowDefaultModel"
+                                    active-text="显示"
+                                    inactive-text="隐藏"
+                                    @change="articleQuestionDefaultChange">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <div v-if="meetingForm.meetingJsonData.articleQuestion.isShowDefaultModel">
+                        <el-row class="el-row-h60">
+                            <el-col :span="20">
+                                <el-form-item label="文章问答Id" prop="" label-width="18%" style="margin:0;">
+                                    <el-input
+                                        :disabled="true"
+                                        v-model="meetingForm.interactionId"
+                                        auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col class="el-row-h40" :offset="1" :span="3">
+                                <el-button style="width: 100%;" @click="openAddArticleQuestionList">修改</el-button>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="是否显示自定义" prop="meetingJsonData.articleQuestion.isShowSelfConfig" label-width="15%" style="margin:0;">
+                                <el-switch
+                                    v-model="meetingForm.meetingJsonData.articleQuestion.isShowSelfConfig"
+                                    active-text="显示"
+                                    inactive-text="隐藏">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row v-if="meetingForm.meetingJsonData.articleQuestion.isShowSelfConfig">
+                        <div v-for="(item,index) in meetingForm.meetingJsonData.articleQuestion.selfConfigZone">
+                            <!--图片型-->
+                            <el-row v-if="item.type == 'img'" :span="24">
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="自定义内容图" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                placeholder="请输入中文标题"
+                                                v-model="item.titleCn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="5" :offset="1" class="el-row-h40">
+                                        <el-button @click="removeSelfConfigItem('articleQuestion',index)">移除</el-button>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                placeholder="请输入英文标题"
+                                                v-model="item.titleEn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h220">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <div class="fengmian_show2" @click="chooseContentImg('articleQuestion',index)">
+                                                <img v-if="item.imgUrl" :src="item.imgUrl" class="avatar2">
+                                                <i v-else class="el-icon-plus avatar-uploader-icon iconadd"></i>
+                                            </div>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                            </el-row>
+                            <!--文字型-->
+                            <el-row v-else-if="item.type == 'text'" :span="24">
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="自定义文案" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                placeholder="请输入中文标题"
+                                                v-model="item.titleCn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="5" :offset="1" class="el-row-h40">
+                                        <el-button @click="removeSelfConfigItem('articleQuestion',index)">移除</el-button>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                placeholder="请输入英文标题"
+                                                v-model="item.titleEn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h120">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                type="textarea"
+                                                :autosize="{ minRows: 4, maxRows: 4}"
+                                                placeholder="请输入自定义文案"
+                                                v-model="item.innerText"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                            </el-row>
+                        </div>
+                        <el-row :span="24" class="el-row-h60">
+                            <el-col :span="5" style="margin-left:15%;">
+                                <el-button style="width: 100%;" @click="addNewSelfConfigFloor('articleQuestion','text')">新增文案</el-button>
+                            </el-col>
+                            <el-col :span="5" :offset="2">
+                                <el-button style="width: 100%;" @click="addNewSelfConfigFloor('articleQuestion','img')">新增图片</el-button>
+                            </el-col>
+                        </el-row>
+                    </el-row>
+                </el-collapse-item>
+
+                <!--高清组图-->
+                <el-collapse-item title="高清组图" name="10">
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="【楼层开关】" prop="" label-width="15%" style="margin:0;">
+                                <el-switch
+                                    v-model="meetingForm.meetingJsonData.pictureGroup.isShowFloor"
+                                    active-text="显示"
+                                    inactive-text="隐藏">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="默认样式" prop="meetingJsonData.pictureGroup.isShowDefaultModel" label-width="15%" style="margin:0;">
+                                <el-switch
+                                    v-model="meetingForm.meetingJsonData.pictureGroup.isShowDefaultModel"
+                                    active-text="显示"
+                                    inactive-text="隐藏"
+                                    @change="pictureGroupDefaultChange">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <div v-if="meetingForm.meetingJsonData.pictureGroup.isShowDefaultModel">
+                        <el-row class="el-row-h60">
+                            <el-col :span="20">
+                                <el-form-item label="高清组图Id" prop="" label-width="18%" style="margin:0;">
+                                    <el-input
+                                        :disabled="true"
+                                        v-model="meetingForm.diagramId"
+                                        auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col class="el-row-h40" :offset="1" :span="3">
+                                <el-button style="width: 100%;" @click="openAddArticleQuestionList">修改</el-button>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="是否显示自定义" prop="meetingJsonData.pictureGroup.isShowSelfConfig" label-width="15%" style="margin:0;">
+                                <el-switch
+                                    v-model="meetingForm.meetingJsonData.pictureGroup.isShowSelfConfig"
+                                    active-text="显示"
+                                    inactive-text="隐藏">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row v-if="meetingForm.meetingJsonData.pictureGroup.isShowSelfConfig">
+                        <div v-for="(item,index) in meetingForm.meetingJsonData.pictureGroup.selfConfigZone">
+                            <!--图片型-->
+                            <el-row v-if="item.type == 'img'" :span="24">
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="自定义内容图" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                placeholder="请输入中文标题"
+                                                v-model="item.titleCn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="5" :offset="1" class="el-row-h40">
+                                        <el-button @click="removeSelfConfigItem('pictureGroup',index)">移除</el-button>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                placeholder="请输入英文标题"
+                                                v-model="item.titleEn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h220">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <div class="fengmian_show2" @click="chooseContentImg('pictureGroup',index)">
+                                                <img v-if="item.imgUrl" :src="item.imgUrl" class="avatar2">
+                                                <i v-else class="el-icon-plus avatar-uploader-icon iconadd"></i>
+                                            </div>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                            </el-row>
+                            <!--文字型-->
+                            <el-row v-else-if="item.type == 'text'" :span="24">
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="自定义文案" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                placeholder="请输入中文标题"
+                                                v-model="item.titleCn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="5" :offset="1" class="el-row-h40">
+                                        <el-button @click="removeSelfConfigItem('pictureGroup',index)">移除</el-button>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                placeholder="请输入英文标题"
+                                                v-model="item.titleEn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h120">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                type="textarea"
+                                                :autosize="{ minRows: 4, maxRows: 4}"
+                                                placeholder="请输入自定义文案"
+                                                v-model="item.innerText"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                            </el-row>
+                        </div>
+                        <el-row :span="24" class="el-row-h60">
+                            <el-col :span="5" style="margin-left:15%;">
+                                <el-button style="width: 100%;" @click="addNewSelfConfigFloor('pictureGroup','text')">新增文案</el-button>
+                            </el-col>
+                            <el-col :span="5" :offset="2">
+                                <el-button style="width: 100%;" @click="addNewSelfConfigFloor('pictureGroup','img')">新增图片</el-button>
+                            </el-col>
+                        </el-row>
+                    </el-row>
+                </el-collapse-item>
+
+                <!--会议地点-->
+                <el-collapse-item title="会议地点" name="11">
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="【楼层开关】" prop="meetingJsonData.location.isShowFloor" label-width="15%" style="margin:0;">
+                                <el-switch
+                                    v-model="meetingForm.meetingJsonData.location.isShowFloor"
+                                    active-text="显示"
+                                    inactive-text="隐藏">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="默认样式" prop="meetingJsonData.location.isShowDefaultModel" label-width="15%" style="margin:0;">
+                                <el-switch
+                                    v-model="meetingForm.meetingJsonData.location.isShowDefaultModel"
+                                    active-text="显示"
+                                    inactive-text="隐藏">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <div v-if="meetingForm.meetingJsonData.location.isShowDefaultModel">
+                        <el-row class="el-row-h230">
+                            <el-col :span="18">
+                                <el-form-item label="地图图片" prop="meetingJsonData.location.locationImgUrl" label-width="20%" style="margin:0;">
+                                    <div class="fengmian_show2" @click="chooseContentImg('map',0)">
+                                        <img v-if="meetingForm.meetingJsonData.location.locationImgUrl" :src="meetingForm.meetingJsonData.location.locationImgUrl" class="avatar2">
+                                        <i v-else class="el-icon-plus avatar-uploader-icon iconadd"></i>
+                                    </div>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6" style="line-height: 30px;">建议尺寸：1100*550  单位：像素(PX)<br>建议格式：Png JPG JPEG</el-col>
+                        </el-row>
+                    </div>
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="是否显示自定义" prop="meetingJsonData.location.isShowSelfConfig" label-width="15%" style="margin:0;">
+                                <el-switch
+                                    v-model="meetingForm.meetingJsonData.location.isShowSelfConfig"
+                                    active-text="显示"
+                                    inactive-text="隐藏">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row v-if="meetingForm.meetingJsonData.location.isShowSelfConfig">
+                        <div v-for="(item,index) in meetingForm.meetingJsonData.location.selfConfigZone">
+                            <!--图片型-->
+                            <el-row v-if="item.type == 'img'" :span="24">
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="自定义内容图" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                placeholder="请输入中文标题"
+                                                v-model="item.titleCn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="5" :offset="1" class="el-row-h40">
+                                        <el-button @click="removeSelfConfigItem('location',index)">移除</el-button>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                placeholder="请输入英文标题"
+                                                v-model="item.titleEn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h220">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <div class="fengmian_show2" @click="chooseContentImg('location',index)">
+                                                <img v-if="item.imgUrl" :src="item.imgUrl" class="avatar2">
+                                                <i v-else class="el-icon-plus avatar-uploader-icon iconadd"></i>
+                                            </div>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                            </el-row>
+                            <!--文字型-->
+                            <el-row v-else-if="item.type == 'text'" :span="24">
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="自定义文案" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                placeholder="请输入中文标题"
+                                                v-model="item.titleCn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="5" :offset="1" class="el-row-h40">
+                                        <el-button @click="removeSelfConfigItem('location',index)">移除</el-button>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                placeholder="请输入英文标题"
+                                                v-model="item.titleEn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h120">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                type="textarea"
+                                                :autosize="{ minRows: 4, maxRows: 4}"
+                                                placeholder="请输入自定义文案"
+                                                v-model="item.innerText"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                            </el-row>
+                        </div>
+                        <el-row :span="24" class="el-row-h60">
+                            <el-col :span="5" style="margin-left:15%;">
+                                <el-button style="width: 100%;" @click="addNewSelfConfigFloor('location','text')">新增文案</el-button>
+                            </el-col>
+                            <el-col :span="5" :offset="2">
+                                <el-button style="width: 100%;" @click="addNewSelfConfigFloor('location','img')">新增图片</el-button>
+                            </el-col>
+                        </el-row>
+                    </el-row>
+                </el-collapse-item>
+
+                <!--合作伙伴-->
+                <el-collapse-item title="合作伙伴" name="12">
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="【楼层开关】" prop="" label-width="15%" style="margin:0;">
+                                <el-switch
+                                    v-model="meetingForm.meetingJsonData.coperation.isShowFloor"
+                                    active-text="显示"
+                                    inactive-text="隐藏">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="默认样式" prop="meetingJsonData.coperation.isShowDefaultModel" label-width="15%" style="margin:0;">
+                                <el-switch
+                                    v-model="meetingForm.meetingJsonData.coperation.isShowDefaultModel"
+                                    active-text="显示"
+                                    inactive-text="隐藏"
+                                    @change="coperationDefaultChange">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <div v-if="meetingForm.meetingJsonData.coperation.isShowDefaultModel">
+                        <el-row class="el-row-h60">
+                            <el-col :span="20">
+                                <el-form-item label="合作伙伴Id" prop="" label-width="18%" style="margin:0;">
+                                    <el-input
+                                        :disabled="true"
+                                        v-model="meetingForm.meetingCooperationId"
+                                        auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col class="el-row-h40" :offset="1" :span="3">
+                                <el-button style="width: 100%;" @click="openAddCoperationList">修改</el-button>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="是否显示自定义" prop="meetingJsonData.coperation.isShowSelfConfig" label-width="15%" style="margin:0;">
+                                <el-switch
+                                    v-model="meetingForm.meetingJsonData.coperation.isShowSelfConfig"
+                                    active-text="显示"
+                                    inactive-text="隐藏">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row v-if="meetingForm.meetingJsonData.coperation.isShowSelfConfig">
+                        <div v-for="(item,index) in meetingForm.meetingJsonData.coperation.selfConfigZone">
+                            <!--图片型-->
+                            <el-row v-if="item.type == 'img'" :span="24">
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="自定义内容图" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                placeholder="请输入中文标题"
+                                                v-model="item.titleCn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="5" :offset="1" class="el-row-h40">
+                                        <el-button @click="removeSelfConfigItem('coperation',index)">移除</el-button>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                placeholder="请输入英文标题"
+                                                v-model="item.titleEn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h220">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <div class="fengmian_show2" @click="chooseContentImg('coperation',index)">
+                                                <img v-if="item.imgUrl" :src="item.imgUrl" class="avatar2">
+                                                <i v-else class="el-icon-plus avatar-uploader-icon iconadd"></i>
+                                            </div>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                            </el-row>
+                            <!--文字型-->
+                            <el-row v-else-if="item.type == 'text'" :span="24">
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="自定义文案" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                placeholder="请输入中文标题"
+                                                v-model="item.titleCn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="5" :offset="1" class="el-row-h40">
+                                        <el-button @click="removeSelfConfigItem('coperation',index)">移除</el-button>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                placeholder="请输入英文标题"
+                                                v-model="item.titleEn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h120">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength=""
+                                                clearable
+                                                type="textarea"
+                                                :autosize="{ minRows: 4, maxRows: 4}"
+                                                placeholder="请输入自定义文案"
+                                                v-model="item.innerText"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                            </el-row>
+                        </div>
+                        <el-row :span="24" class="el-row-h60">
+                            <el-col :span="5" style="margin-left:15%;">
+                                <el-button style="width: 100%;" @click="addNewSelfConfigFloor('coperation','text')">新增文案</el-button>
+                            </el-col>
+                            <el-col :span="5" :offset="2">
+                                <el-button style="width: 100%;" @click="addNewSelfConfigFloor('coperation','img')">新增图片</el-button>
+                            </el-col>
+                        </el-row>
+                    </el-row>
+                </el-collapse-item>
 
             </el-collapse>
             <!--折叠面板结束-->
@@ -1572,7 +2187,185 @@
         </el-dialog>
         <!--嘉宾信息库表弹出层结束-->
 
+        <!--投票弹出层开始-->
+        <el-dialog title="投票列表" :visible.sync="showVoteLib" width="100%" :fullscreen="true" :show-close="false" >
+            <el-form :model="searchVoteForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                <el-row class="el-row-h60">
+                    <el-col :span="16">
+                        <el-form-item label="投票名称" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="searchVoteForm.voteTitle"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchVote(0)">搜索</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" style="width:100%" @click="backToEditFromVote()">返回</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <el-table :data="voteTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="voteTableData" stripe>
+                <el-table-column prop="voteId" width="110" label="投票编号" ></el-table-column>
+                <el-table-column prop="voteTitle" label="投票标题" ></el-table-column>
+                <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
+                <el-table-column prop="voteCrtTime" label="创建时间" width="200"></el-table-column>
+                <el-table-column label="操作" width="100" fixed="right">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" @click="addThisVote(scope.row)">添加</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange6"
+                    :current-page="pagination6.currPage"
+                    :page-size="pagination6.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination6.totalCount">
+                </el-pagination>
+            </div>
+        </el-dialog>
+        <!--投票表弹出层结束-->
 
+        <!--文章问答弹出层开始-->
+        <el-dialog title="文章问答列表" :visible.sync="showArticleQuestionLib" width="100%" :fullscreen="true" :show-close="false" >
+            <el-form :model="searchArticleQuestionForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                <el-row class="el-row-h60">
+                    <el-col :span="16">
+                        <el-form-item label="文章问答名称" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="searchArticleQuestionForm.interactionTitle"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchArticleQuestion(0)">搜索</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" style="width:100%" @click="backToEditFromArticleQuestion()">返回</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <el-table :data="articleQuestionTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="articleQuestionTableData" stripe>
+                <el-table-column prop="interactionId" width="110" label="文章问答编号" ></el-table-column>
+                <el-table-column prop="interactionTitle" label="文章问答标题" ></el-table-column>
+                <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
+                <el-table-column prop="interactionCrtTime" label="创建时间" width="200"></el-table-column>
+                <el-table-column label="操作" width="100" fixed="right">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" @click="addThisArticleQuestion(scope.row)">添加</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange7"
+                    :current-page="pagination7.currPage"
+                    :page-size="pagination7.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination7.totalCount">
+                </el-pagination>
+            </div>
+        </el-dialog>
+        <!--文章问答表弹出层结束-->
+
+        <!--高清组图弹出层开始-->
+        <el-dialog title="高清组图" :visible.sync="showPictrueGroupLib" width="100%" :fullscreen="true" :show-close="false" >
+            <el-form :model="searchPictrueGroupForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                <el-row class="el-row-h60">
+                    <el-col :span="16">
+                        <el-form-item label="文章问答名称" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="searchPictrueGroupForm.diagramTitle"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchPictureGroup(0)">搜索</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" style="width:100%" @click="backToEditFromPictureGroup()">返回</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <el-table :data="pictrueGroupTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="pictrueGroupTableData" stripe>
+                <el-table-column prop="diagramId" width="110" label="组图编号" ></el-table-column>
+                <el-table-column prop="diagramTitle" label="文章问答标题" ></el-table-column>
+                <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
+                <el-table-column prop="diagramCrtTime" label="创建时间" width="200"></el-table-column>
+                <el-table-column label="操作" width="100" fixed="right">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" @click="addThisPictureGroup(scope.row)">添加</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange8"
+                    :current-page="pagination8.currPage"
+                    :page-size="pagination8.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination8.totalCount">
+                </el-pagination>
+            </div>
+        </el-dialog>
+        <!--高清组图表弹出层结束-->
+
+        <!--合作机构弹出层开始-->
+        <el-dialog title="合作伙伴" :visible.sync="showCoperationLib" width="100%" :fullscreen="true" :show-close="false" >
+            <el-form :model="searchCoperationForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                <el-row class="el-row-h60">
+                    <el-col :span="16">
+                        <el-form-item label="会议名称" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="searchCoperationForm.meetingTitle"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchCoperation(0)">搜索</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" style="width:100%" @click="backToEditFromCoperation()">返回</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <el-table :data="coperationTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="coperationTableData" stripe>
+                <el-table-column prop="meetingCooperationId" label="合作伙伴编号" width="120"></el-table-column>
+                <el-table-column prop="meetingTitle" label="会议名称" width=""></el-table-column>
+                <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
+                <el-table-column prop="meetingCooperationCrtTime" label="创建时间" width="200"></el-table-column>
+                <el-table-column label="操作" width="100" fixed="right">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" @click="addThisCoperation(scope.row)">添加</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange8"
+                    :current-page="pagination9.currPage"
+                    :page-size="pagination9.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination9.totalCount">
+                </el-pagination>
+            </div>
+        </el-dialog>
+        <!--合作机构表弹出层结束-->
 
 
 

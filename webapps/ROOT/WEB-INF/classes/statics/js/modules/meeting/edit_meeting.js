@@ -27,7 +27,7 @@ var vm = new Vue({
             //按钮请求开关
             ajaxController:true,
             //折叠面板组件实例
-            activeNames: ['8','9','10'],
+            activeNames: ['1','2','3','4','5','6','7','8','9','10','11','12'],
             //会议关键词数组
             meetingTagArray:[],
             labelOptions:[],
@@ -55,26 +55,31 @@ var vm = new Vue({
                 meetingAgendaId:'',//日程ID
                 meetingGuestId:'',//嘉宾ID
                 voteId:'',//投票ID
+                interactionId:'',//文章问答互动ID
+                diagramId:'',//高清组图ID
+                meetingCooperationId:'',//合作机构ID
                 meetingJsonData:{ //前端渲染大数据
                     headPicBanner:{
                         isShowFloor:true,
                         isShowDefaultModel: true,
-                        isShowSelfConfig: true,
+                        isShowSelfConfig: false,
                         picUrlPc: '',
                         picUrlMobile: '',
                         picLink:'',
-                        selfConfigZone:[{
-                            type:'text',
-                            titleCn:'标题',
-                            titleEn:'TITLE',
-                            innerText:'内容',
-                        },{
-                            type:'img',
-                            titleCn:'标题',
-                            titleEn:'TITLE',
-                            toLinkUrl:"https://www.baidu.com",
-                            imgUrl:'https://cvinfo-test.obs.cn-north-1.myhuaweicloud.com/head/6546992352198656.jpg',
-                        }]
+                        selfConfigZone:[
+                        // {
+                        //     type:'text',
+                        //     titleCn:'标题',
+                        //     titleEn:'TITLE',
+                        //     innerText:'内容',
+                        // },{
+                        //     type:'img',
+                        //     titleCn:'标题',
+                        //     titleEn:'TITLE',
+                        //     toLinkUrl:"https://www.baidu.com",
+                        //     imgUrl:'https://cvinfo-test.obs.cn-north-1.myhuaweicloud.com/head/6546992352198656.jpg',
+                        // }
+                        ]
                     },
                     basicInformation:{
                         isShowFloor:true,
@@ -83,30 +88,38 @@ var vm = new Vue({
                         selfConfigZone:[]
                     },
                     meetingIntroduce:{
+                        floorTitleCn:'活动介绍',
+                        floorTitleEn:'ACTIVITY DESCRIPTION',
                         isShowFloor:true,
                         isShowDefaultModel: true,
-                        isShowSelfConfig: true,
+                        isShowSelfConfig: false,
                         paragraph:[{
                             innerText:''
                         }],
                         selfConfigZone:[]
                     },
                     calendar:{
+                        floorTitleCn:'会议议程',
+                        floorTitleEn:'MEETING AGENDA',
                         isShowFloor:true,
                         isShowDefaultModel: false,
-                        isShowSelfConfig: true,
+                        isShowSelfConfig: false,
                         selfConfigZone:[]
                     },
                     guest:{
+                        floorTitleCn:'嘉宾介绍',
+                        floorTitleEn:'GUEST INTRODUCTION',
                         isShowFloor:true,
                         isShowDefaultModel: false,
-                        isShowSelfConfig: true,
+                        isShowSelfConfig: false,
                         selfConfigZone:[]
                     },
                     guestOpinion:{
+                        floorTitleCn:'嘉宾观点',
+                        floorTitleEn:'GUEST VIEWS',
                         isShowFloor:true,
                         isShowDefaultModel: true,
-                        isShowSelfConfig: true,
+                        isShowSelfConfig: false,
                         opinionList:[{
                             guestName:'',
                             guestPosition:'',
@@ -117,12 +130,46 @@ var vm = new Vue({
                         selfConfigZone:[]
                     },
                     vote:{
+                        floorTitleCn:'投票',
+                        floorTitleEn:'VOTE',
                         isShowFloor:true,
                         isShowDefaultModel: false,
-                        isShowSelfConfig: true,
+                        isShowSelfConfig: false,
+                        selfConfigZone:[]
+                    },
+                    articleQuestion:{
+                        floorTitleCn:'相关报道',
+                        floorTitleEn:'RELEVANT REPORTS',
+                        isShowFloor:true,
+                        isShowDefaultModel: false,
+                        isShowSelfConfig: false,
+                        selfConfigZone:[]
+                    },
+                    pictureGroup:{
+                        floorTitleCn:'图片直播',
+                        floorTitleEn:'PICTURE',
+                        isShowFloor:true,
+                        isShowDefaultModel: false,
+                        isShowSelfConfig: false,
+                        selfConfigZone:[]
+                    },
+                    location:{
+                        floorTitleCn:'会议地点',
+                        floorTitleEn:'WHERE',
+                        isShowFloor:true,
+                        isShowDefaultModel: true,
+                        isShowSelfConfig: false,
+                        locationImgUrl:'',
+                        selfConfigZone:[]
+                    },
+                    coperation:{
+                        floorTitleCn:'合作伙伴',
+                        floorTitleEn:'PARTNER',
+                        isShowFloor:true,
+                        isShowDefaultModel: false,
+                        isShowSelfConfig: false,
                         selfConfigZone:[]
                     }
-                    
                 }
             },
             meetingFormRules:{
@@ -229,6 +276,54 @@ var vm = new Vue({
             },
             voteTableData:[],
             pagination6: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //展示文章问答
+            showArticleQuestionLib:false,
+            searchArticleQuestionForm:{
+                interactionTitle:''
+            },
+            articleQuestionTableData:[],
+            pagination7: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //展示文章问答
+            showArticleQuestionLib:false,
+            searchArticleQuestionForm:{
+                interactionTitle:''
+            },
+            articleQuestionTableData:[],
+            pagination7: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //展示高清组图
+            showPictrueGroupLib:false,
+            searchPictrueGroupForm:{
+                diagramTitle:''
+            },
+            pictrueGroupTableData:[],
+            pagination8: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //展示合作伙伴
+            showCoperationLib:false,
+            searchCoperationForm:{
+                meetingTitle:''
+            },
+            coperationTableData:[],
+            pagination9: {
                 currPage: 1,
                 totalCount:0,
                 totalPage:0,
@@ -465,9 +560,9 @@ var vm = new Vue({
         //修改某一张内容图片
         chooseContentImg(objName,index){
             console.log(objName,index)
-            this.showContentImgLib = true
             this.chooseImgObjName = objName
             this.chooseImgObjIndex = index
+            this.showContentImgLib = true
             this.searchContentImg(0)
         },
         //搜索内容图库
@@ -512,9 +607,14 @@ var vm = new Vue({
                 }
             });
         },
-        //选择了某一张封面图片
+        //选择了某一张内容图片
         addThisContentImg (item) {
-            this.meetingForm.meetingJsonData[this.chooseImgObjName].selfConfigZone[this.chooseImgObjIndex].imgUrl = item.picUrl
+            //当chooseImgObjName == map  单独处理一下，选择的是location中的地图图片
+            if (this.chooseImgObjName == 'map' && this.chooseImgObjIndex == '0') {
+                this.meetingForm.meetingJsonData.location.locationImgUrl = item.picUrl
+            } else {
+                this.meetingForm.meetingJsonData[this.chooseImgObjName].selfConfigZone[this.chooseImgObjIndex].imgUrl = item.picUrl
+            }
             this.backToEdit2()
         },
         //返回编辑页
@@ -786,7 +886,7 @@ var vm = new Vue({
             }
             $.ajax({
 				type: "POST",
-                url: "/guest/list",
+                url: "/vote/list",
                 contentType: "application/json",
 			    data: JSON.stringify(data),
 			    dataType: "json",
@@ -810,7 +910,256 @@ var vm = new Vue({
                 }
 			});
         },
+        handleCurrentChange6 (val) {
+            this.pagination6.currPage = val
+            this.searchVote()
+        },
+        addThisVote (item) {
+            this.meetingForm.voteId = item.voteId
+            this.backToEditFromVote()
+        },
+        backToEditFromVote (){
+            if (this.meetingForm.voteId == '') {
+                this.meetingForm.meetingJsonData.vote.isShowDefaultModel = false
+            }
+            this.showVoteLib = false
+            this.searchVoteForm = {
+                voteTitle:''
+            }
+            this.voteTableData = []
+            this.pagination6 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+        },
+        //--------------------搜索文章问答相关--------------------
+        articleQuestionDefaultChange (val){
+            if (val && this.meetingForm.interactionId == '') {
+                this.openAddArticleQuestionList()
+            }
+        },
+        openAddArticleQuestionList () {
+            this.showArticleQuestionLib = true
+            this.searchArticleQuestion(0)
+        },
+        searchArticleQuestion (type){
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchArticleQuestionForm))
+            data.interactionTitle = data.interactionTitle.toString().trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination7.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination7.currPage.toString(),
+                    limit: self.pagination7.pageSize.toString()
+                })
+            }
+            $.ajax({
+				type: "POST",
+                url: "/interaction/list",
+                contentType: "application/json",
+			    data: JSON.stringify(data),
+			    dataType: "json",
+			    success: function(res){
+					if(res.code == 200){
+                        self.articleQuestionTableData = res.page.list
+                        self.pagination7 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage: res.page.totalPage,
+                            pageSize: res.page.pageSize
+                        }
+					}else{
+						mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+			});
+        },
+        handleCurrentChange7 (val) {
+            this.pagination7.currPage = val
+            this.searchArticleQuestion()
+        },
+        addThisArticleQuestion (item) {
+            this.meetingForm.interactionId = item.interactionId
+            this.backToEditFromArticleQuestion()
+        },
+        backToEditFromArticleQuestion(){
+            if (this.meetingForm.interactionId == '') {
+                this.meetingForm.meetingJsonData.articleQuestion.isShowDefaultModel = false
+            }
+            this.showArticleQuestionLib=false
+            this.searchArticleQuestionForm={
+                interactionTitle:''
+            }
+            this.articleQuestionTableData=[]
+            this.pagination7= {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+        },
+        //--------------------搜索高清组图相关--------------------
+        pictureGroupDefaultChange (val){
+            if (val && this.meetingForm.diagramId == '') {
+                this.openAddPictureGroupList()
+            }
+        },
+        openAddPictureGroupList () {
+            this.showPictrueGroupLib = true
+            this.searchPictureGroup(0)
+        },
+        searchPictureGroup (type){
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchPictrueGroupForm))
+            data.diagramTitle = data.diagramTitle.toString().trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination8.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination8.currPage.toString(),
+                    limit: self.pagination8.pageSize.toString()
+                })
+            }
+            $.ajax({
+				type: "POST",
+                url: "/diagram/list",
+                contentType: "application/json",
+			    data: JSON.stringify(data),
+			    dataType: "json",
+			    success: function(res){
+					if(res.code == 200){
+                        self.pictrueGroupTableData = res.page.list
+                        self.pagination8 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage: res.page.totalPage,
+                            pageSize: res.page.pageSize
+                        }
+					}else{
+						mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+			});
+        },
+        handleCurrentChange8 (val) {
+            this.pagination8.currPage = val
+            this.searchPictureGroup()
+        },
+        addThisPictureGroup (item) {
+            this.meetingForm.diagramId = item.diagramId
+            this.backToEditFromPictureGroup()
+        },
+        backToEditFromPictureGroup(){
+            if (this.meetingForm.diagramId == '') {
+                this.meetingForm.meetingJsonData.pictureGroup.isShowDefaultModel = false
+            }
+            this.showPictrueGroupLib=false
+            this.searchPictrueGroupForm={
+                diagramTitle:''
+            }
+            this.pictrueGroupTableData=[]
+            this.pagination8={
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+        },
+        //--------------------搜索合作伙伴相关--------------------
+        coperationDefaultChange (val){
+            if (val && this.meetingForm.meetingCooperationId == '') {
+                this.openAddCoperationList()
+            }
+        },
+        openAddCoperationList () {
+            this.showCoperationLib = true
+            this.searchCoperation(0)
+        },
+        searchCoperation (type){
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchCoperationForm))
+            data.meetingTitle = data.meetingTitle.toString().trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination9.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination9.currPage.toString(),
+                    limit: self.pagination9.pageSize.toString()
+                })
+            }
+            $.ajax({
+				type: "POST",
+                url: "/meeting/cooperation/list",
+                contentType: "application/json",
+			    data: JSON.stringify(data),
+			    dataType: "json",
+			    success: function(res){
+					if(res.code == 200){
+                        self.coperationTableData = res.page.list
+                        self.pagination9 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage: res.page.totalPage,
+                            pageSize: res.page.pageSize
+                        }
+					}else{
+						mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+			});
+        },
+        handleCurrentChange9 (val) {
+            this.pagination9.currPage = val
+            this.searchCoperation()
+        },
+        addThisCoperation (item) {
+            this.meetingForm.meetingCooperationId = item.meetingCooperationId
+            this.backToEditFromCoperation()
+        },
+        backToEditFromCoperation(){
+            if (this.meetingForm.meetingCooperationId == '') {
+                this.meetingForm.meetingJsonData.coperation.isShowDefaultModel = false
+            }
+            this.showCoperationLib=false
+            this.searchCoperationForm={
+                meetingTitle:''
+            }
+            this.coperationTableData=[]
+            this.pagination9 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
 
+        },
         //保存会议 formName---表单名称   type----提交类型
         testMeetingInfo(type,formName) {
             var self = this
