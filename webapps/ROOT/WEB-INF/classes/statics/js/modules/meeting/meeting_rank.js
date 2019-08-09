@@ -425,6 +425,7 @@ var vm = new Vue({
                 var reqUrl = '/meeting/rank/update'
             }
             var data = JSON.parse(JSON.stringify(self.rankForm))
+            console.log(data)
             $.base64.utf8encode = true;
             var jsonString = JSON.stringify(data.meetingRankJson);
             var json64 = $.base64.btoa(jsonString);

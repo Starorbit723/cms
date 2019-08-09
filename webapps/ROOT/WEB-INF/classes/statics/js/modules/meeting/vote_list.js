@@ -13,11 +13,12 @@ var vm = new Vue({
         }
         return {
             //是否显示子页面
-            showChildPage:true,
+            showChildPage: false,
             creatOrEdit: 0, //0新建  1修改
             timeRange:[],
             searchForm: {
                 voteMeetingId: '',
+                voteTitle:'',
                 startTime:'',
                 endTime:''
             },
@@ -40,7 +41,11 @@ var vm = new Vue({
                 voteCrtTime: '', //创建时间
                 voteModTime: '', //更新时间
                 userName: '', //创建人
-                voteOptions: [] //投票选项
+                voteOptions: [
+                    {
+                        optionsText: '',
+                    }
+                ] //投票选项
             },
             voteFormRules: {
                 voteType: [
@@ -63,6 +68,125 @@ var vm = new Vue({
 
     },
     methods: {
+        // 获取投票类型
+        getRadioVal(event){ 
+            var radioVal = event.target.value;
+            this.voteForm.voteType = radioVal
+        },
+        // 添加选项
+        // addOptions(index) {
+        //     console.log(index)
+        //     let OPtLength = this.voteForm.voteOptions.OPtLength
+        //     console.log(OPtLength)
+        //     if(this.voteForm.voteOptions[OptLength-1].optionsText.trim() !== '') {
+
+        //     }
+        // },
+        //保存
+        testSubmit(formName) {
+            var self = this
+            self.$refs[formName].validate((valid) => {
+                if(valid) {
+                    //验证第一个选项是否填写完成
+                    // for(let i = 0; i < self.voteForm.voteOptions.length; i++) {
+                    //     if(self.voteForm.voteOptions[i].optionsText.trim() == ''){
+                    //         self.$message.error('还有选项未填写完成')
+                    //         return
+                    //     }
+                    // }
+                    if(self.creatOrEdit == 0) {
+                        var data = {
+                            voteMeetingId: self.voteForm.voteMeetingId,
+                            page: '1',
+                            limit: '100'
+                        }
+                        $.ajax({
+                            type: "POST",
+                            url: "/vote/list",
+                            contentType: "application/json",
+                            data: JSON.stringify(data),
+                            dataType: "json",
+                            success: function(res) {
+                                if(res.code == 200) {
+                                    if(res.page.list.length == 0) {
+                                        self.submitCreatEdit()
+                                    } else {
+                                        self.$message.error('该投票数据已存在，不能重复创建')
+                                    }
+                                } else {
+                                    mapErrorStatus(res)
+                                    vm.error = true;
+                                    vm.errorMsg = res.msg;
+                                }
+                            },
+                            error:function(res){
+                                mapErrorStatus(res)
+                            }
+                        });
+                    } else if (self.creatOrEdit == 1) {
+                        self.submitCreatEdit()
+                    }
+                }
+            })
+        },
+        submitCreatEdit() {
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.voteForm))
+            console.log('准备提交保存的FORM', data)
+            if (self.creatOrEdit == 0) {
+                var reqUrl = '/vote/save'
+            } else if (self.creatOrEdit == 1) {
+                var reqUrl = '/vote/update'
+            }
+            $.ajax({
+                type: "POST",
+                url: reqUrl,
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res) {
+                    console.log(res)
+                    if(res.code == 200) {
+                        self.$message.success('保存成功')
+                        self.closeCreatOrEdit('voteForm')
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            })
+        },
+        // 关闭页面
+        closeCreatOrEdit(formName) {
+            this.showChildPage = false
+            this.creatOrEdit = 0
+            this.voteForm = {
+                voteId: '', //投票编号
+                voteTitle: '', //投票名称
+                voteType: '', //投票类型
+                voteAbstract:'', //投票摘要
+                voteMeetingId: '', //投票所属会议
+                voteCrtUserId: '', //创建人用户编号
+                voteModUserId: '', //更新人用户编号
+                voteCrtTime: '', //创建时间
+                voteModTime: '', //更新时间
+                userName: '', //创建人
+                voteOptions: [
+                    {
+                        optionsText: '',
+                    }
+                ]
+            }
+        },
+        //切换页码
+        handleCurrentChange (val) {
+            this.pagination1.currPage = val
+            this.startSearch() 
+        },
         // 开始搜索列表
         startSearch(type) {
             var self = this
@@ -101,7 +225,6 @@ var vm = new Vue({
         // 新建或修改投票type:0  新增   type:1修改
         addOrEditVote(type, item) {
             var self = this
-            console.log(self)
             if(type == 0) {
                 self.showChildPage = true
             } else if(type == 1) {
