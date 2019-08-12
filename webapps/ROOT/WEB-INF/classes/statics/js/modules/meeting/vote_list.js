@@ -59,6 +59,7 @@ var vm = new Vue({
                 ]
             }
             
+            
         }
     },
     watch: {
@@ -174,8 +175,6 @@ var vm = new Vue({
         },
         // 关闭页面
         closeCreatOrEdit(formName) {
-            
-            
             this.creatOrEdit = 0
             this.$refs[formName].resetFields();
             this.voteForm = {
@@ -227,10 +226,6 @@ var vm = new Vue({
                     // console.log(res)
                     if(res.code == 200) {
                         self.tableData = res.page.list
-                        // for (let i = 0; i < self.tableData.length; i++){
-                        //     self.tableData[i].voteCrtTime = self.transformTime(parseInt(self.tableData[i].voteCrtTime))
-                        //     self.tableData[i].voteModTime = self.transformTime(parseInt(self.tableData[i].voteModTime))
-                        // }
                         self.pagination1 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
