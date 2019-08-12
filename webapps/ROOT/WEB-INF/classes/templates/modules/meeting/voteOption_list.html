@@ -33,7 +33,7 @@
             <!--功能按钮区-->
             <el-row class="el-row-h50">
                 <el-col :span="4">
-                    <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addOrEditGuest(0)">新增投票选项</el-button>
+                    <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addOrEditVoteOpt(0)">新增投票选项</el-button>
                 </el-col>
             </el-row>
             <!--表格查询结果区-->
@@ -49,8 +49,8 @@
                     <el-table-column prop="voteOptionModTime" label="更新时间" width="160"></el-table-column>
                     <el-table-column label="操作"  width="140" fixed="right">
                         <template slot-scope="scope">
-                            <el-button type="text" size="small" @click="addOrEditGuest(1,scope.row)">修改</el-button>
-                            <el-button type="text" size="small" @click="deleteThisGuest(scope.row)">删除</el-button>
+                            <el-button type="text" size="small" @click="addOrEditVoteOpt(1,scope.row)">修改</el-button>
+                            <el-button type="text" size="small" @click="deleteThisVoteOpt(scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -58,7 +58,7 @@
             <!--分页器-->
             <div class="cv_page_zone">
                 <el-pagination
-                    @current-change=""
+                    @current-change="handleCurrentChange"
                     :current-page="pagination1.currPage"
                     :page-size="pagination1.pageSize"
                     layout="total, prev, pager, next, jumper"
@@ -72,7 +72,7 @@
             <!-- 选项表单信息 -->
             <div class="cv_content_square">
                 <el-form :model="voteOptForm" :rules="voteOptFormRules" ref="voteOptForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
-                    <el-row class="el-row-h70">
+                    <!-- <el-row class="el-row-h70">
                         <el-col :span="12">
                             <el-form-item label="投票编号" prop="voteId" style="margin:0;">
                                 <el-input
@@ -82,7 +82,7 @@
                                 </el-input>
                             </el-form-item>
                         </el-col>
-                    </el-row>
+                    </el-row> -->
                     <el-row class="el-row-h70">
                         <el-col :span="24">
                             <el-form-item label="投票选项名称" label-width="15%" prop="voteOptionName" style="margin:0;">

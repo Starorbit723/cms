@@ -17,11 +17,10 @@
                     <el-form :model="searchForm" status-icon class="demo-ruleForm" style="width: 100%"  @submit.native.prevent>
                         <el-row class="el-row-h60">
                             <el-col :span="7">
-                                <el-form-item label="投票名称" label-width="25%" style="margin:0;">
+                                <el-form-item label="所属会议编号" label-width="40%" style="margin:0;">
                                     <el-input
                                     clearable
                                     v-model="searchForm.voteMeetingId"
-                                    placeholder="输入图位名称"
                                     type="text"
                                     auto-complete="off"></el-input>
                                 </el-form-item>
@@ -153,10 +152,7 @@
                                 <el-col :span="2" :offset="1" style="margin-top: 0px">
                                     <el-button size="medium" type="primary" icon="el-icon-plus" @click="addOptions()" circle ></el-button>
                                 </el-col>
-                                
-                            </el-row>
-                            
-                            
+                            </el-row> 
                         </div>
                         
                     </el-form>
@@ -165,7 +161,7 @@
                             <el-button type="primary" style="width: 100%" @click="testSubmit('voteForm')">保存</el-button>
                         </el-col>
                         <el-col class="el-row-h40" :span="2" :offset="1">
-                            <el-button type="primary" style="width: 100%" @click="closeCreatOrEdit('calendarForm')">取消</el-button>
+                            <el-button type="primary" style="width: 100%" @click="closeCreatOrEdit('voteForm')">取消</el-button>
                         </el-col>
                     </el-row>
                 </div>

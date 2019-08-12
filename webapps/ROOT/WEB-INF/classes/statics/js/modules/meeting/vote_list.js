@@ -33,6 +33,7 @@ var vm = new Vue({
                 totalPage:0,
                 pageSize:10
             },
+            timeRange: [],
             voteForm: {
                 voteId: '', //投票编号
                 voteTitle: '', //投票名称
@@ -58,6 +59,19 @@ var vm = new Vue({
                 ]
             }
             
+        }
+    },
+    watch: {
+        timeRange (val) {
+            console.log(val)
+            if (val) {
+                this.searchForm.startTime = val[0]
+                this.searchForm.endTime = val[1]
+            } else {
+                this.searchForm.startTime = ''
+                this.searchForm.endTime = ''
+            }
+            console.log(this.searchForm)
         }
     },
     created() {
@@ -160,9 +174,10 @@ var vm = new Vue({
         },
         // 关闭页面
         closeCreatOrEdit(formName) {
-            this.showVoteList = true
-            this.showChildList = false
+            
+            
             this.creatOrEdit = 0
+            this.$refs[formName].resetFields();
             this.voteForm = {
                 voteId: '', //投票编号
                 voteTitle: '', //投票名称
@@ -175,7 +190,10 @@ var vm = new Vue({
                 voteModTime: '', //更新时间
                 userName: '', //创建人
                 voteStatus: ''
-            }
+            },
+            
+            this.showChildList = false
+            this.showVoteList = true
         },
         //切换页码
         handleCurrentChange (val) {

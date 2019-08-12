@@ -46,6 +46,10 @@ var vm = new Vue({
         this.startSearch(0)
     },
     methods:{
+        handleCurrentChange (val) {
+            this.pagination1.currPage = val
+            this.startSearch()
+        },
          //开始搜索选项列表
          startSearch (type) {
             var self = this
@@ -89,18 +93,69 @@ var vm = new Vue({
             });
         },
         // 新增或修改投票
-        addOrEditGuest(type, item) {
+        addOrEditVoteOpt(type, item) {
             var self = this
+            self.creatOrEdit = type
             if(type == 0){
                 self.showChildPage = true
-                self.creatOrEdit = 0
                 console.log('新增投票选项')
             } else {
-                self.showChildPage = true
-                self.creatOrEdit = 1
-                self.voteOptForm = JSON.parse(JSON.stringify(item))
-                console.log('修改投票选项',self.voteOptForm)
+                
+                $.ajax({
+                    type: "POST",
+                    url:"/voteOption/info/" + item.voteOptionId.toString(),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function(res){
+                        if(res.code == 200) {
+                            let data = res.dict
+                            self.voteOptForm = data
+                            self.showChildPage = true
+                        } else{
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                })
             }
+        },
+        // 删除投票选项
+        deleteThisVoteOpt (item) {
+            var self = this
+            self.$confirm('确定删除该选项吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = JSON.parse(JSON.stringify(item))
+                data.voteOptionStatus = 1 //0 正常  1 删除
+                console.log(data)
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/voteOption/update",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res) {
+                        if (res.code == 200) {
+                            self.startSearch()
+                            self.$message.success('删除成功')
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+            })
+           
         },
         // 提交表单
         submitCreatEdit (formName) {
@@ -108,12 +163,6 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if(valid) {
-                    console.log(1111)
-                    // console.log(self.voteOptForm)
-                    // if(self.voteOptForm.voteOptionName.trim() == '' || self.voteOptForm.voteId.trim() == '') {
-                    //     self.$message.error('信息未填写完成')
-                    //     return
-                    // }
                     if(self.creatOrEdit == 0) {
                         var data = {
                             voteOptionName: self.voteOptForm.voteOptionName,
@@ -127,12 +176,9 @@ var vm = new Vue({
                             data: JSON.stringify(data),
                             dataType: "json",
                             success: function(res){
+                                console.log(res)
                                 if(res.code == 200){
-                                    if (res.page.list.length == 0) {
-                                        self.submitCreatEdit()
-                                    } else {
-                                        self.$message.error('该投票数据已存在，不能重复创建')
-                                    }
+                                    self.submitForm()
                                 }else{
                                     mapErrorStatus(res)
                                     vm.error = true;
@@ -144,13 +190,13 @@ var vm = new Vue({
                             }
                         });
                     } else if (self.creatOrEdit == 1) {
-                        self.submitCreatEdit()
+                        self.submitForm()
                     }
                 }
             })
         },
         // 提交保存
-        submitCreatEdit() {
+        submitForm() {
             var self = this
             if(self.creatOrEdit == 0) {
                 var reqUrl = '/voteOption/save'
