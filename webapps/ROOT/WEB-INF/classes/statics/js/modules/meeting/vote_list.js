@@ -13,16 +13,17 @@ var vm = new Vue({
         }
         return {
             //是否显示子页面
-            showVoteList: false,
+            showVoteList: true,
             showChildList: false,
-            showDetailPage: true,
+            showDetailPage: false,
             creatOrEdit: 0, //0新建  1修改
             timeRange:[],
             searchForm: {
                 voteMeetingId: '',
                 voteTitle:'',
                 startTime:'',
-                endTime:''
+                endTime:'',
+                voteStatus: '0'
             },
             tableData:[{}],
             //分页器相关
@@ -36,18 +37,14 @@ var vm = new Vue({
                 voteId: '', //投票编号
                 voteTitle: '', //投票名称
                 voteType: '', //投票类型
-                voteAbstract:'', //投票摘要
+                voteDesc:'', //投票摘要
                 voteMeetingId: '', //投票所属会议
                 voteCrtUserId: '', //创建人用户编号
                 voteModUserId: '', //更新人用户编号
                 voteCrtTime: '', //创建时间
                 voteModTime: '', //更新时间
                 userName: '', //创建人
-                voteOptions: [
-                    {
-                        optionsText: '',
-                    }
-                ] //投票选项
+                voteStatus: ''
             },
             voteFormRules: {
                 voteType: [
@@ -56,7 +53,7 @@ var vm = new Vue({
                 voteTitle: [
                     {required: true, message: '投票名称为必填项', trigger: 'change'}
                 ],
-                voteAbstract: [
+                voteDesc: [
                     {required: true, message: '投票摘要为必填项', trigger: 'change'}
                 ]
             }
@@ -96,6 +93,7 @@ var vm = new Vue({
                     if(self.creatOrEdit == 0) {
                         var data = {
                             voteMeetingId: self.voteForm.voteMeetingId,
+                            voteStatus: '0',
                             page: '1',
                             limit: '100'
                         }
@@ -169,18 +167,14 @@ var vm = new Vue({
                 voteId: '', //投票编号
                 voteTitle: '', //投票名称
                 voteType: '', //投票类型
-                voteAbstract:'', //投票摘要
+                voteDesc:'', //投票摘要
                 voteMeetingId: '', //投票所属会议
                 voteCrtUserId: '', //创建人用户编号
                 voteModUserId: '', //更新人用户编号
                 voteCrtTime: '', //创建时间
                 voteModTime: '', //更新时间
                 userName: '', //创建人
-                voteOptions: [
-                    {
-                        optionsText: '',
-                    }
-                ]
+                voteStatus: ''
             }
         },
         //切换页码
@@ -279,6 +273,7 @@ var vm = new Vue({
                 type: 'warning'
             }).then(() => {
                 var data = JSON.parse(JSON.stringify(item))
+                data.voteStatus = "1"
                 console.log(JSON.stringify(data))
                 $.ajax({
                     type: "POST",
