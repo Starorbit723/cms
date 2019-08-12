@@ -103,8 +103,12 @@
                             <img :src="item.guestImg">
                             <div class="delbtn el-icon-circle-close" @click="delThisGuest(index)"></div>
                             <div class="nametext" v-text="item.guestName"></div>
-                            <div class="movebtn" v-if="index !== 0" @click="moveUp(index)">前移</div>
-                            <div class="movebtn" v-if="index !== (meetingGuestForm.meetingGuestJson.length - 1)" @click="moveDown(index)">后移</div>
+                            <el-input
+                                class="scaleText"
+                                type="text"
+                                v-model="item.scale"
+                                auto-complete="off"
+                                @change="scaleChange(index)"></el-input>
                         </div>
                     </div>
                     
@@ -278,5 +282,9 @@
     display: block;
 }
 
+.scaleText .el-input__inner{
+    text-align: center;
+    border-radius: 0 0 4px 4px;
+}
 </style>
 </html>

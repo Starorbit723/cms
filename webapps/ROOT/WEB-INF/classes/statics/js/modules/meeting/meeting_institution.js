@@ -62,6 +62,7 @@ var vm = new Vue({
                         // children:[{
                         //     title:'',
                         //     picUrl:''
+                        //     scale:'',//权重
                         // }
                     //     ]
                     // }
@@ -149,6 +150,35 @@ var vm = new Vue({
                 }
             });
         },
+        //权重发生改变时调整顺序
+        scaleChange (index,index2,index3) {
+            console.log('发生变化',index,index2,this.meetingCopForm.meetingCooperationJson[index].children[index2].children)
+            if (this.meetingCopForm.meetingCooperationJson[index].children[index2].children[index3].scale.trim() == '') {
+                this.meetingCopForm.meetingCooperationJson[index].children[index2].children[index3].scale = '-1'
+                this.$message.error('嘉宾显示权重值不能为空')
+            }
+            let arrSort = JSON.parse(JSON.stringify(this.meetingCopForm.meetingCooperationJson[index].children[index2].children));
+            this.meetingCopForm.meetingCooperationJson[index].children[index2].children = arrSort.sort(this.compare('scale'))
+        },
+        //排序比较函数
+        compare (prop) {
+            console.log(prop)
+            return function (obj1, obj2) {
+                var val1 = obj1[prop];
+                var val2 = obj2[prop];
+                if (!isNaN(Number(val1)) && !isNaN(Number(val2))) {
+                    val1 = Number(val1);
+                    val2 = Number(val2);
+                }
+                if (val1 > val2) {
+                    return -1;
+                } else if (val1 < val2) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }            
+        },
         //添加一级标题---1级维度
         addCopLv1 () {
             let Lv1Length = this.meetingCopForm.meetingCooperationJson.length
@@ -204,24 +234,6 @@ var vm = new Vue({
             this.searchCoper(0)
             this.showMeidaLibDialog = true
         },
-        //前移
-        moveUp(index,index2,index3){
-            var moveArr = JSON.parse(JSON.stringify(this.meetingCopForm.meetingCooperationJson[index].children[index2].children))
-            let temp = moveArr[index3 - 1]
-            let temp2 = moveArr[index3]
-            moveArr[index3 - 1] = temp2
-            moveArr[index3] = temp
-            this.meetingCopForm.meetingCooperationJson[index].children[index2].children = moveArr
-        },
-        //后移
-        moveDown(index,index2,index3){
-            var moveArr = JSON.parse(JSON.stringify(this.meetingCopForm.meetingCooperationJson[index].children[index2].children))
-            let temp = moveArr[index3]
-            let temp2 = moveArr[index3 + 1]
-            moveArr[index3 + 1] = temp
-            moveArr[index3] = temp2
-            this.meetingCopForm.meetingCooperationJson[index].children[index2].children = moveArr
-        },
         //搜索图库
         searchCoper (type){
             var self = this
@@ -270,7 +282,8 @@ var vm = new Vue({
             console.log('单个选择添加某个logo',item)
             this.meetingCopForm.meetingCooperationJson[this.chooseIndex].children[this.chooseIndex2].children.push({
                 title: item.cooperationName,
-                picUrl: item.cooperationImg
+                picUrl: item.cooperationImg,
+                scale:'-1'
             });
             this.backToEdit()
         },
@@ -284,7 +297,8 @@ var vm = new Vue({
             for (let i=0; i < this.multipleSelection.length; i++) {
                 this.meetingCopForm.meetingCooperationJson[this.chooseIndex].children[this.chooseIndex2].children.push({
                     title: this.multipleSelection[i].cooperationName,
-                    picUrl: this.multipleSelection[i].cooperationImg
+                    picUrl: this.multipleSelection[i].cooperationImg,
+                    scale:'-1'
                 });
             }
             this.backToEdit()
