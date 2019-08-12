@@ -13,9 +13,9 @@ var vm = new Vue({
         }
         return {
             //是否显示子页面
-            showVoteList: false,
+            showVoteList: true,
             showChildList: false,
-            showDetailPage: true,
+            showDetailPage: false,
             creatOrEdit: 0, //0新建  1修改
             timeRange:[],
             searchForm: {
