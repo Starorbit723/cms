@@ -273,7 +273,7 @@ var vm = new Vue({
                 type: 'warning'
             }).then(() => {
                 var data = JSON.parse(JSON.stringify(item))
-                data.voteStatus = 1
+                data.voteStatus = "1"
                 console.log(JSON.stringify(data))
                 $.ajax({
                     type: "POST",

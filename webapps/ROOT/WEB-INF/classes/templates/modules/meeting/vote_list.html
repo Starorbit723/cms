@@ -52,12 +52,13 @@
                 <!--表格查询结果区-->
                 <div class="cv_content_square">
                     <el-table :data="tableData" style="width: 100%; margin: 10px auto;" stripe>
+                        <el-table-column prop="voteId" width="110" label="投票编号"></el-table-column>
                         <el-table-column prop="voteMeetingId" width="160" label="所属会议详情编号"></el-table-column>
                         <el-table-column prop="voteTitle" width="220" label="投票名称"></el-table-column>
                         <el-table-column prop="voteType" width="110" label="类型"></el-table-column>
                         <el-table-column prop="voteCrtTime" width="180" label="创建时间"></el-table-column>
                         <el-table-column prop="userName" width=90 label="创建人"></el-table-column>
-                        <el-table-column label="操作" width="180" fixed="right">
+                        <el-table-column label="操作"  fixed="right">
                             <template slot-scope="scope">
                                 <el-button type="text" size="small" @click="addOrEditVote(1,scope.row)">编辑</el-button>
                                 <el-button type="text" size="small"@click="checkVoteDetail(scope.row)" >详情</el-button>

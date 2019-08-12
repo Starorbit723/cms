@@ -28,11 +28,11 @@ var vm = new Vue({
             pageSize:10
         },
         // 新建投票选项表单
-        VoteOptForm: {
+        voteOptForm: {
             voteId: '', //投票编号
             voteOptionName: '', //投票选项名称
         },
-        VoteOptFormRules: {
+        voteOptFormRules: {
             voteId: [
                 { required: true, message: '投票编号不能为空', trigger: 'change' }
             ],
@@ -98,8 +98,8 @@ var vm = new Vue({
             } else {
                 self.showChildPage = true
                 self.creatOrEdit = 1
-                self.VoteOptForm = JSON.parse(JSON.stringify(item))
-                console.log('修改投票选项',self.VoteOptForm)
+                self.voteOptForm = JSON.parse(JSON.stringify(item))
+                console.log('修改投票选项',self.voteOptForm)
             }
         },
         // 提交表单
@@ -108,9 +108,15 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if(valid) {
+                    console.log(1111)
+                    // console.log(self.voteOptForm)
+                    // if(self.voteOptForm.voteOptionName.trim() == '' || self.voteOptForm.voteId.trim() == '') {
+                    //     self.$message.error('信息未填写完成')
+                    //     return
+                    // }
                     if(self.creatOrEdit == 0) {
                         var data = {
-                            voteOptionName: self.VoteOptForm.voteOptionName,
+                            voteOptionName: self.voteOptForm.voteOptionName,
                             page: '1',
                             limit: '100'
                         }
@@ -121,7 +127,6 @@ var vm = new Vue({
                             data: JSON.stringify(data),
                             dataType: "json",
                             success: function(res){
-                                console.log(res)
                                 if(res.code == 200){
                                     if (res.page.list.length == 0) {
                                         self.submitCreatEdit()
@@ -152,8 +157,40 @@ var vm = new Vue({
             } else if (self.creatOrEdit == 1) {
                 var reqUrl = '/voteOption/update'
             }
-            var data = JSON.parse(JSON.stringify(self.VoteOptForm))
-            console.log(data)
+            var data = JSON.parse(JSON.stringify(self.voteOptForm))
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: reqUrl,
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res) {
+                    console.log(res)
+                    if(res.code == 200) {
+                        self.$message.success('保存成功');
+                        self.startSearch() //列表回显
+                        self.closeEditCreatEdit('voteOptForm')
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error: function(res) {
+                    mapErrorStatus(res)
+                }
+            })
+        },
+        //取消编辑返回列表页
+        closeEditCreatEdit (formName) {
+            this.creatOrEdit = 0
+            this.$refs[formName].resetFields();
+            this.voteOptForm = {
+                voteOptionId: '',
+                voteId: '',
+                voteOptionName: ''
+            }
+            this.showChildPage = false
         }
 
     }
