@@ -349,6 +349,7 @@ var vm = new Vue({
         startSearch(type){
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
+            console.log(data)
             data.meetingAgendaMeetingId = data.meetingAgendaMeetingId.toString().trim()
             if (type == 0) {
                 Object.assign(data,{

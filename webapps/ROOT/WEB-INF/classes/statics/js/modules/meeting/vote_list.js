@@ -13,7 +13,9 @@ var vm = new Vue({
         }
         return {
             //是否显示子页面
-            showChildPage: false,
+            showVoteList: false,
+            showChildList: false,
+            showDetailPage: true,
             creatOrEdit: 0, //0新建  1修改
             timeRange:[],
             searchForm: {
@@ -160,7 +162,8 @@ var vm = new Vue({
         },
         // 关闭页面
         closeCreatOrEdit(formName) {
-            this.showChildPage = false
+            this.showVoteList = true
+            this.showChildList = false
             this.creatOrEdit = 0
             this.voteForm = {
                 voteId: '', //投票编号
@@ -189,7 +192,7 @@ var vm = new Vue({
         startSearch(type) {
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
-            console.log(data)
+            // console.log(data)
             data.voteMeetingId = data.voteMeetingId.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
@@ -209,10 +212,13 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
-                    console.log(res)
+                    // console.log(res)
                     if(res.code == 200) {
                         self.tableData = res.page.list
-
+                        // for (let i = 0; i < self.tableData.length; i++){
+                        //     self.tableData[i].voteCrtTime = self.transformTime(parseInt(self.tableData[i].voteCrtTime))
+                        //     self.tableData[i].voteModTime = self.transformTime(parseInt(self.tableData[i].voteModTime))
+                        // }
                         self.pagination1 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
@@ -236,7 +242,8 @@ var vm = new Vue({
             var self = this
             self.creatOrEdit = type
             if(type == 0) {
-                self.showChildPage = true
+                self.showVoteList = false
+                self.showChildList = true
             } else if(type == 1) {
                 $.ajax({
                     type: "POST",
@@ -247,7 +254,8 @@ var vm = new Vue({
                         if(res.code == 200) {
                             let data = res.dict
                             self.voteForm = data
-                            self.showChildPage = true
+                            self.showVoteList = false
+                            self.showChildList = true
                         } else {
                             mapErrorStatus(res)
                             vm.error = true;
@@ -263,6 +271,7 @@ var vm = new Vue({
         },
         //删除
         deleteThisVote(item) {
+            console.log(item)
             var self = this
             self.$confirm('确实要删除该投票数据吗？', '提示', {
                 confirmButtonText: '确定',
@@ -293,6 +302,12 @@ var vm = new Vue({
                     }
                 })
             })
+        },
+        //详情
+        checkVoteDetail(item){
+            this.showVoteList = false,
+            this.showDetailPage = true;
+
         }
     }
    
