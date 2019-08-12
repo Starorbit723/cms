@@ -58,7 +58,6 @@ var vm = new Vue({
                     //    guestImg:'',
                     //    guestPosition:'',//嘉宾职位
                     //    guestCompany:'',//嘉宾公司
-                    //    scale:'',//权重
                     // }
                 ],//json
             },
@@ -159,41 +158,29 @@ var vm = new Vue({
                 }
             });
         },
-        //权重发生改变时调整顺序
-        scaleChange (index) {
-            console.log('发生变化',index)
-            if (this.meetingGuestForm.meetingGuestJson[index].scale.trim() == '') {
-                this.meetingGuestForm.meetingGuestJson[index].scale = '-1'
-                this.$message.error('嘉宾显示权重值不能为空')
-            }
-            let arrSort = JSON.parse(JSON.stringify(this.meetingGuestForm.meetingGuestJson));
-            this.meetingGuestForm.meetingGuestJson = arrSort.sort(this.compare('scale'))
+        //前移
+        moveUp(index){
+            var moveArr = JSON.parse(JSON.stringify(this.meetingGuestForm.meetingGuestJson))
+            let temp = moveArr[index - 1]
+            let temp2 = moveArr[index]
+            moveArr[index - 1] = temp2
+            moveArr[index] = temp
+            this.meetingGuestForm.meetingGuestJson = moveArr
         },
-        //排序比较函数
-        compare (prop) {
-            console.log(prop)
-            return function (obj1, obj2) {
-                var val1 = obj1[prop];
-                var val2 = obj2[prop];
-                if (!isNaN(Number(val1)) && !isNaN(Number(val2))) {
-                    val1 = Number(val1);
-                    val2 = Number(val2);
-                }
-                if (val1 > val2) {
-                    return -1;
-                } else if (val1 < val2) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }            
+        //后移
+        moveDown(index){
+            var moveArr = JSON.parse(JSON.stringify(this.meetingGuestForm.meetingGuestJson))
+            let temp = moveArr[index]
+            let temp2 = moveArr[index + 1]
+            moveArr[index + 1] = temp
+            moveArr[index] = temp2
+            this.meetingGuestForm.meetingGuestJson = moveArr
         },
         //添加嘉宾
         addGuestToList(){
             this.searchGuest(0)
             this.showGuestLibDialog = true
         },
-        
         //搜索嘉宾库
         searchGuest (type){
             var self = this
@@ -244,8 +231,7 @@ var vm = new Vue({
                 guestName: item.guestName,
                 guestPosition:item.guestPosition,
                 guestCompany:item.guestCompany,
-                guestImg: item.guestImg,
-                scale:'-1'
+                guestImg: item.guestImg
             });
             this.backToEdit()
         },
@@ -261,8 +247,7 @@ var vm = new Vue({
                     guestName: this.multipleSelection[i].guestName,
                     guestPosition:this.multipleSelection[i].guestPosition,
                     guestCompany:this.multipleSelection[i].guestCompany,
-                    guestImg: this.multipleSelection[i].guestImg,
-                    scale:'-1'
+                    guestImg: this.multipleSelection[i].guestImg
                 });
             }
             this.backToEdit()

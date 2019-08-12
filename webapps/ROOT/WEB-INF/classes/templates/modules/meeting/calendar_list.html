@@ -104,8 +104,8 @@
                         </el-row>
                         <div v-for="(item,index) in calendarForm.meetingAgendaJson">
                             <el-row class="el-row-h60">
-                                <el-col :span="9">
-                                    <el-form-item label-width="30%" label="日程" prop="labelText" style="margin:0;">
+                                <el-col :span="6">
+                                    <el-form-item label-width="25%" label="日程" prop="labelText" style="margin:0;">
                                         <el-input
                                             clearable
                                             type="text"
@@ -113,7 +113,7 @@
                                             auto-complete="off"></el-input>
                                     </el-form-item>
                                 </el-col>
-                                <el-col class="el-row-h60" :span="7">
+                                <el-col class="el-row-h60" :span="5">
                                     <el-form-item label-width="26%" label="时间" prop="timeValue" style="margin:0;">
                                         <el-date-picker
                                             style="width:100%;"
@@ -127,15 +127,21 @@
                                 <el-col :span="3" :offset="1" class="el-row-h40">
                                     <el-button type="primary" style="width:100%" @click="addPlace(index)">添加会场</el-button>
                                 </el-col>
-                                <el-col :span="3" :offset="1" class="el-row-h40">
-                                    <el-button style="width:100%" @click="delDaly(index)">删除日程</el-button>
+                                <el-col :span="2" :offset="1" class="el-row-h40">
+                                    <el-button style="width:100%" @click="delDaly(index)">删除</el-button>
+                                </el-col>
+                                <el-col :span="2" :offset="1" class="el-row-h40" v-if="index !== 0">
+                                    <el-button type="primary" icon="el-icon-caret-top" style="width:100%" @click="moveUpLv1(index)"></el-button>
+                                </el-col>
+                                <el-col :span="2" :offset="1" class="el-row-h40" v-if="index !== (calendarForm.meetingAgendaJson.length - 1)">
+                                    <el-button type="primary" icon="el-icon-caret-bottom" style="width:100%" @click="moveDownLv1(index)"></el-button>
                                 </el-col>
                             </el-row>
 
                             <!--会场---2级维度开始-->
                             <div v-for="(item2,index2) in item.children">
                                 <el-row class="el-row-h60">
-                                    <el-col :span="15" :offset="1">
+                                    <el-col :span="10" :offset="1">
                                         <el-form-item label-width="18%" label="会场" prop="labelText" style="margin:0;">
                                             <el-input
                                                 clearable
@@ -147,16 +153,22 @@
                                     <el-col :span="3" :offset="1" class="el-row-h40">
                                         <el-button type="primary" style="width:100%" @click="addTheme(index,index2)">添加主题</el-button>
                                     </el-col>
-                                    <el-col :span="3" :offset="1" class="el-row-h40">
-                                        <el-button style="width:100%" @click="delPlace(index,index2)">删除会场</el-button>
+                                    <el-col :span="2" :offset="1" class="el-row-h40">
+                                        <el-button style="width:100%" @click="delPlace(index,index2)">删除</el-button>
+                                    </el-col>
+                                    <el-col :span="2" :offset="1" class="el-row-h40" v-if="index2 !== 0">
+                                        <el-button type="primary" icon="el-icon-caret-top" style="width:100%" @click="moveUpLv2(index,index2)"></el-button>
+                                    </el-col>
+                                    <el-col :span="2" :offset="1" class="el-row-h40" v-if="index2 !== (item.children.length - 1)">
+                                        <el-button type="primary" icon="el-icon-caret-bottom" style="width:100%" @click="moveDownLv2(index,index2)"></el-button>
                                     </el-col>
                                 </el-row>
 
                                 <!--主题---3级维度开始-->
                                 <div v-for="(item3,index3) in item2.children">
                                     <el-row class="el-row-h60">
-                                        <el-col :span="14" :offset="2">
-                                            <el-form-item label-width="18%" label="主题" prop="labelText" style="margin:0;">
+                                        <el-col :span="9" :offset="2">
+                                            <el-form-item label-width="14%" label="主题" prop="labelText" style="margin:0;">
                                                 <el-input
                                                     clearable
                                                     type="text"
@@ -167,16 +179,22 @@
                                         <el-col :span="3" :offset="1" class="el-row-h40">
                                             <el-button type="primary" style="width:100%" @click="addIssue(index,index2,index3)">添加议题</el-button>
                                         </el-col>
-                                        <el-col :span="3" :offset="1" class="el-row-h40">
-                                            <el-button style="width:100%" @click="delTheme(index,index2,index3)">删除主题</el-button>
+                                        <el-col :span="2" :offset="1" class="el-row-h40">
+                                            <el-button style="width:100%" @click="delTheme(index,index2,index3)">删除</el-button>
+                                        </el-col>
+                                        <el-col :span="2" :offset="1" class="el-row-h40" v-if="index3 !== 0">
+                                            <el-button type="primary" icon="el-icon-caret-top" style="width:100%" @click="moveUpLv3(index,index2,index3)"></el-button>
+                                        </el-col>
+                                        <el-col :span="2" :offset="1" class="el-row-h40" v-if="index3 !== (item2.children.length - 1)">
+                                            <el-button type="primary" icon="el-icon-caret-bottom" style="width:100%" @click="moveDownLv3(index,index2,index3)"></el-button>
                                         </el-col>
                                     </el-row>
 
                                     <!--议题---4级维度开始-->
                                     <div v-for="(item4,index4) in item3.children">
                                         <el-row class="el-row-h50">
-                                            <el-col :span="7" :offset="3">
-                                                <el-form-item label-width="22%" label="议题" prop="labelText" style="margin:0;">
+                                            <el-col :span="4" :offset="2">
+                                                <el-form-item label-width="31%" label="议题" prop="labelText" style="margin:0;">
                                                     <el-input
                                                         clearable
                                                         type="text"
@@ -184,7 +202,7 @@
                                                         auto-complete="off"></el-input>
                                                 </el-form-item>
                                             </el-col>
-                                            <el-col class="el-row-h40" :span="6">
+                                            <el-col class="el-row-h40" :span="5">
                                                 <el-form-item label-width="5%" label="" prop="timeRange" style="margin:0;">
                                                     <el-time-picker
                                                         style="width: 100%;"
@@ -201,16 +219,22 @@
                                             <el-col :span="3" :offset="1" class="el-row-h40">
                                                 <el-button type="primary" style="width:100%" @click="addItem(index,index2,index3,index4)">添加条目</el-button>
                                             </el-col>
-                                            <el-col :span="3" :offset="1" class="el-row-h40">
-                                                <el-button style="width:100%" @click="delIssue(index,index2,index3,index4)">删除议题</el-button>
+                                            <el-col :span="2" :offset="1" class="el-row-h40">
+                                                <el-button style="width:100%" @click="delIssue(index,index2,index3,index4)">删除</el-button>
+                                            </el-col>
+                                            <el-col :span="2" :offset="1" class="el-row-h40" v-if="index4 !== 0">
+                                                <el-button type="primary" icon="el-icon-caret-top" style="width:100%" @click="moveUpLv4(index,index2,index3,index4)"></el-button>
+                                            </el-col>
+                                            <el-col :span="2" :offset="1" class="el-row-h40" v-if="index4 !== (item3.children.length - 1)">
+                                                <el-button type="primary" icon="el-icon-caret-bottom" style="width:100%" @click="moveDownLv4(index,index2,index3,index4)"></el-button>
                                             </el-col>
                                         </el-row>
 
                                         <!--条目---5级维度开始-->
                                         <div v-for="(item5,index5) in item4.children">
                                             <el-row class="el-row-h50">
-                                                <el-col :span="4" :offset="4">
-                                                    <el-form-item label-width="13%" label="" prop="labelText" style="margin:0;">
+                                                <el-col :span="4" :offset="3">
+                                                    <el-form-item label-width="6%" label="" prop="labelText" style="margin:0;">
                                                         <el-input
                                                             clearable
                                                             type="text"
@@ -219,7 +243,7 @@
                                                             auto-complete="off"></el-input>
                                                     </el-form-item>
                                                 </el-col>
-                                                <el-col :span="12">
+                                                <el-col :span="8">
                                                     <el-form-item label-width="3%" label="" prop="labelContent" style="margin:0;">
                                                         <el-input
                                                             clearable
@@ -229,8 +253,14 @@
                                                             auto-complete="off"></el-input>
                                                     </el-form-item>
                                                 </el-col>
-                                                <el-col :span="3" :offset="1" class="el-row-h40">
-                                                    <el-button style="width:100%" @click="delItem(index,index2,index3,index4,index5)">删除条目</el-button>
+                                                <el-col :span="2" :offset="1" class="el-row-h40">
+                                                    <el-button style="width:100%" @click="delItem(index,index2,index3,index4,index5)">删除</el-button>
+                                                </el-col>
+                                                <el-col :span="2" :offset="1" class="el-row-h40" v-if="index5 !== 0">
+                                                    <el-button type="primary" icon="el-icon-caret-top" style="width:100%" @click="moveUpLv5(index,index2,index3,index4,index5)"></el-button>
+                                                </el-col>
+                                                <el-col :span="2" :offset="1" class="el-row-h40" v-if="index5 !== (item4.children.length - 1)">
+                                                    <el-button type="primary" icon="el-icon-caret-bottom" style="width:100%" @click="moveDownLv5(index,index2,index3,index4,index5)"></el-button>
                                                 </el-col>
                                             </el-row>
                                         </div>

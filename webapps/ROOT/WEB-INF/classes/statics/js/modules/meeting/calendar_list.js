@@ -13,7 +13,7 @@ var vm = new Vue({
         }
         return {
             //是否显示子页面
-            showChildPage: false,
+            showChildPage: true,
             creatOrEdit:0,//0新建  1修改
             timeRange:[],
             searchForm:{
@@ -92,9 +92,93 @@ var vm = new Vue({
         this.startSearch(0)
     },
     mounted () {
-        
     },
     methods:{
+        //移动日程
+        moveUpLv1 (index) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson))
+            let temp = moveArr[index - 1]
+            let temp2 = moveArr[index]
+            moveArr[index - 1] = temp2
+            moveArr[index] = temp
+            this.calendarForm.meetingAgendaJson = moveArr
+        },
+        moveDownLv1(index) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson))
+            let temp = moveArr[index]
+            let temp2 = moveArr[index + 1]
+            moveArr[index + 1] = temp
+            moveArr[index] = temp2
+            this.calendarForm.meetingAgendaJson = moveArr
+        },
+        //移动会场
+        moveUpLv2(index,index2) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson[index].children))
+            let temp = moveArr[index2 - 1]
+            let temp2 = moveArr[index2]
+            moveArr[index2 - 1] = temp2
+            moveArr[index2] = temp
+            this.calendarForm.meetingAgendaJson[index].children = moveArr
+        },
+        moveDownLv2(index,index2) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson[index].children))
+            let temp = moveArr[index2]
+            let temp2 = moveArr[index2 + 1]
+            moveArr[index2 + 1] = temp
+            moveArr[index2] = temp2
+            this.calendarForm.meetingAgendaJson[index].children = moveArr
+        },
+        //移动主题
+        moveUpLv3(index,index2,index3) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson[index].children[index2].children))
+            let temp = moveArr[index3 - 1]
+            let temp2 = moveArr[index3]
+            moveArr[index3 - 1] = temp2
+            moveArr[index3] = temp
+            this.calendarForm.meetingAgendaJson[index].children[index2].children = moveArr
+        },
+        moveDownLv3(index,index2,index3) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson[index].children[index2].children))
+            let temp = moveArr[index3]
+            let temp2 = moveArr[index3 + 1]
+            moveArr[index3 + 1] = temp
+            moveArr[index3] = temp2
+            this.calendarForm.meetingAgendaJson[index].children[index2].children = moveArr
+        },
+        //移动议题
+        moveUpLv4(index,index2,index3,index4) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children))
+            let temp = moveArr[index4 - 1]
+            let temp2 = moveArr[index4]
+            moveArr[index4 - 1] = temp2
+            moveArr[index4] = temp
+            this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children = moveArr
+        },
+        moveDownLv4(index,index2,index3,index4) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children))
+            let temp = moveArr[index4]
+            let temp2 = moveArr[index4 + 1]
+            moveArr[index4 + 1] = temp
+            moveArr[index4] = temp2
+            this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children = moveArr
+        },
+        //移动条目
+        moveUpLv5(index,index2,index3,index4,index5) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4].children))
+            let temp = moveArr[index5 - 1]
+            let temp2 = moveArr[index5]
+            moveArr[index5 - 1] = temp2
+            moveArr[index5] = temp
+            this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4].children = moveArr
+        },
+        moveDownLv5(index,index2,index3,index4,index5) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4].children))
+            let temp = moveArr[index5]
+            let temp2 = moveArr[index5 + 1]
+            moveArr[index5 + 1] = temp
+            moveArr[index5] = temp2
+            this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4].children = moveArr
+        },
         //添加会场---1级维度
         addDaly () {
             let Lv1Length = this.calendarForm.meetingAgendaJson.length
