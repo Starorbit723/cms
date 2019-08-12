@@ -120,18 +120,17 @@
                                         auto-complete="off"
                                         
                                         ></el-input>
-                                        <template slot="append">最多36字</template>
                                 </el-form-item>
                             </el-col>
                         </el-row>
                         <el-row class="el-row-h70">
                             <el-col :span="18">
-                                <el-form-item label="投票摘要" label-width="12%" prop="voteAbstract" style="margin:0;">
+                                <el-form-item label="投票摘要" label-width="12%" prop="voteDesc" style="margin:0;">
                                     <el-input
                                         clearable
                                         type="textarea"
                                         placeholder="请输入投票摘要"
-                                        v-model="voteForm.voteAbstract"
+                                        v-model="voteForm.voteDesc"
                                         auto-complete="off"
                                         ></el-input>
                                 </el-form-item>
