@@ -107,6 +107,7 @@ var vm = new Vue({
          //搜索内容图库
          searchContentImg(type){
             var self = this
+            console.log(this)
             var data = JSON.parse(JSON.stringify(self.searchContentImgForm))
             data.picTitle = data.picTitle.trim()
             if (type == 0) {

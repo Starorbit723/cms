@@ -7,7 +7,6 @@ var vm = new Vue({
         timeRange:[], //时间需要特殊处理,并且同步到searchForm
         searchForm:{
             meetingTitle:'',//标题
-            meetingType:'',//类型
             meetingStarTime:'',//开始时间
             meetingEndTime:'',//结束时间
             meetingStatus: ['1','2','3']
@@ -58,7 +57,7 @@ var vm = new Vue({
         }
     },
     created () {
-        this.getMeetingType()
+        //this.getMeetingType()
         this.startSearch(0)
     },
     methods:{
@@ -71,7 +70,6 @@ var vm = new Vue({
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.meetingTitle = data.meetingTitle.toString().trim()
-            data.meetingType = data.meetingType.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -85,7 +83,7 @@ var vm = new Vue({
             }
             $.ajax({
 				type: "POST",
-                url: "/meeting/list",
+                url: "/meetingInfo/list",
                 contentType: "application/json",
 			    data: JSON.stringify(data),
 			    dataType: "json",
@@ -114,7 +112,7 @@ var vm = new Vue({
                 }
 			});
         },
-        //新建会议
+        //新建会议--跳转至详情页
         creatMeeting () {
             setCookie ('createditmeeting', '', 1)
             if (window.parent.location.hash == '#modules/meeting/edit_meeting.html') {
@@ -142,7 +140,7 @@ var vm = new Vue({
                 }
                 $.ajax({
                     type: "POST",
-                    url: "/meeting/update",
+                    url: "/meetingInfo/update",
                     contentType: "application/json",
                     data: JSON.stringify(data),
                     dataType: "json",
@@ -231,26 +229,26 @@ var vm = new Vue({
             })
         },
         //获取会议类型
-        getMeetingType () {
-            var self = this
-            $.ajax({
-				type: "POST",
-                url: "/sys/dict/list?type=meetingType" ,
-			    dataType: "json",
-			    success: function(res){
-					if(res.code == 200){
-                        self.meetingTypeOptions = res.page.list
-					} else {
-						mapErrorStatus(res)
-                        vm.error = true;
-                        vm.errorMsg = res.msg;
-                    }
-                },
-                error:function(res){
-                    mapErrorStatus(res)
-                }
-			});
-        },
+        // getMeetingType () {
+        //     var self = this
+        //     $.ajax({
+		// 		type: "POST",
+        //         url: "/sys/dict/list?type=meetingType" ,
+		// 	    dataType: "json",
+		// 	    success: function(res){
+		// 			if(res.code == 200){
+        //                 self.meetingTypeOptions = res.page.list
+		// 			} else {
+		// 				mapErrorStatus(res)
+        //                 vm.error = true;
+        //                 vm.errorMsg = res.msg;
+        //             }
+        //         },
+        //         error:function(res){
+        //             mapErrorStatus(res)
+        //         }
+		// 	});
+        // },
         //跳转至详情
         openUrlPage(url){
             console.log('url',url)

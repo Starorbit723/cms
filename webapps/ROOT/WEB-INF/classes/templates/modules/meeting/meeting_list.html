@@ -12,7 +12,7 @@
         <div class="cv_content_square">
             <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right">
                 <el-row class="el-row-h60">
-                    <el-col :span="14">
+                    <el-col :span="10">
                         <el-form-item label="会议标题" style="margin:0;">
                             <el-input
                             clearable
@@ -22,20 +22,6 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="10">
-                        <el-form-item label="会议类型" style="margin:0;">
-                            <el-select v-model="searchForm.meetingType" style="width:100%;" clearable>
-                                <el-option
-                                    v-for="item in meetingTypeOptions"
-                                    :key="item.code"
-                                    :label="item.value"
-                                    :value="item.code">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row class="el-row-h60">
-                    <el-col :span="14">
                         <el-form-item label="会议时间" style="margin:0;">
                             <el-date-picker
                                 clearable
@@ -49,7 +35,7 @@
                             </el-date-picker>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="3" :offset="7" class="el-row-h50">
+                    <el-col :span="3" :offset="1" class="el-row-h40">
                         <el-button type="primary" style="width:100%" @click="startSearch(0)">搜索</el-button>
                     </el-col>
                 </el-row>
@@ -66,39 +52,25 @@
         <!--表格查询结果区-->
         <div class="cv_content_square">
             <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
-                <el-table-column prop="meetingId" label="会议编号" width="80"></el-table-column>
-                <el-table-column prop="meetingTitle" label="会议标题" width="">
+                <el-table-column prop="meetingId" label="会议编号" width="90"></el-table-column>
+                <el-table-column prop="meetingTitle" label="会议标题">
                     <template v-if="scope.row.meetingTitle" slot-scope="scope">
                         <div v-text="scope.row.meetingTitle" @click="openUrlPage(scope.row.meetingUrl)"></div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="meetingType" label="会议类型"  width="120">
-                    <template slot-scope="scope" v-if="scope.row.meetingType !== ''">
-                        <el-tag v-if="scope.row.meetingType == 0">Vtalk沙龙</el-tag>
-                        <el-tag v-if="scope.row.meetingType == 1">投中年会</el-tag>
-                        <el-tag v-if="scope.row.meetingType == 2">投中合作会议</el-tag>
-                        <el-tag v-if="scope.row.meetingType == 3">行业会议</el-tag>
-                        <el-tag v-if="scope.row.meetingType == 4">创新经济峰会</el-tag>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="meetingImg" label="封面图"  width="180">
-                    <template v-if="scope.row.meetingImg !== ''" slot-scope="scope">
-                        <img style="width:160px;height:100px;" :src="scope.row.meetingImg">
-                    </template>
-                </el-table-column>
-                <el-table-column prop="meetingModTime" label="修改时间" width="100"></el-table-column>
-                <el-table-column prop="meetingStarTime" label="开始时间" width="100"></el-table-column>
-                <el-table-column prop="meetingEndTime" label="结束时间" width="100"></el-table-column>
-                <el-table-column prop="meetingCrtUserName" label="创建人" width="90"></el-table-column>
+                <el-table-column prop="meetingUrl" label="会议页面地址" width="300"></el-table-column>
                 <el-table-column prop="meetingStatus" label="发布状态"  width="110">
-                    <!--1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除-->
-                    <template slot-scope="scope" v-if="scope.row.meetingStatus !== ''">
-                        <el-tag v-if="scope.row.meetingStatus == 1" type="success">已发布</el-tag>
-                        <el-tag v-if="scope.row.meetingStatus == 2" type="warning">已下线</el-tag>
-                        <el-tag v-if="scope.row.meetingStatus == 3" >待发布</el-tag>
-                        <el-tag v-if="scope.row.meetingStatus == 4" type="danger">已删除</el-tag>
+                    <template slot-scope="scope">
+                        <el-tag v-if="scope.row.meetingStatus == 0">未发布</el-tag>
+                        <el-tag v-if="scope.row.meetingStatus == 1" type="warning">待发布</el-tag>
+                        <el-tag v-if="scope.row.meetingStatus == 2" type="success">已发布</el-tag>
+                        <el-tag v-if="scope.row.meetingStatus == 3" type="danger">发布失败 </el-tag>
+                        <el-tag v-if="scope.row.meetingStatus == 4" type="warning">待删除</el-tag>
+                        <el-tag v-if="scope.row.meetingStatus == 5" type="danger">已删除</el-tag>
                     </template>
                 </el-table-column>
+                <el-table-column prop="meetingCrtTime" label="创建时间" width="100"></el-table-column>
+                <el-table-column prop="meetingCrtUserName" label="创建人" width="90"></el-table-column>
                 <el-table-column label="操作" width="200" fixed="right">
                     <template slot-scope="scope">
                         <el-button type="text" size="small" @click="editThisMeeting(scope.row)">编辑</el-button>

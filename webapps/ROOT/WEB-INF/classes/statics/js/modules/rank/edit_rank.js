@@ -6,13 +6,36 @@ var vm = new Vue({
         rankDataTree:[
             {
                 rankLevel:'1',
+                rankType:'level',
+                scale:'-1',
                 rankTitle:'我是一级榜单名称',
                 children:[{
                     rankLevel:'2',
+                    rankType:'level',
                     rankTitle:'我是二级榜单名称',
-                    children:[]
+                    scale:'-1',
+                    children:[{
+                        rankLevel:'3',
+                        rankType:'level',
+                        rankTitle:'我是三级榜单名称',
+                        scale:'-1',
+                        children:[]
+                    }]
                 }]
-            }
+            },
+            {
+                rankLevel:'1',
+                rankType:'level',
+                scale:'-1',
+                rankTitle:'我是一级榜单名称',
+                children:[{
+                    rankLevel:'4',
+                    rankType:'list',
+                    scale:'-1',
+                    rankTitle:'我是具体榜单名称'
+                }]
+            },
+            
         ],
         //文章基本信息
         newsTagArray:[],
@@ -57,17 +80,141 @@ var vm = new Vue({
         console.log('type',this.typeOfPage)
     },
     methods:{
-        //新增榜单---一级榜单
+        //新增榜单---1级榜单
         addNewRank(){
             let Lv1Length = this.rankDataTree.length
             if (this.rankDataTree[Lv1Length - 1].rankTitle.trim() !== '') {
                 this.rankDataTree.push({
                     rankLevel:'1',
+                    rankType:'level',
+                    scale:'-1',
                     rankTitle:'',
                     children:[]
                 })
             } else {
                 this.$message.error('请完成上一个榜单的内容')
+            }
+        },
+        //在第1级添加4级榜单详情
+        addRankLevel14(index){
+            //判断上一级的内容是否为空
+            if (this.rankDataTree[index].rankTitle.trim() == '') {
+                this.$message.error('请完成上级榜单的内容')
+                return
+            }
+            if (this.rankDataTree[index].children.length == 0) {
+                this.rankDataTree[index].children.push({
+                    rankLevel:'4',
+                    rankType:'list',
+                    rankTitle:'',
+                    scale:'-1'
+                })
+            } else if (this.rankDataTree[index].children[0].rankType == 'list') {
+                this.rankDataTree[index].children.push({
+                    rankLevel:'4',
+                    rankType:'list',
+                    rankTitle:'',
+                    scale:'-1'
+                })
+            } else {
+                this.$message.error('不能添加榜单')
+            }
+        },
+        //在第2级添加4级榜单详情
+        addRankLevel24(index,index2) {
+            console.log(index,index2)
+            //判断上一级的内容是否为空
+            if (this.rankDataTree[index].children[index2].rankTitle.trim() == '') {
+                this.$message.error('请完成上级榜单的内容')
+                return
+            }
+            if (this.rankDataTree[index].children[index2].children.length == 0) {
+                this.rankDataTree[index].children[index2].children.push({
+                    rankLevel:'4',
+                    rankType:'list',
+                    rankTitle:'',
+                    scale:'-1'
+                })
+            } else if (this.rankDataTree[index].children[index2].children[0].rankType == 'list') {
+                this.rankDataTree[index].children[index2].children.push({
+                    rankLevel:'4',
+                    rankType:'list',
+                    rankTitle:'',
+                    scale:'-1'
+                })
+            } else {
+                this.$message.error('不能添加榜单')
+            }
+            console.log(this.rankDataTree[index].children[index2])
+        },
+        //在第3级添加4级榜单详情
+        addRankLevel34(index,index2,index3){
+            //判断上一级的内容是否为空
+            if (this.rankDataTree[index].children[index2].children[index3].rankTitle.trim() == '') {
+                this.$message.error('请完成上级榜单的内容')
+                return
+            }
+            this.rankDataTree[index].children[index2].children[index3].children.push({
+                rankLevel:'4',
+                rankType:'list',
+                rankTitle:'',
+                scale:'-1'
+            })
+        },
+        //添加2级目录
+        addTwoLevel(index){
+            //判断上一级的内容是否为空
+            if (this.rankDataTree[index].rankTitle.trim() == '') {
+                this.$message.error('请完成上级榜单的内容')
+                return
+            }
+            //判断同级上一条是否为空
+            if (this.rankDataTree[index].children.length == 0) {
+                this.rankDataTree[index].children.push({
+                    rankLevel:'2',
+                    rankType:'level',
+                    rankTitle:'',
+                    scale:'-1',
+                    children:[]
+                })
+            } else if (this.rankDataTree[index].children[0].rankType == 'level') {
+                this.rankDataTree[index].children.push({
+                    rankLevel:'2',
+                    rankType:'level',
+                    rankTitle:'',
+                    scale:'-1',
+                    children:[]
+                })
+            } else {
+                this.$message.error('不能添加2级目录')
+            }
+        },
+        //添加3级目录
+        addThreeLevel(index,index2) {
+            //判断上一级的内容是否为空
+            if (this.rankDataTree[index].children[index2].rankTitle.trim() == '') {
+                this.$message.error('请完成上级榜单的内容')
+                return
+            }
+            //判断同级上一条是否为空
+            if (this.rankDataTree[index].children[index2].children.length == 0) {
+                this.rankDataTree[index].children[index2].children.push({
+                    rankLevel:'3',
+                    rankType:'level',
+                    rankTitle:'',
+                    scale:'-1',
+                    children:[]
+                })
+            } else if (this.rankDataTree[index].children[index2].children[0].rankType == 'level') {
+                this.rankDataTree[index].children[index2].children.push({
+                    rankLevel:'3',
+                    rankType:'level',
+                    rankTitle:'',
+                    scale:'-1',
+                    children:[]
+                })
+            } else {
+                this.$message.error('不能添加3级目录')
             }
         },
         //删除一级榜单
@@ -78,220 +225,75 @@ var vm = new Vue({
                 this.rankDataTree.splice(index, 1); 
             }
         },
-        //在第二层级添加2级榜单
-        addTwoLevel(index){
-            console.log('添加了2级类',index)
-            let Lv2Length = this.rankDataTree[index].children.length
-            //判断上一级的内容是否为空
-            if (this.rankDataTree[index].rankTitle.trim() == '') {
-                this.$message.error('请完成上级榜单的内容')
-                return
-            }
-            //判断同级上一条是否为空
-            if (Lv2Length !== 0) {
-                if (this.rankDataTree[index].children[Lv2Length - 1].rankTitle !== '') {
-                    this.rankDataTree[index].children.push({
-                        rankLevel:'2',
-                        rankTitle:'',
-                        children:[]
-                    })
-                } else {
-                    this.$message.error('请完成上一个榜单的内容')
-                }
-            } else {
-                this.rankDataTree[index].children.push({
-                    rankLevel:'2',
-                    rankTitle:'',
-                    children:[]
-                })
-            }
-            
-            console.log(this.rankDataTree)
-        },
         //删除2级层级
         delThisLevel2(index1,index2){
             this.rankDataTree[index1].children.splice(index2, 1); 
         },
-        //在第二层级添加3级榜单
-        addThreeLevel23(index){
-            let Lv3Length = this.rankDataTree[index].children.length
-            if (Lv3Length !== 0) {
-                if (this.rankDataTree[index].children[Lv3Length - 1].rankTitle !== '') {
-                    this.rankDataTree[index].children.push({
-                        rankLevel:'3',
-                        rankTitle:'',
-                        children:[]
-                    })
+        //删除第3个层级
+        delThisLevel3(index,index2,index3){
+            this.rankDataTree[index].children[index2].children.splice(index3, 1); 
+        },
+        //删除第4个层级
+        delThisLevel4(index,index2,index3,index4){
+            this.rankDataTree[index].children[index2].children[index3].children.splice(index4, 1); 
+        },
+        //权重调整1级
+        scaleChangeLv1 (index){
+            console.log('发生变化',index)
+            if (this.rankDataTree[index].scale.trim() == '') {
+                this.rankDataTree[index].scale = '-1'
+                this.$message.error('权重值不能为空')
+            }
+            let arrSort = JSON.parse(JSON.stringify(this.rankDataTree));
+            this.rankDataTree = arrSort.sort(this.compare('scale'))
+        },
+        //权重调整1级下的2级和4级
+        scaleChangeLv124 (index,index2){
+            if (this.rankDataTree[index].children[index2].scale.trim() == '') {
+                this.rankDataTree[index].children[index2].scale = '-1'
+                this.$message.error('权重值不能为空')
+            }
+            let arrSort = JSON.parse(JSON.stringify(this.rankDataTree[index].children));
+            this.rankDataTree[index].children = arrSort.sort(this.compare('scale'))
+        },
+        //权重调整2级下的3级和4级
+        scaleChangeLv234(index,index2,index3) {
+            if (this.rankDataTree[index].children[index2].children[index3].scale.trim() == '') {
+                this.rankDataTree[index].children[index2].children[index3].scale = '-1'
+                this.$message.error('权重值不能为空')
+            }
+            let arrSort = JSON.parse(JSON.stringify(this.rankDataTree[index].children[index2].children));
+            this.rankDataTree[index].children[index2].children = arrSort.sort(this.compare('scale'))
+        },
+        //权重调整3级下4级
+        scaleChangeLv34(index,index2,index3,index4){
+            if (this.rankDataTree[index].children[index2].children[index3].children[index4].scale.trim() == '') {
+                this.rankDataTree[index].children[index2].children[index3].children[index4].scale = '-1'
+                this.$message.error('权重值不能为空')
+            }
+            let arrSort = JSON.parse(JSON.stringify(this.rankDataTree[index].children[index2].children[index3].children));
+            this.rankDataTree[index].children[index2].children[index3].children = arrSort.sort(this.compare('scale'))
+        },
+        //排序比较函数
+        compare (prop) {
+            console.log(prop)
+            return function (obj1, obj2) {
+                var val1 = obj1[prop];
+                var val2 = obj2[prop];
+                if (!isNaN(Number(val1)) && !isNaN(Number(val2))) {
+                    val1 = Number(val1);
+                    val2 = Number(val2);
+                }
+                if (val1 > val2) {
+                    return -1;
+                } else if (val1 < val2) {
+                    return 1;
                 } else {
-                    this.$message.error('请完成上一个榜单的内容')
+                    return 0;
                 }
-            } else {
-                this.rankDataTree[index].children.push({
-                    rankLevel:'3',
-                    rankTitle:'',
-                    children:[]
-                })
-            }
-            
-            console.log(this.rankDataTree)
-        },
-        //再第二层级添加4级排行
-        addRankLevel24 (index) {
-            let Lv4Length = this.rankDataTree[index].children.length
-            if (Lv4Length !== 0) {
-                if (this.rankDataTree[index].children[Lv4Length - 1].rankTitle !== '') {
-                    this.rankDataTree[index].children.push({
-                        rankLevel:'4',
-                        rankTitle:'',
-                        children:[]
-                    })
-                } else {
-                    this.$message.error('请完成上一个榜单的内容')
-                }
-            } else {
-                this.rankDataTree[index].children.push({
-                    rankLevel:'4',
-                    rankTitle:'',
-                    children:[]
-                })
-            }
-            
-            console.log(this.rankDataTree)
+            }            
         },
 
-
-
-
-
-
-
-
-
-
-
-        //保存快讯 opt: 0 保存，1保存并发布---快讯没有待发布状态
-        saveFastinfoToDraft (opt,formName){
-            var self = this
-            //针对非必填字段验证
-            //var urlReg = /^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~\/])+$/;
-            var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/
-            if (self.rankinfoForm.flashSourceUrl.toString().trim() !=='' && !urlReg.test(self.rankinfoForm.flashSourceUrl)) {
-                self.$message.error('原文网址链接不合法')
-                return
-            } else if (self.rankinfoForm.flashSourceUrl.toString().trim() =='') {
-                self.rankinfoForm.flashSourceUrl = '#'
-            }
-            //判断是新建还是修改
-            if (self.typeOfPage == 'creat') {
-                var reqUrl = '/flash/save'
-                var data = JSON.parse(JSON.stringify(self.rankinfoForm))
-                data.flashStatus = '0'
-                console.log('data',data, data.flashStatus)
-            } else {
-                var reqUrl = '/flash/update'
-                var data = JSON.parse(JSON.stringify(self.rankinfoForm))
-            }
-            //标题中出现英文双引号修改为中文双引号，否则造成标签属性不闭合
-            data.flashTitle = self.replaceDqm(data.flashTitle)
-            self.$refs[formName].validate((valid) => {
-                if (valid) {
-                    $.ajax({
-                        type: "POST",
-                        contentType: "application/json",
-                        url: reqUrl,
-                        data: JSON.stringify(data),
-                        dataType: "json",
-                        success: function(res){
-                            if(res.code == 200){
-                                console.log('提交保存返回',res)
-                                if (opt == 0) {
-                                    self.$message.success('保存成功')
-                                    setCookie ('createditfastinfo', '', 1)
-                                    window.parent.location.href = '/index.html#modules/content/fastinfo_list.html'
-                                } else if (opt == 1) {
-                                    self.rankinfoForm.flashId = res.flashId
-                                    self.submitFastinfo()
-                                }
-                                
-                            } else {
-                                mapErrorStatus(res)
-                                vm.error = true;
-                                vm.errorMsg = res.msg;
-                            }
-                        },
-                        error:function(res){
-                            mapErrorStatus(res)
-                        }
-                    });
-
-                }
-            })
-        },
-        //发布快讯---状态改为2
-        submitFastinfo () {
-            var self = this
-            var data = {
-                flashId: self.rankinfoForm.flashId.toString(),
-                flashStatus: '2'
-            }
-            $.ajax({
-                type: "POST",
-                url: "/flash/push",
-                contentType: "application/json",
-                data: JSON.stringify(data),
-                dataType: "json",
-                success: function(res){
-                    if(res.code == 200){
-                        self.$message.success('提交发布成功')
-                        setCookie ('createditfastinfo', '', 1)
-                        window.parent.location.href = '/index.html#modules/content/fastinfo_list.html'
-                    }else{
-                        mapErrorStatus(res)
-						vm.error = true;
-						vm.errorMsg = res.msg;
-					}
-                },
-                error:function(res){
-                    mapErrorStatus(res)
-                }
-            });
-        },
-        //返回取消编辑
-        closeAndBack () {
-            setCookie ('createditfastinfo', '', 1)
-            window.parent.location.href = '/index.html#modules/content/fastinfo_list.html'
-        },
-        //请求原文章所有信息
-        getEditFastinfoOrign (type) {
-            var self = this
-            console.log('当前快讯id:',type)
-            $.ajax({
-                type: "POST",
-                url: "/flash/info/" + type.toString(),
-                contentType: "application/json",
-                dataType: "json",
-                success: function(res){
-                    if(res.code == 200){
-                        self.rankinfoForm = res.dict
-                    }else{
-                        mapErrorStatus(res)
-						vm.error = true;
-						vm.errorMsg = res.msg;
-					}
-                },
-                error:function(res){
-                    mapErrorStatus(res)
-                }
-            });
-        },
-        //替换引号
-        replaceDqm (str) {
-            var val=str.replace(/"([^"]*)"/g ,"“$1”");
-            if(val.indexOf('"')<0){
-                return val;
-            }
-            return replaceDqm(val);
-        }
     }
     
 })

@@ -155,7 +155,7 @@ var vm = new Vue({
             console.log('发生变化',index,index2,this.meetingCopForm.meetingCooperationJson[index].children[index2].children)
             if (this.meetingCopForm.meetingCooperationJson[index].children[index2].children[index3].scale.trim() == '') {
                 this.meetingCopForm.meetingCooperationJson[index].children[index2].children[index3].scale = '-1'
-                this.$message.error('嘉宾显示权重值不能为空')
+                this.$message.error('权重值不能为空')
             }
             let arrSort = JSON.parse(JSON.stringify(this.meetingCopForm.meetingCooperationJson[index].children[index2].children));
             this.meetingCopForm.meetingCooperationJson[index].children[index2].children = arrSort.sort(this.compare('scale'))
