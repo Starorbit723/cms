@@ -99,11 +99,14 @@
                                 <el-input
                                     clearable
                                     type="text"
+                                    maxlength="36"
                                     placeholder="高清组图名称"
                                     v-model="diagramForm.diagramTitle"
                                     auto-complete="off"
-                                    maxlength="36"
-                                    ></el-input>
+                                    >
+                                    <template slot="append">限制36个字</template>
+                                </el-input>
+
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -116,10 +119,6 @@
                         <el-button type="primary" style="width: 100%" @click="closeCreatOrEdit('diagramForm')">取消</el-button>
                     </el-col>
                 </el-row>
-
-
-
-
             </div>
         </div>
 

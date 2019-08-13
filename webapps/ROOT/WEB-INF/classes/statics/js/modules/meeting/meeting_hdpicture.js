@@ -19,7 +19,7 @@ var vm = new Vue({
             creatOrEdit:  0, //0新建  1修改
             searchForm: {
                 diagramMeetingId: '',
-                diagramStatus: '' //状态 0正常 1删除
+                diagramStatus: '0' //状态 0正常 1删除
             },
             tableData:[{}],
             //分页器相关
