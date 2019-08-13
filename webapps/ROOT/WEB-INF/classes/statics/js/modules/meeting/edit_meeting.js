@@ -40,12 +40,7 @@ var vm = new Vue({
                 meetingType:'',//类型
                 meetingUrl:'',//会议链接
                 meetingDesc:'',//简介
-                meetingCrtUserId:'',//创建人编号
-                meetingCrtTime:'',//创建时间
-                meetingModUserId:'',//更新人编号
-                meetingModTime:'',//更新时间
                 meetingStatus:'',//会议状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
-                meetingCrtUserName:'',//创建人姓名
                 meetingKeywords:'', //会议关键词
                 meetingTheme:'',//会议主题
                 meetingOrganizer:'',//主办单位
@@ -55,10 +50,19 @@ var vm = new Vue({
                 meetingAddress:'',//会议举办地址
                 meetingAgendaId:'',//日程ID
                 meetingGuestId:'',//嘉宾ID
-                voteId:'',//投票ID
-                interactionId:'',//文章问答互动ID
-                diagramId:'',//高清组图ID
+                meetingVoteId:'',//投票ID
+                meetingInteractionId:'',//文章问答互动ID
+                meetingDiagramId:'',//高清组图ID
                 meetingCooperationId:'',//合作机构ID
+                meetingCrtUserId:'',//创建人编号
+                meetingCrtTime:'',//创建时间
+                meetingModUserId:'',//更新人编号
+                meetingModTime:'',//更新时间
+                meetingCrtUserName:'',//创建人姓名
+                meetingTemplateId:'',
+                meetingTemplateMid:'',
+                meetingTemplateAddress:'',
+                meetingTemplateMaddress:'',
                 meetingJsonData:{ //前端渲染大数据
                     headPicBanner:{
                         isShowFloor:true,
@@ -862,7 +866,7 @@ var vm = new Vue({
         },
         //--------------------搜索投票相关--------------------
         voteDefaultChange (val){
-            if (val && this.meetingForm.voteId == '') {
+            if (val && this.meetingForm.meetingVoteId == '') {
                 this.openAddVoteList()
             }
         },
@@ -916,11 +920,11 @@ var vm = new Vue({
             this.searchVote()
         },
         addThisVote (item) {
-            this.meetingForm.voteId = item.voteId
+            this.meetingForm.meetingVoteId = item.voteId
             this.backToEditFromVote()
         },
         backToEditFromVote (){
-            if (this.meetingForm.voteId == '') {
+            if (this.meetingForm.meetingVoteId == '') {
                 this.meetingForm.meetingJsonData.vote.isShowDefaultModel = false
             }
             this.showVoteLib = false
@@ -937,7 +941,7 @@ var vm = new Vue({
         },
         //--------------------搜索文章问答相关--------------------
         articleQuestionDefaultChange (val){
-            if (val && this.meetingForm.interactionId == '') {
+            if (val && this.meetingForm.meetingInteractionId == '') {
                 this.openAddArticleQuestionList()
             }
         },
@@ -991,11 +995,11 @@ var vm = new Vue({
             this.searchArticleQuestion()
         },
         addThisArticleQuestion (item) {
-            this.meetingForm.interactionId = item.interactionId
+            this.meetingForm.meetingInteractionId = item.interactionId
             this.backToEditFromArticleQuestion()
         },
         backToEditFromArticleQuestion(){
-            if (this.meetingForm.interactionId == '') {
+            if (this.meetingForm.meetingInteractionId == '') {
                 this.meetingForm.meetingJsonData.articleQuestion.isShowDefaultModel = false
             }
             this.showArticleQuestionLib=false
@@ -1012,7 +1016,7 @@ var vm = new Vue({
         },
         //--------------------搜索高清组图相关--------------------
         pictureGroupDefaultChange (val){
-            if (val && this.meetingForm.diagramId == '') {
+            if (val && this.meetingForm.meetingDiagramId == '') {
                 this.openAddPictureGroupList()
             }
         },
@@ -1066,11 +1070,11 @@ var vm = new Vue({
             this.searchPictureGroup()
         },
         addThisPictureGroup (item) {
-            this.meetingForm.diagramId = item.diagramId
+            this.meetingForm.meetingDiagramId = item.diagramId
             this.backToEditFromPictureGroup()
         },
         backToEditFromPictureGroup(){
-            if (this.meetingForm.diagramId == '') {
+            if (this.meetingForm.meetingDiagramId == '') {
                 this.meetingForm.meetingJsonData.pictureGroup.isShowDefaultModel = false
             }
             this.showPictrueGroupLib=false
@@ -1161,6 +1165,9 @@ var vm = new Vue({
             }
 
         },
+
+
+
         //保存会议 formName---表单名称   type----提交类型
         testMeetingInfo(type,formName) {
             var self = this
@@ -1316,26 +1323,7 @@ var vm = new Vue({
             setCookie ('createditmeeting', '', 1) 
             window.parent.location.href = '/index.html#modules/meeting/meeting_list.html'
         },
-        //时间格式转换工具
-        transformTime (timestamp = +new Date()) {
-            if (timestamp) {
-                var time = new Date(timestamp);
-                var y = time.getFullYear();
-                var M = time.getMonth() + 1;
-                var d = time.getDate();
-                var h = time.getHours();
-                var m = time.getMinutes();
-                var s = time.getSeconds();
-                return y + '-' + this.addZero(M) + '-' + this.addZero(d) + ' ' + this.addZero(h) + ':' + this.addZero(m) + ':' + this.addZero(s);
-              } else {
-                  return '';
-              }
-        },
-        addZero (m) {
-            return m < 10 ? '0' + m : m;
-        }
-
-        
+ 
     }
     
 })
