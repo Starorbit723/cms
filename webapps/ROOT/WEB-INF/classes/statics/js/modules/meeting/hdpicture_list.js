@@ -12,11 +12,6 @@ var vm = new Vue({
             }
         }
         return {
-<<<<<<< HEAD
-            //切换内容图库
-            showContentimgLib: true,
-=======
->>>>>>> 77bf0a69960cf956fcbf249dcfbf383a3256f206
             showChildPage: false,
             creatOrEdit:0,//0新建  1修改
             //搜索提交
@@ -44,17 +39,15 @@ var vm = new Vue({
                 diagramInfoStatus: '',
             }],
             //内容图库相关
-<<<<<<< HEAD
-            searchContentImgForm: {
-=======
+            chooseImgObjName:'',
+            chooseImgObjIndex:'',
             showContentImgLib: false,
-            searchContentimgForm:{
->>>>>>> 77bf0a69960cf956fcbf249dcfbf383a3256f206
+            searchContentImgForm:{
                 picTitle:'',
                 picType:'1'//0封面图库 1内容图库 2图为图库
             },
             multipleSelection:[],
-            contentimgTableData:[],
+            contentImgTableData:[],
             //分页器相关
             pagination2: {
                 currPage: 1,
@@ -113,12 +106,8 @@ var vm = new Vue({
         //搜索内容图库
         searchContentImg(type){
             var self = this
-<<<<<<< HEAD
-            console.log(this.searchContentImgForm)
-            var data = JSON.parse(JSON.stringify(self.searchContentImgForm))
-=======
-            var data = JSON.parse(JSON.stringify(this.searchContentimgForm))
->>>>>>> 77bf0a69960cf956fcbf249dcfbf383a3256f206
+            
+            var data = JSON.parse(JSON.stringify(this.searchContentImgForm))
             data.picTitle = data.picTitle.trim()
             if (type == 0) {
                 Object.assign(data,{
@@ -160,18 +149,13 @@ var vm = new Vue({
         },
         //选择了某一张封面图片
         addThisContentImg (item) {
-            if (this.chooseImgObjName == 'signUp' && this.chooseImgObjIndex == 0) {
-                this.meetingForm.meetingJson.signUpCodeImg = item.picUrl
-            } else {
-                this.meetingForm.meetingJson[this.chooseImgObjName][this.chooseImgObjIndex].imgUrl = item.picUrl
-            }
+            console.log(item)
+            this.hdPicForm.diagramInfoImg = item.picUrl
             this.backToEdit2()
         },
         //返回编辑页
         backToEdit2 (){
             this.showContentImgLib = false
-            this.chooseImgObjName = ''
-            this.chooseImgObjIndex = ''
             this.searchContentImgForm = {
                 picTitle:'',
                 picType:'1'//0封面图库 1内容图库 2图为图库
@@ -184,10 +168,7 @@ var vm = new Vue({
                 pageSize:10
             }
         },
-        //多选批量
-        handleSelectionChange (val) {
-            this.multipleSelection = val;
-        },
+        
          //开始搜索选项列表
         startSearch (type) {
             var self = this
@@ -295,28 +276,28 @@ var vm = new Vue({
            
         },
         
-        //新建或编辑保存--优先上传图片，再提交保存
-        submitCreatEdit(formName) {
+        //保存
+        testSubmit(formName) {
             var self = this
             self.$refs[formName].validate((valid) => {
-                if (valid) {
-                    //新建,图片新上传
-                    if (self.creatOrEdit == 0) {
+                if(valid) {
+                    if(self.creatOrEdit == 0) {
+                        var data = {
+                            diagramId: self.hdPicForm.diagramId,
+                            diagramInfoStatus: '0',
+                            page: '1',
+                            limit: '100'
+                        }
                         $.ajax({
                             type: "POST",
-                            contentType: false,
-                            processData: false,
-                            mimeType:"multipart/form-data",
-                            url: "/upload/headPicture",
-                            data: self.imgFormData,
+                            url: "/diagramInfo/list",
+                            contentType: "application/json",
+                            data: JSON.stringify(data),
+                            dataType: "json",
                             success: function(res) {
-                                if(res.code == 200){
-                                    console.log('图片上传返回',res)
-                                    self.hdPicForm.diagramInfoImg = res.url
-                                    console.log('接受到图片改变后的form',self.hdPicForm)
-                                    self.submitForm()
-                                }else{
-                                    self.$message.error('图片上传失败,请联系管理员')
+                                if(res.code == 200) {
+                                    self.submitCreatEdit()
+                                } else {
                                     mapErrorStatus(res)
                                     vm.error = true;
                                     vm.errorMsg = res.msg;
@@ -326,61 +307,35 @@ var vm = new Vue({
                                 mapErrorStatus(res)
                             }
                         });
-                    //修改，图片发生了改变
-                    } else if (self.creatOrEdit == 1 && (self.hdPicForm.diagramInfoImg !== self.originUrl )) {
-                        console.log('当前',self.hdPicForm.diagramInfoImg,'原始：',self.originUrl)
-                        $.ajax({
-                            type: "POST",
-                            contentType: false,
-                            processData: false,
-                            mimeType:"multipart/form-data",
-                            url: "/upload/headPicture",
-                            data: self.imgFormData,
-                            success: function(res){
-                                if(res.code == 200){
-                                    console.log('图片上传返回',res)
-                                    self.hdPicForm.diagramInfoImg = res.url
-                                    console.log('接受到图片改变后的form',self.hdPicForm)
-                                    self.submitForm()
-                                }else{
-                                    self.$message.error('图片上传失败,请联系管理员')
-                                    mapErrorStatus(res)
-                                    vm.error = true;
-                                    vm.errorMsg = res.msg;
-                                }
-                            },
-                            error:function(res){
-                                mapErrorStatus(res)
-                            }
-                        });
-                    //修改，图片未改变
-                    } else {
-                        console.log('当前',self.hdPicForm.diagramInfoImg,'原始：',self.originUrl)
-                        self.submitForm()
+                    } else if (self.creatOrEdit == 1) {
+                        self.submitCreatEdit()
                     }
                 }
             })
         },
-        // 提交保存
-        submitForm() {
+        //新建或编辑保存--优先上传图片，再提交保存
+        submitCreatEdit(formName) {
             var self = this
-            if(self.creatOrEdit == 0) {
+            var data = JSON.parse(JSON.stringify(self.hdPicForm))
+            data.diagramInfoStatus = "0"
+            console.log(JSON.stringify(data))
+            console.log('准备提交保存的FORM', data)
+            if (self.creatOrEdit == 0) {
                 var reqUrl = '/diagramInfo/save'
             } else if (self.creatOrEdit == 1) {
                 var reqUrl = '/diagramInfo/update'
             }
-            var data = JSON.parse(JSON.stringify(self.hdPicForm))
             $.ajax({
                 type: "POST",
-                contentType: "application/json",
                 url: reqUrl,
+                contentType: "application/json",
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
                     console.log(res)
                     if(res.code == 200) {
-                        self.$message.success('保存成功');
-                        self.startSearch() //列表回显
+                        self.$message.success('保存成功')
+                        self.startSearch()
                         self.closeEditCreatEdit('hdPicForm')
                     } else {
                         mapErrorStatus(res)
@@ -388,11 +343,12 @@ var vm = new Vue({
                         vm.errorMsg = res.msg;
                     }
                 },
-                error: function(res) {
+                error:function(res){
                     mapErrorStatus(res)
                 }
             })
         },
+        
         //取消编辑返回列表页
         closeEditCreatEdit (formName) {
             this.creatOrEdit = 0
@@ -410,7 +366,6 @@ var vm = new Vue({
                 diagramInfoStatus: '',
             }
             this.showChildPage = false
-            this.creatOrEdit = 0
         }
 
     }

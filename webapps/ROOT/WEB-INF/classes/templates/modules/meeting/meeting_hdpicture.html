@@ -122,13 +122,55 @@
         </div>
         <!------------------新建高清组图结束------------------>
     
+       
+
+
+
         <!-- 新建组图列表开始 -->
-        <div v-show="diagramListPage">
-
-        </div>
-
-
-        <!-- 新建组图列表结束 -->
+        <el-dialog title="高清组图列表" :visible.sync="showDiagramLab" width="100%" :fullscreen="true" :show-close="false" >
+               
+            <el-table :data="diagramTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="contentImgTableData" stripe>
+                <el-table-column prop="diagramInfoPriority" label="权重" width="250"></el-table-column>
+                <el-table-column prop="diagramInfoImg" label="图片" width="180">
+                    <template v-if="scope.row.picUrl" slot-scope="scope">
+                        <img style="width:80px;height:60px;" :src="scope.row.picUrl">
+                    </template>
+                </el-table-column>
+                <el-table-column prop="diagramInfoTitle" label="标题" width="250"></el-table-column>
+                <el-table-column prop="diagramInfoCrtTime" label="创建时间" width="120"></el-table-column>
+                <el-table-column label="操作" fixed="right">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" @click="addOrEdit(1,scope.row)">编辑</el-button>
+                        <el-button type="text" size="small" @click="deleteThisDiagram(scope.row)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <!-- <el-pagination
+                    @current-change="handleCurrentChange2"
+                    :current-page="pagination2.currPage"
+                    :page-size="pagination2.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination2.totalCount">
+                </el-pagination> -->
+            </div>
+            <el-row style="margin-top: 30px">
+                <el-col class="el-row-h40" :span="2">
+                    <el-button type="primary" style="width: 100%">添加图片</el-button>
+                </el-col>
+                <el-col class="el-row-h40" :span="2" :offset="14">
+                        <el-button type="palin" style="width: 100%" >保存</el-button>
+                    </el-col>
+                    <el-col class="el-row-h40" :span="2" :offset="1">
+                        <el-button type="plain" style="width: 100%" >取消</el-button>
+                    </el-col>
+            </el-row>
+            <el-row style="margin-top: 30px">
+                
+            </el-row>
+        </el-dialog>
+        <!--内容图库弹出层结束-->
     </div>
         
 

@@ -25,7 +25,10 @@ var vm = new Vue({
                 diagramStatus: '0' //状态 0正常 1删除
             },
             tableData:[{}],
-            detailData: [{}],
+
+            showDiagramLab: false,
+            diagramTableData:[],
+            
             
             //分页器相关
             pagination1: {
@@ -65,6 +68,36 @@ var vm = new Vue({
 
     },
     methods: {
+        //修改组图列表
+        addOrEditList (type, item) {
+            this.showDiagramLab = true
+            var data = JSON.parse(JSON.stringify(item))
+            console.log(data)
+            $.ajax({
+                type: "POST",
+                url: "/diagramInfo/list",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                dataType: "json",
+                success: function(res){
+                    console.log(res)
+                    // if(res.code == 200){
+                    //     let data = res.dict
+                    //     self.diagramForm = data
+                    //     self.showDiagramPage = false
+                    //     self.showHdPage = true
+                    // }else{
+                    //     mapErrorStatus(res)
+                    //     vm.error = true;
+                    //     vm.errorMsg = res.msg;
+                    // }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+
+        },
         // 开始搜索列表
         startSearch(type) {
             var self = this
