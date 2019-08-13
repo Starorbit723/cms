@@ -1,6 +1,6 @@
 var vm = new Vue({
     el: "#hdpicture_list",
-    data() {
+    data () {
         var validatePriority = (rule, value, callback) => {
             var urlReg = /^[0-9]*[1-9][0-9]*$/;
             if (value !== '' && value == '-1') {
@@ -12,8 +12,6 @@ var vm = new Vue({
             }
         }
         return {
-            //切换内容图库
-            showContentimgLib:false,
             showChildPage: false,
             creatOrEdit:0,//0新建  1修改
             //搜索提交
@@ -41,8 +39,7 @@ var vm = new Vue({
                 diagramInfoStatus: '',
             }],
             //内容图库相关
-            chooseImgObjName:'',
-            chooseImgObjIndex:'',
+            showContentImgLib: false,
             searchContentimgForm:{
                 picTitle:'',
                 picType:'1'//0封面图库 1内容图库 2图为图库
@@ -99,16 +96,15 @@ var vm = new Vue({
             this.searchContentImg()
         },
         //修改某一张内容图片
-        chooseContentImg(){
-            console.log(1111222)
+        chooseContentImg () {
             this.showContentImgLib = true
+            console.log(this.showContentImgLib)
             this.searchContentImg(0)
         },
-         //搜索内容图库
-         searchContentImg(type){
+        //搜索内容图库
+        searchContentImg(type){
             var self = this
-            console.log(this)
-            var data = JSON.parse(JSON.stringify(self.searchContentImgForm))
+            var data = JSON.parse(JSON.stringify(this.searchContentimgForm))
             data.picTitle = data.picTitle.trim()
             if (type == 0) {
                 Object.assign(data,{
@@ -130,6 +126,7 @@ var vm = new Vue({
                 success: function(res){
                     if(res.code == 200){
                         self.contentImgTableData = res.page.list
+                        console.log(self.contentImgTableData)
                         self.pagination2 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
