@@ -90,7 +90,7 @@
                             <!--3级下的4级-->
                             <div v-if="item4.rankLevel == 4" v-for="(item4,index4) in item3.children">
                                 <el-row class="el-row-h60">
-                                    <el-col :span="11" :offset="7">
+                                    <el-col :span="15" :offset="3">
                                         <el-form-item label="榜单名称" style="margin:0;">
                                             <el-input clearable type="text" v-model="item4.rankTitle"auto-complete="off">
                                                 <template slot="append">{{item4.rankLevel}}级</template>
@@ -113,7 +113,7 @@
                         <!--2级下的4级-->
                         <div v-if="item3.rankLevel == 4" v-for="(item3,index3) in item2.children">
                             <el-row class="el-row-h60">
-                                <el-col :span="11" :offset="7">
+                                <el-col :span="15" :offset="3">
                                     <el-form-item label="榜单名称" style="margin:0;">
                                         <el-input clearable type="text" v-model="item3.rankTitle"auto-complete="off">
                                             <template slot="append">{{item3.rankLevel}}级</template>
@@ -136,7 +136,7 @@
                     <!--1级下的4级-->
                     <div v-if="item2.rankLevel == 4" v-for="(item2,index2) in item.children">
                         <el-row class="el-row-h60">
-                            <el-col :span="11" :offset="7">
+                            <el-col :span="15" :offset="3">
                                 <el-form-item label="榜单名称" style="margin:0;">
                                     <el-input clearable type="text" v-model="item2.rankTitle"auto-complete="off">
                                         <template slot="append">{{item2.rankLevel}}级</template>
