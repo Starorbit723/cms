@@ -13,7 +13,7 @@ var vm = new Vue({
         }
         return {
             //切换内容图库
-            showContentimgLib:false,
+            showContentimgLib: true,
             showChildPage: false,
             creatOrEdit:0,//0新建  1修改
             //搜索提交
@@ -41,9 +41,7 @@ var vm = new Vue({
                 diagramInfoStatus: '',
             }],
             //内容图库相关
-            chooseImgObjName:'',
-            chooseImgObjIndex:'',
-            searchContentimgForm:{
+            searchContentImgForm: {
                 picTitle:'',
                 picType:'1'//0封面图库 1内容图库 2图为图库
             },
@@ -107,7 +105,7 @@ var vm = new Vue({
          //搜索内容图库
          searchContentImg(type){
             var self = this
-            console.log(this)
+            console.log(this.searchContentImgForm)
             var data = JSON.parse(JSON.stringify(self.searchContentImgForm))
             data.picTitle = data.picTitle.trim()
             if (type == 0) {

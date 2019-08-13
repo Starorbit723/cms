@@ -116,7 +116,7 @@ var vm = new Vue({
             //内容图库相关
             chooseImgObjName:'',
             chooseImgObjIndex:'',
-            searchContentImgForm:{
+            searchContentImgForm: {
                 picTitle:'',
                 picType:'1'//0封面图库 1内容图库 2图为图库
             },
@@ -249,6 +249,7 @@ var vm = new Vue({
         //搜索内容图库
         searchContentImg(type){
             var self = this
+            console.log(self.searchContentImgForm)
             var data = JSON.parse(JSON.stringify(self.searchContentImgForm))
             data.picTitle = data.picTitle.trim()
             if (type == 0) {
