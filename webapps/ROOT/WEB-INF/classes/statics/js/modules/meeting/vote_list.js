@@ -33,6 +33,7 @@ var vm = new Vue({
                 totalPage:0,
                 pageSize:10
             },
+            timeRange: [],
             voteForm: {
                 voteId: '', //投票编号
                 voteTitle: '', //投票名称
@@ -58,6 +59,20 @@ var vm = new Vue({
                 ]
             }
             
+            
+        }
+    },
+    watch: {
+        timeRange (val) {
+            console.log(val)
+            if (val) {
+                this.searchForm.startTime = val[0]
+                this.searchForm.endTime = val[1]
+            } else {
+                this.searchForm.startTime = ''
+                this.searchForm.endTime = ''
+            }
+            console.log(this.searchForm)
         }
     },
     created() {
@@ -160,9 +175,8 @@ var vm = new Vue({
         },
         // 关闭页面
         closeCreatOrEdit(formName) {
-            this.showVoteList = true
-            this.showChildList = false
             this.creatOrEdit = 0
+            this.$refs[formName].resetFields();
             this.voteForm = {
                 voteId: '', //投票编号
                 voteTitle: '', //投票名称
@@ -175,7 +189,10 @@ var vm = new Vue({
                 voteModTime: '', //更新时间
                 userName: '', //创建人
                 voteStatus: ''
-            }
+            },
+            
+            this.showChildList = false
+            this.showVoteList = true
         },
         //切换页码
         handleCurrentChange (val) {
@@ -209,10 +226,6 @@ var vm = new Vue({
                     // console.log(res)
                     if(res.code == 200) {
                         self.tableData = res.page.list
-                        // for (let i = 0; i < self.tableData.length; i++){
-                        //     self.tableData[i].voteCrtTime = self.transformTime(parseInt(self.tableData[i].voteCrtTime))
-                        //     self.tableData[i].voteModTime = self.transformTime(parseInt(self.tableData[i].voteModTime))
-                        // }
                         self.pagination1 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
