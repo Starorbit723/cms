@@ -11,7 +11,7 @@
     <div id="meeting_hdpicture" class="cv_page_content">
         <div class="cv_content_square">
             <!------------------列表开始------------------>
-            <div v-show="!showChildPage">
+            <div v-show="showDiagramPage">
                 <el-form :model="searchForm" status-icon class="demo-ruleForm" style="width: 100%"  @submit.native.prevent>
                     <el-row class="el-row-h60">
                         <el-col :span="7">
@@ -25,11 +25,11 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="所属会议名称" label-width="25%" style="margin:0;">
+                            <el-form-item label="组图标题" label-width="25%" style="margin:0;">
                                 <el-input
                                 clearable
-                                v-model="searchForm.diagramMeetingId"
-                                placeholder="输入会议名称"
+                                v-model="searchForm.diagramTitle"
+                                placeholder="输入组图标题名称"
                                 type="text"
                                 auto-complete="off"></el-input>
                             </el-form-item>
@@ -40,7 +40,7 @@
                     </el-row>
                 </el-form>
                 <!--功能按钮区-->
-            <el-row class="el-row-h50">
+                <el-row class="el-row-h50">
                     <el-col :span="3">
                         <el-button type="primary" type="primary" style="width:100%" @click="addOrEditPic(0)">新建高清组图</el-button>
                     </el-col>
@@ -49,13 +49,13 @@
                 <div class="cv_content_square">
                     <el-table :data="tableData" style="width: 100%; margin: 10px auto;" stripe>
                         <el-table-column prop="diagramMeetingId" width="160" label="会议详情编号"></el-table-column>
-                        <el-table-column prop="" width="420" label="会议详情名称"></el-table-column>
+                        <el-table-column prop="diagramTitle" width="420" label="组图标题名称"></el-table-column>
                         <el-table-column prop="diagramCrtTime" width="180" label="创建时间"></el-table-column>
                         <el-table-column prop="userName" width="100" label="创建人"></el-table-column>
                         <el-table-column label="操作"  fixed="right">
                             <template slot-scope="scope">
-                                <el-button type="text" size="small" @click="addOrEditPic(1,scope.row)">编辑</el-button>
-                                <el-button type="text" size="small" @click="checkDiagramDetail(scope.row)" >详情</el-button>
+                                <el-button type="text" size="small" @click="addOrEditPic(1,scope.row)">属性</el-button>
+                                <el-button type="text" size="small" @click="addOrEditList(1,scope.row)">编辑</el-button>
                                 <el-button type="text" size="small" @click="deleteThisDiagram(scope.row)">删除</el-button>
                             </template>
                         </el-table-column>
@@ -72,11 +72,11 @@
                     </el-pagination>
                 </div>
             </div>
-            
-        </div>
-        <!------------------列表结束------------------>
+
+
+            <!------------------列表结束------------------>
         <!------------------新建高清组图开始------------------>
-        <div v-show="showChildPage">
+        <div v-show="showHdPage">
             <div class="cv_content_square">
                 <el-form :model="diagramForm" :rules="diagramFormRules" ref="diagramForm" label-position="left" status-icon class="demo-ruleForm" label-width="13%" label-position="right">
                     <el-row class="el-row-h70">
@@ -88,7 +88,6 @@
                                     placeholder="请输入所属会议详情编号"
                                     v-model="diagramForm.diagramMeetingId"
                                     auto-complete="off"
-                                    :disabled="creatOrEdit == 1"
                                     ></el-input>
                             </el-form-item>
                         </el-col>
@@ -106,11 +105,11 @@
                                     >
                                     <template slot="append">限制36个字</template>
                                 </el-input>
-
                             </el-form-item>
                         </el-col>
                     </el-row>
                 </el-form>
+                 
                 <el-row style="margin-top: 30px">
                     <el-col class="el-row-h40" :span="2">
                         <el-button type="primary" style="width: 100%" @click="testSubmit('diagramForm')">保存</el-button>
@@ -121,10 +120,17 @@
                 </el-row>
             </div>
         </div>
-
-
-
         <!------------------新建高清组图结束------------------>
+    
+        <!-- 新建组图列表开始 -->
+        <div v-show="diagramListPage">
+
+        </div>
+
+
+        <!-- 新建组图列表结束 -->
+    </div>
+        
 
     </div>
 

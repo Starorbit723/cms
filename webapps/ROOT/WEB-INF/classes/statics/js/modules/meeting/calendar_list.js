@@ -206,6 +206,7 @@ var vm = new Vue({
         addPlace (index) {
             console.log(index)
             let currentLv1 = this.calendarForm.meetingAgendaJson[index]
+            console.log(currentLv1)
             if (currentLv1.children.length == 0) {
                 this.calendarForm.meetingAgendaJson[index].children.push({
                     type:'place',

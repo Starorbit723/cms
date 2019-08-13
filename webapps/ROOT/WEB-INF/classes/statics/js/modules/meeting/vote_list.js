@@ -12,6 +12,11 @@ var vm = new Vue({
             }
         }
         return {
+            pickerOptions:{
+                disabledDate(time) {
+                    return time.getTime() > Date.now();
+                }
+            },
             //是否显示子页面
             showVoteList: true,
             showChildList: false,
@@ -45,7 +50,14 @@ var vm = new Vue({
                 voteCrtTime: '', //创建时间
                 voteModTime: '', //更新时间
                 userName: '', //创建人
-                voteStatus: ''
+                voteStatus: '',
+                voteOptionArray: [
+                    {
+                        voteId: '', //vote编号
+                        voteOptionName: '', //选项名称
+                        voteOptionCount: '', //选项数量
+                    }
+                ]
             },
             voteFormRules: {
                 voteType: [
@@ -120,11 +132,7 @@ var vm = new Vue({
                             dataType: "json",
                             success: function(res) {
                                 if(res.code == 200) {
-                                    if(res.page.list.length == 0) {
-                                        self.submitCreatEdit()
-                                    } else {
-                                        self.$message.error('该投票数据已存在，不能重复创建')
-                                    }
+                                    self.submitCreatEdit()
                                 } else {
                                     mapErrorStatus(res)
                                     vm.error = true;
@@ -144,6 +152,7 @@ var vm = new Vue({
         submitCreatEdit() {
             var self = this
             var data = JSON.parse(JSON.stringify(self.voteForm))
+            console.log(JSON.stringify(data))
             console.log('准备提交保存的FORM', data)
             if (self.creatOrEdit == 0) {
                 var reqUrl = '/vote/save'
@@ -258,6 +267,7 @@ var vm = new Vue({
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res) {
+                        console.log(res)
                         if(res.code == 200) {
                             let data = res.dict
                             self.voteForm = data
@@ -316,7 +326,19 @@ var vm = new Vue({
             this.showVoteList = false,
             this.showDetailPage = true;
 
-        }
+        },
+        // 添加投票选项
+        // addOptions(index) {
+        //     console.log(index)
+        //     console.log(this.voteForm)
+        //     let voteCon = this.voteForm.voteOptionArray[index]
+        //     let VoteType = this.voteForm.voteType
+
+        //     if (voteType == "观点PK" ) {
+        //         this.voteForm.voteOptionArray.splice(index, 2)
+        //     } 
+            
+        // }
     }
    
        

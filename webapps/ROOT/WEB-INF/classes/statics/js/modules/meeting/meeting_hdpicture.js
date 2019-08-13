@@ -15,13 +15,18 @@ var vm = new Vue({
         }
         return {
             //是否显示子页面
-            showChildPage: false,
+            showDiagramPage: true,
+            showHdPage: false,
+            diagramListPage: false,
             creatOrEdit:  0, //0新建  1修改
             searchForm: {
                 diagramMeetingId: '',
+                diagramTitle: '', 
                 diagramStatus: '0' //状态 0正常 1删除
             },
             tableData:[{}],
+            detailData: [{}],
+            
             //分页器相关
             pagination1: {
                 currPage: 1,
@@ -113,28 +118,31 @@ var vm = new Vue({
             var self = this
             self.creatOrEdit = type
             if(type == 0) {
-                self.showChildPage = true
+                self.showDiagramPage = false
+                self.showHdPage = true
             } else if(type == 1) {
                 $.ajax({
                     type: "POST",
-                    url: " /diagram/info/"+item.diagramId.toString(),
+                    url: "/diagram/info/" + item.diagramId.toString(),
                     contentType: "application/json",
                     dataType: "json",
-                    success: function(res) {
-                        if(res.code == 200) {
+                    success: function(res){
+                        console.log(res)
+                        if(res.code == 200){
                             let data = res.dict
                             self.diagramForm = data
-                            self.showChildPage = true
-                        } else {
+                            self.showDiagramPage = false
+                            self.showHdPage = true
+                        }else{
                             mapErrorStatus(res)
                             vm.error = true;
                             vm.errorMsg = res.msg;
                         }
                     },
-                    error: function(res) {
+                    error:function(res){
                         mapErrorStatus(res)
                     }
-                })   
+                });
             }
         },
          //保存
@@ -175,6 +183,7 @@ var vm = new Vue({
                 }
             })
         },
+        
         // 提交
         submitCreatEdit() {
             var self = this
@@ -222,7 +231,8 @@ var vm = new Vue({
                 diagramModTime:'',
                 diagramStatus:'',
             },
-            this.showChildPage = false
+            this.showHdPage = false
+            this.showDiagramPage = true
         },
         //删除
         deleteThisDiagram(item) {
