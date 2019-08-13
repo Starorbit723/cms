@@ -36,6 +36,7 @@ var vm = new Vue({
                 meetingId:'',//主键
                 meetingTitle:'',//标题
                 meetingStarTime:'',//开始时间
+                meetingEndTime:'',//结束时间
                 meetingType:'',//类型
                 meetingUrl:'',//会议链接
                 meetingDesc:'',//简介
@@ -1164,16 +1165,32 @@ var vm = new Vue({
         testMeetingInfo(type,formName) {
             var self = this
             //判断报名时间和开始时间规则
-            console.log(self.meetingForm)
-            if (self.meetingForm.meetingEnrollEndTime > self.meetingForm.meetingStarTime) {
-                self.$message.error('会议报名截至时间不能大于会议开始时间')
-                return
-            }
-            self.$refs[formName].validate((valid) =>{
-                if (valid) {
-                    self.saveMeeting(type)
+            console.log('数据',self.meetingForm)
+            // self.$refs[formName].validate((valid) =>{
+            //     if (valid) {
+            //         //self.saveMeeting(type)
+            //     }
+            // })
+            $.ajax({
+                type: "POST",
+                url: '/meeting/save',
+                contentType: "application/json",
+                data: JSON.stringify(self.meetingForm),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.$message.success('保存成功')
+                    }else{
+                        self.ajaxController = true
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
                 }
-            })
+            });
         },
         //新建或修改保存会议
         saveMeeting (type) {
