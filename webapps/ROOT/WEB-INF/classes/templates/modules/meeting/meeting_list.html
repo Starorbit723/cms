@@ -22,7 +22,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="10">
-                        <el-form-item label="会议时间" style="margin:0;">
+                        <el-form-item label="创建时间" style="margin:0;">
                             <el-date-picker
                                 clearable
                                 style="width:100%;"
@@ -74,9 +74,9 @@
                 <el-table-column label="操作" width="200" fixed="right">
                     <template slot-scope="scope">
                         <el-button type="text" size="small" @click="editThisMeeting(scope.row)">编辑</el-button>
-                        <el-button type="text" size="small" v-if="scope.row.meetingStatus !== 1" @click="deleteThisMeeting(scope.row)">删除</el-button>
-                        <el-button type="text" v-if="scope.row.meetingStatus !== 1" size="small" @click="onlineThisMeeting(scope.row)">发布</el-button>
-                        <el-button type="text" size="small" v-if="scope.row.meetingStatus == 1" @click="offlineThisMeeting(scope.row)">下线</el-button>
+                        <el-button type="text" size="small" v-if="scope.row.meetingStatus == 0" @click="deleteThisMeeting(scope.row)">删除</el-button>
+                        <el-button type="text" v-if="scope.row.meetingStatus == '0' || scope.row.meetingStatus == 3" size="small" @click="onlineThisMeeting(scope.row)">发布</el-button>
+                        <el-button type="text" size="small" v-if="scope.row.meetingStatus == 2" @click="offlineThisMeeting(scope.row)">下线</el-button>
                     </template>
                 </el-table-column>
             </el-table>

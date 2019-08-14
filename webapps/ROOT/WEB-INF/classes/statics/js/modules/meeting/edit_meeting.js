@@ -45,7 +45,7 @@ var vm = new Vue({
                 meetingTheme:'',//会议主题
                 meetingOrganizer:'',//主办单位
                 meetingCoOrganizer:'',//协办单位
-                meetingScaleNumer:'',//规模人数
+                meetingScaleNumber:'',//规模人数
                 meetingHoldTime:'',//举办时间字符串
                 meetingAddress:'',//会议举办地址
                 meetingAgendaId:'',//日程ID
@@ -63,6 +63,7 @@ var vm = new Vue({
                 meetingTemplateMid:'',
                 meetingTemplateAddress:'',
                 meetingTemplateMaddress:'',
+                meetingSignUpUrl:'',//报名链接
                 meetingJsonData:{ //前端渲染大数据
                     headPicBanner:{
                         isShowFloor:true,
@@ -195,7 +196,7 @@ var vm = new Vue({
                 meetingOrganizer:[
                     { required: true, message: '请填写主办单位', trigger: 'change' }
                 ],
-                meetingScaleNumer:[
+                meetingScaleNumber:[
                     { required: true, validator: validateScaleNumber, trigger: 'change' }
                 ],
                 meetingHoldTime:[
@@ -1165,9 +1166,6 @@ var vm = new Vue({
             }
 
         },
-
-
-
         //保存会议 formName---表单名称   type----提交类型
         testMeetingInfo(type,formName) {
             var self = this
@@ -1187,15 +1185,21 @@ var vm = new Vue({
                 self.ajaxController = false
                 if (self.typeOfPage == 'creat') {
                     var reqUrl = '/meetingInfo/save'
-                    self.meetingForm.meetingStatus = '3'
+                    self.meetingForm.meetingStatus = '0'
                 } else if (self.typeOfPage == 'edit') {
                     var reqUrl = '/meetingInfo/update'
                 }
+                //大数据JSON处理
+                var submitData = JSON.parse(JSON.stringify(self.meetingForm))
+                $.base64.utf8encode = true;
+                var jsonString = JSON.stringify(submitData.meetingJsonData);
+                var json64 = $.base64.btoa(jsonString);
+                submitData.meetingJsonData = json64
                 $.ajax({
                     type: "POST",
                     url: reqUrl,
                     contentType: "application/json",
-                    data: JSON.stringify(self.meetingForm),
+                    data: JSON.stringify(submitData),
                     dataType: "json",
                     success: function(res){
                         if(res.code == 200){
@@ -1234,13 +1238,19 @@ var vm = new Vue({
         //提交会议--更新发布状态即可
         submitMeeting () {
             var self = this
-            //不走CMS逻辑，只需要改状态即可  meetingStatus=1 已发布
-            self.meetingForm.meetingStatus = '1' 
+            //meetingStatus=1 待发布
+            self.meetingForm.meetingStatus = '1'
+            //大数据JSON处理
+            var submitData = JSON.parse(JSON.stringify(self.meetingForm))
+            $.base64.utf8encode = true;
+            var jsonString = JSON.stringify(submitData.meetingJsonData);
+            var json64 = $.base64.btoa(jsonString);
+            submitData.meetingJsonData = json64
             $.ajax({
                 type: "POST",
                 url: "/meeting/update",
                 contentType: "application/json",
-                data: JSON.stringify(self.meetingForm),
+                data: JSON.stringify(submitData),
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){
@@ -1285,7 +1295,15 @@ var vm = new Vue({
         //编辑反显前数据过滤
         editMeetingFilter (tempObj) {
             console.log('tempObj',tempObj)
-            this.meetingForm = tempObj
+            let data = tempObj
+            //json64反解
+            let map = $.base64.atob(tempObj.meetingJsonData, true)
+            data.meetingJsonData = JSON.parse(map)
+            //关键词数组还原
+            if (tempObj.newsKeywords !== '') {
+                this.meetingTagArray = data.meetingKeywords.split(',')
+            }
+            this.meetingForm = data
             this.$refs['meetingForm'].resetFields()
         },
         //返回列表页

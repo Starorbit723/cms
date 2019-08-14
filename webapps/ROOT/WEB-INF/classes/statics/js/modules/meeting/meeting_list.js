@@ -5,9 +5,9 @@ var vm = new Vue({
         timeRange:[], //时间需要特殊处理,并且同步到searchForm
         searchForm:{
             meetingTitle:'',//标题
-            meetingStarTime:'',//开始时间
-            meetingEndTime:'',//结束时间
-            meetingStatus: ['1','2','3']
+            starTime:'',//开始时间
+            endTime:'',//结束时间
+            meetingStatus: ['0','1','2','3','4']
         },
         //表格结果
         tableData: [{
@@ -41,6 +41,7 @@ var vm = new Vue({
             meetingTemplateMid:'',
             meetingTemplateAddress:'',
             meetingTemplateMaddress:'',
+            meetingSignUpUrl:'',//报名链接
             meetingJsonData:[]
         }],
         //分页器相关
@@ -55,11 +56,11 @@ var vm = new Vue({
         timeRange (val) {
             console.log(val)
             if (val) {
-                this.searchForm.meetingStarTime = val[0]
-                this.searchForm.meetingEndTime = val[1]
+                this.searchForm.startTime = val[0]
+                this.searchForm.endTime = val[1]
             } else {
-                this.searchForm.meetingStarTime = ''
-                this.searchForm.meetingEndTime = ''
+                this.searchForm.startTime = ''
+                this.searchForm.endTime = ''
             }
             console.log(this.searchForm)
         }
