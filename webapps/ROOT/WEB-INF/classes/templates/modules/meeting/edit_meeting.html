@@ -325,11 +325,11 @@
                         </el-row>
                         <el-row class="el-row-h70">
                             <el-col :span="12">
-                                <el-form-item prop="meetingScaleNumer" label="规模人数" style="margin:0;" label-width="30%">
+                                <el-form-item prop="meetingScaleNumber" label="规模人数" style="margin:0;" label-width="30%">
                                     <el-input
                                         clearable
                                         type="text"
-                                        v-model="meetingForm.meetingScaleNumer"
+                                        v-model="meetingForm.meetingScaleNumber"
                                         auto-complete="on"
                                         maxlength="10">
                                     </el-input>
@@ -2373,6 +2373,8 @@
 </body>
 
 <script type="text/javascript" src="${request.contextPath}/statics/js/region.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.min.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.base64.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/modules/meeting/edit_meeting.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
