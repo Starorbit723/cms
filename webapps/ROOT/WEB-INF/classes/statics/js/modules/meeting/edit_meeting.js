@@ -1173,31 +1173,11 @@ var vm = new Vue({
             var self = this
             //判断报名时间和开始时间规则
             console.log('数据',self.meetingForm)
-            // self.$refs[formName].validate((valid) =>{
-            //     if (valid) {
-            //         //self.saveMeeting(type)
-            //     }
-            // })
-            $.ajax({
-                type: "POST",
-                url: '/meeting/save',
-                contentType: "application/json",
-                data: JSON.stringify(self.meetingForm),
-                dataType: "json",
-                success: function(res){
-                    if(res.code == 200){
-                        self.$message.success('保存成功')
-                    }else{
-                        self.ajaxController = true
-                        mapErrorStatus(res)
-                        vm.error = true;
-                        vm.errorMsg = res.msg;
-                    }
-                },
-                error:function(res){
-                    mapErrorStatus(res)
+            self.$refs[formName].validate((valid) =>{
+                if (valid) {
+                    self.saveMeeting(type)
                 }
-            });
+            })
         },
         //新建或修改保存会议
         saveMeeting (type) {
@@ -1206,10 +1186,10 @@ var vm = new Vue({
                 //关闭请求开关
                 self.ajaxController = false
                 if (self.typeOfPage == 'creat') {
-                    var reqUrl = '/meeting/save'
+                    var reqUrl = '/meetingInfo/save'
                     self.meetingForm.meetingStatus = '3'
                 } else if (self.typeOfPage == 'edit') {
-                    var reqUrl = '/meeting/update'
+                    var reqUrl = '/meetingInfo/update'
                 }
                 $.ajax({
                     type: "POST",
@@ -1284,7 +1264,7 @@ var vm = new Vue({
             var self = this
             $.ajax({
                 type: "POST",
-                url: "/meeting/info/"+ type.toString(),
+                url: "/meetingInfo/info/"+ type.toString(),
                 contentType: "application/json",
                 dataType: "json",
                 success: function(res){
@@ -1305,16 +1285,6 @@ var vm = new Vue({
         //编辑反显前数据过滤
         editMeetingFilter (tempObj) {
             console.log('tempObj',tempObj)
-            //会议时间反显
-            tempObj.meetingTimes = [parseInt(tempObj.meetingStarTime),parseInt(tempObj.meetingEndTime)]
-            //会议报名时间反显--非必填项
-            if (tempObj.meetingEnrollStarTime !== '#') {
-                tempObj.meetingBaomingTimes = [parseInt(tempObj.meetingEnrollStarTime),parseInt(tempObj.meetingEnrollEndTime)]
-            } else {
-                tempObj.validateMeetingBaomingTimes = []
-            }
-            //会议类型转换
-            tempObj.meetingType = tempObj.meetingType.toString()
             this.meetingForm = tempObj
             this.$refs['meetingForm'].resetFields()
         },
