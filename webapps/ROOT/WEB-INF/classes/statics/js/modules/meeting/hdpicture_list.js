@@ -1,6 +1,14 @@
 var vm = new Vue({
     el: "#hdpicture_list",
     data () {
+        var validateDiaId = (rule, value, callback) => {
+            var urlReg = /^[0-9]*[1-9][0-9]*$/;
+            if (value !== '' && urlReg.test(value)) {
+                callback();
+            } else {
+                callback(new Error('组图所属编号必须为整数'));
+            }
+        }
         var validatePriority = (rule, value, callback) => {
             var urlReg = /^[0-9]*[1-9][0-9]*$/;
             if (value !== '' && value == '-1') {
@@ -59,7 +67,7 @@ var vm = new Vue({
             hdPicForm: {
                 diagramInfoId: '',
                 diagramInfoTitle: '',
-                diagramInfoPriority: '',
+                diagramInfoPriority: '-1',
                 diagramInfoImg: '',
                 diagramId: '',
                 diagramInfoCrtUserId: '',
@@ -74,6 +82,9 @@ var vm = new Vue({
                 ],
                 diagramInfoImg: [
                     { required: true, message: '请上传组图图片', trigger: 'change' }
+                ],
+                diagramId: [
+                    { validator: validateDiaId, trigger: 'change' }
                 ],
                 diagramInfoPriority: [
                     { validator: validatePriority, trigger: 'change' }
@@ -106,7 +117,6 @@ var vm = new Vue({
         //搜索内容图库
         searchContentImg(type){
             var self = this
-            
             var data = JSON.parse(JSON.stringify(this.searchContentImgForm))
             data.picTitle = data.picTitle.trim()
             if (type == 0) {
@@ -174,6 +184,7 @@ var vm = new Vue({
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.diagramId = data.diagramId.toString().trim()
+            console.log(data)
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
