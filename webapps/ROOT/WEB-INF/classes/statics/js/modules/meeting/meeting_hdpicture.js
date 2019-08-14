@@ -16,9 +16,8 @@ var vm = new Vue({
         return {
             //是否显示子页面
             showDiagramPage: true,
-            showHdPage: false,
+            showHdPage: false, 
             showDetailPage: false,
-            diagramListPage: false,
             creatOrEdit:  0, //0新建  1修改
             searchForm: {
                 diagramMeetingId: '',
@@ -28,19 +27,9 @@ var vm = new Vue({
             tableData:[{}],
 
             showDiagramLab: false,
-            diagramTableForm: {
+            
                 
-                diagramTableData:[],
-            },
-            
-             //分页器相关
-             pagination2: {
-                currPage: 1,
-                totalCount:0,
-                totalPage:0,
-                pageSize:10
-            },
-            
+            diagramTableData:[],
             
             //分页器相关
             pagination1: {
@@ -49,6 +38,23 @@ var vm = new Vue({
                 totalPage:0,
                 pageSize:10
             },
+             //分页器相关
+             pagination2: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+             //分页器相关
+             pagination3: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            
+            
+            
             diagramForm: {
                 diagramId: '',
                 diagramTitle: '',
@@ -94,13 +100,7 @@ var vm = new Vue({
             },
             multipleSelection:[],
             contentImgTableData:[],
-            //分页器相关
-            pagination2: {
-                currPage: 1,
-                totalCount:0,
-                totalPage:0,
-                pageSize:10
-            },
+            
             diaId: '',
 
         }
@@ -115,6 +115,12 @@ var vm = new Vue({
 
     },
     methods: {
+       
+        // 图片列表页面变化
+        // handleCurrentChange3 (val) {
+        //     this.pagination2.currPage = val
+        //     this.startSearch2(self.diaId)
+        // },
          //内容图页面变化
          handleCurrentChange2 (val) {
             this.pagination2.currPage = val
@@ -172,19 +178,34 @@ var vm = new Vue({
         addThisContentImg (item) {
             var self = this
             console.log(item)
-            this.diagramTableForm.diagramTableData.push({
+            var data = [{
                 diagramId: self.diaId,
                 diagramInfoPriority: '-1',
                 diagramInfoImg: item.picUrl,
                 diagramInfoTitle: item.picTitle,
                 diagramInfoCrtTime: item.picCrtTime,
+                diagramInfoStatus: "0"
+            }]
+            self.diagramTableData.push({
+                diagramId: self.diaId,
+                diagramInfoPriority: '-1',
+                diagramInfoImg: item.picUrl,
+                diagramInfoTitle: item.picTitle,
+                diagramInfoCrtTime: item.picCrtTime,
+                diagramInfoStatus: "0"
             })
-            console.log(this.diagramTableForm.diagramTableData)
-            self.backToEdit2()
+            console.log(self.diagramTableData)
+            console.log(data)
+            self.saveTable(data)
+            self.startSearch2(self.diaId)
+            self.showContentImgLib = false
+            self.showDetailPage = true
+            console.log(self.showDetailPage)
         },
         //返回编辑页
         backToEdit2 (){
             this.showContentImgLib = false
+            this.showDetailPage = true
             this.searchContentImgForm = {
                 picTitle:'',
                 picType:'1'//0封面图库 1内容图库 2图为图库
@@ -196,6 +217,7 @@ var vm = new Vue({
                 totalPage:0,
                 pageSize:10
             }
+            
         },
         //多选批量
         handleSelectionChange (val) {
@@ -207,24 +229,34 @@ var vm = new Vue({
             var self = this
             console.log(self.multipleSelection)
             console.log(self.diaId)
-            for(i=0; i < self.multipleSelection.length; i++) {
-                this.diagramTableForm.diagramTableData.push({
+            var len = self.multipleSelection.length
+            for(i=0; i < len; i++) {
+                this.diagramTableData.push({
                     diagramId: self.diaId,
+                    diagramInfoStatu: "0",
                     diagramInfoPriority: '-1',
                     diagramInfoImg: self.multipleSelection[i].picUrl,
                     diagramInfoTitle: self.multipleSelection[i].picTitle,
                     diagramInfoCrtTime: self.multipleSelection[i].picCrtTime,
                 })
             }
-            console.log(self.diagramTableForm.diagramTableData)
-            self.backToEdit2()
+            
+            var data = this.diagramTableData.slice(-len)
+            console.log(data)
+            self.saveTable(data)
+            self.startSearch2(self.diaId)
+            self.showContentImgLib = false
+            self.showDetailPage = true
+            console.log(self.diagramTableData)
+        },
+        // 关闭高清组图列表页面
+        closeDiaTable() {
+            this.showDetailPage = false
+            this.showDiagramPage = true
         },
         
-
-
-
-       
         
+
         // 弹出组图列表
         // addDiaPic () {
         //     this.searchDiaList(0)
@@ -307,17 +339,43 @@ var vm = new Vue({
         //     }
         // },
          
+        // 保存高清组图列表
+        saveTable(data1){
+            var self = this
+            var data = JSON.parse(JSON.stringify(data1))
+            console.log(data)
+            console.log(JSON.stringify(data))
+            $.ajax({
+                type: "POST",
+                url: "/diagramInfo/save",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res) {
+                    console.log(res)
+                    if(res.code == 200) {
+                        self.$message.success('保存成功')
+                        self.startSearch2(self.diaId)
+                        // self.closeDiaTable()
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            })
+        },
+        
         //修改组图列表
         EditDetailList (item) {
             var self = this
-            console.log(item)
             self.showDiagramPage = false
             self.showDetailPage = true
             self.diaId = item.diagramId
-            console.log(self.diaId)
-            var id = item.diagramId
-            // this.startSearch2(id)
-            // this.showDiagramLab = true
+            self.startSearch2(self.diaId)
         },
         // 加载高清组图列表详情
         startSearch2(id) {
@@ -327,6 +385,7 @@ var vm = new Vue({
                 diagramInfoStatus: '0'
             }
             var data = JSON.parse(JSON.stringify(data1))
+            console.log(data)
             $.ajax({
                 type: "POST",
                 url: "/diagramInfo/list",
@@ -334,8 +393,9 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
+                    console.log(res)
                     if(res.code == 200) {
-                        self.diagramTableForm.diagramTableData = res.page.list
+                        self.diagramTableData = res.page.list
                         self.pagination2 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
@@ -350,19 +410,13 @@ var vm = new Vue({
                 }
             })
         },
-        // 关闭详情页面
-        closeDiaTable() {
-            this.showDiagramLab = false
-        },
-       
-
-
-
+     
         // 开始搜索列表
         startSearch(type) {
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.diagramMeetingId = data.diagramMeetingId.toString().trim()
+            console.log(data)
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -389,6 +443,7 @@ var vm = new Vue({
                             totalPage: res.page.totalPage,
                             pageSize: res.page.pageSize
                         }
+                        self.searchForm.diagramMeetingId = ''
                     } else {
                         mapErrorStatus(res)
 						vm.error = true;
@@ -453,11 +508,12 @@ var vm = new Vue({
                         }
                         $.ajax({
                             type: "POST",
-                            url: "/vote/list",
+                            url: "/diagram/list",
                             contentType: "application/json",
                             data: JSON.stringify(data),
                             dataType: "json",
                             success: function(res) {
+                                console.log(res)
                                 if(res.code == 200) {
                                    self.submitCreatEdit()
                                 } else {
@@ -528,6 +584,48 @@ var vm = new Vue({
             this.showHdPage = false
             this.showDiagramPage = true
         },
+        
+        //删除高清组图列表单项
+        deleteThisDiaDetail(item){
+            console.log(item)
+            var self = this 
+            self.$confirm('确实要删除该图片吗？', '提示',{
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = JSON.parse(JSON.stringify(item))
+                data.diagramInfoId = data.diagramInfoId.toString()
+                data.diagramInfoStatus = "1"
+                console.log(data)
+                console.log(JSON.stringify(data))
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/diagramInfo/update",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res) {
+                        console.log(res)
+                        if(res.code == 200) {
+                            console.log(res)
+                            self.startSearch()
+                            self.$message.success('删除成功')
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true
+                            vm.errorMsg = res.msg
+                        }
+                    },
+                    error: function(res) {
+                        mapErrorStatus(res)
+                    }
+
+                })
+            })
+
+
+        },
         //删除
         deleteThisDiagram(item) {
             console.log(item)
@@ -538,6 +636,7 @@ var vm = new Vue({
                 type: 'warning'
             }).then(() => {
                 var data = JSON.parse(JSON.stringify(item))
+                console.log(data)
                 data.diagramStatus = "1"
                 console.log(JSON.stringify(data))
                 $.ajax({
