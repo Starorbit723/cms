@@ -13,7 +13,7 @@ var vm = new Vue({
         }
         return {
             //是否显示子页面
-            showChildPage: true,
+            showChildPage: false,
             creatOrEdit:0,//0新建  1修改
             timeRange:[],
             searchForm:{
