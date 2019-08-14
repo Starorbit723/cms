@@ -1,8 +1,6 @@
 var vm = new Vue({
     el: '#meeting_list',
     data: {
-        //会议类型下拉选项
-        meetingTypeOptions:[],
         //搜索文章列表提交
         timeRange:[], //时间需要特殊处理,并且同步到searchForm
         searchForm:{
@@ -17,23 +15,33 @@ var vm = new Vue({
             meetingTitle:'',//标题
             meetingStarTime:'',//开始时间
             meetingEndTime:'',//结束时间
-            meetingImg:'',//封面图
             meetingType:'',//类型
             meetingUrl:'',//会议链接
-            meetingRegion:[],//会议所在区域-----前端自用字段
-            meetingProvince:'',//省
-            meetingCity:'',//市
-            meetingArea:'',//区
-            meetingAddress:'',//详细地址
-            meetingOrganizers:'',//举办方
             meetingDesc:'',//简介
+            meetingStatus:'',//会议状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
+            meetingKeywords:'', //会议关键词
+            meetingTheme:'',//会议主题
+            meetingOrganizer:'',//主办单位
+            meetingCoOrganizer:'',//协办单位
+            meetingScaleNumer:'',//规模人数
+            meetingHoldTime:'',//举办时间字符串
+            meetingAddress:'',//会议举办地址
+            meetingAgendaId:'',//日程ID
+            meetingGuestId:'',//嘉宾ID
+            meetingVoteId:'',//投票ID
+            meetingInteractionId:'',//文章问答互动ID
+            meetingDiagramId:'',//高清组图ID
+            meetingCooperationId:'',//合作机构ID
             meetingCrtUserId:'',//创建人编号
             meetingCrtTime:'',//创建时间
             meetingModUserId:'',//更新人编号
             meetingModTime:'',//更新时间
-            meetingStatus:'',//会议状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
-            meetingEnrollStarTime:'',//报名开始时间
-            meetingEnrollEndTime:'',//报名结束时间
+            meetingCrtUserName:'',//创建人姓名
+            meetingTemplateId:'',
+            meetingTemplateMid:'',
+            meetingTemplateAddress:'',
+            meetingTemplateMaddress:'',
+            meetingJsonData:[]
         }],
         //分页器相关
         pagination1: {
@@ -129,7 +137,7 @@ var vm = new Vue({
         //删除会议
         deleteThisMeeting (item) {
             var self = this
-            self.$confirm('确实要删除此会议吗?', '提示', {
+            self.$confirm('确实要删除此会议页面吗?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
@@ -174,7 +182,7 @@ var vm = new Vue({
                 }
                 $.ajax({
                     type: "POST",
-                    url: "/meeting/update",
+                    url: "/meetingInfo/update",
                     contentType: "application/json",
                     data: JSON.stringify(data),
                     dataType: "json",
@@ -204,11 +212,11 @@ var vm = new Vue({
             }).then(() => {
                 var data = {
                     meetingId: item.meetingId.toString(),
-                    meetingStatus: '2'
+                    meetingStatus: '0'
                 }
                 $.ajax({
                     type: "POST",
-                    url: "/meeting/update",
+                    url: "/meetingInfo/update",
                     contentType: "application/json",
                     data: JSON.stringify(data),
                     dataType: "json",
@@ -249,11 +257,6 @@ var vm = new Vue({
         //         }
 		// 	});
         // },
-        //跳转至详情
-        openUrlPage(url){
-            console.log('url',url)
-            window.open(url) 
-        },
         //时间格式转换工具
         transformTime (timestamp = +new Date()) {
             if (timestamp) {
