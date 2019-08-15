@@ -52,9 +52,6 @@ var vm = new Vue({
                 totalPage:0,
                 pageSize:10
             },
-            
-            
-            
             diagramForm: {
                 diagramId: '',
                 diagramTitle: '',
@@ -115,6 +112,60 @@ var vm = new Vue({
 
     },
     methods: {
+        // 保存图片
+        submitForm(){
+            var self = this
+            console.log(self.diagramTableData)
+            // for(var i = 0; i < self.diagramTableData.length; i++) {
+            //     if(Number(self.diagramTableData[i].diagramInfoPriority) < -1 || self.diagramTableData[i].diagramInfoPriority.trim() == '' || parseFloat(self.diagramTableData[i].diagramInfoPriority).toString() == "NaN" ) {
+            //         self.$message.error('权重填写不正确')
+            //     } 
+            // }
+            var data = JSON.parse(JSON.stringify(self.diagramTableData))
+            for(var i = 0; i < self.diagramTableData.length; i++) {
+                self.diagramTableData[i].diagramInfoId = self.diagramTableData[i].diagramInfoId.toString()
+            }
+            $.ajax({
+                type: "POST",
+                url: "/diagramInfo/update",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.$message.success('保存成功')
+                        self.startSearch()
+                        // self.closeDiaTable()
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            })
+        },
+        // 权重发生改变时调整顺序
+        scaleChange (item) {
+            console.log(item)
+            if(item < -1) {
+                this.$message.error('权重最低为-1')
+            } else if (item.trim() == ''){
+                this.$message.error('权重值不能为空')
+            } else if (parseFloat(item).toString() == "NaN" ) {
+                this.$message.error('权重值不能为非数字')
+            }
+            
+            
+            // if (this.meetingGuestForm.meetingGuestJson[index].scale.trim() == '') {
+            //     this.meetingGuestForm.meetingGuestJson[index].scale = '-1'
+            //     this.$message.error('嘉宾显示权重值不能为空')
+            // }
+            // let arrSort = JSON.parse(JSON.stringify(this.meetingGuestForm.meetingGuestJson));
+            // this.meetingGuestForm.meetingGuestJson = arrSort.sort(this.compare('scale'))
+        },
        
         // 图片列表页面变化
         // handleCurrentChange3 (val) {
@@ -179,13 +230,15 @@ var vm = new Vue({
             var self = this
             console.log(item)
             var data = [{
-                diagramId: self.diaId,
+                diagramId: self.diaId.toString(),
                 diagramInfoPriority: '-1',
                 diagramInfoImg: item.picUrl,
                 diagramInfoTitle: item.picTitle,
                 diagramInfoCrtTime: item.picCrtTime,
                 diagramInfoStatus: "0"
             }]
+            
+            console.log(data.diagramId)
             self.diagramTableData.push({
                 diagramId: self.diaId,
                 diagramInfoPriority: '-1',
@@ -343,6 +396,7 @@ var vm = new Vue({
         saveTable(data1){
             var self = this
             var data = JSON.parse(JSON.stringify(data1))
+           
             console.log(data)
             console.log(JSON.stringify(data))
             $.ajax({
@@ -554,7 +608,7 @@ var vm = new Vue({
                     if(res.code == 200) {
                         self.$message.success('保存成功')
                         self.startSearch()
-                        self.closeCreatOrEdit('diagramForm')
+                        // self.closeCreatOrEdit('diagramForm')
                     } else {
                         mapErrorStatus(res)
                         vm.error = true;
@@ -594,10 +648,12 @@ var vm = new Vue({
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                var data = JSON.parse(JSON.stringify(item))
-                data.diagramInfoId = data.diagramInfoId.toString()
-                data.diagramInfoStatus = "1"
-                console.log(data)
+                var arr = []
+                arr.push(item)
+                var data = JSON.parse(JSON.stringify(arr))
+                console.log(arr)
+                data[0].diagramInfoId = data[0].diagramInfoId.toString()
+                data[0].diagramInfoStatus = "1"
                 console.log(JSON.stringify(data))
                 $.ajax({
                     type: "POST",
@@ -609,7 +665,7 @@ var vm = new Vue({
                         console.log(res)
                         if(res.code == 200) {
                             console.log(res)
-                            self.startSearch()
+                            self.startSearch2(self.diaId)
                             self.$message.success('删除成功')
                         } else {
                             mapErrorStatus(res)

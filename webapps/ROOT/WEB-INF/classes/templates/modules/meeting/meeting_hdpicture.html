@@ -128,6 +128,14 @@
                     <!-- <el-form :model="diagramTableForm" ref="diagramTableForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right" @submit.native.prevent></el-form> -->
                         <el-table :data="diagramTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="contentImgTableData" stripe>
                             <el-table-column prop="diagramInfoPriority" label="权重" width="150">
+                                <template slot-scope="scope">
+                                    <el-input
+                                    v-model="scope.row.diagramInfoPriority"
+                                    class="scaleText"
+                                    type="text"
+                                    auto-complete="off"
+                                    @input="scaleChange(scope.row.diagramInfoPriority)"></el-input>
+                                </template>
                                 
                             </el-table-column>
                             <el-table-column prop="diagramId" label="所属组图编号" width="150"></el-table-column>
@@ -161,11 +169,13 @@
                         <el-button type="primary" style="width: 100%" @click="chooseContentImg()">添加图片</el-button>
                     </el-col>
                     <el-col class="el-row-h40" :span="2" :offset="14">
-                            <el-button type="palin" style="width: 100%"  @click="saveDiaTable()">保存</el-button>
-                        </el-col>
-                        <el-col class="el-row-h40" :span="2" :offset="1">
-                            <el-button type="plain" style="width: 100%" @click="closeDiaTable()">取消</el-button>
-                        </el-col>
+                        
+                        <el-button type="palin" style="width: 100%"  @click.native="submitForm">保存</el-button>
+                        
+                    </el-col>
+                    <el-col class="el-row-h40" :span="2" :offset="1">
+                        <el-button type="plain" style="width: 100%" @click="closeDiaTable()">取消</el-button>
+                    </el-col>
                 </el-row>
             </div>
             <!-- 高清组图列表结束 -->
