@@ -394,17 +394,17 @@ var vm = new Vue({
                             dataType: "json",
                             success: function(res){
                                 console.log(res)
-                                // if(res.code == 200){
-                                //     if (res.page.list.length == 0) {
-                                //         self.submitCreatEdit()
-                                //     } else {
-                                //         self.$message.error('该会议数据已存在，不能重复创建')
-                                //     }
-                                // }else{
-                                //     mapErrorStatus(res)
-                                //     vm.error = true;
-                                //     vm.errorMsg = res.msg;
-                                // }
+                                if(res.code == 200){
+                                    if (res.page.list.length == 0) {
+                                        self.submitCreatEdit()
+                                    } else {
+                                        self.$message.error('该会议数据已存在，不能重复创建')
+                                    }
+                                }else{
+                                    mapErrorStatus(res)
+                                    vm.error = true;
+                                    vm.errorMsg = res.msg;
+                                }
                             },
                             error:function(res){
                                 mapErrorStatus(res)

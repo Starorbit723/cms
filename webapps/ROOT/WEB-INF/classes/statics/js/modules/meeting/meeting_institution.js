@@ -239,6 +239,7 @@ var vm = new Vue({
             var self = this
             var data = self.searchCoperForm
             data.cooperationName = data.cooperationName.trim()
+            console.log(data)
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -257,6 +258,7 @@ var vm = new Vue({
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res){
+                    console.log(res)
                     if(res.code == 200){
                         self.searchCoperForm.cooperationName = ''
                         self.coperTableData = res.page.list

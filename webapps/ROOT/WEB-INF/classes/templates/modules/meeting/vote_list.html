@@ -39,7 +39,7 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="2" :offset="1" class="el-row-h40">
-                                <el-button style="width:100%" @click="startSearch(0)">搜索</el-button>
+                                <el-button type="primary" style="width:100%" @click="startSearch(0)">搜索</el-button>
                             </el-col>
                         </el-row>
                     </el-form>
@@ -47,7 +47,7 @@
                 <!--功能按钮区-->
                 <el-row class="el-row-h50">
                     <el-col :span="3">
-                        <el-button type="primary" type="primary" style="width:100%" @click="addOrEditVote(0)">新建投票</el-button>
+                        <el-button type="primary" type="primary" plain icon="el-icon-plus" style="width:100%" @click="addOrEditVote(0)">新建投票</el-button>
                     </el-col>
                 </el-row>
                 <!--表格查询结果区-->
@@ -62,7 +62,7 @@
                         <el-table-column label="操作"  fixed="right">
                             <template slot-scope="scope">
                                 <el-button type="text" size="small" @click="addOrEditVote(1,scope.row)">编辑</el-button>
-                                <el-button type="text" size="small"@click="checkVoteDetail(scope.row)" >详情</el-button>
+                                <el-button type="text" size="small"@click="addOrEditVote(2,scope.row)" >详情</el-button>
                                 <el-button type="text" size="small" @click="deleteThisVote(scope.row)">删除</el-button>
                             </template>
                         </el-table-column>
@@ -85,7 +85,7 @@
             <div v-show="showChildList">
                 <div class="cv_content_square">
                     <el-form :model="voteForm" :rules="voteFormRules" ref="voteForm" label-position="left" status-icon class="demo-ruleForm" label-width="13%" label-position="right">
-                        <el-row class="el-row-h70">
+                        <!-- <el-row class="el-row-h70">
                             <el-col :span="18">
                                 <el-form-item label="所属会议详情编号" label-width="20%" prop="voteMeetingId" style="margin:0;">
                                     <el-input
@@ -98,7 +98,7 @@
                                         ></el-input>
                                 </el-form-item>
                             </el-col>
-                        </el-row>
+                        </el-row> -->
                         <el-row class="el-row-h70">
                             <el-col :span="18">
                                 <el-form-item label="投票类型" label-width="12%" prop="voteType" style="margin:0;">
@@ -150,7 +150,7 @@
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="1" :offset="1" style="margin-top: 0px">
-                                    <el-button size="medium" type="primary" icon="el-icon-plus" @click="addOptions(index)" circle ></el-button>
+                                    <el-button size="medium" type="primary" icon="el-icon-plus" @click="addOptions()" circle ></el-button>
                                 </el-col>
                                 <el-col :span="1"  :offset="1" style="margin-top: 0px">
                                     <el-button size="medium" type="plain" icon="el-icon-minus" @click="delOptions(index)" circle ></el-button>
@@ -161,10 +161,10 @@
                         
                     </el-form>
                     <el-row style="margin-top: 30px">
-                        <el-col class="el-row-h40" :span="2">
+                        <el-col class="el-row-h40" :span="3" :offset="8">
                             <el-button type="primary" style="width: 100%" @click="testSubmit('voteForm')">保存</el-button>
                         </el-col>
-                        <el-col class="el-row-h40" :span="2" :offset="1">
+                        <el-col class="el-row-h40" :span="3" :offset="2">
                             <el-button type="primary" style="width: 100%" @click="closeCreatOrEdit('voteForm')">取消</el-button>
                         </el-col>
                     </el-row>
@@ -181,7 +181,9 @@
                     <el-form :model="voteForm" status-icon class="demo-ruleForm" @submit.native.prevent>
                         <el-row class="el-row-h60">
                             <el-col>
-                                <el-form-item label="投票名称" label-position="left" style="margin:0;"></el-form-item>
+                                <el-form-item label="投票名称" label-position="left" style="margin:0;">
+                                
+                            </el-form-item>
                             </el-col>
                         </el-row>
                         <el-row class="el-row-h30"  style="width: 80%" >
@@ -201,42 +203,70 @@
                             </el-col>
                         </el-row>
                         <el-row class="el-row-h60" style="width: 80%">
-                            <el-col>
-                                <el-form-item  label="投票人数" label-position="left" style="margin:0;">
-                                    23
+                            <el-col :span="9">
+                                <el-form-item  label="参与人数" label-position="left" style="margin:0;">
+                                        <el-input
+                                        v-model="voteForm.totalVoteCount"
+                                        type="text"
+                                        auto-complete="off"
+                                        :disabled= "true"
+                                        ></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
-                         <!--表格查询结果区-->
-                    <div class="cv_content_square" v-for="(item, index) in voteForm.voteOptionArray">
-                        <el-row style="margin-top: 30px">
-                            <el-col class="el-row-h40" :span="8">
-                                    <el-form-item label="选项1：" label-width="25%" label-position="left" style="margin:0;">
+                        <div class="cv_content_square" v-for="(item, index) in voteForm.voteOptionArray">
+                            <el-row style="margin-top: 30px">
+                                <el-col class="el-row-h40" :span="8">
+                                        <el-form-item label="选项：" label-width="25%" label-position="left" style="margin:0;">
+                                            <el-input
+                                            clearable
+                                            v-model="item.voteOptionName"
+                                            type="text"
+                                            auto-complete="off"
+                                            :disabled= "true"
+                                            ></el-input>
+                                        </el-form-item>
+                                </el-col>
+                                <el-col :span="6" :offset="1">
+                                    <el-form-item label="人数：" label-width="25%" style="margin:0;">
+                                        <el-input 
+                                        v-model="item.voteOptionCount" 
+                                        type="text"
+                                        auto-complete="off"
+                                         ></el-input>
+                                    </el-form-item>
+                                    </el-col>
+                                <el-col :span="2" :offset="1">
+                                    <el-form-item>
                                         <el-input
-                                        clearable
-                                        v-model="item.voteOptionName"
+                                        v-model="item.voteCountRatio"
                                         type="text"
                                         auto-complete="off"
                                         :disabled= "true"
                                         ></el-input>
                                     </el-form-item>
-                            </el-col>
-                            <el-col :span="6" :offset="1">
-                                <el-progress :text-inside="true" :stroke-width="30" :percentage="12"></el-progress>
-                            </el-col>
-                            <el-col :span="4" :offset="1">
-                                <el-button type="primary" style="width: 100%">设置人数</el-button>
-                            </el-col>
-                            
-                        </el-row>
+                                </el-col>
+                                <!-- <el-col :span="4" :offset="1">
+                                    <el-button type="primary" style="width: 100%" @click="editVoteCount(item.voteOptionId, 1)">设置人数</el-button>
+                                </el-col> -->
+                            </el-row>
+                        </div>
                         
-                    </div>
-                        
-                        
-
                     </el-form>
+                    <el-row style="margin-top: 30px">
+                        <el-col class="el-row-h40" :span="3" :offset="8">
+                            <el-button type="primary" style="width: 100%" @click="testSubmit('voteForm')">保存</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="3" :offset="2">
+                            <el-button type="primary" style="width: 100%" @click="closeCreatOrEdit('voteForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
                 </div>
             </div>
+
+
+
+            
         </div>
     </div>
 </body>

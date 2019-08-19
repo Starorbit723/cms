@@ -1,0 +1,37 @@
+<div v-show="showArticleDetail">
+                <div class="cv_content_square">
+                    <el-form :model="articleDetailForm" :rules="articleDetailFormRules" ref="articleDetailForm" label-position="left" status-icon class="demo-ruleForm" label-width="13%" label-position="right">
+                       
+                        <el-row class="el-row-h70">
+                            <el-col :span="6">
+                                <el-form-item label="内容类型" label-width="20%" prop="interactionInfoType" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        v-model="articleDetailForm.interactionInfoType"
+                                        auto-complete="off"
+                                        >
+                                        <template slot="append">限制36个字</template>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="3" :offset="1" class="el-row-h40">
+                                <el-button style="width:100%" @click="startSearch(0)">选择文章</el-button>
+                            </el-col>
+                            <el-col :span="3" :offset="1" class="el-row-h40">
+                                <el-button style="width:100%" @click="startSearch(0)">确定</el-button>
+                            </el-col>
+                            
+                        </el-row>
+                    </el-form>
+                    
+                    <el-row style="margin-top: 30px">
+                        <el-col class="el-row-h40" :span="2">
+                            <el-button type="primary" style="width: 100%" @click="testSubmit('interactionForm')">保存</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="2" :offset="1">
+                            <el-button type="primary" style="width: 100%" @click="closeCreatOrEdit('interactionForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </div>
+            </div>
