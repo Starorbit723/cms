@@ -519,7 +519,7 @@ var vm = new Vue({
         //搜索封面图库
         searchCoverImg (type){
             var self = this
-            var data = JSON.parse(JSON.stringify(self.searchContentImgForm))
+            var data = JSON.parse(JSON.stringify(self.searchCoverimgForm))
             data.picTitle = data.picTitle.trim()
             if (type == 0) {
                 Object.assign(data,{
@@ -574,7 +574,7 @@ var vm = new Vue({
         //搜索内容图库
         searchContentImg(type){
             var self = this
-            var data = JSON.parse(JSON.stringify(self.searchCoverimgForm))
+            var data = JSON.parse(JSON.stringify(self.searchContentImgForm))
             data.picTitle = data.picTitle.trim()
             if (type == 0) {
                 Object.assign(data,{
@@ -674,9 +674,6 @@ var vm = new Vue({
 			    success: function(res){
 					if(res.code == 200){
                         self.calendarTableData = res.page.list
-                        for (let i = 0; i < self.calendarTableData.length; i++){
-                            self.calendarTableData[i].agendaCrtTime = self.transformTime(parseInt(self.calendarTableData[i].agendaCrtTime))
-                        }
                         self.pagination3 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
