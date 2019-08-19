@@ -22,7 +22,6 @@ var vm = new Vue({
             showChildList: false,
             showDetailPage: false,
             creatOrEdit: 0, //0新建  1修改
-            // editVoteOptCount: 0, // 0新建  1修改
             timeRange:[],
             searchForm: {
                 voteMeetingId: '',
@@ -80,7 +79,6 @@ var vm = new Vue({
     },
     watch: {
         timeRange (val) {
-            console.log(val)
             if (val) {
                 this.searchForm.startTime = val[0]
                 this.searchForm.endTime = val[1]
@@ -88,7 +86,6 @@ var vm = new Vue({
                 this.searchForm.startTime = ''
                 this.searchForm.endTime = ''
             }
-            console.log(this.searchForm)
         }
     },
     created() {
@@ -105,10 +102,9 @@ var vm = new Vue({
         },
         // 添加选项
         addOptions() {
-            console.log(11111)
             let len = this.voteForm.voteOptionArray.length
-            console.log(len)
-            console.log(this.voteForm)
+            // console.log(len)
+            // console.log(this.voteForm)
             if(this.voteForm.voteOptionArray[len-1].voteOptionName.trim() !== '') {
                 this.voteForm.voteOptionArray.push({
                     voteOptionId: '',//选项编号
@@ -186,16 +182,15 @@ var vm = new Vue({
         },
         submitCreatEdit() {
             var self = this
-            console.log(self.voteForm)
+            // console.log(self.voteForm)
             var data = JSON.parse(JSON.stringify(self.voteForm))
             data.voteStatus = '0'
-            console.log(data)
             data.voteId = data.voteId.toString()
             for(let i = 0; i < data.voteOptionArray.length; i++) {
                 data.voteOptionArray[i].voteOptionId = data.voteOptionArray[i].voteOptionId.toString()
             }
-            console.log(JSON.stringify(data))
-            console.log('准备提交保存的FORM', data)
+            // console.log(JSON.stringify(data))
+            // console.log('准备提交保存的FORM', data)
             if (self.creatOrEdit == 0) {
                 var reqUrl = '/vote/save'
             } else if (self.creatOrEdit == 1) {
@@ -210,7 +205,6 @@ var vm = new Vue({
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
-                    console.log(res)
                     if(res.code == 200) {
                         self.$message.success('保存成功')
                         self.startSearch()
@@ -270,7 +264,6 @@ var vm = new Vue({
         startSearch(type) {
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
-            console.log(data)
             data.voteMeetingId = data.voteMeetingId.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
@@ -290,7 +283,6 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
-                    console.log(res)
                     if(res.code == 200) {
                         self.tableData = res.page.list
                         self.pagination1 = {
@@ -326,7 +318,6 @@ var vm = new Vue({
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res) {
-                        console.log(res)
                         if(res.code == 200) {
                             let data = res.dict
                             self.voteForm = data
@@ -349,32 +340,29 @@ var vm = new Vue({
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res) {
-                        console.log(res)
                         if(res.code == 200) {
                             let data = res.dict
-                            console.log(data)
                             var sum = 0
                             for(let i = 0; i < data.voteOptionArray.length; i++) {
                                 var str = data.voteOptionArray[i].voteOptionCount
                                 sum = sum + Number(str)
                             }
-                            console.log(sum)
                             self.voteForm = data
                             self.voteForm.totalVoteCount = sum
                             var sum1 = 0
-                            console.log(data.voteOptionArray.length)
+                            // console.log(data.voteOptionArray.length)
                             for(let i = 0; i < data.voteOptionArray.length; i++) {
                                 if(i == data.voteOptionArray.length-1) {
                                     self.voteForm.voteOptionArray[data.voteOptionArray.length-1].voteCountRatio = (100 - sum1)+ "%"
-                                    console.log(self.voteForm.voteOptionArray[data.voteOptionArray.length-1].voteCountRatio)
+                                    // console.log(self.voteForm.voteOptionArray[data.voteOptionArray.length-1].voteCountRatio)
                                     
                                 } else {
                                     var str = data.voteOptionArray[i].voteOptionCount
                                 var rat1 = parseInt(Number(str)/sum*100)
                                 self.voteForm.voteOptionArray[i].voteCountRatio = rat1+"%"
-                                console.log(rat1)
+                                // console.log(rat1)
                                 sum1 = sum1 + rat1
-                                console.log(sum1)
+                                // console.log(sum1)
                                 }
                                 
                             }
@@ -393,43 +381,9 @@ var vm = new Vue({
                 
             }
         },
-
-        //修改人数
-        // editVoteCount(item, type) { 
-        //     var self = this
-        //     self.editVoteOptCount = type
-        //     console.log(item)
-        //     console.log(self.editVoteOptCount)
-        //     $.ajax({
-        //         type: "POST",
-        //         url: "/voteOption/info/"+item.toString(),
-        //         contentType: "application/json",
-        //         dataType: "json",
-        //         success: function(res) {
-        //             console.log(res)
-        //             if(res.code == 200) {
-                        
-        //                 // input.disabled = false;
-        //                 // let data = res.dict
-        //                 // self.voteForm = data
-        //                 // self.showVoteList = false
-        //                 // self.showDetailPage = true
-        //             } else {
-        //                 mapErrorStatus(res)
-        //                 vm.error = true;
-        //                 vm.errorMsg = res.msg;
-        //             }
-        //         },
-        //         error: function(res) {
-        //             mapErrorStatus(res)
-        //         }
-        //     }) 
-
-            
-        // },
         //删除
         deleteThisVote(item) {
-            console.log(item)
+            // console.log(item)
             var self = this
             self.$confirm('确实要删除该投票数据吗？', '提示', {
                 confirmButtonText: '确定',
@@ -439,7 +393,7 @@ var vm = new Vue({
                 var data = JSON.parse(JSON.stringify(item))
                 data.voteStatus = "1"
                 data.voteOptionArray.voteOptionStatus = "1"
-                console.log(JSON.stringify(data))
+                // console.log(JSON.stringify(data))
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
@@ -448,7 +402,6 @@ var vm = new Vue({
                     dataType: "json",
                     success: function(res) {
                         if(res.code == 200) {
-                            console.log(res)
                             self.startSearch()
                             self.$message.success('删除成功')
                         } else {
@@ -467,7 +420,6 @@ var vm = new Vue({
         checkVoteDetail(item){
             this.showVoteList = false,
             this.showDetailPage = true;
-            console.log(item)
             data = {
                 voteId: data.voteId.toString(),
             }

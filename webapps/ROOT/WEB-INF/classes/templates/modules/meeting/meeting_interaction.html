@@ -181,13 +181,7 @@
                         <el-row class="el-row-h70">
                             <el-col :span="6">
                                 <el-form-item label="内容类型" label-width="40%" prop="interactionInfoType" style="margin:0;">
-                                    <!-- <el-input
-                                        clearable
-                                        type="text"
-                                        v-model="articleDetailForm.interactionInfoType"
-                                        auto-complete="off"
-                                        >
-                                    </el-input> -->
+                                 
                                     <el-select v-model="articleDetailForm.interactionInfoType">
                                         <el-option
                                         v-for="item in options"
@@ -248,20 +242,11 @@
                         <el-row class="el-row-h70">
                             <el-col :span="10">
                                 <el-form-item label="上传图片" label-width="20%" prop="interactionInfoImg" style="margin:0;">
-                                    <!-- <el-input
-                                        clearable
-                                        type="text"
-                                        v-model="articleDetailForm.interactionInfoImg"
-                                        auto-complete="off"
-                                        >
-                                    </el-input> -->
+                                    
                                     <div class="fengmian_show" @click="chooseContentImg">
                                         <img v-if="articleDetailForm.interactionInfoImg" :src="articleDetailForm.interactionInfoImg" class="avatar">
                                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                                     </div>
-                                    <!-- <template v-if="scope.row.interactionInfoImg" slot-scope="scope">
-                                        <img style="width:80px;height:60px;" :src="scope.row.interactionInfoImg">
-                                    </template> -->
                                 </el-form-item>
                             </el-col>
                             <el-col :span="4">

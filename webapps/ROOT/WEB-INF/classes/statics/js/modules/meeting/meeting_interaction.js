@@ -155,7 +155,7 @@ var vm = new Vue({
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.interactionMeetingId = data.interactionMeetingId.toString().trim()
-            console.log(data)
+            // console.log(data)
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -174,7 +174,7 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
-                    console.log(res)
+                    // console.log(res)
                     if(res.code == 200) {
                         self.tableData = res.page.list
                         self.pagination1 = {
@@ -215,7 +215,7 @@ var vm = new Vue({
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res){
-                        console.log(res)
+                        // console.log(res)
                         if(res.code == 200){
                             let data = res.dict
                             self.interactionForm = data
@@ -253,7 +253,6 @@ var vm = new Vue({
                             data: JSON.stringify(data),
                             dataType: "json",
                             success: function(res) {
-                                console.log(res)
                                 if(res.code == 200) {
                                    self.submitCreatEdit()
                                    self.showHdPage = false
@@ -278,7 +277,7 @@ var vm = new Vue({
         submitCreatEdit() {
             var self = this
             var data = JSON.parse(JSON.stringify(self.interactionForm))
-            console.log('准备提交保存的FORM', data)
+            // console.log('准备提交保存的FORM', data)
             if (self.creatOrEdit == 0) {
                 var reqUrl = '/interaction/save'
             } else if (self.creatOrEdit == 1) {
@@ -291,7 +290,6 @@ var vm = new Vue({
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
-                    console.log(res)
                     if(res.code == 200) {
                         self.$message.success('保存成功')
                         self.startSearch()
@@ -327,7 +325,6 @@ var vm = new Vue({
         },
          //删除问答条目
          deleteThisInteraction(item) {
-            console.log(item)
             var self = this
             self.$confirm('确实要删除该投票数据吗？', '提示', {
                 confirmButtonText: '确定',
@@ -335,9 +332,8 @@ var vm = new Vue({
                 type: 'warning'
             }).then(() => {
                 var data = JSON.parse(JSON.stringify(item))
-                console.log(data)
                 data.interactionStatus = "1"
-                console.log(JSON.stringify(data))
+                // console.log(JSON.stringify(data))
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
@@ -346,7 +342,6 @@ var vm = new Vue({
                     dataType: "json",
                     success: function(res) {
                         if(res.code == 200) {
-                            console.log(res)
                             self.startSearch()
                             self.$message.success('删除成功')
                         } else {
@@ -385,20 +380,8 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
-                    console.log(res)
                     if(res.code == 200) {
                         self.diagramTableData = res.page.list
-                        // for(var i = 0; i < self.diagramTableData.length; i++) {
-                        //     if(self.diagramTableData[i].interactionInfoType == '0') {
-                        //         self.diagramTableData[i].interactionInfoType == "文章"
-                        //     }
-                        // }
-                        console.log(self.diagramTableData)
-                        // for(var i = 0; i < self.diagramTableData.length; i++) {
-                        //     if(self.diagramTableData[i].interactionInfoType == '0') {
-                        //         self.diagramTableData[i].interactionInfoType == '文章'
-                        //     }
-                        // }
                         self.pagination2 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
@@ -415,7 +398,6 @@ var vm = new Vue({
         },
         //新建文章具体内容
         createOrEditArticles(type,item){
-            console.log(item)
             var self = this
             self.creatOrEditArticle = type
             if(type == 0) {
@@ -428,7 +410,6 @@ var vm = new Vue({
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res){
-                        console.log(res)
                         if(res.code == 200){
                             let data = res.dict
                             self.articleDetailForm = data
@@ -485,7 +466,6 @@ var vm = new Vue({
         },
         // 权重发生改变时调整顺序
         scaleChange (item) {
-            console.log(item)
             if(item < -1) {
                 this.$message.error('权重最低为-1')
             } else if (item.trim() == ''){
@@ -526,10 +506,8 @@ var vm = new Vue({
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res){
-                    // console.log(res)
                     if(res.code == 200){
                         self.contentArticleTableData = res.page.list
-                        // console.log(self.contentArticleTableData)
                         for (let i = 0; i < self.tableData.length; i++){
                             self.contentArticleTableData[i].newsReleaseTime = self.transformTime(self.contentArticleTableData[i].newsReleaseTime)
                         }
@@ -553,7 +531,6 @@ var vm = new Vue({
         //选择了某一篇文章
         addThisContentArticles (item) {
             var self = this
-            console.log(item)
             var data = [{
                 interactionId: self.diaId.toString(),
                 interactionInfoId: '',
@@ -565,7 +542,6 @@ var vm = new Vue({
                 interactionInfoPriority:'-1'
             }]
             self.articleDetailForm = data[0]
-            // console.log(data)
             self.showContentLib = false
             self.showArticleDetail = true
         },
@@ -584,7 +560,6 @@ var vm = new Vue({
             var dataArr = []
             dataArr.push(self.articleDetailForm)
             var data = JSON.parse(JSON.stringify(dataArr))
-            console.log(JSON.stringify(data))
             // console.log('准备提交保存的FORM', data)
             if (self.creatOrEditArticle == 0) {
                 var reqUrl = '/interactionInfo/save'
@@ -598,7 +573,6 @@ var vm = new Vue({
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
-                    console.log(res)
                     if(res.code == 200) {
                         self.$message.success('保存成功')
                         self.startSearch2(self.diaId)
@@ -640,7 +614,6 @@ var vm = new Vue({
         },
         //删除文章列表单项
         deleteThisDiaDetail(item){
-            console.log(item)
             var self = this 
             self.$confirm('确实要删除该图片吗？', '提示',{
                 confirmButtonText: '确定',
@@ -650,13 +623,10 @@ var vm = new Vue({
                 var arr = []
                 arr.push(item)
                 var data = JSON.parse(JSON.stringify(arr))
-                // console.log(arr)
-                // data[0].interactionInfoId = data[0].interactionInfoId.toString()
-                // data[0].interactionInfoStatus = "1"
                 data[0].interactionInfoId = data[0].interactionInfoId.toString()
                 data[0].interactionId = data[0].interactionId.toString()
                 data[0].interactionInfoStatus = '1'
-                console.log(JSON.stringify(data))
+                // console.log(JSON.stringify(data))
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
@@ -664,9 +634,7 @@ var vm = new Vue({
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res) {
-                        console.log(res)
                         if(res.code == 200) {
-                            console.log(res)
                             self.startSearch2(self.diaId)
                             self.$message.success('删除成功')
                         } else {
@@ -681,16 +649,10 @@ var vm = new Vue({
 
                 })
             })
-
-
         },
-
-
-
          //修改某一张内容图片
          chooseContentImg () {
             this.showContentImgLib = true
-            console.log(this.showContentImgLib)
             this.searchContentImg(0)
         },
          //搜索内容图库
@@ -756,11 +718,6 @@ var vm = new Vue({
                 pageSize:10
             }
         },
-
-
-
-
-       
         //时间格式转换工具
         transformTime (timestamp = +new Date()) {
             if (timestamp) {

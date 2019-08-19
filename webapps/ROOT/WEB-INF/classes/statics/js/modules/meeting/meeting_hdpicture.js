@@ -104,12 +104,6 @@ var vm = new Vue({
         // 保存图片
         submitForm(){
             var self = this
-            console.log(self.diagramTableData)
-            // for(var i = 0; i < self.diagramTableData.length; i++) {
-            //     if(Number(self.diagramTableData[i].diagramInfoPriority) < -1 || self.diagramTableData[i].diagramInfoPriority.trim() == '' || parseFloat(self.diagramTableData[i].diagramInfoPriority).toString() == "NaN" ) {
-            //         self.$message.error('权重填写不正确')
-            //     } 
-            // }
             var data = JSON.parse(JSON.stringify(self.diagramTableData))
             for(var i = 0; i < self.diagramTableData.length; i++) {
                 self.diagramTableData[i].diagramInfoId = self.diagramTableData[i].diagramInfoId.toString()
@@ -138,7 +132,6 @@ var vm = new Vue({
         },
         // 权重发生改变时调整顺序
         scaleChange (item) {
-            console.log(item)
             if(item < -1) {
                 this.$message.error('权重最低为-1')
             } else if (item.trim() == ''){
@@ -147,12 +140,6 @@ var vm = new Vue({
                 this.$message.error('权重值不能为非数字')
             }
         },
-       
-        // 图片列表页面变化
-        // handleCurrentChange3 (val) {
-        //     this.pagination2.currPage = val
-        //     this.startSearch2(self.diaId)
-        // },
          //内容图页面变化
          handleCurrentChange2 (val) {
             this.pagination2.currPage = val
@@ -161,7 +148,7 @@ var vm = new Vue({
         //修改某一张内容图片
         chooseContentImg () {
             this.showContentImgLib = true
-            console.log(this.showContentImgLib)
+            // console.log(this.showContentImgLib)
             this.searchContentImg(0)
         },
         //搜索内容图库
@@ -209,7 +196,7 @@ var vm = new Vue({
         //选择了某一张封面图片
         addThisContentImg (item) {
             var self = this
-            console.log(item)
+            // console.log(item)
             var data = [{
                 diagramId: self.diaId.toString(),
                 diagramInfoPriority: '-1',
@@ -218,7 +205,7 @@ var vm = new Vue({
                 diagramInfoCrtTime: item.picCrtTime,
                 diagramInfoStatus: "0"
             }]
-            console.log(data.diagramId)
+            // console.log(data.diagramId)
             self.diagramTableData.push({
                 diagramId: self.diaId,
                 diagramInfoPriority: '-1',
@@ -227,13 +214,10 @@ var vm = new Vue({
                 diagramInfoCrtTime: item.picCrtTime,
                 diagramInfoStatus: "0"
             })
-            console.log(self.diagramTableData)
-            console.log(data)
             self.saveTable(data)
             self.startSearch2(self.diaId)
             self.showContentImgLib = false
             self.showDetailPage = true
-            console.log(self.showDetailPage)
         },
         //返回编辑页
         backToEdit2 (){
@@ -254,14 +238,11 @@ var vm = new Vue({
         },
         //多选批量
         handleSelectionChange (val) {
-            console.log(val)
             this.multipleSelection = val;
         },
         // // 批量添加图片至列表
         batchAddDia() {
             var self = this
-            console.log(self.multipleSelection)
-            console.log(self.diaId)
             var len = self.multipleSelection.length
             for(i=0; i < len; i++) {
                 this.diagramTableData.push({
@@ -275,12 +256,12 @@ var vm = new Vue({
             }
             
             var data = this.diagramTableData.slice(-len)
-            console.log(data)
+            // console.log(data)
             self.saveTable(data)
             self.startSearch2(self.diaId)
             self.showContentImgLib = false
             self.showDetailPage = true
-            console.log(self.diagramTableData)
+            // console.log(self.diagramTableData)
         },
         // 关闭高清组图列表页面
         closeDiaTable() {
@@ -292,9 +273,6 @@ var vm = new Vue({
         saveTable(data1){
             var self = this
             var data = JSON.parse(JSON.stringify(data1))
-           
-            console.log(data)
-            console.log(JSON.stringify(data))
             $.ajax({
                 type: "POST",
                 url: "/diagramInfo/save",
@@ -302,7 +280,6 @@ var vm = new Vue({
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
-                    console.log(res)
                     if(res.code == 200) {
                         self.$message.success('保存成功')
                         self.startSearch2(self.diaId)
@@ -335,7 +312,6 @@ var vm = new Vue({
                 diagramInfoStatus: '0'
             }
             var data = JSON.parse(JSON.stringify(data1))
-            console.log(data)
             $.ajax({
                 type: "POST",
                 url: "/diagramInfo/list",
@@ -343,7 +319,6 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
-                    console.log(res)
                     if(res.code == 200) {
                         self.diagramTableData = res.page.list
                         self.pagination2 = {
@@ -366,7 +341,6 @@ var vm = new Vue({
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.diagramMeetingId = data.diagramMeetingId.toString().trim()
-            console.log(data)
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -425,7 +399,6 @@ var vm = new Vue({
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res){
-                        console.log(res)
                         if(res.code == 200){
                             let data = res.dict
                             self.diagramForm = data
@@ -463,7 +436,6 @@ var vm = new Vue({
                             data: JSON.stringify(data),
                             dataType: "json",
                             success: function(res) {
-                                console.log(res)
                                 if(res.code == 200) {
                                    self.submitCreatEdit()
                                 } else {
@@ -487,7 +459,7 @@ var vm = new Vue({
         submitCreatEdit() {
             var self = this
             var data = JSON.parse(JSON.stringify(self.diagramForm))
-            console.log('准备提交保存的FORM', data)
+            // console.log('准备提交保存的FORM', data)
             if (self.creatOrEdit == 0) {
                 var reqUrl = '/diagram/save'
             } else if (self.creatOrEdit == 1) {
@@ -500,7 +472,6 @@ var vm = new Vue({
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
-                    console.log(res)
                     if(res.code == 200) {
                         self.$message.success('保存成功')
                         self.startSearch()
@@ -537,7 +508,6 @@ var vm = new Vue({
         
         //删除高清组图列表单项
         deleteThisDiaDetail(item){
-            console.log(item)
             var self = this 
             self.$confirm('确实要删除该图片吗？', '提示',{
                 confirmButtonText: '确定',
@@ -547,10 +517,8 @@ var vm = new Vue({
                 var arr = []
                 arr.push(item)
                 var data = JSON.parse(JSON.stringify(arr))
-                console.log(arr)
                 data[0].diagramInfoId = data[0].diagramInfoId.toString()
                 data[0].diagramInfoStatus = "1"
-                console.log(JSON.stringify(data))
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
@@ -558,9 +526,7 @@ var vm = new Vue({
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res) {
-                        console.log(res)
                         if(res.code == 200) {
-                            console.log(res)
                             self.startSearch2(self.diaId)
                             self.$message.success('删除成功')
                         } else {
@@ -580,7 +546,6 @@ var vm = new Vue({
         },
         //删除
         deleteThisDiagram(item) {
-            console.log(item)
             var self = this
             self.$confirm('确实要删除该投票数据吗？', '提示', {
                 confirmButtonText: '确定',
@@ -588,9 +553,7 @@ var vm = new Vue({
                 type: 'warning'
             }).then(() => {
                 var data = JSON.parse(JSON.stringify(item))
-                console.log(data)
                 data.diagramStatus = "1"
-                console.log(JSON.stringify(data))
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
@@ -599,7 +562,6 @@ var vm = new Vue({
                     dataType: "json",
                     success: function(res) {
                         if(res.code == 200) {
-                            console.log(res)
                             self.startSearch()
                             self.$message.success('删除成功')
                         } else {
