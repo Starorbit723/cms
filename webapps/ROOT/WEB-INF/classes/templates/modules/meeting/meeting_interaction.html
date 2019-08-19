@@ -1,1 +1,463 @@
-会议互动
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+
+<title>高清组图管理</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">文章问答管理 > 新建/编辑文章问答</div>
+    <div id="meeting_hdpicture" class="cv_page_content">
+        <div class="cv_content_square">
+            <!------------------列表开始------------------>
+            <div v-show="showInteractionPage">
+                <el-form :model="searchForm" status-icon class="demo-ruleForm" style="width: 100%"  @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="7">
+                            <el-form-item label="所属会议详情编号" label-width="50%" style="margin:0;">
+                                <el-input
+                                clearable
+                                v-model="searchForm.interactionMeetingId"
+                                placeholder="输入编号"
+                                type="text"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="互动标题" label-width="25%" style="margin:0;">
+                                <el-input
+                                clearable
+                                v-model="searchForm.interactionTitle"
+                                placeholder="输入互动标题"
+                                type="text"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" @click="startSearch(0)">搜索</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <!--功能按钮区-->
+                <el-row class="el-row-h50">
+                    <el-col :span="4">
+                        <el-button type="primary" type="primary"  plain icon="el-icon-plus" style="width:100%" @click="addOrEditPic(0)">新建文章问答</el-button>
+                    </el-col>
+                </el-row>
+                <!--表格查询结果区-->
+                <div class="cv_content_square">
+                    <el-table :data="tableData" style="width: 100%; margin: 10px auto;" stripe>
+                        <el-table-column prop="interactionMeetingId" width="160" label="会议详情编号"></el-table-column>
+                        <el-table-column prop="interactionTitle"  label="互动标题"></el-table-column>
+                        <el-table-column prop="interactionCrtTime" width="180" label="创建时间"></el-table-column>
+                        <el-table-column prop="userName" label="创建人" width="200"></el-table-column>
+                        <el-table-column label="操作" width="180" fixed="right">
+                            <template slot-scope="scope">
+                                <el-button type="text" size="small" @click="addOrEditPic(1,scope.row)">属性</el-button>
+                                <el-button type="text" size="small" @click="EditDetailList(scope.row)">编辑</el-button>
+                                <el-button type="text" size="small" @click="deleteThisInteraction(scope.row)">删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+                <!--分页器-->
+                <div class="cv_page_zone">
+                    <el-pagination
+                        @current-change="handleCurrentChange"
+                        :current-page="pagination1.currPage"
+                        :page-size="pagination1.pageSize"
+                        layout="total, prev, pager, next, jumper"
+                        :total="pagination1.totalCount">
+                    </el-pagination>
+                </div>
+            </div>
+
+
+            <!------------------列表结束------------------>
+            <!------------------新建高清组图开始------------------>
+            <div v-show="showHdPage">
+                <div class="cv_content_square">
+                    <el-form :model="interactionForm" :rules="interactionFormRules" ref="interactionForm" label-position="left" status-icon class="demo-ruleForm" label-width="13%" label-position="right">
+                       
+                        <el-row class="el-row-h70">
+                            <el-col :span="18">
+                                <el-form-item label="文章问答名称" label-width="20%" prop="interactionTitle" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="36"
+                                        placeholder="文章问答名称"
+                                        v-model="interactionForm.interactionTitle"
+                                        auto-complete="off"
+                                        >
+                                        <template slot="append">限制36个字</template>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                    
+                    <el-row style="margin-top: 30px">
+                        <el-col class="el-row-h40" :span="3" :offset="8">
+                            <el-button type="primary" style="width: 100%" @click="testSubmit('interactionForm')">保存</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="3" :offset="2">
+                            <el-button type="primary" style="width: 100%" @click="closeCreatOrEdit('interactionForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </div>
+            </div>
+            <!------------------新建高清组图结束------------------>
+            
+            <!-- 高清组图列表开始 -->
+            <div v-show="showDetailPage">
+                <div class="cv_content_square">
+                    <el-row class="el-row-h50">
+                        <el-col class="el-row-h40" :span="3">
+                            <el-button type="primary" plain icon="el-icon-plus" style="width: 100%" @click="createOrEditArticles(0)">新建内容</el-button>
+                        </el-col>
+                    </el-row>
+                    <el-table :data="diagramTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="contentImgTableData" stripe>
+                        <el-table-column prop="interactionInfoPriority" label="权重" width="150">
+                            <template slot-scope="scope">
+                                <el-input
+                                v-model="scope.row.interactionInfoPriority"
+                                class="scaleText"
+                                type="text"
+                                auto-complete="off"
+                                @input="scaleChange(scope.row.interactionInfoPriority)"></el-input>
+                            </template>
+                            
+                        </el-table-column>
+                        <el-table-column prop="interactionInfoImg" label="图片" width="180">
+                            <template v-if="scope.row.interactionInfoImg" slot-scope="scope">
+                                <img style="width:80px;height:60px;" :src="scope.row.interactionInfoImg">
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="interactionInfoTitle" label="标题" ></el-table-column>
+                        <el-table-column prop="interactionInfoType" label="类型" >
+                            <template slot-scope="scope">
+                                <el-tag v-if="scope.row.interactionInfoType == 0">文章</el-tag>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="interactionInfoCrtTime" label="创建时间" width="200"></el-table-column>
+                        
+                        <el-table-column label="操作" width="150" fixed="right">
+                            <template slot-scope="scope">
+                                <el-button type="text" size="small" @click="createOrEditArticles(1,scope.row)">编辑</el-button>
+                                <el-button type="text" size="small" @click="deleteThisDiaDetail(scope.row)">删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                   
+                </div>
+                <!-- <div class="cv_page_zone">
+                    <el-pagination
+                        :current-page="pagination2.currPage"
+                        :page-size="pagination2.pageSize"
+                        layout="total, prev, pager, next, jumper"
+                        :total="pagination2.totalCount">
+                    </el-pagination>
+                </div> -->
+                <el-row style="margin-top: 30px">
+                    
+                    <el-col class="el-row-h40" :span="3" :offset="8">
+                        <el-button type="primary" style="width: 100%"  @click.native="submitForm">保存</el-button>
+                    </el-col>
+                    <el-col class="el-row-h40" :span="3" :offset="2">
+                        <el-button type="primary" style="width: 100%" @click="closeInteractionTable()">取消</el-button>
+                    </el-col>
+                </el-row>
+            </div>
+            <!-- 高清组图列表结束 -->
+
+
+            <!------------------文章问答列表详情开始------------------>
+            <div v-show="showArticleDetail">
+                <div class="cv_content_square">
+                    <el-form :model="articleDetailForm" :rules="articleDetailFormRules" ref="articleDetailForm" label-position="left" status-icon class="demo-ruleForm" label-width="13%" label-position="right">
+                       
+                        <el-row class="el-row-h70">
+                            <el-col :span="6">
+                                <el-form-item label="内容类型" label-width="40%" prop="interactionInfoType" style="margin:0;">
+                                    <!-- <el-input
+                                        clearable
+                                        type="text"
+                                        v-model="articleDetailForm.interactionInfoType"
+                                        auto-complete="off"
+                                        >
+                                    </el-input> -->
+                                    <el-select v-model="articleDetailForm.interactionInfoType">
+                                        <el-option
+                                        v-for="item in options"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                      
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="3" :offset="2" class="el-row-h40">
+                                <el-button type="primary" style="width:100%" @click="chooseArticles(0)">选择文章</el-button>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="18">
+                                <el-form-item label="标题" label-width="20%" prop="interactionInfoTitle" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        v-model="articleDetailForm.interactionInfoTitle"
+                                        auto-complete="off"
+                                        >
+                                        <template slot="append">限制36个字</template>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="18">
+                                <el-form-item label="摘要" label-width="20%" prop="interactionInfoAbstract" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="textarea"
+                                        v-model="articleDetailForm.interactionInfoAbstract"
+                                        auto-complete="off"
+                                        >
+                                        <template slot="append">限制50个字</template>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="18">
+                                <el-form-item label="标签" label-width="20%" prop="interactionInfoLabel" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        v-model="articleDetailForm.interactionInfoLabel"
+                                        auto-complete="off"
+                                        >
+                                        <template slot="append">限制10个字</template>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="10">
+                                <el-form-item label="上传图片" label-width="20%" prop="interactionInfoImg" style="margin:0;">
+                                    <!-- <el-input
+                                        clearable
+                                        type="text"
+                                        v-model="articleDetailForm.interactionInfoImg"
+                                        auto-complete="off"
+                                        >
+                                    </el-input> -->
+                                    <div class="fengmian_show" @click="chooseContentImg">
+                                        <img v-if="articleDetailForm.interactionInfoImg" :src="articleDetailForm.interactionInfoImg" class="avatar">
+                                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                    </div>
+                                    <!-- <template v-if="scope.row.interactionInfoImg" slot-scope="scope">
+                                        <img style="width:80px;height:60px;" :src="scope.row.interactionInfoImg">
+                                    </template> -->
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="4">
+                                <div style="line-height: 26px; font-size:12px; color:#666;">只支持JPG、PNG格式</div>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                    
+                    <el-row style="margin-top: 30px">
+                        <el-col class="el-row-h40" :span="3" :offset="8">
+                            <el-button type="primary" style="width: 100%" @click="saveArticles('articleDetailForm')">保存</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="3" :offset="2">
+                            <el-button type="primary" style="width: 100%" @click="closeArticles('articleDetailForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </div>
+            </div>
+           
+            <!------------------文章问答列表详情结束------------------>
+             <el-dialog title="文章列表" :visible.sync="showContentLib" width="100%" :fullscreen="true" :show-close="false" >
+                <el-form :model="searchContentForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="12">
+                            <el-form-item label="文章名称" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchContentForm.newsTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchArticles(0)">搜索</el-button>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" @click="backToEdit2()">返回</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <el-table :data="contentArticleTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="contentImgTableData" stripe>
+                    
+                    <el-table-column prop="newsHeadPic" label="封面" width="140">
+                        <template v-if="scope.row.newsHeadPic" slot-scope="scope">
+                            <img style="width:100px;height:70px;" :src="scope.row.newsHeadPic">
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="newsTitle" label="标题" width="280">
+                        <template v-if="scope.row.newsTitle" slot-scope="scope">
+                            <div v-text="scope.row.newsTitle" @click="openUrlArticlePage(scope.row.newsUrl)"></div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="channelTitle" label="频道" width="90"></el-table-column>
+                    <el-table-column prop="newsReleaseTime" label="发布时间" width="95"></el-table-column>
+                    <el-table-column prop="newsAuthor" label="作者"></el-table-column>
+                    <el-table-column prop="userName" label="发布人"></el-table-column>
+                    <el-table-column prop="newsCount" label="阅读量">
+                        <template slot-scope="scope">
+                            <div v-if="scope.row.newsCount == ''">0</div>
+                            <div v-if="scope.row.newsCount !== ''">{{scope.row.newsCount}}</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="100" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="addThisContentArticles(scope.row)">添加</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="cv_page_zone">
+                    <el-pagination
+                        @current-change="handleCurrentChange2"
+                        :current-page="pagination2.currPage"
+                        :page-size="pagination2.pageSize"
+                        layout="total, prev, pager, next, jumper"
+                        :total="pagination2.totalCount">
+                    </el-pagination>
+                </div>
+            </el-dialog>
+            <!-- 文章库弹出层结束 -->
+
+
+
+            
+            <!--内容图弹出层开始-->
+            <el-dialog title="内容图库" :visible.sync="showContentImgLib" width="100%" :fullscreen="true" :show-close="false" >
+                <el-form :model="searchContentImgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="12">
+                            <el-form-item label="图片名称" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchContentImgForm.picTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchContentImg(0)">搜索</el-button>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                                <el-button type="primary" style="width:100%" icon="el-icon-plus" @click="batchAddDia()">批量添加</el-button>
+                            </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" @click="backToEdit()">返回</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <el-table :data="contentImgTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="contentImgTableData" stripe>
+                    <el-table-column
+                        type="selection"
+                        width="55">
+                    </el-table-column>
+                    <el-table-column prop="picUrl" label="内容图预览" width="180">
+                        <template v-if="scope.row.picUrl" slot-scope="scope">
+                            <img style="width:80px;height:60px;" :src="scope.row.picUrl">
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="picTitle" label="图片名称" width="250"></el-table-column>
+                    <el-table-column prop="picEditorName" label="修改人" width="120"></el-table-column>
+                    <el-table-column prop="picModTime" label="最后更新时间"></el-table-column>
+                    <el-table-column label="操作" width="100" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="addThisContentImg(scope.row)">添加</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="cv_page_zone">
+                    <el-pagination
+                        @current-change="handleCurrentChange2"
+                        :current-page="pagination3.currPage"
+                        :page-size="pagination3.pageSize"
+                        layout="total, prev, pager, next, jumper"
+                        :total="pagination3.totalCount">
+                    </el-pagination>
+                </div>
+            </el-dialog>
+            <!--内容图库弹出层结束-->
+       
+
+
+
+        </div>
+
+
+   
+        
+
+    </div>
+
+</body>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.min.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.base64.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/meeting/meeting_interaction.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+<style>
+.fengmian_show{
+    width: 240px;
+    height: 180px;
+    border-radius: 5px;
+    border: 1px dashed #d9d9d9;
+    text-align: center;
+    cursor: pointer;
+}
+.avatar-uploader .el-upload {
+    width:240px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+    border-color: #175CE9;
+}
+.avatar-uploader-icon {
+    display: inline-block;
+    font-size: 28px;
+    color: #8c939d;
+    width: 110px;
+    height: 110px;
+    line-height: 180px;
+    text-align: center;
+}
+.fengmian_show:hover{
+    border-color: #175CE9;
+}
+.fengmian_show:hover .avatar-uploader-icon{
+    color: #175CE9;
+}
+.avatar {
+    width: 240px;
+    height: 180px;
+    display: block;
+}
+
+
+</style>
+</html>

@@ -25,12 +25,8 @@ var vm = new Vue({
                 diagramStatus: '0' //状态 0正常 1删除
             },
             tableData:[{}],
-
             showDiagramLab: false,
-            
-                
             diagramTableData:[],
-            
             //分页器相关
             pagination1: {
                 currPage: 1,
@@ -84,12 +80,7 @@ var vm = new Vue({
                 totalPage:0,
                 pageSize:10
             },
-
-
-
             //内容图库相关
-            chooseImgObjName:'',
-            chooseImgObjIndex:'',
             showContentImgLib: false,
             searchContentImgForm:{
                 picTitle:'',
@@ -97,9 +88,7 @@ var vm = new Vue({
             },
             multipleSelection:[],
             contentImgTableData:[],
-            
             diaId: '',
-
         }
     },
     watch: {
@@ -157,14 +146,6 @@ var vm = new Vue({
             } else if (parseFloat(item).toString() == "NaN" ) {
                 this.$message.error('权重值不能为非数字')
             }
-            
-            
-            // if (this.meetingGuestForm.meetingGuestJson[index].scale.trim() == '') {
-            //     this.meetingGuestForm.meetingGuestJson[index].scale = '-1'
-            //     this.$message.error('嘉宾显示权重值不能为空')
-            // }
-            // let arrSort = JSON.parse(JSON.stringify(this.meetingGuestForm.meetingGuestJson));
-            // this.meetingGuestForm.meetingGuestJson = arrSort.sort(this.compare('scale'))
         },
        
         // 图片列表页面变化
@@ -237,7 +218,6 @@ var vm = new Vue({
                 diagramInfoCrtTime: item.picCrtTime,
                 diagramInfoStatus: "0"
             }]
-            
             console.log(data.diagramId)
             self.diagramTableData.push({
                 diagramId: self.diaId,
@@ -308,90 +288,6 @@ var vm = new Vue({
             this.showDiagramPage = true
         },
         
-        
-
-        // 弹出组图列表
-        // addDiaPic () {
-        //     this.searchDiaList(0)
-        //     this.showDiaLibDialog = true
-        // },
-        // 搜索组图列表图片
-        // searchDiaList(type) {
-        //     var self = this
-        //     console.log(self)
-        //     var data = self.searchDiagramForm
-        //     // data.diagramId = data.diagramId.trim()
-        //     console.log(JSON.stringify(data))
-        //     if (type == 0) {
-        //         Object.assign(data,{
-        //             page: '1',
-        //             limit: self.pagination3.pageSize.toString()
-        //         })
-        //     } else {
-        //         Object.assign(data,{
-        //             page: self.pagination3.currPage.toString(),
-        //             limit: self.pagination3.pageSize.toString()
-        //         })
-        //     }
-        //     $.ajax({
-        //         type: "POST",
-        //         contentType: "application/json",
-        //         url: "/diagramInfo/list",
-        //         data: JSON.stringify(data),
-        //         dataType: "json",
-        //         success: function(res){
-        //             console.log(res)
-        //             if(res.code == 200) {
-        //                 self.searchDiagramForm.diagramId = ''
-        //                 self.DiaTableData = res.page.list 
-        //                 self.pagination3 = {
-        //                     currPage: res.page.currPage,
-        //                     totalCount:res.page.totalCount,
-        //                     totalPage:res.page.totalPage,
-        //                     pageSize:res.page.pageSize
-        //                 } 
-        //             }else{
-        //                 mapErrorStatus(res)
-        //                 vm.error = true;
-        //                 vm.errorMsg = res.msg;
-        //             }
-                   
-        //         },
-        //         error:function(res){
-        //             mapErrorStatus(res)
-        //         }
-        //     });
-        // },
-        //添加组图图片至本页面
-        // addThisDiagram(item) {
-        //     console.log('单个选择添加某个图片',item)
-        //     this.diagramTableForm.diagramTableData.push({
-        //         diagramInfoPriority: item.diagramInfoPriority,
-        //         diagramId: item.diagramId,
-        //         diagramInfoImg: item.diagramInfoImg,
-        //         diagramInfoTitle: item.diagramInfoTitle,
-        //         diagramInfoCrtTime: item.diagramInfoCrtTime
-        //     })
-        //     console.log(this.diagramTableForm.diagramTableData)
-        //     this.backToEdit()
-        // },
-        //返回编辑页
-        // backToEdit (){
-        //     this.showDiaLibDialog = false
-        //     this.multipleSelection = []
-        //     this.searchDiagramForm = {
-        //         diagramInfoTitle:'',
-        //         diagramInfoStatus:'0'
-        //     }
-        //     this.DiaTableData = []
-        //     this.pagination3 = {
-        //         currPage: 1,
-        //         totalCount:0,
-        //         totalPage:0,
-        //         pageSize:10
-        //     }
-        // },
-         
         // 保存高清组图列表
         saveTable(data1){
             var self = this
