@@ -32,6 +32,7 @@ var vm = new Vue({
             },
             tableData:[{}],
             Vid: '',
+            radioVal: '',
             //分页器相关
             pagination1: {
                 currPage: 1,
@@ -97,7 +98,7 @@ var vm = new Vue({
     methods: {
         // 获取投票类型
         getRadioVal(event){ 
-            var radioVal = event.target.value;
+            this.radioVal = event.target.value;
             this.voteForm.voteType = radioVal
         },
         // 添加选项
@@ -318,9 +319,13 @@ var vm = new Vue({
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res) {
+                        console.log(res)
                         if(res.code == 200) {
                             let data = res.dict
                             self.voteForm = data
+                            // if(self.voteForm.voteType == '观点PK') {
+                                
+                            // }
                             self.showVoteList = false
                             self.showChildList = true
                         } else {
