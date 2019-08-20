@@ -1,22 +1,12 @@
 var vm = new Vue({
     el: '#meeting_rank',
     data () { 
-        var validateId = (rule, value, callback) => {
-            var urlReg = /^[0-9]*[1-9][0-9]*$/;
-            if (value.trim() == '') {
-                callback(new Error('所属会议编号为必填项'));
-            } else if (value !== '' && !urlReg.test(value)) {
-                callback(new Error('所属会议编号只能为正整数'));
-            } else {
-                callback();
-            }
-        }
         return {
             showChildPage:false,
             creatOrEdit:0,//0新建  1修改
             //搜索提交
             searchForm:{
-                meetingRankMeetingId:'',
+                meetingRankTitle:'',
                 meetingRankStatus:'0',
             },
             //列表查询结果
@@ -42,7 +32,8 @@ var vm = new Vue({
             },
             //封面图表单
             rankForm:{
-                meetingRankId:'',//主键  
+                meetingRankId:'',//主键
+                meetingRankTitle:'',//会议榜单标题
                 meetingRankMeetingId:'',//所属会议编号
                 meetingRankCrtUserId:'',//
                 meetingRankModUserId:'',//
@@ -73,8 +64,8 @@ var vm = new Vue({
                 ],
             },
             rankFormRules:{
-                meetingRankMeetingId: [
-                    { required: true, validator: validateId, trigger: 'change' }
+                meetingRankTitle: [
+                    { required: true, message: '榜单标题不能为空', trigger: 'change' }
                 ]
             }
         }
@@ -264,7 +255,7 @@ var vm = new Vue({
         startSearch (type) {
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
-            data.meetingRankMeetingId = data.meetingRankMeetingId.toString().trim()
+            data.meetingRankTitle = data.meetingRankTitle.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -379,41 +370,7 @@ var vm = new Vue({
                             return
                         }
                     }
-                    if (self.creatOrEdit == 0) {
-                        var data = {
-                            meetingRankMeetingId:self.rankForm.meetingRankMeetingId,
-                            meetingRankStatus:'0',
-                            page: '1',
-                            limit: '100'
-                        }
-                        $.ajax({
-                            type: "POST",
-                            url: "/meeting/rank/list",
-                            contentType: "application/json",
-                            data: JSON.stringify(data),
-                            dataType: "json",
-                            success: function(res){
-                                console.log(res)
-                                if(res.code == 200){
-                                    if (res.page.list.length == 0) {
-                                        self.submitCreatEdit()
-                                    } else {
-                                        self.$message.error('该会议数据已存在，不能重复创建')
-                                    }
-                                }else{
-                                    mapErrorStatus(res)
-                                    vm.error = true;
-                                    vm.errorMsg = res.msg;
-                                }
-                            },
-                            error:function(res){
-                                mapErrorStatus(res)
-                            }
-                        });
-                    } else if (self.creatOrEdit == 1){
-                        self.submitCreatEdit()
-                    }
-                    
+                    self.submitCreatEdit() 
                 }
             })
         },

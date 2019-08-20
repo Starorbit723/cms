@@ -241,7 +241,7 @@ var vm = new Vue({
             //展示日程表
             showCalendarLib:false,
             searchCalendarForm:{
-                meetingTitle:''
+                meetingAgendaTitle:''
             },
             calendarTableData:[],
             pagination3: {
@@ -253,7 +253,7 @@ var vm = new Vue({
             //展示嘉宾数据表
             showGuestLib:false,
             searchGuestForm:{
-                meetingTitle:''
+                meetingGuestTitle:''
             },
             guestTableData:[],
             pagination4: {
@@ -299,18 +299,6 @@ var vm = new Vue({
                 totalPage:0,
                 pageSize:10
             },
-            //展示文章问答
-            showArticleQuestionLib:false,
-            searchArticleQuestionForm:{
-                interactionTitle:''
-            },
-            articleQuestionTableData:[],
-            pagination7: {
-                currPage: 1,
-                totalCount:0,
-                totalPage:0,
-                pageSize:10
-            },
             //展示高清组图
             showPictrueGroupLib:false,
             searchPictrueGroupForm:{
@@ -326,7 +314,7 @@ var vm = new Vue({
             //展示合作伙伴
             showCoperationLib:false,
             searchCoperationForm:{
-                meetingTitle:''
+                meetingCooperationTitle:''
             },
             coperationTableData:[],
             pagination9: {
@@ -653,7 +641,7 @@ var vm = new Vue({
         searchCalendar (type){
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchCalendarForm))
-            data.meetingTitle = data.meetingTitle.toString().trim()
+            data.meetingAgendaTitle = data.meetingAgendaTitle.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -728,7 +716,7 @@ var vm = new Vue({
         searchGuest (type){
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchGuestForm))
-            data.meetingTitle = data.meetingTitle.toString().trim()
+            data.meetingGuestTitle = data.meetingGuestTitle.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -1100,7 +1088,7 @@ var vm = new Vue({
         searchCoperation (type){
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchCoperationForm))
-            data.meetingTitle = data.meetingTitle.toString().trim()
+            data.meetingCooperationTitle = data.meetingCooperationTitle.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',

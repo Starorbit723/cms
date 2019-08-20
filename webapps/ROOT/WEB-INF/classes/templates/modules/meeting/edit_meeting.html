@@ -1951,7 +1951,6 @@
         </el-row>
         
 
-
         <!--封面图库弹出层开始-->
         <el-dialog title="封面图库" :visible.sync="showCoverimgLib" width="100%" :fullscreen="true" :show-close="false" >
             <el-form :model="searchCoverimgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
@@ -2051,15 +2050,15 @@
         <!--封面图库弹出层结束-->
 
         <!--日程表弹出层开始-->
-        <el-dialog title="日程列表" :visible.sync="showCalendarLib" width="100%" :fullscreen="true" :show-close="false" >
+        <el-dialog title="会议日程列表" :visible.sync="showCalendarLib" width="100%" :fullscreen="true" :show-close="false" >
             <el-form :model="searchCalendarForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
                 <el-row class="el-row-h60">
                     <el-col :span="16">
-                        <el-form-item label="会议名称" style="margin:0;">
+                        <el-form-item label="会议日程标题" style="margin:0;">
                             <el-input
                             clearable
                             type="text"
-                            v-model="searchCalendarForm.meetingTitle"
+                            v-model="searchCalendarForm.meetingAgendaTitle"
                             auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
@@ -2072,8 +2071,7 @@
                 </el-row>
             </el-form>
             <el-table :data="calendarTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="calendarTableData" stripe>
-                <el-table-column prop="meetingAgendaId" width="110" label="日程编号" ></el-table-column>
-                <el-table-column prop="meetingTitle" label="所属会议名称" ></el-table-column>
+                <el-table-column prop="meetingAgendaTitle" label="会议日程名称" ></el-table-column>
                 <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
                 <el-table-column prop="meetingAgendaCrtTime" label="创建时间" width="200"></el-table-column>
                 <el-table-column label="操作" width="100" fixed="right">
@@ -2096,15 +2094,15 @@
         <!--日程表弹出层结束-->
 
         <!--嘉宾数据表弹出层开始-->
-        <el-dialog title="嘉宾列表" :visible.sync="showGuestLib" width="100%" :fullscreen="true" :show-close="false" >
+        <el-dialog title="会议嘉宾列表" :visible.sync="showGuestLib" width="100%" :fullscreen="true" :show-close="false" >
             <el-form :model="searchGuestForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
                 <el-row class="el-row-h60">
                     <el-col :span="16">
-                        <el-form-item label="会议名称" style="margin:0;">
+                        <el-form-item label="会议嘉宾标题" style="margin:0;">
                             <el-input
                             clearable
                             type="text"
-                            v-model="searchGuestForm.meetingTitle"
+                            v-model="searchGuestForm.meetingGuestTitle"
                             auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
@@ -2117,8 +2115,7 @@
                 </el-row>
             </el-form>
             <el-table :data="guestTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="guestTableData" stripe>
-                <el-table-column prop="meetingGuestId" label="嘉宾编号" width="110"></el-table-column>
-                <el-table-column prop="meetingTitle" label="所属会议名称" width=""></el-table-column>
+                <el-table-column prop="meetingGuestTitle" label="会议嘉宾标题" width=""></el-table-column>
                 <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
                 <el-table-column prop="meetingGuestCrtTime" label="创建时间" width="200"></el-table-column>
                 <el-table-column label="操作" width="100" fixed="right">
@@ -2211,7 +2208,6 @@
                 </el-row>
             </el-form>
             <el-table :data="voteTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="voteTableData" stripe>
-                <el-table-column prop="voteId" width="110" label="投票编号" ></el-table-column>
                 <el-table-column prop="voteTitle" label="投票标题" ></el-table-column>
                 <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
                 <el-table-column prop="voteCrtTime" label="创建时间" width="200"></el-table-column>
@@ -2256,7 +2252,6 @@
                 </el-row>
             </el-form>
             <el-table :data="articleQuestionTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="articleQuestionTableData" stripe>
-                <el-table-column prop="interactionId" width="110" label="文章问答编号" ></el-table-column>
                 <el-table-column prop="interactionTitle" label="文章问答标题" ></el-table-column>
                 <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
                 <el-table-column prop="interactionCrtTime" label="创建时间" width="200"></el-table-column>
@@ -2301,7 +2296,6 @@
                 </el-row>
             </el-form>
             <el-table :data="pictrueGroupTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="pictrueGroupTableData" stripe>
-                <el-table-column prop="diagramId" width="110" label="组图编号" ></el-table-column>
                 <el-table-column prop="diagramTitle" label="文章问答标题" ></el-table-column>
                 <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
                 <el-table-column prop="diagramCrtTime" label="创建时间" width="200"></el-table-column>
@@ -2325,15 +2319,15 @@
         <!--高清组图表弹出层结束-->
 
         <!--合作机构弹出层开始-->
-        <el-dialog title="合作伙伴" :visible.sync="showCoperationLib" width="100%" :fullscreen="true" :show-close="false" >
+        <el-dialog title="会议合作机构列表" :visible.sync="showCoperationLib" width="100%" :fullscreen="true" :show-close="false" >
             <el-form :model="searchCoperationForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
                 <el-row class="el-row-h60">
                     <el-col :span="16">
-                        <el-form-item label="会议名称" style="margin:0;">
+                        <el-form-item label="会议机构标题" style="margin:0;">
                             <el-input
                             clearable
                             type="text"
-                            v-model="searchCoperationForm.meetingTitle"
+                            v-model="searchCoperationForm.meetingCooperationTitle"
                             auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
@@ -2346,8 +2340,7 @@
                 </el-row>
             </el-form>
             <el-table :data="coperationTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="coperationTableData" stripe>
-                <el-table-column prop="meetingCooperationId" label="合作伙伴编号" width="120"></el-table-column>
-                <el-table-column prop="meetingTitle" label="会议名称" width=""></el-table-column>
+                <el-table-column prop="meetingCooperationTitle" label="会议机构标题" width=""></el-table-column>
                 <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
                 <el-table-column prop="meetingCooperationCrtTime" label="创建时间" width="200"></el-table-column>
                 <el-table-column label="操作" width="100" fixed="right">

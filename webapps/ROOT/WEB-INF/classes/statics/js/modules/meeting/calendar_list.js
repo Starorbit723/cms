@@ -1,23 +1,13 @@
 var vm = new Vue({
     el: '#calendar_list',
     data(){
-        var validateId = (rule, value, callback) => {
-            var urlReg = /^[0-9]*[1-9][0-9]*$/;
-            if (!value) {
-                callback(new Error('所属会议编号为必填项'));
-            } else if (value !== '' && !urlReg.test(value)) {
-                callback(new Error('所属会议编号只能为正整数'));
-            } else {
-                callback();
-            }
-        }
         return {
             //是否显示子页面
             showChildPage: false,
             creatOrEdit:0,//0新建  1修改
             timeRange:[],
             searchForm:{
-                meetingAgendaMeetingId:'',
+                meetingAgendaTitle:'',
                 meetingAgendaStatus:'0',
                 startTime:'',
                 endTime:''
@@ -33,6 +23,7 @@ var vm = new Vue({
             //日程对象
             calendarForm:{
                 meetingAgendaId:'',//主键
+                meetingAgendaTitle:'',//日程名称
                 meetingAgendaMeetingId:'',//所属会议编号
                 meetingAgendaCrtUserId:'',//
                 meetingAgendaModUserId:'',//
@@ -69,8 +60,8 @@ var vm = new Vue({
                 }],
             },
             calendarFormRules:{
-                meetingAgendaMeetingId: [
-                    { required: true, validator: validateId, trigger: 'change' }
+                meetingAgendaTitle: [
+                    { required: true, message: '日程标题不能为空', trigger: 'change' }
                 ]
             },
         }
@@ -329,40 +320,7 @@ var vm = new Vue({
                             return
                         }
                     }
-                    //验证是否有重复数据
-                    if (self.creatOrEdit == 0) {
-                        var data = {
-                            meetingAgendaMeetingId:self.calendarForm.meetingAgendaMeetingId,
-                            meetingAgendaStatus:'0',
-                            page: '1',
-                            limit: '100'
-                        }
-                        $.ajax({
-                            type: "POST",
-                            url: "/meeting/agenda/list",
-                            contentType: "application/json",
-                            data: JSON.stringify(data),
-                            dataType: "json",
-                            success: function(res){
-                                if(res.code == 200){
-                                    if (res.page.list.length == 0) {
-                                        self.submitCreatEdit()
-                                    } else {
-                                        self.$message.error('该会议数据已存在，不能重复创建')
-                                    }
-                                }else{
-                                    mapErrorStatus(res)
-                                    vm.error = true;
-                                    vm.errorMsg = res.msg;
-                                }
-                            },
-                            error:function(res){
-                                mapErrorStatus(res)
-                            }
-                        });
-                    } else if (self.creatOrEdit == 1) {
-                        self.submitCreatEdit()
-                    }
+                    self.submitCreatEdit()
                 }
             })
         },
@@ -435,7 +393,7 @@ var vm = new Vue({
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
             console.log(data)
-            data.meetingAgendaMeetingId = data.meetingAgendaMeetingId.toString().trim()
+            data.meetingAgendaTitle = data.meetingAgendaTitle.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',

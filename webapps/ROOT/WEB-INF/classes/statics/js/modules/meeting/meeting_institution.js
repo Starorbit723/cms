@@ -1,27 +1,18 @@
 var vm = new Vue({
     el: '#meeting_institution',
     data () {
-        var validateId = (rule, value, callback) => {
-            var urlReg = /^[0-9]*[1-9][0-9]*$/;
-            if (value.trim() == '') {
-                callback(new Error('所属会议编号为必填项'));
-            } else if (value !== '' && !urlReg.test(value)) {
-                callback(new Error('所属会议编号只能为正整数'));
-            } else {
-                callback();
-            }
-        }
         return {
             showChildPage: false,
             creatOrEdit:0,//0新建  1修改
             //搜索提交
             searchForm:{
-                meetingCooperationMeetingId:'',
+                meetingCooperationTitle:'',
                 meetingCooperationStatus:'0',//图片分类查询 0封面 1内容  2图位 3广告 4自媒体头像
             },
             //列表查询结果
             tableData: [{
                 meetingCooperationId:'',//主键
+                meetingCooperationTitle:'',//会议机构标题
                 meetingCooperationMeetingId:'',//所属会议编号
                 meetingCooperationCrtUserId:'',//
                 meetingCooperationModUserId:'',//
@@ -71,8 +62,8 @@ var vm = new Vue({
             
             },
             meetingCopFormRules:{
-                meetingCooperationMeetingId: [
-                    { required: true, validator: validateId, trigger: 'change' }
+                meetingCooperationTitle: [
+                    { required: true, message: '机构标题不能为空', trigger: 'change' }
                 ],         
             },
             //当前打开图库时的索引记录
@@ -112,7 +103,7 @@ var vm = new Vue({
         startSearch (type) {
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
-            data.meetingCooperationMeetingId = data.meetingCooperationMeetingId.toString().trim()
+            data.meetingCooperationTitle = data.meetingCooperationTitle.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -408,40 +399,7 @@ var vm = new Vue({
                             return
                         }
                     }
-                    //验证是否有重复数据
-                    if (self.creatOrEdit == 0) {
-                        var data = {
-                            meetingCooperationMeetingId:self.meetingCopForm.meetingCooperationMeetingId,
-                            meetingCooperationStatus:'0',
-                            page: '1',
-                            limit: '100'
-                        }
-                        $.ajax({
-                            type: "POST",
-                            url: "/meeting/cooperation/list",
-                            contentType: "application/json",
-                            data: JSON.stringify(data),
-                            dataType: "json",
-                            success: function(res){
-                                if(res.code == 200){
-                                    if (res.page.list.length == 0) {
-                                        self.submitCreatEdit()
-                                    } else {
-                                        self.$message.error('该会议数据已存在，不能重复创建')
-                                    }
-                                }else{
-                                    mapErrorStatus(res)
-                                    vm.error = true;
-                                    vm.errorMsg = res.msg;
-                                }
-                            },
-                            error:function(res){
-                                mapErrorStatus(res)
-                            }
-                        });
-                    } else if (self.creatOrEdit == 1) {
-                        self.submitCreatEdit()
-                    }
+                    self.submitCreatEdit()
                 }
             })
         },
