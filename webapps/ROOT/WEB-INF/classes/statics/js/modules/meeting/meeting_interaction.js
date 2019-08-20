@@ -3,16 +3,6 @@
 var vm = new Vue({
     el: '#meeting_hdpicture',
     data(){
-        var validateId = (rule, value, callback) => {
-            var urlReg = /^[0-9]*[1-9][0-9]*$/;
-            if (!value) {
-                callback(new Error('所属投票编号为必填项'));
-            } else if (value !== '' && !urlReg.test(value)) {
-                callback(new Error('所属投票编号只能为正整数'));
-            } else {
-                callback();
-            }
-        }
         return {
             //是否显示子页面
             showInteractionPage: true,
@@ -23,7 +13,8 @@ var vm = new Vue({
             creatOrEditArticle: 0, // 新建 1 修改
             checkOpt: true,
             checkOpt1: false,
-            
+            btnControl: true,
+            selectedInteractionInfoType: "",
             searchForm: {
                 interactionMeetingId: '',
                 interactionTitle: '',  //互动标题
@@ -32,6 +23,7 @@ var vm = new Vue({
             tableData:[{}],
             showDiagramLab: false,
             diagramTableData:[],
+            selectedOption: {},
             //分页器相关
             pagination1: {
                 currPage: 1,
@@ -69,16 +61,11 @@ var vm = new Vue({
                 interactionStatus:'',
                 userName:''
             },
-            
             interactionFormRules: {
-                interactionMeetingId: [
-                    {required: true, message: '所属会议详情编号', trigger: 'change'}
-                ],
                 interactionTitle: [
-                    {required: true, message: '高清组图名称', trigger: 'change'}
+                    {required: true, message: '文章问答名称必填', trigger: 'change'}
                 ]
             },
-
             //文章问答列表详情
             articleDetailForm: {
                 interactionInfoType: '',
@@ -114,7 +101,7 @@ var vm = new Vue({
                 diagramId: '',
                 diagramInfoStatus:'0'
             },
-            pagination3: {
+            pagination4: {
                 currPage: 1,
                 totalCount:0,
                 totalPage:0,
@@ -359,21 +346,39 @@ var vm = new Vue({
         },
          //修改某一条问答条目
          EditDetailList (item) {
-            // console.log(item)
+            console.log(item)
             var self = this
             self.showInteractionPage = false
             self.showDetailPage = true
             self.diaId = item.interactionId
-            self.startSearch2(self.diaId)
+            self.startSearch2(self.diaId, 0)
+        },
+        //内容图页面变化
+        handleCurrentChange4 (val) {
+            console.log(val)
+            console.log(this.diaId)
+            this.pagination4.currPage = val
+            this.startSearch2(this.diaId)
         },
         // 加载问答条目列表
-        startSearch2(id) {
+        startSearch2(id, type) {
             var self = this
             var data1 = {
                 interactionId: id.toString().trim(),
                 interactionInfoStatus: '0'
             }
             var data = JSON.parse(JSON.stringify(data1))
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination4.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination4.currPage.toString(),
+                    limit: self.pagination4.pageSize.toString()
+                })
+            }
             $.ajax({
                 type: "POST",
                 url: "/interactionInfo/list",
@@ -381,9 +386,10 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
+                    console.log(res)
                     if(res.code == 200) {
                         self.diagramTableData = res.page.list
-                        self.pagination2 = {
+                        self.pagination4 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
                             totalPage: res.page.totalPage,
@@ -405,15 +411,20 @@ var vm = new Vue({
                 self.showDetailPage = false
                 self.showArticleDetail = true
             } else if(type == 1) {
+                self.selectedInteractionInfoType = item.interactionInfoType.toString()
                 $.ajax({
                     type: "POST",
                     url: "/interactionInfo/info/" + item.interactionInfoId.toString(),
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res){
+                        console.log(res)
                         if(res.code == 200){
                             let data = res.dict
                             self.articleDetailForm = data
+                            self.checkOpt1 = true
+                            self.checkOpt = false
+                            self.btnControl = false
                             self.showDetailPage = false
                             self.showArticleDetail = true
                         }else{
@@ -529,10 +540,23 @@ var vm = new Vue({
                 }
             });
         },
+        // 选择框变化
+        changeVal(id){
+            var self = this
+            console.log(id)
+            self.selectedOption = this.options.find((item)=>{
+            return item.value === id
+            })
+            self.btnControl = false
+            // console.log(self.selectedOption)
+        },
         //选择了某一篇文章
         addThisContentArticles (item) {
             var self = this
+            
+            console.log(self.selectedOption.value)
             var data = [{
+                // interactionInfoType: self.selectedOption.value,
                 interactionId: self.diaId.toString(),
                 interactionInfoId: '',
                 interactionInfoAbstract: item.newsDesc,
@@ -543,6 +567,14 @@ var vm = new Vue({
                 interactionInfoPriority:'-1'
             }]
             self.articleDetailForm = data[0]
+            if(self.creatOrEditArticle == 0) {
+                self.articleDetailForm.interactionInfoType = self.selectedOption.value
+            } else if (self.creatOrEditArticle == 1) {
+                self.articleDetailForm.interactionInfoType = self.selectedInteractionInfoType
+            }
+            // console.log(self.articleDetailForm)
+            self.checkOpt1 =true
+            self.checkOpt = false
             self.showContentLib = false
             self.showArticleDetail = true
         },
@@ -550,8 +582,10 @@ var vm = new Vue({
             var self = this 
             self.$refs[formName].validate((valid)=> {
                 if(valid) {
-                    
                     self.submitCreatEdit2()
+                    self.checkOpt1 = false
+                    self.checkOpt = true
+                    self.btnControl = true
                 }
             })
         },
@@ -576,7 +610,7 @@ var vm = new Vue({
                 success: function(res) {
                     if(res.code == 200) {
                         self.$message.success('保存成功')
-                        self.startSearch2(self.diaId)
+                        self.startSearch2(self.diaId, 0)
                         self.closeArticles('articleDetailForm')
                     } else {
                         mapErrorStatus(res)
@@ -609,14 +643,18 @@ var vm = new Vue({
                 interactionInfoImg: '',
                 interactionInfoTitle: '',
             },
+            
             this.showArticleDetail = false
             this.showDetailPage = true
+            this.checkOpt1 = false
+            this.checkOpt = true
+            this.btnControl = true
 
         },
         //删除文章列表单项
         deleteThisDiaDetail(item){
             var self = this 
-            self.$confirm('确实要删除该图片吗？', '提示',{
+            self.$confirm('确实要删除该文章吗？', '提示',{
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'

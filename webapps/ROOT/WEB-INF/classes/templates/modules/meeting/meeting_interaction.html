@@ -51,7 +51,7 @@
                         <el-table-column prop="interactionMeetingId" width="160" label="会议详情编号"></el-table-column>
                         <el-table-column prop="interactionTitle"  label="互动标题"></el-table-column>
                         <el-table-column prop="interactionCrtTime" width="180" label="创建时间"></el-table-column>
-                        <el-table-column prop="userName" label="创建人" width="200"></el-table-column>
+                        <el-table-column prop="userName" label="创建人" width="180"></el-table-column>
                         <el-table-column label="操作" width="180" fixed="right">
                             <template slot-scope="scope">
                                 <el-button type="text" size="small" @click="addOrEditPic(1,scope.row)">属性</el-button>
@@ -152,14 +152,15 @@
                     </el-table>
                    
                 </div>
-                <!-- <div class="cv_page_zone">
+                <div class="cv_page_zone">
                     <el-pagination
-                        :current-page="pagination2.currPage"
-                        :page-size="pagination2.pageSize"
+                        @current-change="handleCurrentChange4"
+                        :current-page="pagination4.currPage"
+                        :page-size="pagination4.pageSize"
                         layout="total, prev, pager, next, jumper"
-                        :total="pagination2.totalCount">
+                        :total="pagination4.totalCount">
                     </el-pagination>
-                </div> -->
+                </div>
                 <el-row style="margin-top: 30px">
                     
                     <el-col class="el-row-h40" :span="3" :offset="8">
@@ -182,7 +183,7 @@
                             <el-col :span="6">
                                 <el-form-item label="内容类型" label-width="40%" prop="interactionInfoType" style="margin:0;">
                                  
-                                    <el-select :disabled="checkOpt1" v-model="articleDetailForm.interactionInfoType">
+                                    <el-select :disabled="checkOpt1" @change="changeVal" v-model="articleDetailForm.interactionInfoType">
                                         <el-option
                                         v-for="item in options"
                                         :key="item.value"
@@ -194,7 +195,7 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="3" :offset="2" class="el-row-h40">
-                                <el-button type="primary" style="width:100%" @click="chooseArticles(0)">选择文章</el-button>
+                                <el-button :disabled="btnControl" type="primary" style="width:100%" @click="chooseArticles()">选择文章</el-button>
                             </el-col>
                         </el-row>
                         <el-row class="el-row-h70">
@@ -203,6 +204,7 @@
                                     <el-input
                                         clearable
                                         type="text"
+                                        maxlength = "36"
                                         v-model="articleDetailForm.interactionInfoTitle"
                                         auto-complete="off"
                                         :disabled="checkOpt"
@@ -218,6 +220,8 @@
                                     <el-input
                                         clearable
                                         type="textarea"
+                                        maxlength = "50"
+                                        show-word-limit
                                         v-model="articleDetailForm.interactionInfoAbstract"
                                         auto-complete="off"
                                         :disabled="checkOpt"
@@ -233,6 +237,7 @@
                                     <el-input
                                         clearable
                                         type="text"
+                                        maxlength = "10"
                                         v-model="articleDetailForm.interactionInfoLabel"
                                         auto-complete="off"
                                         :disabled="checkOpt"

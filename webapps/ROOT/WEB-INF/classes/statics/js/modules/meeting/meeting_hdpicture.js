@@ -3,16 +3,6 @@
 var vm = new Vue({
     el: '#meeting_hdpicture',
     data(){
-        // var validateId = (rule, value, callback) => {
-        //     var urlReg = /^[0-9]*[1-9][0-9]*$/;
-        //     if (!value) {
-        //         callback(new Error('所属投票编号为必填项'));
-        //     } else if (value !== '' && !urlReg.test(value)) {
-        //         callback(new Error('所属投票编号只能为正整数'));
-        //     } else {
-        //         callback();
-        //     }
-        // }
         return {
             //是否显示子页面
             showDiagramPage: true,
@@ -41,7 +31,7 @@ var vm = new Vue({
                 totalPage:0,
                 pageSize:10
             },
-             
+            // 新建高清组图
             diagramForm: {
                 diagramId: '',
                 diagramTitle: '',
@@ -82,6 +72,7 @@ var vm = new Vue({
             },
             multipleSelection:[],
             contentImgTableData:[],
+            //编辑时获取的diagramId
             diaId: '',
         }
     },
@@ -95,259 +86,7 @@ var vm = new Vue({
 
     },
     methods: {
-        // 保存图片
-        submitForm(){
-            var self = this
-            var data = JSON.parse(JSON.stringify(self.diagramTableData))
-            for(var i = 0; i < self.diagramTableData.length; i++) {
-                self.diagramTableData[i].diagramInfoId = self.diagramTableData[i].diagramInfoId.toString()
-            }
-            $.ajax({
-                type: "POST",
-                url: "/diagramInfo/update",
-                contentType: "application/json",
-                data: JSON.stringify(data),
-                dataType: "json",
-                success: function(res){
-                    if(res.code == 200){
-                        self.$message.success('保存成功')
-                        self.startSearch()
-                        self.closeDiaTable()
-                    }else{
-                        mapErrorStatus(res)
-                        vm.error = true;
-                        vm.errorMsg = res.msg;
-                    }
-                },
-                error:function(res){
-                    mapErrorStatus(res)
-                }
-            })
-        },
-        // 权重发生改变时调整顺序
-        scaleChange (item) {
-            if(item < -1) {
-                this.$message.error('权重最低为-1')
-            } else if (item.trim() == ''){
-                this.$message.error('权重值不能为空')
-            } else if (parseFloat(item).toString() == "NaN" ) {
-                this.$message.error('权重值不能为非数字')
-            }
-        },
-         //内容图页面变化
-         handleCurrentChange2 (val) {
-            this.pagination2.currPage = val
-            this.searchContentImg()
-        },
-        //修改某一张内容图片
-        chooseContentImg () {
-            this.showContentImgLib = true
-            // console.log(this.showContentImgLib)
-            this.searchContentImg(0)
-        },
-        //搜索内容图库
-        searchContentImg(type){
-            var self = this
-            var data = JSON.parse(JSON.stringify(this.searchContentImgForm))
-            data.picTitle = data.picTitle.trim()
-            if (type == 0) {
-                Object.assign(data,{
-                    page: '1',
-                    limit: self.pagination2.pageSize.toString()
-                })
-            } else {
-                Object.assign(data,{
-                    page: self.pagination2.currPage.toString(),
-                    limit: self.pagination2.pageSize.toString()
-                })
-            }
-            $.ajax({
-                type: "POST",
-                contentType: "application/json",
-                url: "/picture/list",
-                data: JSON.stringify(data),
-                dataType: "json",
-                success: function(res){
-                    if(res.code == 200){
-                        self.contentImgTableData = res.page.list
-                        self.pagination2 = {
-                            currPage: res.page.currPage,
-                            totalCount:res.page.totalCount,
-                            totalPage:res.page.totalPage,
-                            pageSize:res.page.pageSize
-                        }
-                    }else{
-                        mapErrorStatus(res)
-                        vm.error = true;
-                        vm.errorMsg = res.msg;
-                    }
-                },
-                error:function(res){
-                    mapErrorStatus(res)
-                }
-            });
-        },
-        //选择了某一张封面图片
-        addThisContentImg (item) {
-            var self = this
-            // console.log(item)
-            var data = [{
-                diagramId: self.diaId.toString(),
-                diagramInfoPriority: '-1',
-                diagramInfoImg: item.picUrl,
-                diagramInfoTitle: item.picTitle,
-                diagramInfoCrtTime: item.picCrtTime,
-                diagramInfoStatus: "0"
-            }]
-            // console.log(data.diagramId)
-            self.diagramTableData.push({
-                diagramId: self.diaId,
-                diagramInfoPriority: '-1',
-                diagramInfoImg: item.picUrl,
-                diagramInfoTitle: item.picTitle,
-                diagramInfoCrtTime: item.picCrtTime,
-                diagramInfoStatus: "0"
-            })
-            self.saveTable(data)
-            self.startSearch2(self.diaId, 0)
-            self.showContentImgLib = false
-            self.showDetailPage = true
-        },
-        //返回编辑页
-        backToEdit2 (){
-            this.showContentImgLib = false
-            this.showDetailPage = true
-            this.searchContentImgForm = {
-                picTitle:'',
-                picType:'1'//0封面图库 1内容图库 2图为图库
-            }
-            this.contentImgTableData = [],
-            this.pagination2 = {
-                currPage: 1,
-                totalCount:0,
-                totalPage:0,
-                pageSize:10
-            }
-            
-        },
-        //多选批量
-        handleSelectionChange (val) {
-            this.multipleSelection = val;
-        },
-        // // 批量添加图片至列表
-        batchAddDia() {
-            var self = this
-            var len = self.multipleSelection.length
-            for(i=0; i < len; i++) {
-                this.diagramTableData.push({
-                    diagramId: self.diaId,
-                    diagramInfoStatu: "0",
-                    diagramInfoPriority: '-1',
-                    diagramInfoImg: self.multipleSelection[i].picUrl,
-                    diagramInfoTitle: self.multipleSelection[i].picTitle,
-                    diagramInfoCrtTime: self.multipleSelection[i].picCrtTime,
-                })
-            }
-            var data = this.diagramTableData.slice(-len)
-            // console.log(data)
-            self.saveTable(data)
-            self.startSearch2(self.diaId, 0)
-            self.showContentImgLib = false
-            self.showDetailPage = true
-        },
-        // 关闭高清组图列表页面
-        closeDiaTable() {
-            this.showDetailPage = false
-            this.showDiagramPage = true
-        },
-        
-        // 保存高清组图列表
-        saveTable(data1){
-            var self = this
-            var data = JSON.parse(JSON.stringify(data1))
-            $.ajax({
-                type: "POST",
-                url: "/diagramInfo/save",
-                contentType: "application/json",
-                data: JSON.stringify(data),
-                dataType: "json",
-                success: function(res) {
-                    if(res.code == 200) {
-                        self.$message.success('保存成功')
-                        self.startSearch2(self.diaId)
-                        // self.closeDiaTable()
-                    } else {
-                        mapErrorStatus(res)
-                        vm.error = true;
-                        vm.errorMsg = res.msg;
-                    }
-                },
-                error:function(res){
-                    mapErrorStatus(res)
-                }
-            })
-        },
-        
-        //修改组图列表
-        EditDetailList (item) {
-            var self = this
-            self.showDiagramPage = false
-            self.showDetailPage = true
-            self.diaId = item.diagramId
-            self.startSearch2(self.diaId, 0)
-            console.log(self.diaId)
-        },
-        //内容图页面变化
-        handleCurrentChange3 (val) {
-            console.log(val)
-            console.log(this.diaId)
-            this.pagination3.currPage = val
-            this.startSearch2(this.diaId)
-        },
-        // 加载高清组图列表详情
-        startSearch2(id, type) {
-            var self = this
-            var data1 = {
-                diagramId: id.toString().trim(),
-                diagramInfoStatus: '0'
-            }
-            var data = JSON.parse(JSON.stringify(data1))
-            if (type == 0) {
-                Object.assign(data,{
-                    page: '1',
-                    limit: self.pagination3.pageSize.toString()
-                })
-            } else {
-                Object.assign(data,{
-                    page: self.pagination3.currPage.toString(),
-                    limit: self.pagination3.pageSize.toString()
-                })
-            }
-            $.ajax({
-                type: "POST",
-                url: "/diagramInfo/list",
-                contentType: "application/json",
-			    data: JSON.stringify(data),
-                dataType: "json",
-                success: function(res) {
-                    console.log(res)
-                    if(res.code == 200) {
-                        self.diagramTableData = res.page.list
-                        self.pagination3 = {
-                            currPage: res.page.currPage,
-                            totalCount: res.page.totalCount,
-                            totalPage: res.page.totalPage,
-                            pageSize: res.page.pageSize
-                        }
-                    } else {
-                        mapErrorStatus(res)
-						vm.error = true;
-						vm.errorMsg = res.msg;
-                    }
-                }
-            })
-        },
-     
+        // 高清组图首页相关
         // 开始搜索列表
         startSearch(type) {
             var self = this
@@ -400,7 +139,7 @@ var vm = new Vue({
             this.pagination1.currPage = val
             this.startSearch() 
         },
-        // 新建或修改高清组图  type:0  新增   type:1修改
+         // 新建或修改高清组图  type:0  新增   type:1修改
         addOrEditPic(type, item) {
             var self = this
             self.creatOrEdit = type
@@ -430,6 +169,38 @@ var vm = new Vue({
                     }
                 });
             }
+        },
+        //删除某项组图列表
+        deleteThisDiagram(item) {
+            var self = this
+            self.$confirm('确实要删除该组图数据吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = JSON.parse(JSON.stringify(item))
+                data.diagramStatus = "1"
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/diagram/update",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res) {
+                        if(res.code == 200) {
+                            self.startSearch()
+                            self.$message.success('删除成功')
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true
+                            vm.errorMsg = res.msg
+                        }
+                    },
+                    error: function(res) {
+                        mapErrorStatus(res)
+                    }
+                })
+            })
         },
          //保存
          testSubmit(formName) {
@@ -469,7 +240,6 @@ var vm = new Vue({
                 }
             })
         },
-        
         // 提交
         submitCreatEdit() {
             var self = this
@@ -520,6 +290,257 @@ var vm = new Vue({
             this.showHdPage = false
             this.showDiagramPage = true
         },
+
+
+
+        //新建高清组图列表相关
+        // 加载高清组图列表详情
+        startSearch2(id, type) {
+            var self = this
+            var data1 = {
+                diagramId: id.toString().trim(),
+                diagramInfoStatus: '0'
+            }
+            var data = JSON.parse(JSON.stringify(data1))
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination3.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination3.currPage.toString(),
+                    limit: self.pagination3.pageSize.toString()
+                })
+            }
+            $.ajax({
+                type: "POST",
+                url: "/diagramInfo/list",
+                contentType: "application/json",
+			    data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res) {
+                    console.log(res)
+                    if(res.code == 200) {
+                        self.diagramTableData = res.page.list
+                        self.pagination3 = {
+                            currPage: res.page.currPage,
+                            totalCount: res.page.totalCount,
+                            totalPage: res.page.totalPage,
+                            pageSize: res.page.pageSize
+                        }
+                    } else {
+                        mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+                    }
+                }
+            })
+        },
+        //修改组图列表
+        EditDetailList (item) {
+            var self = this
+            self.showDiagramPage = false
+            self.showDetailPage = true
+            self.diaId = item.diagramId
+            self.startSearch2(self.diaId, 0)
+            // console.log(self.diaId)
+        },
+        //某项列表所包含的图片数量
+        handleCurrentChange3 (val) {
+            console.log(val)
+            console.log(this.diaId)
+            this.pagination3.currPage = val
+            this.startSearch2(this.diaId)
+        },
+        //修改某一张内容图片
+        chooseContentImg () {
+            this.showContentImgLib = true
+            // console.log(this.showContentImgLib)
+            this.searchContentImg(0)
+        },
+        //搜索内容图库
+        searchContentImg(type){
+            var self = this
+            var data = JSON.parse(JSON.stringify(this.searchContentImgForm))
+            data.picTitle = data.picTitle.trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination2.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination2.currPage.toString(),
+                    limit: self.pagination2.pageSize.toString()
+                })
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/picture/list",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.contentImgTableData = res.page.list
+                        self.pagination2 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage:res.page.totalPage,
+                            pageSize:res.page.pageSize
+                        }
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        //内容图页面变化
+        handleCurrentChange2 (val) {
+            this.pagination2.currPage = val
+            this.searchContentImg()
+        },
+        
+         // 保存高清组图列表
+         saveTable(data1){
+            var self = this
+            var data = JSON.parse(JSON.stringify(data1))
+            $.ajax({
+                type: "POST",
+                url: "/diagramInfo/save",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res) {
+                    if(res.code == 200) {
+                        self.$message.success('保存成功')
+                        self.startSearch2(self.diaId, 0)
+                        self.showContentImgLib = false
+                        self.showDetailPage = true
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            })
+
+            
+            
+        },
+        
+        //选择了某一张封面图片
+        addThisContentImg (item) {
+            var self = this
+            console.log(item)
+            var data = [{
+                diagramId: self.diaId.toString(),
+                diagramInfoPriority: '-1',
+                diagramInfoImg: item.picUrl,
+                diagramInfoTitle: item.picTitle,
+                diagramInfoCrtTime: item.picCrtTime,
+                diagramInfoStatus: "0"
+            }]
+            console.log(data)
+            self.saveTable(data)
+            
+        },
+        //返回编辑页
+        backToEdit2 (){
+            this.showContentImgLib = false
+            this.showDetailPage = true
+            this.searchContentImgForm = {
+                picTitle:'',
+                picType:'1'//0封面图库 1内容图库 2图为图库
+            }
+            this.contentImgTableData = [],
+            this.pagination2 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+            
+        },
+        //多选批量
+        handleSelectionChange (val) {
+            this.multipleSelection = val;
+        },
+        // 批量添加图片至列表
+        batchAddDia() {
+            var self = this
+            var len = self.multipleSelection.length
+            console.log(len)
+            var data =[]
+            for(i=0; i < len; i++) {
+                data.push({
+                    diagramId: self.diaId,
+                    diagramInfoStatu: "0",
+                    diagramInfoPriority: '-1',
+                    diagramInfoImg: self.multipleSelection[i].picUrl,
+                    diagramInfoTitle: self.multipleSelection[i].picTitle,
+                    diagramInfoCrtTime: self.multipleSelection[i].picCrtTime,
+                })
+            }
+            console.log(data)
+            self.saveTable(data)
+            self.startSearch2(self.diaId, 0)
+            self.showContentImgLib = false
+            self.showDetailPage = true
+        },
+        // 权重发生改变时调整顺序
+        scaleChange (item) {
+            if(item < -1) {
+                this.$message.error('权重最低为-1')
+            } else if (item.trim() == ''){
+                this.$message.error('权重值不能为空')
+            } else if (parseFloat(item).toString() == "NaN" ) {
+                this.$message.error('权重值不能为非数字')
+            }
+        },
+        // 保存图片
+        submitForm(){
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.diagramTableData))
+            for(var i = 0; i < self.diagramTableData.length; i++) {
+                self.diagramTableData[i].diagramInfoId = self.diagramTableData[i].diagramInfoId.toString()
+            }
+            $.ajax({
+                type: "POST",
+                url: "/diagramInfo/update",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.$message.success('保存成功')
+                        self.startSearch()
+                        self.closeDiaTable()
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            })
+        },
+        // 关闭高清组图列表页面
+        closeDiaTable() {
+            this.showDetailPage = false
+            this.showDiagramPage = true
+        },
         
         //删除高清组图列表单项
         deleteThisDiaDetail(item){
@@ -559,37 +580,6 @@ var vm = new Vue({
 
 
         },
-        //删除
-        deleteThisDiagram(item) {
-            var self = this
-            self.$confirm('确实要删除该投票数据吗？', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                var data = JSON.parse(JSON.stringify(item))
-                data.diagramStatus = "1"
-                $.ajax({
-                    type: "POST",
-                    contentType: "application/json",
-                    url: "/diagram/update",
-                    data: JSON.stringify(data),
-                    dataType: "json",
-                    success: function(res) {
-                        if(res.code == 200) {
-                            self.startSearch()
-                            self.$message.success('删除成功')
-                        } else {
-                            mapErrorStatus(res)
-                            vm.error = true
-                            vm.errorMsg = res.msg
-                        }
-                    },
-                    error: function(res) {
-                        mapErrorStatus(res)
-                    }
-                })
-            })
-        },
+        
     }
 })
