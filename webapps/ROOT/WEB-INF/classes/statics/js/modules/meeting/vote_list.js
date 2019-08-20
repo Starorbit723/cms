@@ -22,6 +22,7 @@ var vm = new Vue({
             showChildList: false,
             showDetailPage: false,
             creatOrEdit: 0, //0新建  1修改
+            checkOption: false,
             timeRange:[],
             searchForm: {
                 voteMeetingId: '',
@@ -96,11 +97,7 @@ var vm = new Vue({
 
     },
     methods: {
-        // 获取投票类型
-        getRadioVal(event){ 
-            this.radioVal = event.target.value;
-            this.voteForm.voteType = radioVal
-        },
+        
         // 添加选项
         addOptions() {
             let len = this.voteForm.voteOptionArray.length
@@ -183,14 +180,12 @@ var vm = new Vue({
         },
         submitCreatEdit() {
             var self = this
-            // console.log(self.voteForm)
             var data = JSON.parse(JSON.stringify(self.voteForm))
             data.voteStatus = '0'
             data.voteId = data.voteId.toString()
             for(let i = 0; i < data.voteOptionArray.length; i++) {
                 data.voteOptionArray[i].voteOptionId = data.voteOptionArray[i].voteOptionId.toString()
             }
-            // console.log(JSON.stringify(data))
             // console.log('准备提交保存的FORM', data)
             if (self.creatOrEdit == 0) {
                 var reqUrl = '/vote/save'
@@ -209,7 +204,7 @@ var vm = new Vue({
                     if(res.code == 200) {
                         self.$message.success('保存成功')
                         self.startSearch()
-                        // self.closeCreatOrEdit('voteForm')
+                        self.closeCreatOrEdit('voteForm')
                     } else {
                         mapErrorStatus(res)
                         vm.error = true;
@@ -323,9 +318,7 @@ var vm = new Vue({
                         if(res.code == 200) {
                             let data = res.dict
                             self.voteForm = data
-                            // if(self.voteForm.voteType == '观点PK') {
-                                
-                            // }
+                            self.checkOption = true
                             self.showVoteList = false
                             self.showChildList = true
                         } else {
@@ -355,21 +348,15 @@ var vm = new Vue({
                             self.voteForm = data
                             self.voteForm.totalVoteCount = sum
                             var sum1 = 0
-                            // console.log(data.voteOptionArray.length)
                             for(let i = 0; i < data.voteOptionArray.length; i++) {
                                 if(i == data.voteOptionArray.length-1) {
                                     self.voteForm.voteOptionArray[data.voteOptionArray.length-1].voteCountRatio = (100 - sum1)+ "%"
-                                    // console.log(self.voteForm.voteOptionArray[data.voteOptionArray.length-1].voteCountRatio)
-                                    
                                 } else {
                                     var str = data.voteOptionArray[i].voteOptionCount
-                                var rat1 = parseInt(Number(str)/sum*100)
-                                self.voteForm.voteOptionArray[i].voteCountRatio = rat1+"%"
-                                // console.log(rat1)
-                                sum1 = sum1 + rat1
-                                // console.log(sum1)
+                                    var rat1 = parseInt(Number(str)/sum*100)
+                                    self.voteForm.voteOptionArray[i].voteCountRatio = rat1+"%"
+                                    sum1 = sum1 + rat1
                                 }
-                                
                             }
                             self.showVoteList = false
                             self.showDetailPage = true

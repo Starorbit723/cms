@@ -89,16 +89,8 @@
                             <el-col :span="18">
                                 <el-form-item label="投票类型" label-width="12%" prop="voteType" style="margin:0;">
                                     <template slot-scope="scope">
-                                        <!-- <div>
-                                            <label><input @click="getRadioVal(scope.row)" type="radio" name="type" value="多项单选">多项单选</label>
-                                            <label><input @click="getRadioVal" type="radio" name="type" value="观点PK">观点PK</label>
-                                        </div> -->
-                                        <!-- <el-radio v-if="scope.row.voteType == 0">文章</el-radio>
-                                        <el-radio v-if="scope.row.voteType == 0">文章</el-radio> -->
-                                        
-                                            <el-radio v-model="voteForm.voteType" label="多项单选">多项单选</el-radio>
-                                            <el-radio v-model="voteForm.voteType" label="观点PK">观点PK</el-radio>
-                                          
+                                        <el-radio :disabled="checkOption" v-model="voteForm.voteType" label="多项单选">多项单选</el-radio>
+                                        <el-radio :disabled="checkOption" v-model="voteForm.voteType" label="观点PK">观点PK</el-radio>
                                     </template>
                                 </el-form-item>
                             </el-col>

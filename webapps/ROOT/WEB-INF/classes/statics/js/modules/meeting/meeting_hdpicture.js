@@ -3,16 +3,16 @@
 var vm = new Vue({
     el: '#meeting_hdpicture',
     data(){
-        var validateId = (rule, value, callback) => {
-            var urlReg = /^[0-9]*[1-9][0-9]*$/;
-            if (!value) {
-                callback(new Error('所属投票编号为必填项'));
-            } else if (value !== '' && !urlReg.test(value)) {
-                callback(new Error('所属投票编号只能为正整数'));
-            } else {
-                callback();
-            }
-        }
+        // var validateId = (rule, value, callback) => {
+        //     var urlReg = /^[0-9]*[1-9][0-9]*$/;
+        //     if (!value) {
+        //         callback(new Error('所属投票编号为必填项'));
+        //     } else if (value !== '' && !urlReg.test(value)) {
+        //         callback(new Error('所属投票编号只能为正整数'));
+        //     } else {
+        //         callback();
+        //     }
+        // }
         return {
             //是否显示子页面
             showDiagramPage: true,
@@ -41,13 +41,7 @@ var vm = new Vue({
                 totalPage:0,
                 pageSize:10
             },
-             //分页器相关
-             pagination3: {
-                currPage: 1,
-                totalCount:0,
-                totalPage:0,
-                pageSize:10
-            },
+             
             diagramForm: {
                 diagramId: '',
                 diagramTitle: '',
@@ -118,7 +112,7 @@ var vm = new Vue({
                     if(res.code == 200){
                         self.$message.success('保存成功')
                         self.startSearch()
-                        // self.closeDiaTable()
+                        self.closeDiaTable()
                     }else{
                         mapErrorStatus(res)
                         vm.error = true;
@@ -215,7 +209,7 @@ var vm = new Vue({
                 diagramInfoStatus: "0"
             })
             self.saveTable(data)
-            self.startSearch2(self.diaId)
+            self.startSearch2(self.diaId, 0)
             self.showContentImgLib = false
             self.showDetailPage = true
         },
@@ -254,14 +248,12 @@ var vm = new Vue({
                     diagramInfoCrtTime: self.multipleSelection[i].picCrtTime,
                 })
             }
-            
             var data = this.diagramTableData.slice(-len)
             // console.log(data)
             self.saveTable(data)
-            self.startSearch2(self.diaId)
+            self.startSearch2(self.diaId, 0)
             self.showContentImgLib = false
             self.showDetailPage = true
-            // console.log(self.diagramTableData)
         },
         // 关闭高清组图列表页面
         closeDiaTable() {
@@ -302,16 +294,35 @@ var vm = new Vue({
             self.showDiagramPage = false
             self.showDetailPage = true
             self.diaId = item.diagramId
-            self.startSearch2(self.diaId)
+            self.startSearch2(self.diaId, 0)
+            console.log(self.diaId)
+        },
+        //内容图页面变化
+        handleCurrentChange3 (val) {
+            console.log(val)
+            console.log(this.diaId)
+            this.pagination3.currPage = val
+            this.startSearch2(this.diaId)
         },
         // 加载高清组图列表详情
-        startSearch2(id) {
+        startSearch2(id, type) {
             var self = this
             var data1 = {
                 diagramId: id.toString().trim(),
                 diagramInfoStatus: '0'
             }
             var data = JSON.parse(JSON.stringify(data1))
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination3.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination3.currPage.toString(),
+                    limit: self.pagination3.pageSize.toString()
+                })
+            }
             $.ajax({
                 type: "POST",
                 url: "/diagramInfo/list",
@@ -319,11 +330,12 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
+                    console.log(res)
                     if(res.code == 200) {
                         self.diagramTableData = res.page.list
-                        self.pagination2 = {
+                        self.pagination3 = {
                             currPage: res.page.currPage,
-                            totalCount:res.page.totalCount,
+                            totalCount: res.page.totalCount,
                             totalPage: res.page.totalPage,
                             pageSize: res.page.pageSize
                         }
@@ -341,6 +353,7 @@ var vm = new Vue({
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.diagramMeetingId = data.diagramMeetingId.toString().trim()
+            data.diagramTitle = data.diagramTitle.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -352,6 +365,7 @@ var vm = new Vue({
                     limit: self.pagination1.pageSize.toString()
                 })
             }
+            console.log(JSON.stringify(data))
             $.ajax({
                 type: "POST",
                 url: "/diagram/list",
@@ -359,6 +373,7 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
+                    console.log(res)
                     if(res.code == 200) {
                         self.tableData = res.page.list
                         self.pagination1 = {
@@ -367,7 +382,7 @@ var vm = new Vue({
                             totalPage: res.page.totalPage,
                             pageSize: res.page.pageSize
                         }
-                        self.searchForm.diagramMeetingId = ''
+                        // self.searchForm.diagramMeetingId = ''
                     } else {
                         mapErrorStatus(res)
 						vm.error = true;
@@ -475,7 +490,7 @@ var vm = new Vue({
                     if(res.code == 200) {
                         self.$message.success('保存成功')
                         self.startSearch()
-                        // self.closeCreatOrEdit('diagramForm')
+                        self.closeCreatOrEdit('diagramForm')
                     } else {
                         mapErrorStatus(res)
                         vm.error = true;

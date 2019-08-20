@@ -182,7 +182,7 @@
                             <el-col :span="6">
                                 <el-form-item label="内容类型" label-width="40%" prop="interactionInfoType" style="margin:0;">
                                  
-                                    <el-select v-model="articleDetailForm.interactionInfoType">
+                                    <el-select :disabled="checkOpt1" v-model="articleDetailForm.interactionInfoType">
                                         <el-option
                                         v-for="item in options"
                                         :key="item.value"
@@ -205,6 +205,7 @@
                                         type="text"
                                         v-model="articleDetailForm.interactionInfoTitle"
                                         auto-complete="off"
+                                        :disabled="checkOpt"
                                         >
                                         <template slot="append">限制36个字</template>
                                     </el-input>
@@ -219,6 +220,7 @@
                                         type="textarea"
                                         v-model="articleDetailForm.interactionInfoAbstract"
                                         auto-complete="off"
+                                        :disabled="checkOpt"
                                         >
                                         <template slot="append">限制50个字</template>
                                     </el-input>
@@ -233,6 +235,7 @@
                                         type="text"
                                         v-model="articleDetailForm.interactionInfoLabel"
                                         auto-complete="off"
+                                        :disabled="checkOpt"
                                         >
                                         <template slot="append">限制10个字</template>
                                     </el-input>
@@ -241,7 +244,7 @@
                         </el-row>
                         <el-row class="el-row-h70">
                             <el-col :span="10">
-                                <el-form-item label="上传图片" label-width="20%" prop="interactionInfoImg" style="margin:0;">
+                                <el-form-item label="上传图片" :disabled="checkOpt" label-width="20%" prop="interactionInfoImg" style="margin:0;">
                                     
                                     <div class="fengmian_show" @click="chooseContentImg">
                                         <img v-if="articleDetailForm.interactionInfoImg" :src="articleDetailForm.interactionInfoImg" class="avatar">

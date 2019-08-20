@@ -21,7 +21,8 @@ var vm = new Vue({
             creatOrEdit:  0, //0新建  1修改
             showArticleDetail: false,
             creatOrEditArticle: 0, // 新建 1 修改
-            
+            checkOpt: true,
+            checkOpt1: false,
             
             searchForm: {
                 interactionMeetingId: '',
@@ -183,7 +184,7 @@ var vm = new Vue({
                             totalPage: res.page.totalPage,
                             pageSize: res.page.pageSize
                         }
-                        self.searchForm.interactionMeetingId = ''
+                        // self.searchForm.interactionMeetingId = ''
                     } else {
                         mapErrorStatus(res)
 						vm.error = true;
@@ -293,7 +294,7 @@ var vm = new Vue({
                     if(res.code == 200) {
                         self.$message.success('保存成功')
                         self.startSearch()
-                        // self.closeCreatOrEdit('interactionForm')
+                        self.closeCreatOrEdit('interactionForm')
                     } else {
                         mapErrorStatus(res)
                         vm.error = true;

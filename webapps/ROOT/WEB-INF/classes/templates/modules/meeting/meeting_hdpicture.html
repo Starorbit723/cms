@@ -50,8 +50,8 @@
                     <el-table :data="tableData" style="width: 100%; margin: 10px auto;" stripe>
                         <el-table-column prop="diagramMeetingId" width="160" label="会议详情编号"></el-table-column>
                         <el-table-column prop="diagramTitle"  label="组图标题"></el-table-column>
-                        <el-table-column prop="diagramCrtTime" width="180" label="创建时间"></el-table-column>
-                        <el-table-column prop="diagramCrtUserId" label="创建人" width="200"></el-table-column>
+                        <el-table-column prop="diagramCrtTime" width="200" label="创建时间"></el-table-column>
+                        <el-table-column prop="userName" label="创建人" width="180"></el-table-column>
                         <el-table-column label="操作" width="180" fixed="right">
                             <template slot-scope="scope">
                                 <el-button type="text" size="small" @click="addOrEditPic(1,scope.row)">属性</el-button>
@@ -129,10 +129,8 @@
                                     auto-complete="off"
                                     @input="scaleChange(scope.row.diagramInfoPriority)"></el-input>
                                 </template>
-                                
                             </el-table-column>
-                            <el-table-column prop="diagramId" label="所属组图编号" width="150"></el-table-column>
-                            <el-table-column prop="diagramInfoImg" label="图片" width="180">
+                            <el-table-column prop="diagramInfoImg" label="图片" width="200">
                                 <template v-if="scope.row.diagramInfoImg" slot-scope="scope">
                                     <img style="width:80px;height:60px;" :src="scope.row.diagramInfoImg">
                                 </template>
@@ -148,14 +146,15 @@
                         </el-table>
                     
                 </div>
-                <!-- <div class="cv_page_zone">
+                <div class="cv_page_zone">
                     <el-pagination
-                        :current-page="pagination2.currPage"
-                        :page-size="pagination2.pageSize"
+                        @current-change="handleCurrentChange3"
+                        :current-page="pagination3.currPage"
+                        :page-size="pagination3.pageSize"
                         layout="total, prev, pager, next, jumper"
-                        :total="pagination2.totalCount">
+                        :total="pagination3.totalCount">
                     </el-pagination>
-                </div> -->
+                </div>
                 <el-row style="margin-top: 30px">
                     <el-col class="el-row-h40" :span="3" :offset="8">
                         <el-button type="primary" style="width: 100%"  @click.native="submitForm">保存</el-button>
