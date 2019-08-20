@@ -1,27 +1,18 @@
 var vm = new Vue({
     el: '#meeting_guest',
     data () {
-        var validateId = (rule, value, callback) => {
-            var urlReg = /^[0-9]*[1-9][0-9]*$/;
-            if (value.trim() == '') {
-                callback(new Error('所属会议编号为必填项'));
-            } else if (value !== '' && !urlReg.test(value)) {
-                callback(new Error('所属会议编号只能为正整数'));
-            } else {
-                callback();
-            }
-        }
         return {
             showChildPage: false,
             creatOrEdit:0,//0新建  1修改
             //搜索提交
             searchForm:{
-                meetingGuestMeetingId:'',
+                meetingGuestTitle:'',
                 meetingGuestStatus:'0',
             },
             //列表查询结果
             tableData: [{
                 meetingGuestId:'',//主键
+                meetingGuestTitle:'',//会议嘉宾标题
                 meetingGuestMeetingId:'',//所属会议编号
                 meetingGuestCrtUserId:'',
                 meetingGuestModUserId:'',
@@ -63,8 +54,8 @@ var vm = new Vue({
                 ],//json
             },
             meetingGuestFormRules:{
-                meetingGuestMeetingId: [
-                    { required: true, validator: validateId, trigger: 'change' }
+                meetingGuestTitle: [
+                    { required: true, message: '会议嘉宾标题不能为空', trigger: 'change' }
                 ]
                 
             },
@@ -121,7 +112,7 @@ var vm = new Vue({
         startSearch (type) {
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
-            data.meetingGuestMeetingId = data.meetingGuestMeetingId.toString().trim()
+            data.meetingGuestTitle = data.meetingGuestTitle.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -358,47 +349,13 @@ var vm = new Vue({
             })
         },
 
-        //新建或编辑保存--优先上传图片，再提交保存
+        //新建或编辑保存
         testSubmit(formName) {
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
                     //验证是否有重复数据
-                    if (self.creatOrEdit == 0) {
-                        var data = {
-                            meetingGuestMeetingId:self.meetingGuestForm.meetingGuestMeetingId,
-                            meetingGuestStatus:'0',
-                            page: '1',
-                            limit: '100'
-                        }
-                        $.ajax({
-                            type: "POST",
-                            url: "/meeting/guest/list",
-                            contentType: "application/json",
-                            data: JSON.stringify(data),
-                            dataType: "json",
-                            success: function(res){
-                                if(res.code == 200){
-                                    if (res.page.list.length == 0) {
-                                        self.submitCreatEdit()
-                                    } else {
-                                        self.$message.error('该会议数据已存在，不能重复创建')
-                                    }
-                                }else{
-                                    mapErrorStatus(res)
-                                    vm.error = true;
-                                    vm.errorMsg = res.msg;
-                                }
-                            },
-                            error:function(res){
-                                mapErrorStatus(res)
-                            }
-                        });
-                    } else if (self.creatOrEdit == 1) {
-                        self.submitCreatEdit()
-                    }
-
-
+                    self.submitCreatEdit()
                 }
             })
         },

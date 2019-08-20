@@ -16,11 +16,11 @@
                 <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="25%" label-position="right" @submit.native.prevent>
                     <el-row class="el-row-h60">
                         <el-col :span="13">
-                            <el-form-item label="所属会议编号" style="margin:0;">
+                            <el-form-item label="会议机构标题" style="margin:0;">
                                 <el-input
                                 clearable
                                 type="text"
-                                v-model="searchForm.meetingCooperationMeetingId"
+                                v-model="searchForm.meetingCooperationTitle"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
@@ -40,7 +40,7 @@
             <div class="cv_content_square">
                 <el-table :data="tableData" style="width: 100%; margin:10px auto;" ref="multipleTable" stripe>
                     <el-table-column prop="meetingCooperationMeetingId" label="所属会议编号" width="110"></el-table-column>
-                    <el-table-column prop="meetingTitle" label="所属会议名称" width=""></el-table-column>
+                    <el-table-column prop="meetingCooperationTitle" label="会议机构标题" width=""></el-table-column>
                     <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
                     <el-table-column prop="modUserName" label="更新人" width="90"></el-table-column>
                     <el-table-column prop="meetingCooperationCrtTime" label="创建时间" width="200"></el-table-column>
@@ -80,19 +80,18 @@
                                 type="text"
                                 v-model="meetingCopForm.meetingCooperationMeetingId"
                                 auto-complete="off"
-                                :disabled="creatOrEdit == 1"></el-input>
+                                :disabled="true"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-row class="el-row-h80">
                         <el-col :span="24">
-                            <el-form-item label-width="13%" prop="meetingTitle" label="所属会议名称" style="margin:0;">
+                            <el-form-item label-width="13%" prop="meetingCooperationTitle" label="会议机构标题" style="margin:0;">
                                 <el-input
                                 clearable
                                 type="text"
-                                v-model="meetingCopForm.meetingTitle"
-                                auto-complete="off"
-                                :disabled="true"></el-input>
+                                v-model="meetingCopForm.meetingCooperationTitle"
+                                auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>

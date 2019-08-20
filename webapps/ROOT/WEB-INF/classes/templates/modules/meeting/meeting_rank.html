@@ -16,11 +16,11 @@
                 <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
                     <el-row class="el-row-h60">
                         <el-col :span="14">
-                            <el-form-item label="所属会议编号" style="margin:0;">
+                            <el-form-item label="会议榜单标题" style="margin:0;">
                                 <el-input
                                 clearable
                                 type="text"
-                                v-model="searchForm.meetingRankMeetingId"
+                                v-model="searchForm.meetingRankTitle"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
@@ -40,7 +40,7 @@
             <div class="cv_content_square">
                 <el-table :data="tableData" style="width: 100%; margin:10px auto;" ref="multipleTable" stripe>
                     <el-table-column prop="meetingRankMeetingId" label="所属会议编号" width="110"></el-table-column>
-                    <el-table-column prop="meetingTitle" label="所属会议名称" width=""></el-table-column>
+                    <el-table-column prop="meetingRankTitle" label="会议榜单标题" width=""></el-table-column>
                     <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
                     <el-table-column prop="modUserName" label="更新人" width="90"></el-table-column>
                     <el-table-column prop="meetingRankCrtTime" label="创建时间" width="200"></el-table-column>
@@ -80,19 +80,18 @@
                                 type="text"
                                 v-model="rankForm.meetingRankMeetingId"
                                 auto-complete="off"
-                                :disabled="creatOrEdit == 1"></el-input>
+                                :disabled="true"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-row class="el-row-h80">
                         <el-col>
-                            <el-form-item label-width="16%" prop="meetingTitle" label="所属会议名称" style="margin:0;">
+                            <el-form-item label-width="16%" prop="meetingRankTitle" label="会议榜单标题" style="margin:0;">
                                 <el-input
                                 clearable
                                 type="text"
-                                v-model="rankForm.meetingTitle"
-                                auto-complete="off"
-                                :disabled="true"></el-input>
+                                v-model="rankForm.meetingRankTitle"
+                                auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>

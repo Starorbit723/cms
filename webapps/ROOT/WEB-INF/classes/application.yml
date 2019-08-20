@@ -78,8 +78,8 @@ mybatis-plus:
 
 
 logging:
-  level: info
-  level.com.chinaventure.modules.sys.dao: info
-  level.io.renren: info
+  level: debug
+  level.com.chinaventure.modules.sys.dao: debug
+  level.io.renren: debug
   path: logs/
   file: admin.log
