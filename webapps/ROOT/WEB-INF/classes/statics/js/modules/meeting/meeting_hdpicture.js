@@ -104,7 +104,6 @@ var vm = new Vue({
                     limit: self.pagination1.pageSize.toString()
                 })
             }
-            console.log(JSON.stringify(data))
             $.ajax({
                 type: "POST",
                 url: "/diagram/list",
@@ -112,7 +111,6 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
-                    console.log(res)
                     if(res.code == 200) {
                         self.tableData = res.page.list
                         self.pagination1 = {
@@ -320,7 +318,6 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
-                    console.log(res)
                     if(res.code == 200) {
                         self.diagramTableData = res.page.list
                         self.pagination3 = {
@@ -348,8 +345,8 @@ var vm = new Vue({
         },
         //某项列表所包含的图片数量
         handleCurrentChange3 (val) {
-            console.log(val)
-            console.log(this.diaId)
+            // console.log(val)
+            // console.log(this.diaId)
             this.pagination3.currPage = val
             this.startSearch2(this.diaId)
         },
@@ -441,7 +438,6 @@ var vm = new Vue({
         //选择了某一张封面图片
         addThisContentImg (item) {
             var self = this
-            console.log(item)
             var data = [{
                 diagramId: self.diaId.toString(),
                 diagramInfoPriority: '-1',
@@ -450,9 +446,8 @@ var vm = new Vue({
                 diagramInfoCrtTime: item.picCrtTime,
                 diagramInfoStatus: "0"
             }]
-            console.log(data)
+            // console.log(data)
             self.saveTable(data)
-            
         },
         //返回编辑页
         backToEdit2 (){
@@ -479,7 +474,7 @@ var vm = new Vue({
         batchAddDia() {
             var self = this
             var len = self.multipleSelection.length
-            console.log(len)
+            // console.log(len)
             var data =[]
             for(i=0; i < len; i++) {
                 data.push({
@@ -491,7 +486,7 @@ var vm = new Vue({
                     diagramInfoCrtTime: self.multipleSelection[i].picCrtTime,
                 })
             }
-            console.log(data)
+            // console.log(data)
             self.saveTable(data)
             self.startSearch2(self.diaId, 0)
             self.showContentImgLib = false
@@ -499,20 +494,32 @@ var vm = new Vue({
         },
         // 权重发生改变时调整顺序
         scaleChange (item) {
-            if(item < -1) {
-                this.$message.error('权重最低为-1')
-            } else if (item.trim() == ''){
-                this.$message.error('权重值不能为空')
-            } else if (parseFloat(item).toString() == "NaN" ) {
-                this.$message.error('权重值不能为非数字')
+            // if(item < -1) {
+            //     this.$message.error('权重最低为-1')
+            // } else if(item > 1000) {
+            //     this.$message.error('权重最高为1000')
+            // }else if (item.trim() == ''){
+            //     this.$message.error('权重值不能为空')
+            // } else if (parseFloat(item).toString() == "NaN" ) {
+            //     this.$message.error('权重值不能为非数字')
+            // }
+            var reg = new RegExp("^(?:[0-9]{1,3}|1000)$")
+            if(!reg.test(item) && item !== -1) {
+                this.$message.error('权重值为-1到1000之间的整数')
             }
         },
         // 保存图片
         submitForm(){
             var self = this
             var data = JSON.parse(JSON.stringify(self.diagramTableData))
+            var reg = new RegExp("^(?:[0-9]{1,3}|1000)$")
             for(var i = 0; i < self.diagramTableData.length; i++) {
                 self.diagramTableData[i].diagramInfoId = self.diagramTableData[i].diagramInfoId.toString()
+                var Pro = Number(self.diagramTableData[i].diagramInfoPriority)
+                if(!reg.test(Pro) && Pro !== -1) {
+                    this.$message.error('权重值为-1到1000之间的整数')
+                    return
+                }
             }
             $.ajax({
                 type: "POST",

@@ -1,34 +1,33 @@
 var vm = new Vue({
     el: '#vote_list',
     data(){
-        var validateId = (rule, value, callback) => {
-            var urlReg = /^[0-9]*[1-9][0-9]*$/;
-            if (!value) {
-                callback(new Error('所属投票编号为必填项'));
-            } else if (value !== '' && !urlReg.test(value)) {
-                callback(new Error('所属投票编号只能为正整数'));
-            } else {
-                callback();
-            }
-        }
+        // var validateId = (rule, value, callback) => {
+        //     var urlReg = /^[0-9]*[1-9][0-9]*$/;
+        //     if (!value) {
+        //         callback(new Error('所属投票编号为必填项'));
+        //     } else if (value !== '' && !urlReg.test(value)) {
+        //         callback(new Error('所属投票编号只能为正整数'));
+        //     } else {
+        //         callback();
+        //     }
+        // }
         return {
-            pickerOptions:{
-                disabledDate(time) {
-                    return time.getTime() > Date.now();
-                }
-            },
+            // pickerOptions:{
+            //     disabledDate(time) {
+            //         return time.getTime() > Date.now();
+            //     }
+            // },
             //是否显示子页面
             showVoteList: true,
             showChildList: false,
             showDetailPage: false,
             creatOrEdit: 0, //0新建  1修改
             checkOption: false,
-            timeRange:[],
             searchForm: {
                 voteMeetingId: '',
                 voteTitle:'',
-                startTime:'',
-                endTime:'',
+                // startTime:'',
+                // endTime:'',
                 voteStatus: '0'
             },
             tableData:[{}],
@@ -41,7 +40,7 @@ var vm = new Vue({
                 totalPage:0,
                 pageSize:10
             },
-            timeRange: [],
+            // timeRange: [],
             voteForm: {
                 voteId: '', //投票编号
                 voteTitle: '', //投票名称
@@ -80,15 +79,15 @@ var vm = new Vue({
         }
     },
     watch: {
-        timeRange (val) {
-            if (val) {
-                this.searchForm.startTime = val[0]
-                this.searchForm.endTime = val[1]
-            } else {
-                this.searchForm.startTime = ''
-                this.searchForm.endTime = ''
-            }
-        }
+        // timeRange (val) {
+        //     if (val) {
+        //         this.searchForm.startTime = val[0]
+        //         this.searchForm.endTime = val[1]
+        //     } else {
+        //         this.searchForm.startTime = ''
+        //         this.searchForm.endTime = ''
+        //     }
+        // }
     },
     created() {
         this.startSearch(0)

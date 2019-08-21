@@ -346,7 +346,7 @@ var vm = new Vue({
         },
          //修改某一条问答条目
          EditDetailList (item) {
-            console.log(item)
+            // console.log(item)
             var self = this
             self.showInteractionPage = false
             self.showDetailPage = true
@@ -355,8 +355,8 @@ var vm = new Vue({
         },
         //内容图页面变化
         handleCurrentChange4 (val) {
-            console.log(val)
-            console.log(this.diaId)
+            // console.log(val)
+            // console.log(this.diaId)
             this.pagination4.currPage = val
             this.startSearch2(this.diaId)
         },
@@ -386,7 +386,7 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
-                    console.log(res)
+                    // console.log(res)
                     if(res.code == 200) {
                         self.diagramTableData = res.page.list
                         self.pagination4 = {
@@ -418,7 +418,7 @@ var vm = new Vue({
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res){
-                        console.log(res)
+                        // console.log(res)
                         if(res.code == 200){
                             let data = res.dict
                             self.articleDetailForm = data
@@ -443,9 +443,15 @@ var vm = new Vue({
         submitForm(){
             var self = this
             var data = JSON.parse(JSON.stringify(self.diagramTableData))
+            var reg = new RegExp("^(?:[0-9]{1,3}|1000)$")
             for(var i = 0; i < self.diagramTableData.length; i++) {
                 self.diagramTableData[i].interactionInfoId = self.diagramTableData[i].interactionInfoId.toString()
                 self.diagramTableData[i].interactionId = self.diagramTableData[i].interactionId.toString()
+                var Pro = Number(self.diagramTableData[i].interactionInfoPriority)
+                if(!reg.test(Pro) && Pro !== -1) {
+                    this.$message.error('权重值为-1到1000之间的整数')
+                    return
+                }
             }
             $.ajax({
                 type: "POST",
@@ -457,7 +463,7 @@ var vm = new Vue({
                     if(res.code == 200){
                         self.$message.success('保存成功')
                         self.startSearch()
-                        // self.closeDiaTable()
+                        self.closeInteractionTable()
                     }else{
                         mapErrorStatus(res)
                         vm.error = true;
@@ -478,12 +484,9 @@ var vm = new Vue({
         },
         // 权重发生改变时调整顺序
         scaleChange (item) {
-            if(item < -1) {
-                this.$message.error('权重最低为-1')
-            } else if (item.trim() == ''){
-                this.$message.error('权重值不能为空')
-            } else if (parseFloat(item).toString() == "NaN" ) {
-                this.$message.error('权重值不能为非数字')
+            var reg = new RegExp("^(?:[0-9]{1,3}|1000)$")
+            if(!reg.test(item) && item !== -1) {
+                this.$message.error('权重值为-1到1000之间的整数')
             }
         },
          //文章库页码
@@ -543,7 +546,7 @@ var vm = new Vue({
         // 选择框变化
         changeVal(id){
             var self = this
-            console.log(id)
+            // console.log(id)
             self.selectedOption = this.options.find((item)=>{
             return item.value === id
             })
@@ -554,7 +557,7 @@ var vm = new Vue({
         addThisContentArticles (item) {
             var self = this
             
-            console.log(self.selectedOption.value)
+            // console.log(self.selectedOption.value)
             var data = [{
                 // interactionInfoType: self.selectedOption.value,
                 interactionId: self.diaId.toString(),
