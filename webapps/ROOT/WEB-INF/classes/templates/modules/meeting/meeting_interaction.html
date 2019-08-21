@@ -50,7 +50,13 @@
                 <!--表格查询结果区-->
                 <div class="cv_content_square">
                     <el-table :data="tableData" style="width: 100%; margin: 10px auto;" stripe>
-                        <el-table-column prop="interactionMeetingId" width="160" label="所属会议编号"></el-table-column>
+                        <el-table-column prop="interactionId" width="160" label="问答编号"></el-table-column>
+                        <el-table-column prop="interactionMeetingId" width="160" label="所属会议编号">
+                            <template slot-scope="scope">
+                                <div v-if="scope.row.interactionMeetingId == '-1'"></div>
+                                <div v-else v-text="scope.row.interactionMeetingId"></div>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="interactionTitle"  label="互动标题"></el-table-column>
                         <el-table-column prop="interactionCrtTime" width="180" label="创建时间"></el-table-column>
                         <el-table-column prop="userName" label="创建人" width="180"></el-table-column>

@@ -48,7 +48,13 @@
             <!--表格查询结果区-->
             <div class="cv_content_square">
                 <el-table :data="tableData" style="width: 100%; margin:10px auto;" ref="multipleTable" stripe>
-                    <el-table-column prop="meetingRankMeetingId" label="所属会议编号" width="110"></el-table-column>
+                    <el-table-column prop="meetingRankId" label="榜单编号" width="110"></el-table-column>
+                    <el-table-column prop="meetingRankMeetingId" label="所属会议编号" width="110">
+                        <template slot-scope="scope">
+                            <div v-if="scope.row.meetingRankMeetingId == '-1'"></div>
+                            <div v-else v-text="scope.row.meetingRankMeetingId"></div>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="meetingRankTitle" label="会议榜单标题" width=""></el-table-column>
                     <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
                     <el-table-column prop="modUserName" label="更新人" width="90"></el-table-column>
