@@ -16,10 +16,19 @@
             <div v-show="!showChildPage">
                 <!--列表搜索区-->
                 <div class="cv_content_square">
-                    <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="25%" label-position="right" @submit.native.prevent>
                         <el-row class="el-row-h60">
-                            <el-col :span="14">
-                                <el-form-item label="日程标题" style="margin:0;">
+                            <el-col :span="8">
+                                <el-form-item  label-width="40%" label="所属会议编号" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    type="text"
+                                    v-model="searchForm.meetingAgendaMeetingId"
+                                    auto-complete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="会议日程标题" style="margin:0;">
                                     <el-input
                                     clearable
                                     type="text"
@@ -35,8 +44,8 @@
                 </div>
                 <!--功能按钮区-->
                 <el-row class="el-row-h50">
-                    <el-col :span="3">
-                        <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addOrEditCalendar(0)">新增日程</el-button>
+                    <el-col :span="4">
+                        <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addOrEditCalendar(0)">新增会议日程</el-button>
                     </el-col>
                 </el-row>
                 <!--表格查询结果区-->

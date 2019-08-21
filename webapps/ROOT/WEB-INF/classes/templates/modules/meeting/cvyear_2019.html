@@ -207,31 +207,67 @@
                     </el-row>
                 </el-collapse-item>
 
-                <!--会议议程-->
-                <el-collapse-item title="会议议程" name="5">
-                    <el-row class="el-row-h60">
-                        <el-col :offset="2">请到会议管理——日程管理中配置相关内容，本次会议的会议编号为：1</el-col>
+                <!--会议日程-->
+                <el-collapse-item title="会议日程" name="5">
+                    <el-row class="el-row-h50">
+                        <el-col :span="10">
+                            <el-form-item label="日程编号" prop="" label-width="30%" style="margin:0;">
+                                <el-input
+                                    :disabled="true"
+                                    v-model="meetingForm.meetingAgendaId"
+                                    auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col class="el-row-h40" :offset="1" :span="13">请到<b style="color: #175CE9;">日程管理</b>中配置相关内容，本次会议的会议编号为：<b style="color: #175CE9;">1</b></el-col>
                     </el-row>
                 </el-collapse-item>
 
                 <!--嘉宾管理-->
                 <el-collapse-item title="嘉宾管理" name="6">
-                    <el-row class="el-row-h60">
-                        <el-col :offset="2">请到会议管理——嘉宾管理中配置相关内容，本次会议的会议编号为：1</el-col>
+                    <el-row class="el-row-h50">
+                        <el-col :span="10">
+                            <el-form-item label="嘉宾编号" prop="" label-width="30%" style="margin:0;">
+                                <el-input
+                                    :disabled="true"
+                                    v-model="meetingForm.meetingGuestId"
+                                    auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col class="el-row-h40" :offset="1" :span="13">请到<b style="color: #175CE9;">嘉宾管理—会议嘉宾</b>中配置相关内容，本次会议的会议编号为：<b style="color: #175CE9;">1</b></el-col>
                     </el-row>
                 </el-collapse-item>
 
                 <!--榜单管理-->
                 <el-collapse-item title="榜单管理" name="7">
-                    <el-row class="el-row-h60">
-                        <el-col :offset="2">请到会议管理——会议榜单中配置相关内容，本次会议的会议编号为：1</el-col>
+                    <el-row class="el-row-h50">
+                        <el-col :span="10">
+                            <el-form-item label="榜单编号" prop="" label-width="30%" style="margin:0;">
+                                <el-input
+                                    :disabled="true"
+                                    v-model="meetingForm.meetingRankId"
+                                    auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col class="el-row-h40" :offset="1" :span="13">请到<b style="color: #175CE9;">会议榜单</b>中配置相关内容，本次会议的会议编号为：<b style="color: #175CE9;">1</b></el-col>
                     </el-row>
                 </el-collapse-item>
 
                 <!--合作伙伴-->
-                <el-collapse-item title="合作伙伴" name="8">
-                    <el-row class="el-row-h60">
-                        <el-col :offset="2">请到会议管理——机构管理中配置相关内容，本次会议的会议编号为：1</el-col>
+                <el-collapse-item title="合作机构" name="8">
+                    <el-row class="el-row-h50">
+                        <el-col :span="10">
+                            <el-form-item label="合作机构编号" prop="" label-width="30%" style="margin:0;">
+                                <el-input
+                                    :disabled="true"
+                                    v-model="meetingForm.meetingCooperationId"
+                                    auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col class="el-row-h40" :offset="1" :span="13">请到<b style="color: #175CE9;">机构管理—会议机构</b>中配置相关内容，本次会议的会议编号为：<b style="color: #175CE9;">1</b></el-col>
                     </el-row>
                 </el-collapse-item>
 

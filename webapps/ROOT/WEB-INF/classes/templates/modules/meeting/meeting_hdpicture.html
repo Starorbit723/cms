@@ -12,33 +12,35 @@
         <div class="cv_content_square">
             <!------------------列表开始------------------>
             <div v-show="showDiagramPage">
-                <el-form :model="searchForm" status-icon class="demo-ruleForm" style="width: 100%"  @submit.native.prevent>
-                    <el-row class="el-row-h60">
-                        <el-col :span="7">
-                            <el-form-item label="所属会议详情编号" label-width="50%" style="margin:0;">
-                                <el-input
-                                clearable
-                                v-model="searchForm.diagramMeetingId"
-                                placeholder="输入编号"
-                                type="text"
-                                auto-complete="off"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="组图标题" label-width="25%" style="margin:0;">
-                                <el-input
-                                clearable
-                                v-model="searchForm.diagramTitle"
-                                placeholder="输入组图标题"
-                                type="text"
-                                auto-complete="off"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="2" :offset="1" class="el-row-h40">
-                            <el-button type="primary" style="width:100%" @click="startSearch(0)">搜索</el-button>
-                        </el-col>
-                    </el-row>
-                </el-form>
+                <div class="cv_content_square">
+                    <el-form :model="searchForm" status-icon class="demo-ruleForm" style="width: 100%"  @submit.native.prevent>
+                        <el-row class="el-row-h60">
+                            <el-col :span="8">
+                                <el-form-item label="所属会议编号" label-width="40%" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    v-model="searchForm.diagramMeetingId"
+                                    placeholder="输入编号"
+                                    type="text"
+                                    auto-complete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="组图标题" label-width="25%" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    v-model="searchForm.diagramTitle"
+                                    placeholder="输入组图标题"
+                                    type="text"
+                                    auto-complete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="3" :offset="1" class="el-row-h40">
+                                <el-button type="primary" icon="el-icon-search" style="width:100%" @click="startSearch(0)">搜索</el-button>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                </div>
                 <!--功能按钮区-->
                 <el-row class="el-row-h50">
                     <el-col :span="4">
@@ -48,7 +50,7 @@
                 <!--表格查询结果区-->
                 <div class="cv_content_square">
                     <el-table :data="tableData" style="width: 100%; margin: 10px auto;" stripe>
-                        <el-table-column prop="diagramMeetingId" width="160" label="会议详情编号"></el-table-column>
+                        <el-table-column prop="diagramMeetingId" width="160" label="所属会议编号"></el-table-column>
                         <el-table-column prop="diagramTitle"  label="组图标题"></el-table-column>
                         <el-table-column prop="diagramCrtTime" width="200" label="创建时间"></el-table-column>
                         <el-table-column prop="userName" label="创建人" width="180"></el-table-column>

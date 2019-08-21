@@ -6,6 +6,7 @@ var vm = new Vue({
             creatOrEdit:0,//0新建  1修改
             //搜索提交
             searchForm:{
+                meetingGuestMeetingId:'',
                 meetingGuestTitle:'',
                 meetingGuestStatus:'0',
             },
@@ -113,6 +114,7 @@ var vm = new Vue({
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.meetingGuestTitle = data.meetingGuestTitle.toString().trim()
+            data.meetingGuestMeetingId = data.meetingGuestMeetingId.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',

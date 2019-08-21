@@ -15,7 +15,16 @@
             <div class="cv_content_square">
                 <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="25%" label-position="right" @submit.native.prevent>
                     <el-row class="el-row-h60">
-                        <el-col :span="13">
+                        <el-col :span="8">
+                                <el-form-item  label-width="40%" label="所属会议编号" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    type="text"
+                                    v-model="searchForm.meetingGuestMeetingId"
+                                    auto-complete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        <el-col :span="12">
                             <el-form-item label="会议嘉宾标题" style="margin:0;">
                                 <el-input
                                 clearable

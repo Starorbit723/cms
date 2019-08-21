@@ -6,6 +6,7 @@ var vm = new Vue({
             creatOrEdit:0,//0新建  1修改
             //搜索提交
             searchForm:{
+                meetingCooperationMeetingId:'',
                 meetingCooperationTitle:'',
                 meetingCooperationStatus:'0',//图片分类查询 0封面 1内容  2图位 3广告 4自媒体头像
             },
@@ -104,6 +105,7 @@ var vm = new Vue({
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.meetingCooperationTitle = data.meetingCooperationTitle.toString().trim()
+            data.meetingCooperationMeetingId = data.meetingCooperationMeetingId.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
