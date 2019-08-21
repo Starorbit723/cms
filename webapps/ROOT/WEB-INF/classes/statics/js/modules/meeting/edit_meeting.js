@@ -241,7 +241,8 @@ var vm = new Vue({
             //展示日程表
             showCalendarLib:false,
             searchCalendarForm:{
-                meetingAgendaTitle:''
+                meetingAgendaTitle:'',
+                meetingAgendaStatus:'0',
             },
             calendarTableData:[],
             pagination3: {
@@ -266,7 +267,8 @@ var vm = new Vue({
             currentOpinionIndex:'',
             showGuestInfoLib:false,
             searchGuestInfoForm:{
-                guestName:''
+                guestName:'',
+                guestStatus:'0',
             },
             guestInfoTableData:[],
             pagination5: {
@@ -689,7 +691,8 @@ var vm = new Vue({
             }
             this.showCalendarLib = false
             this.searchCalendarForm = {
-                meetingTitle:''
+                meetingAgendaTitle:'',
+                meetingAgendaStatus:'0',
             },
             this.calendarTableData = []
             this.pagination3 = {
@@ -764,7 +767,7 @@ var vm = new Vue({
             }
             this.showGuestLib=false
             this.searchGuestForm={
-                meetingTitle:''
+                meetingGuestTitle:''
             },
             this.guestTableData=[]
             this.pagination4= {
@@ -840,7 +843,8 @@ var vm = new Vue({
             this.currentOpinionIndex = ''
             this.showGuestInfoLib = false
             this.searchGuestInfoForm = {
-                guestName:''
+                guestName:'',
+                guestStatus:'0',
             }
             this.guestInfoTableData = []
             this.pagination5 = {
@@ -1140,7 +1144,7 @@ var vm = new Vue({
             }
             this.showCoperationLib=false
             this.searchCoperationForm={
-                meetingTitle:''
+                meetingCooperationTitle:''
             }
             this.coperationTableData=[]
             this.pagination9 = {

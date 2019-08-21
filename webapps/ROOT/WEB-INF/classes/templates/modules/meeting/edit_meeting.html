@@ -937,9 +937,9 @@
                                 </el-row>
                                 <el-row :span="24" class="el-row-h60">
                                     <el-col :span="18">
-                                        <el-form-item label="500" label-width="20%" style="margin:0;">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
                                             <el-input
-                                                maxlength=""
+                                                maxlength="500"
                                                 clearable
                                                 placeholder="请输入英文标题"
                                                 v-model="item.titleEn"
@@ -1135,9 +1135,9 @@
                                 </el-row>
                                 <el-row :span="24" class="el-row-h120">
                                     <el-col :span="18">
-                                        <el-form-item label="500" label-width="20%" style="margin:0;">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
                                             <el-input
-                                                maxlength=""
+                                                maxlength="500"
                                                 clearable
                                                 type="textarea"
                                                 :autosize="{ minRows: 4, maxRows: 4}"
@@ -2071,6 +2071,7 @@
                 </el-row>
             </el-form>
             <el-table :data="calendarTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="calendarTableData" stripe>
+                <el-table-column prop="meetingAgendaId" label="日程编号" ></el-table-column>
                 <el-table-column prop="meetingAgendaTitle" label="会议日程名称" ></el-table-column>
                 <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
                 <el-table-column prop="meetingAgendaCrtTime" label="创建时间" width="200"></el-table-column>
@@ -2115,6 +2116,7 @@
                 </el-row>
             </el-form>
             <el-table :data="guestTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="guestTableData" stripe>
+                <el-table-column prop="meetingGuestId" label="会议嘉宾编号" width="110"></el-table-column>
                 <el-table-column prop="meetingGuestTitle" label="会议嘉宾标题" width=""></el-table-column>
                 <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
                 <el-table-column prop="meetingGuestCrtTime" label="创建时间" width="200"></el-table-column>
@@ -2208,6 +2210,7 @@
                 </el-row>
             </el-form>
             <el-table :data="voteTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="voteTableData" stripe>
+                <el-table-column prop="voteId" width="160" label="投票编号"></el-table-column>
                 <el-table-column prop="voteTitle" label="投票标题" ></el-table-column>
                 <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
                 <el-table-column prop="voteCrtTime" label="创建时间" width="200"></el-table-column>
@@ -2252,6 +2255,7 @@
                 </el-row>
             </el-form>
             <el-table :data="articleQuestionTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="articleQuestionTableData" stripe>
+                <el-table-column prop="interactionId" width="160" label="问答编号"></el-table-column>
                 <el-table-column prop="interactionTitle" label="文章问答标题" ></el-table-column>
                 <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
                 <el-table-column prop="interactionCrtTime" label="创建时间" width="200"></el-table-column>
@@ -2296,6 +2300,7 @@
                 </el-row>
             </el-form>
             <el-table :data="pictrueGroupTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="pictrueGroupTableData" stripe>
+                <el-table-column prop="diagramId" width="160" label="会议组图编号"></el-table-column>
                 <el-table-column prop="diagramTitle" label="文章问答标题" ></el-table-column>
                 <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
                 <el-table-column prop="diagramCrtTime" label="创建时间" width="200"></el-table-column>
@@ -2340,6 +2345,7 @@
                 </el-row>
             </el-form>
             <el-table :data="coperationTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="coperationTableData" stripe>
+                <el-table-column prop="meetingCooperationId" label="会议机构编号" width="110"></el-table-column>
                 <el-table-column prop="meetingCooperationTitle" label="会议机构标题" width=""></el-table-column>
                 <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
                 <el-table-column prop="meetingCooperationCrtTime" label="创建时间" width="200"></el-table-column>
