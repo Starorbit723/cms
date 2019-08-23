@@ -196,6 +196,9 @@ var vm = new Vue({
                 meetingOrganizer:[
                     { required: true, message: '请填写主办单位', trigger: 'change' }
                 ],
+                meetingCoOrganizer:[
+                    { required: true, message: '协办单位必填，没有协办单位填写"#"', trigger: 'change' }
+                ],
                 meetingScaleNumber:[
                     { required: true, validator: validateScaleNumber, trigger: 'change' }
                 ],

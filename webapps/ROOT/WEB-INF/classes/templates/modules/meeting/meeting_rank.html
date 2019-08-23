@@ -63,7 +63,7 @@
                     <el-table-column label="操作" width="100" fixed="right">
                         <template slot-scope="scope">
                             <el-button type="text" size="small" @click="addOrEditRank(1,scope.row)">修改</el-button>
-                            <el-button type="text" size="small" @click="deleteThisRank(scope.row)">删除</el-button>
+                            <el-button v-if="scope.row.meetingRankMeetingId == '-1' || scope.row.meetingRankMeetingId == ''" type="text" size="small" @click="deleteThisRank(scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>

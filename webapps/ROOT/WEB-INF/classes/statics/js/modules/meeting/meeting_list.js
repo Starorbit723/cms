@@ -5,7 +5,7 @@ var vm = new Vue({
         timeRange:[], //时间需要特殊处理,并且同步到searchForm
         searchForm:{
             meetingTitle:'',//标题
-            starTime:'',//开始时间
+            startTime:'',//开始时间
             endTime:'',//结束时间
             meetingStatus: ['0','1','2','3','4']
         },
@@ -145,7 +145,7 @@ var vm = new Vue({
             }).then(() => {
                 var data = {
                     meetingId: item.meetingId.toString(),
-                    meetingStatus: '4'
+                    meetingStatus: '5'
                 }
                 $.ajax({
                     type: "POST",

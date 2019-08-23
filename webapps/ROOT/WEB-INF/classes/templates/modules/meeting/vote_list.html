@@ -78,7 +78,7 @@
                             <template slot-scope="scope">
                                 <el-button type="text" size="small" @click="addOrEditVote(1,scope.row)">编辑</el-button>
                                 <el-button type="text" size="small"@click="addOrEditVote(2,scope.row)" >详情</el-button>
-                                <el-button type="text" size="small" @click="deleteThisVote(scope.row)">删除</el-button>
+                                <el-button v-if="scope.row.voteMeetingId == '-1' || scope.row.voteMeetingId == ''" type="text" size="small" @click="deleteThisVote(scope.row)">删除</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
