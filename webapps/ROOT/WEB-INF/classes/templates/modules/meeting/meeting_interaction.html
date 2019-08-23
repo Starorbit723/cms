@@ -185,7 +185,7 @@
             <!------------------文章问答列表详情开始------------------>
             <div v-show="showArticleDetail">
                 <div class="cv_content_square">
-                    <el-form :model="articleDetailForm" :rules="articleDetailFormRules" ref="articleDetailForm" label-position="left" status-icon class="demo-ruleForm" label-width="13%" label-position="right">
+                    <el-form :model="articleDetailForm" :rules="articleDetailFormRules" ref="articleDetailForm" label-position="right" status-icon class="demo-ruleForm" label-width="13%" label-position="right">
                        
                         <el-row class="el-row-h70">
                             <el-col :span="6">
@@ -208,11 +208,10 @@
                         </el-row>
                         <el-row class="el-row-h70">
                             <el-col :span="18">
-                                <el-form-item label="标题" label-width="20%" prop="interactionInfoTitle" style="margin:0;">
+                                <el-form-item label="标题"  prop="interactionInfoTitle" style="margin:0;">
                                     <el-input
                                         clearable
                                         type="text"
-                                        maxlength = "36"
                                         v-model="articleDetailForm.interactionInfoTitle"
                                         auto-complete="off"
                                         :disabled="checkOpt"
@@ -224,24 +223,25 @@
                         </el-row>
                         <el-row class="el-row-h70">
                             <el-col :span="18">
-                                <el-form-item label="摘要" label-width="20%" prop="interactionInfoAbstract" style="margin:0;">
+                                <el-form-item label="摘要"  prop="interactionInfoAbstract" style="margin:0;">
                                     <el-input
                                         clearable
                                         type="textarea"
-                                        maxlength = "50"
-                                        show-word-limit
+                                        maxlength = "200"
+                                        :autosize="{ minRows: 4, maxRows: 4}"
                                         v-model="articleDetailForm.interactionInfoAbstract"
                                         auto-complete="off"
                                         :disabled="checkOpt"
+                                        placeholder="请输入摘要"
                                         >
-                                        <template slot="append">限制50个字</template>
+                                        <template slot="append">限制200个字</template>
                                     </el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
-                        <el-row class="el-row-h70">
-                            <el-col :span="18">
-                                <el-form-item label="标签" label-width="20%" prop="interactionInfoLabel" style="margin:0;">
+                        <el-row style="margin-top: 40px">
+                            <el-col :span="18" class="el-row-h70">
+                                <el-form-item label="标签"  prop="interactionInfoLabel" style="margin:0;">
                                     <el-input
                                         clearable
                                         type="text"
@@ -254,10 +254,10 @@
                                     </el-input>
                                 </el-form-item>
                             </el-col>
-                        </el-row>
+                        </el-row >
                         <el-row class="el-row-h70">
                             <el-col :span="10">
-                                <el-form-item label="上传图片" :disabled="checkOpt" label-width="20%" prop="interactionInfoImg" style="margin:0;">
+                                <el-form-item label="上传图片" :disabled="checkOpt" label-width="22%" prop="interactionInfoImg" style="margin:0;">
                                     
                                     <div class="fengmian_show" @click="chooseContentImg">
                                         <img v-if="articleDetailForm.interactionInfoImg" :src="articleDetailForm.interactionInfoImg" class="avatar">
@@ -347,51 +347,48 @@
 
             
             <!--内容图弹出层开始-->
-            <el-dialog title="内容图库" :visible.sync="showContentImgLib" width="100%" :fullscreen="true" :show-close="false" >
-                <el-form :model="searchContentImgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+            <el-dialog title="封面图库" :visible.sync="showCoverimgLib" width="100%" :fullscreen="true" :show-close="false" >
+                <el-form :model="searchCoverimgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
                     <el-row class="el-row-h60">
                         <el-col :span="12">
                             <el-form-item label="图片名称" style="margin:0;">
                                 <el-input
                                 clearable
                                 type="text"
-                                v-model="searchContentImgForm.picTitle"
+                                v-model="searchCoverimgForm.picTitle"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="3" :offset="1" class="el-row-h40">
-                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchContentImg(0)">搜索</el-button>
+                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchCoverImg(0)">搜索</el-button>
                         </el-col>
-                        <el-col :span="3" :offset="1" class="el-row-h40">
-                                <el-button type="primary" style="width:100%" icon="el-icon-plus" @click="batchAddDia()">批量添加</el-button>
-                            </el-col>
                         <el-col :span="3" :offset="1" class="el-row-h40">
                             <el-button type="primary" style="width:100%" @click="backToEdit()">返回</el-button>
                         </el-col>
                     </el-row>
                 </el-form>
                 <el-table :data="contentImgTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="contentImgTableData" stripe>
-                    <el-table-column
+                    <!-- <el-table-column
                         type="selection"
                         width="55">
-                    </el-table-column>
-                    <el-table-column prop="picUrl" label="内容图预览" width="180">
+                    </el-table-column> -->
+                    <el-table-column prop="picUrl" label="封面图预览" width="180">
                         <template v-if="scope.row.picUrl" slot-scope="scope">
                             <img style="width:80px;height:60px;" :src="scope.row.picUrl">
                         </template>
                     </el-table-column>
                     <el-table-column prop="picTitle" label="图片名称" width="250"></el-table-column>
-                    <el-table-column prop="picEditorName" label="修改人" width="120"></el-table-column>
+                    <el-table-column prop="picEditorName" label="修改人" width="180"></el-table-column>
                     <el-table-column prop="picModTime" label="最后更新时间"></el-table-column>
                     <el-table-column label="操作" width="100" fixed="right">
                         <template slot-scope="scope">
-                            <el-button type="text" size="small" @click="addThisContentImg(scope.row)">添加</el-button>
+                            <el-button type="text" size="small" @click="addThisCoverImg(scope.row)">添加</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
                 <div class="cv_page_zone">
                     <el-pagination
-                        @current-change="handleCurrentChange2"
+                        @current-change="handleCurrentChange3"
                         :current-page="pagination3.currPage"
                         :page-size="pagination3.pageSize"
                         layout="total, prev, pager, next, jumper"

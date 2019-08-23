@@ -1,16 +1,7 @@
 var vm = new Vue({
     el: '#vote_list',
     data(){
-        // var validateId = (rule, value, callback) => {
-        //     var urlReg = /^[0-9]*[1-9][0-9]*$/;
-        //     if (!value) {
-        //         callback(new Error('所属投票编号为必填项'));
-        //     } else if (value !== '' && !urlReg.test(value)) {
-        //         callback(new Error('所属投票编号只能为正整数'));
-        //     } else {
-        //         callback();
-        //     }
-        // }
+        
         return {
             // pickerOptions:{
             //     disabledDate(time) {
@@ -40,6 +31,7 @@ var vm = new Vue({
                 totalPage:0,
                 pageSize:10
             },
+            num: '0',
             // timeRange: [],
             voteForm: {
                 voteId: '', //投票编号
@@ -75,7 +67,7 @@ var vm = new Vue({
                 voteDesc: [
                     {required: true, message: '投票摘要为必填项', trigger: 'change'}
                 ]
-            }
+            },
         }
     },
     watch: {
@@ -100,7 +92,6 @@ var vm = new Vue({
         // 添加选项
         addOptions() {
             let len = this.voteForm.voteOptionArray.length
-            // console.log(len)
             // console.log(this.voteForm)
             if(this.voteForm.voteOptionArray[len-1].voteOptionName.trim() !== '') {
                 this.voteForm.voteOptionArray.push({
@@ -113,11 +104,11 @@ var vm = new Vue({
             } else {
                 this.$message.error('请完成上一个选项')
             }
-            if(this.voteForm.voteType == "观点PK" && len == 2) {
+            if(this.voteForm.voteType == "pk" && len == 2) {
                 this.voteForm.voteOptionArray.length = 2
                 this.voteForm.voteOptionArray.slice(0,2)
                 this.$message.error('观点PK只能设置两个选项')
-            } 
+            }
         },
         // 删除选项
         delOptions(index) {
@@ -126,6 +117,50 @@ var vm = new Vue({
             } else{
                 this.voteForm.voteOptionArray.splice(index, 1) 
             }
+        },
+        testSubmit2(formName) {
+            var self = this
+            // var numReg = /^[0-9]*[1-9][0-9]*$/;
+            var numReg = /^([1-9]\d*|[0]{1,1})$/;
+            for(let i = 0; i < self.voteForm.voteOptionArray.length; i++) {
+                var num1 = self.voteForm.voteOptionArray[i].voteOptionCount
+                console.log(num1)
+                if(num1 == null || num1.trim() == "") {
+                    self.$message.error("人数不能为空")
+                    return
+                } else if (Number(num1) == NaN || (!numReg.test(Number(num1)) && num1.trim !=="")) {
+                    self.$message.error("人数必须为正整数")
+                    return
+                }
+            }
+            var data = JSON.parse(JSON.stringify(self.voteForm))
+            data.voteStatus = '0'
+            data.voteId = data.voteId.toString()
+            console.log(JSON.stringify(data))
+            for(let i = 0; i < data.voteOptionArray.length; i++) {
+                data.voteOptionArray[i].voteOptionId = data.voteOptionArray[i].voteOptionId.toString()
+            }
+            $.ajax({
+                type: "POST",
+                url: "/vote/update",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res) {
+                    if(res.code == 200) {
+                        self.$message.success('保存成功')
+                        self.startSearch()
+                        self.closeCreatOrEdit('voteForm')
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            })
         },
         //保存
         testSubmit(formName) {
@@ -171,9 +206,8 @@ var vm = new Vue({
                         });
                     } else if (self.creatOrEdit == 1) {
                         self.submitCreatEdit()
-                    } else if (self.creatOrEdit == 2) {
-                        self.submitCreatEdit()
-                    }
+                        self.checkOption = false
+                    } 
                 }
             })
         },
@@ -182,6 +216,7 @@ var vm = new Vue({
             var data = JSON.parse(JSON.stringify(self.voteForm))
             data.voteStatus = '0'
             data.voteId = data.voteId.toString()
+            // console.log(JSON.stringify(data))
             for(let i = 0; i < data.voteOptionArray.length; i++) {
                 data.voteOptionArray[i].voteOptionId = data.voteOptionArray[i].voteOptionId.toString()
             }
@@ -189,8 +224,6 @@ var vm = new Vue({
             if (self.creatOrEdit == 0) {
                 var reqUrl = '/vote/save'
             } else if (self.creatOrEdit == 1) {
-                var reqUrl = '/vote/update'
-            } else if(self.creatOrEdit == 2) {
                 var reqUrl = '/vote/update'
             }
             $.ajax({
@@ -243,10 +276,10 @@ var vm = new Vue({
                     }
                 ]
             },
-            
             this.startSearch()
             this.showDetailPage = false
             this.showChildList = false
+            this.checkOption = false
             this.showVoteList = true
         },
 
@@ -278,6 +311,7 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
+                    // console.log(res)
                     if(res.code == 200) {
                         self.tableData = res.page.list
                         self.pagination1 = {
@@ -301,9 +335,11 @@ var vm = new Vue({
 
         // 新建或修改投票type:0  新增   type:1修改
         addOrEditVote(type, item) {
+            // console.log(this.creatOrEdit)
             var self = this
             self.creatOrEdit = type
             if(type == 0) {
+                console.log(item)
                 self.showVoteList = false
                 self.showChildList = true
             } else if(type == 1) {
@@ -313,7 +349,7 @@ var vm = new Vue({
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res) {
-                        console.log(res)
+                        // console.log(res)
                         if(res.code == 200) {
                             let data = res.dict
                             self.voteForm = data
@@ -337,26 +373,21 @@ var vm = new Vue({
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res) {
+                        console.log(res)
                         if(res.code == 200) {
                             let data = res.dict
                             var sum = 0
+                            var numReg = /^[0-9]*[1-9][0-9]*$/;
                             for(let i = 0; i < data.voteOptionArray.length; i++) {
                                 var str = data.voteOptionArray[i].voteOptionCount
+                                // console.log(Number(str))
                                 sum = sum + Number(str)
+                                // console.log(sum)
                             }
                             self.voteForm = data
                             self.voteForm.totalVoteCount = sum
-                            var sum1 = 0
-                            for(let i = 0; i < data.voteOptionArray.length; i++) {
-                                if(i == data.voteOptionArray.length-1) {
-                                    self.voteForm.voteOptionArray[data.voteOptionArray.length-1].voteCountRatio = (100 - sum1)+ "%"
-                                } else {
-                                    var str = data.voteOptionArray[i].voteOptionCount
-                                    var rat1 = parseInt(Number(str)/sum*100)
-                                    self.voteForm.voteOptionArray[i].voteCountRatio = rat1+"%"
-                                    sum1 = sum1 + rat1
-                                }
-                            }
+                            // console.log(self.voteForm)
+
                             self.showVoteList = false
                             self.showDetailPage = true
                         } else {
@@ -383,7 +414,7 @@ var vm = new Vue({
             }).then(() => {
                 var data = JSON.parse(JSON.stringify(item))
                 data.voteStatus = "1"
-                data.voteOptionArray.voteOptionStatus = "1"
+                // data.voteOptionArray.voteOptionStatus = "1"
                 // console.log(JSON.stringify(data))
                 $.ajax({
                     type: "POST",

@@ -379,6 +379,7 @@ var vm = new Vue({
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res){
+                    console.log(res)
                     if(res.code == 200){
                         self.contentImgTableData = res.page.list
                         self.pagination2 = {

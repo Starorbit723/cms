@@ -71,7 +71,12 @@
                             </template>
                         </el-table-column>
                         <el-table-column prop="voteTitle" label="投票名称"></el-table-column>
-                        <el-table-column prop="voteType" width="110" label="类型"></el-table-column>
+                        <el-table-column prop="voteType" width="110" label="类型">
+                            <template slot-scope="scope">
+                                <el-tag v-if="scope.row.voteType == 'singleChoose'">多项单选</el-tag>
+                                <el-tag v-if="scope.row.voteType == 'pk'">观点PK</el-tag>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="voteCrtTime" width="180" label="创建时间"></el-table-column>
                         <el-table-column prop="userName" width="110" label="创建人"></el-table-column>
                         <el-table-column label="操作" width="180" fixed="right">
@@ -105,8 +110,8 @@
                             <el-col :span="18">
                                 <el-form-item label="投票类型" label-width="12%" prop="voteType" style="margin:0;">
                                     <template slot-scope="scope">
-                                        <el-radio :disabled="checkOption" v-model="voteForm.voteType" label="多项单选">多项单选</el-radio>
-                                        <el-radio :disabled="checkOption" v-model="voteForm.voteType" label="观点PK">观点PK</el-radio>
+                                        <el-radio :disabled="checkOption" v-model="voteForm.voteType" label="singleChoose">多项单选</el-radio>
+                                        <el-radio :disabled="checkOption" v-model="voteForm.voteType" label="pk">观点PK</el-radio>
                                     </template>
                                 </el-form-item>
                             </el-col>
@@ -136,7 +141,7 @@
                                         clearable
                                         type="textarea"
                                         maxlength = "200"
-                                        show-word-limit
+                                        :autosize="{ minRows: 4, maxRows: 4}"
                                         placeholder="请输入投票摘要"
                                         v-model="voteForm.voteDesc"
                                         auto-complete="off"
@@ -145,20 +150,33 @@
                                 </el-form-item>
                             </el-col>
                         </el-row>
-                        <div v-for="(item, index) in voteForm.voteOptionArray">
-                            <el-row>
-                                <el-col :span="18" class="el-row-h70">
+                        <div style="margin-top: 50px;" v-for="(item, index) in voteForm.voteOptionArray">
+                            <el-row >
+                                <el-col :span="18" class="el-row-h50">
                                     <el-form-item label="选项" label-width="12%" prop="voteOptionName" style="margin:0;">
-                                        <el-input
+                                        <div v-if="voteForm.voteType == 'pk'">
+                                            <el-input
                                             clearable
                                             type="text"
                                             placeholder="请输入选项内容"
+                                            maxlength=3
                                             v-model="item.voteOptionName"
                                             auto-complete="off"></el-input>
+                                        </div>
+                                        <div v-else="voteForm.voteType == 'singleChoose'">
+                                            <el-input
+                                            clearable
+                                            type="text"
+                                            placeholder="请输入选项内容"
+                                            maxlength= 50
+                                            v-model="item.voteOptionName"
+                                            auto-complete="off"></el-input>
+                                        </div>
+                                        
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="1" :offset="1" style="margin-top: 0px">
-                                    <el-button size="medium" type="primary" icon="el-icon-plus" @click="addOptions()" circle ></el-button>
+                                    <el-button size="medium" type="primary" icon="el-icon-plus" @click="addOptions('voteForm')" circle ></el-button>
                                 </el-col>
                                 <el-col :span="1"  :offset="1" style="margin-top: 0px">
                                     <el-button size="medium" type="plain" icon="el-icon-minus" @click="delOptions(index)" circle ></el-button>
@@ -186,7 +204,7 @@
             <!----------------- 投票详情开始 ------------------>
             <div v-show="showDetailPage">
                 <div class="cv_content_square">
-                    <el-form :model="voteForm" status-icon class="demo-ruleForm" @submit.native.prevent>
+                    <el-form :model="voteForm" :rules="voteFormRules" ref="voteForm" status-icon class="demo-ruleForm" @submit.native.prevent>
                         <el-row class="el-row-h60">
                             <el-col>
                                 <el-form-item label="投票名称" label-position="left" style="margin:0;">
@@ -235,16 +253,17 @@
                                             ></el-input>
                                         </el-form-item>
                                 </el-col>
-                                <el-col :span="6" :offset="1">
-                                    <el-form-item label="人数：" label-width="25%" style="margin:0;">
+                                <el-col :span="8" :offset="1">
+                                    <el-form-item label="人数：" prop="voteOptionCount" label-width="30%" style="margin:0;">
                                         <el-input 
                                         v-model="item.voteOptionCount" 
                                         type="text"
                                         auto-complete="off"
-                                         ></el-input>
+                                        maxlength="8"
+                                        ></el-input>
                                     </el-form-item>
                                     </el-col>
-                                <el-col :span="2" :offset="1">
+                                <!-- <el-col :span="2" :offset="1">
                                     <el-form-item>
                                         <el-input
                                         v-model="item.voteCountRatio"
@@ -253,14 +272,14 @@
                                         :disabled= "true"
                                         ></el-input>
                                     </el-form-item>
-                                </el-col>
+                                </el-col> -->
                             </el-row>
                         </div>
                         
                     </el-form>
                     <el-row style="margin-top: 30px">
                         <el-col class="el-row-h40" :span="3" :offset="8">
-                            <el-button type="primary" style="width: 100%" @click="testSubmit('voteForm')">保存</el-button>
+                            <el-button type="primary" style="width: 100%" @click="testSubmit2('voteForm')">保存</el-button>
                         </el-col>
                         <el-col class="el-row-h40" :span="3" :offset="2">
                             <el-button type="primary" style="width: 100%" @click="closeCreatOrEdit('voteForm')">取消</el-button>

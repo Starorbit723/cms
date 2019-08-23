@@ -80,7 +80,8 @@ var vm = new Vue({
                     {required: true, message: '问答类型必选', trigger: 'change'}
                 ],
                 interactionInfoTitle: [
-                    {required: true, message: '标题不能为空', trigger: 'change'}
+                    {required: true, message: '标题不能为空', trigger: 'change'},
+                    { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
                 ],
                 interactionInfoAbstract: [
                     {required: true, message: '摘要不能为空', trigger: 'change'}
@@ -118,10 +119,10 @@ var vm = new Vue({
             contentArticleTableData:[],
             diaId: '',
             //内容图库相关
-            showContentImgLib: false,
-            searchContentImgForm:{
+            showCoverimgLib: false,
+            searchCoverimgForm:{
                 picTitle:'',
-                picType:'1'//0封面图库 1内容图库 2图为图库
+                picType:'0'//0封面图库 1内容图库 2图为图库
             },
             contentImgTableData:[],
         }
@@ -492,7 +493,11 @@ var vm = new Vue({
          //文章库页码
          handleCurrentChange2 (val) {
             this.pagination2.currPage = val
-            this.searchContentImg()
+            this.searchArticles()
+        },
+        handleCurrentChange3 (val) {
+            this.pagination3.currPage = val
+            this.searchCoverImg()
         },
         // 加载文章列表库
         chooseArticles(){
@@ -563,7 +568,7 @@ var vm = new Vue({
                 interactionId: self.diaId.toString(),
                 interactionInfoId: '',
                 interactionInfoAbstract: item.newsDesc,
-                interactionInfoLabel: item.newsKeywords,
+                // interactionInfoLabel: item.newsKeywords,
                 interactionInfoImg: item.newsHeadPic,
                 interactionInfoTitle: item.newsTitle,
                 interactionInfoTypeEntity:item.newsId.toString(),
@@ -575,7 +580,7 @@ var vm = new Vue({
             } else if (self.creatOrEditArticle == 1) {
                 self.articleDetailForm.interactionInfoType = self.selectedInteractionInfoType
             }
-            // console.log(self.articleDetailForm)
+            console.log(self.articleDetailForm)
             self.checkOpt1 =true
             self.checkOpt = false
             self.showContentLib = false
@@ -694,23 +699,23 @@ var vm = new Vue({
         },
          //修改某一张内容图片
          chooseContentImg () {
-            this.showContentImgLib = true
-            this.searchContentImg(0)
+            this.showCoverimgLib = true
+            this.searchCoverImg(0)
         },
          //搜索内容图库
-         searchContentImg(type){
+         searchCoverImg(type){
             var self = this
-            var data = JSON.parse(JSON.stringify(this.searchContentImgForm))
+            var data = JSON.parse(JSON.stringify(this.searchCoverimgForm))
             data.picTitle = data.picTitle.trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
-                    limit: self.pagination2.pageSize.toString()
+                    limit: self.pagination3.pageSize.toString()
                 })
             } else {
                 Object.assign(data,{
-                    page: self.pagination2.currPage.toString(),
-                    limit: self.pagination2.pageSize.toString()
+                    page: self.pagination3.currPage.toString(),
+                    limit: self.pagination3.pageSize.toString()
                 })
             }
             $.ajax({
@@ -722,7 +727,7 @@ var vm = new Vue({
                 success: function(res){
                     if(res.code == 200){
                         self.contentImgTableData = res.page.list
-                        self.pagination2 = {
+                        self.pagination3 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
                             totalPage:res.page.totalPage,
@@ -740,17 +745,17 @@ var vm = new Vue({
             });
         },
         //选择了某一张封面图片
-        addThisContentImg (item) {
+        addThisCoverImg (item) {
             this.articleDetailForm.interactionInfoImg = item.picUrl
             this.backToEdit()
         },
          //返回编辑页
          backToEdit (){
-            this.showContentImgLib = false
+            this.showCoverimgLib = false
             this.showArticleDetail = true
-            this.searchContentImgForm = {
+            this.searchCoverimgForm = {
                 picTitle:'',
-                picType:'1'//0封面图库 1内容图库 2图为图库
+                picType:'0'//0封面图库 1内容图库 2图为图库
             }
             this.contentImgTableData = [],
             this.pagination3 = {
