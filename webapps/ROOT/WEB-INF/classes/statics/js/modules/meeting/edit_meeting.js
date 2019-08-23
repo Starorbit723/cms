@@ -196,6 +196,9 @@ var vm = new Vue({
                 meetingOrganizer:[
                     { required: true, message: '请填写主办单位', trigger: 'change' }
                 ],
+                meetingCoOrganizer:[
+                    { required: true, message: '协办单位必填，没有协办单位填写"#"', trigger: 'change' }
+                ],
                 meetingScaleNumber:[
                     { required: true, validator: validateScaleNumber, trigger: 'change' }
                 ],
@@ -254,7 +257,8 @@ var vm = new Vue({
             //展示嘉宾数据表
             showGuestLib:false,
             searchGuestForm:{
-                meetingGuestTitle:''
+                meetingGuestTitle:'',
+                meetingGuestStatus:'0',
             },
             guestTableData:[],
             pagination4: {
@@ -280,7 +284,8 @@ var vm = new Vue({
             //展示投票
             showVoteLib:false,
             searchVoteForm:{
-                voteTitle:''
+                voteTitle:'',
+                voteStatus:'0'
             },
             voteTableData:[],
             pagination6: {
@@ -292,7 +297,8 @@ var vm = new Vue({
             //展示文章问答
             showArticleQuestionLib:false,
             searchArticleQuestionForm:{
-                interactionTitle:''
+                interactionTitle:'',
+                interactionStatus: '0'
             },
             articleQuestionTableData:[],
             pagination7: {
@@ -304,7 +310,8 @@ var vm = new Vue({
             //展示高清组图
             showPictrueGroupLib:false,
             searchPictrueGroupForm:{
-                diagramTitle:''
+                diagramTitle:'',
+                diagramStatus: "0"
             },
             pictrueGroupTableData:[],
             pagination8: {
@@ -316,7 +323,8 @@ var vm = new Vue({
             //展示合作伙伴
             showCoperationLib:false,
             searchCoperationForm:{
-                meetingCooperationTitle:''
+                meetingCooperationTitle:'',
+                meetingCooperationStatus: "0"
             },
             coperationTableData:[],
             pagination9: {
@@ -767,7 +775,8 @@ var vm = new Vue({
             }
             this.showGuestLib=false
             this.searchGuestForm={
-                meetingGuestTitle:''
+                meetingGuestTitle:'',
+                meetingGuestStatus:'0'
             },
             this.guestTableData=[]
             this.pagination4= {
@@ -919,7 +928,8 @@ var vm = new Vue({
             }
             this.showVoteLib = false
             this.searchVoteForm = {
-                voteTitle:''
+                voteTitle:'',
+                voteStatus:'0'
             }
             this.voteTableData = []
             this.pagination6 = {
@@ -994,7 +1004,8 @@ var vm = new Vue({
             }
             this.showArticleQuestionLib=false
             this.searchArticleQuestionForm={
-                interactionTitle:''
+                interactionTitle:'',
+                interactionStatus: '0'
             }
             this.articleQuestionTableData=[]
             this.pagination7= {
@@ -1069,7 +1080,8 @@ var vm = new Vue({
             }
             this.showPictrueGroupLib=false
             this.searchPictrueGroupForm={
-                diagramTitle:''
+                diagramTitle:'',
+                diagramStatus:'0'
             }
             this.pictrueGroupTableData=[]
             this.pagination8={
@@ -1144,7 +1156,8 @@ var vm = new Vue({
             }
             this.showCoperationLib=false
             this.searchCoperationForm={
-                meetingCooperationTitle:''
+                meetingCooperationTitle:'',
+                meetingCooperationStatus: "0"
             }
             this.coperationTableData=[]
             this.pagination9 = {

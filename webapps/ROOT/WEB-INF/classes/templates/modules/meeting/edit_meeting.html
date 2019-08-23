@@ -1508,7 +1508,7 @@
                                 </el-form-item>
                             </el-col>
                             <el-col class="el-row-h40" :offset="1" :span="3">
-                                <el-button style="width: 100%;" @click="openAddArticleQuestionList">修改</el-button>
+                                <el-button style="width: 100%;" @click="openAddPictureGroupList">修改</el-button>
                             </el-col>
                         </el-row>
                     </div>
@@ -2283,7 +2283,7 @@
             <el-form :model="searchPictrueGroupForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
                 <el-row class="el-row-h60">
                     <el-col :span="16">
-                        <el-form-item label="文章问答名称" style="margin:0;">
+                        <el-form-item label="高清组图名称" style="margin:0;">
                             <el-input
                             clearable
                             type="text"
@@ -2300,8 +2300,8 @@
                 </el-row>
             </el-form>
             <el-table :data="pictrueGroupTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="pictrueGroupTableData" stripe>
-                <el-table-column prop="diagramId" width="160" label="会议组图编号"></el-table-column>
-                <el-table-column prop="diagramTitle" label="文章问答标题" ></el-table-column>
+                <el-table-column prop="diagramId" width="160" label="高清组图编号"></el-table-column>
+                <el-table-column prop="diagramTitle" label="高清组图标题" ></el-table-column>
                 <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
                 <el-table-column prop="diagramCrtTime" label="创建时间" width="200"></el-table-column>
                 <el-table-column label="操作" width="100" fixed="right">
@@ -2358,7 +2358,7 @@
             <!--分页器-->
             <div class="cv_page_zone">
                 <el-pagination
-                    @current-change="handleCurrentChange8"
+                    @current-change="handleCurrentChange9"
                     :current-page="pagination9.currPage"
                     :page-size="pagination9.pageSize"
                     layout="total, prev, pager, next, jumper"
