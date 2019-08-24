@@ -74,6 +74,8 @@ var vm = new Vue({
                 interactionInfoLabel: '',
                 interactionInfoImg: '',
                 interactionInfoTitle: '',
+                interactionInfoUrl: '',
+                interactionInfoReleaseTime: ''
             },
             articleDetailFormRules: {
                 interactionInfoType: [
@@ -561,7 +563,7 @@ var vm = new Vue({
         //选择了某一篇文章
         addThisContentArticles (item) {
             var self = this
-            
+            console.log(item)
             // console.log(self.selectedOption.value)
             var data = [{
                 // interactionInfoType: self.selectedOption.value,
@@ -572,6 +574,8 @@ var vm = new Vue({
                 interactionInfoImg: item.newsHeadPic,
                 interactionInfoTitle: item.newsTitle,
                 interactionInfoTypeEntity:item.newsId.toString(),
+                interactionInfoUrl: item.newsUrl,
+                interactionInfoReleaseTime: item.newsReleaseTime,
                 interactionInfoPriority:'-1'
             }]
             self.articleDetailForm = data[0]
