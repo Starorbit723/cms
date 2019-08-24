@@ -37,6 +37,8 @@ var vm = new Vue({
                 meetingTitle:'',//标题
                 meetingStarTime:'',//开始时间
                 meetingEndTime:'',//结束时间
+                meetingEnrollStartTime:'',//报名开始时间
+                meetingEnrollEndTime:'',//报名结束时间
                 meetingType:'',//类型
                 meetingUrl:'',//会议链接
                 meetingDesc:'',//简介
@@ -210,7 +212,13 @@ var vm = new Vue({
                 ],
                 meetingSignUpUrl:[
                     { required: true, validator: validateUrl, trigger: 'change' }
-                ]
+                ],
+                meetingEnrollStartTime:[
+                    { required: true, message: '报名开始时间必填', trigger: 'change' }
+                ],
+                meetingEnrollEndTime:[
+                    { required: true, message: '报名结束时间必填', trigger: 'change' }
+                ],
             },
             //封面图库相关
             showCoverimgLib:false,
@@ -1178,8 +1186,12 @@ var vm = new Vue({
         //保存会议 formName---表单名称   type----提交类型
         testMeetingInfo(type,formName) {
             var self = this
-            //判断报名时间和开始时间规则
             console.log('数据',self.meetingForm)
+            //判断报名开始时间和报名结束时间规则
+            if (self.meetingForm.meetingEnrollStartTime >= self.meetingForm.meetingEnrollEndTime) {
+                self.$message.error('报名开始时间必须小于报名结束时间');
+                return
+            }
             self.$refs[formName].validate((valid) =>{
                 if (valid) {
                     self.saveMeeting(type)
