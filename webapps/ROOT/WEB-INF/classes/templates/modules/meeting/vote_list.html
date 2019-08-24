@@ -204,7 +204,7 @@
             <!----------------- 投票详情开始 ------------------>
             <div v-show="showDetailPage">
                 <div class="cv_content_square">
-                    <el-form :model="voteForm" :rules="voteFormRules" ref="voteForm" status-icon class="demo-ruleForm" @submit.native.prevent>
+                    <el-form :model="voteForm" status-icon class="demo-ruleForm" @submit.native.prevent>
                         <el-row class="el-row-h60">
                             <el-col>
                                 <el-form-item label="投票名称" label-position="left" style="margin:0;">
@@ -254,7 +254,7 @@
                                         </el-form-item>
                                 </el-col>
                                 <el-col :span="8" :offset="1">
-                                    <el-form-item label="人数：" prop="voteOptionCount" label-width="30%" style="margin:0;">
+                                    <el-form-item label="人数："  label-width="30%" style="margin:0;">
                                         <el-input 
                                         v-model="item.voteOptionCount" 
                                         type="text"
