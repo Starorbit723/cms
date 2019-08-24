@@ -246,6 +246,7 @@ var vm = new Vue({
             searchCalendarForm:{
                 meetingAgendaTitle:'',
                 meetingAgendaStatus:'0',
+                meetingAgendaMeetingId:'-1',
             },
             calendarTableData:[],
             pagination3: {
@@ -259,6 +260,7 @@ var vm = new Vue({
             searchGuestForm:{
                 meetingGuestTitle:'',
                 meetingGuestStatus:'0',
+                meetingGuestMeetingId:'-1',
             },
             guestTableData:[],
             pagination4: {
@@ -285,7 +287,9 @@ var vm = new Vue({
             showVoteLib:false,
             searchVoteForm:{
                 voteTitle:'',
-                voteStatus:'0'
+                voteStatus:'0',
+                voteMeetingId: '-1',
+                
             },
             voteTableData:[],
             pagination6: {
@@ -298,7 +302,8 @@ var vm = new Vue({
             showArticleQuestionLib:false,
             searchArticleQuestionForm:{
                 interactionTitle:'',
-                interactionStatus: '0'
+                interactionStatus: '0',
+                interactionMeetingId: '-1',
             },
             articleQuestionTableData:[],
             pagination7: {
@@ -311,7 +316,8 @@ var vm = new Vue({
             showPictrueGroupLib:false,
             searchPictrueGroupForm:{
                 diagramTitle:'',
-                diagramStatus: "0"
+                diagramStatus: "0",
+                diagramMeetingId: '-1',
             },
             pictrueGroupTableData:[],
             pagination8: {
@@ -324,7 +330,8 @@ var vm = new Vue({
             showCoperationLib:false,
             searchCoperationForm:{
                 meetingCooperationTitle:'',
-                meetingCooperationStatus: "0"
+                meetingCooperationStatus: "0",
+                meetingCooperationMeetingId:'-1',
             },
             coperationTableData:[],
             pagination9: {
