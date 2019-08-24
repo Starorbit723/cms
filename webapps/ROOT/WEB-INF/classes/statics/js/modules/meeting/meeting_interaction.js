@@ -530,9 +530,9 @@ var vm = new Vue({
                 success: function(res){
                     if(res.code == 200){
                         self.contentArticleTableData = res.page.list
-                        for (let i = 0; i < self.tableData.length; i++){
-                            self.contentArticleTableData[i].newsReleaseTime = self.transformTime(self.contentArticleTableData[i].newsReleaseTime)
-                        }
+                        // for (let i = 0; i < self.tableData.length; i++){
+                        //     self.contentArticleTableData[i].newsReleaseTime = self.transformTime(self.contentArticleTableData[i].newsReleaseTime)
+                        // }
                         self.pagination2 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
@@ -564,6 +564,7 @@ var vm = new Vue({
         addThisContentArticles (item) {
             var self = this
             console.log(item)
+            
             // console.log(self.selectedOption.value)
             var data = [{
                 // interactionInfoType: self.selectedOption.value,
@@ -575,7 +576,7 @@ var vm = new Vue({
                 interactionInfoTitle: item.newsTitle,
                 interactionInfoTypeEntity:item.newsId.toString(),
                 interactionInfoUrl: item.newsUrl,
-                interactionInfoReleaseTime: item.newsReleaseTime,
+                interactionInfoReleaseTime: item.newsReleaseTime.toString(),
                 interactionInfoPriority:'-1'
             }]
             self.articleDetailForm = data[0]
@@ -613,6 +614,7 @@ var vm = new Vue({
             } else if (self.creatOrEditArticle == 1) {
                 var reqUrl = '/interactionInfo/update'
             }
+            console.log(JSON.stringify(data))
             $.ajax({
                 type: "POST",
                 url: reqUrl,

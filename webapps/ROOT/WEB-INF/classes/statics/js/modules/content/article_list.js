@@ -21,6 +21,7 @@ var vm = new Vue({
             label: '不推荐',
             value: 2
         }],
+        timeStamp: '',
         //搜索文章列表提交
         timeRange:[], //时间需要特殊处理,并且同步到searchForm
         searchForm:{
@@ -152,6 +153,7 @@ var vm = new Vue({
                         self.tableData = res.page.list
                         for (let i = 0; i < self.tableData.length; i++){
                             self.tableData[i].newsReleaseTime = self.transformTime(self.tableData[i].newsReleaseTime)
+                            self.
                         }
                         self.pagination1 = {
                             currPage: res.page.currPage,
