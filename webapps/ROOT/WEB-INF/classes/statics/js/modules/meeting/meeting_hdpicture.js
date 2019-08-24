@@ -203,6 +203,7 @@ var vm = new Vue({
          //保存
          testSubmit(formName) {
             var self = this
+            // console.log(self.$refs[formName])
             self.$refs[formName].validate((valid) => {
                 if(valid) {
                     if(self.creatOrEdit == 0) {

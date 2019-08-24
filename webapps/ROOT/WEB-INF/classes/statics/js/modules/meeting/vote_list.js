@@ -276,7 +276,7 @@ var vm = new Vue({
                     }
                 ]
             },
-            this.startSearch()
+            // this.startSearch()
             this.showDetailPage = false
             this.showChildList = false
             this.checkOption = false
