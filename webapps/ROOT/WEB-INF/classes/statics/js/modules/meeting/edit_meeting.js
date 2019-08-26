@@ -297,7 +297,6 @@ var vm = new Vue({
                 voteTitle:'',
                 voteStatus:'0',
                 voteMeetingId: '-1',
-                
             },
             voteTableData:[],
             pagination6: {
@@ -716,6 +715,7 @@ var vm = new Vue({
             this.searchCalendarForm = {
                 meetingAgendaTitle:'',
                 meetingAgendaStatus:'0',
+                meetingAgendaMeetingId:'-1',
             },
             this.calendarTableData = []
             this.pagination3 = {
@@ -791,7 +791,8 @@ var vm = new Vue({
             this.showGuestLib=false
             this.searchGuestForm={
                 meetingGuestTitle:'',
-                meetingGuestStatus:'0'
+                meetingGuestStatus:'0',
+                meetingGuestMeetingId:'-1',
             },
             this.guestTableData=[]
             this.pagination4= {
@@ -944,7 +945,8 @@ var vm = new Vue({
             this.showVoteLib = false
             this.searchVoteForm = {
                 voteTitle:'',
-                voteStatus:'0'
+                voteStatus:'0',
+                voteMeetingId: '-1',
             }
             this.voteTableData = []
             this.pagination6 = {
@@ -1020,7 +1022,8 @@ var vm = new Vue({
             this.showArticleQuestionLib=false
             this.searchArticleQuestionForm={
                 interactionTitle:'',
-                interactionStatus: '0'
+                interactionStatus: '0',
+                interactionMeetingId: '-1',
             }
             this.articleQuestionTableData=[]
             this.pagination7= {
@@ -1096,7 +1099,8 @@ var vm = new Vue({
             this.showPictrueGroupLib=false
             this.searchPictrueGroupForm={
                 diagramTitle:'',
-                diagramStatus:'0'
+                diagramStatus:'0',
+                diagramMeetingId: '-1',
             }
             this.pictrueGroupTableData=[]
             this.pagination8={
@@ -1172,7 +1176,8 @@ var vm = new Vue({
             this.showCoperationLib=false
             this.searchCoperationForm={
                 meetingCooperationTitle:'',
-                meetingCooperationStatus: "0"
+                meetingCooperationStatus: "0",
+                meetingCooperationMeetingId:'-1',
             }
             this.coperationTableData=[]
             this.pagination9 = {
