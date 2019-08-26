@@ -3,12 +3,12 @@ var vm = new Vue({
     data () {
         var validateUrl = (rule, value, callback) => {
             var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
-            if (value) {
-                if (!urlReg.test(value)) {
-                    callback(new Error('链接格式不正确'));
-                } else {
-                    callback();
-                }
+            if (value == '') {
+                callback(new Error('链接不能为空'));
+            } else if (value.trim() == '#') {
+                callback();
+            } else if (!urlReg.test(value)) {
+                callback(new Error('链接格式不正确，暂无链接可填写"#"'));
             } else {
                 callback();
             }
@@ -79,7 +79,7 @@ var vm = new Vue({
                     { validator: validatePriority, trigger: 'change' }
                 ],
                 cooperationUrl:[
-                    { validator: validateUrl, trigger: 'change' }
+                    { required: true, validator: validateUrl, trigger: 'change' }
                 ]
             },
             //图片文件临时存储
