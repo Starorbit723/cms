@@ -80,6 +80,7 @@ var vm = new Vue({
             newsContentNumber:'',//正文字数
             newsContentReadTime:'',//阅读时间
             newsReleaseTime:'',
+            newsOldChannel:'',//暂时记录之前的频道用于MQ修改
             pictureEntity:{},//封面图的item全部信息
             newsContentList:[{//新闻内容图片列表
                 srcName:'',//图片地址
@@ -805,6 +806,8 @@ var vm = new Vue({
         //文章数据转换反显
         editArticleFilter (tempObj) {
             console.log('tempObj',tempObj)
+            //暂时记录一下用户编辑之前的频道Id用于MQ修改
+            tempObj.newsOldChannel = tempObj.newsChannel
             /*
                 回显定时发布时间:
                 已上线文章 status = 2, 不能修改定时时间---不显示
