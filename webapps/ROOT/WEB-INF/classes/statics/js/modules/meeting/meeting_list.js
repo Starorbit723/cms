@@ -213,7 +213,7 @@ var vm = new Vue({
             }).then(() => {
                 var data = {
                     meetingId: item.meetingId.toString(),
-                    meetingStatus: '0'
+                    meetingStatus: '4'
                 }
                 $.ajax({
                     type: "POST",
