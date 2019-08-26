@@ -53,7 +53,8 @@ var vm = new Vue({
                         // labelText:'',
                         // children:[{
                         //     title:'',
-                        //     picUrl:''
+                        //     picUrl:'',
+                        //     cooperationUrl:'',
                         //     scale:'',//权重
                         // }
                     //     ]
@@ -278,6 +279,7 @@ var vm = new Vue({
             this.meetingCopForm.meetingCooperationJson[this.chooseIndex].children[this.chooseIndex2].children.push({
                 title: item.cooperationName,
                 picUrl: item.cooperationImg,
+                cooperationUrl:item.cooperationUrl,
                 scale:'-1'
             });
             this.backToEdit()
@@ -293,6 +295,7 @@ var vm = new Vue({
                 this.meetingCopForm.meetingCooperationJson[this.chooseIndex].children[this.chooseIndex2].children.push({
                     title: this.multipleSelection[i].cooperationName,
                     picUrl: this.multipleSelection[i].cooperationImg,
+                    cooperationUrl:this.multipleSelection[i].cooperationUrl,
                     scale:'-1'
                 });
             }
