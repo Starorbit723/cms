@@ -3,12 +3,14 @@ var vm = new Vue({
     data () {
         var validateUrl = (rule, value, callback) => {
             var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
-            if (value == '') {
+            if (value == '' || value == null) {
                 callback(new Error('链接不能为空'));
-            } else if (value.trim() == '#') {
-                callback();
-            } else if (!urlReg.test(value)) {
-                callback(new Error('链接格式不正确，暂无链接可填写"#"'));
+            } else if (value !== null) {
+                if (value.trim() == '#') {
+                    callback();
+                } else if (!urlReg.test(value)) {
+                    callback(new Error('链接格式不正确，暂无链接可填写"#"'));
+                }
             } else {
                 callback();
             }
