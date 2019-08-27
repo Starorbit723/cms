@@ -174,6 +174,10 @@ var vm = new Vue({
         //添加会场---1级维度
         addDaly () {
             let Lv1Length = this.calendarForm.meetingAgendaJson.length
+            if (Lv1Length >= 3) {
+                this.$message.error('日程最多添加3天')
+                return
+            }
             if (this.calendarForm.meetingAgendaJson[Lv1Length - 1].labelText.trim() !== '' && this.calendarForm.meetingAgendaJson[Lv1Length - 1].timeValue) {
                 console.log(this.calendarForm.meetingAgendaJson[Lv1Length - 1].timeValue)
                 this.calendarForm.meetingAgendaJson.push({
@@ -258,7 +262,7 @@ var vm = new Vue({
             if (currentLv3.children.length == 0) {
                 this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children.push({
                     type:'issue',
-                    timeRange:'',
+                    timeRange:[0, 0],
                     labelText:'',        
                     children:[]
                 })
@@ -266,7 +270,7 @@ var vm = new Vue({
                 if ((currentLv3.children[currentLv3.children.length - 1].labelText.trim() !== '' || currentLv3.children[currentLv3.children.length - 1].labelText.trim() == '#') && currentLv3.children[currentLv3.children.length - 1].timeRange) {
                     this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children.push({
                         type:'issue',
-                        timeRange:'',
+                        timeRange:[0, 0],
                         labelText:'',        
                         children:[]
                     })
@@ -274,6 +278,10 @@ var vm = new Vue({
                     this.$message.error('请填写上一个议题相关内容')
                 }
             }
+
+        },
+        //议题的时间范围发生变化时
+        issueTimeRangeChange(val){
 
         },
         //删除议题index：所属一级索引  index2:所属二级索引 index3:所属三级索引 index4:所属四级索引
