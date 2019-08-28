@@ -143,6 +143,7 @@ var vm = new Vue({
                         isShowFloor:true,
                         isShowDefaultModel: false,
                         isShowSelfConfig: false,
+                        voteType:'',
                         selfConfigZone:[]
                     },
                     articleQuestion:{
@@ -936,6 +937,8 @@ var vm = new Vue({
         },
         addThisVote (item) {
             this.meetingForm.meetingVoteId = item.voteId
+            this.meetingForm.meetingJsonData.vote.voteType = item.voteType
+            console.log('voteType',this.meetingForm.meetingJsonData.vote.voteType)
             this.backToEditFromVote()
         },
         backToEditFromVote (){
