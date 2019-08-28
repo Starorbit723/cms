@@ -1265,18 +1265,15 @@ var vm = new Vue({
         submitMeeting () {
             var self = this
             //meetingStatus=1 待发布
-            self.meetingForm.meetingStatus = '1'
-            //大数据JSON处理
-            var submitData = JSON.parse(JSON.stringify(self.meetingForm))
-            $.base64.utf8encode = true;
-            var jsonString = JSON.stringify(submitData.meetingJsonData);
-            var json64 = $.base64.btoa(jsonString);
-            submitData.meetingJsonData = json64
+            var _data = {
+                meetingId: self.meetingForm.meetingId.toString(),
+                meetingStatus: '1'
+            }
             $.ajax({
                 type: "POST",
-                url: "/meeting/update",
+                url: "/meetingInfo/push",
                 contentType: "application/json",
-                data: JSON.stringify(submitData),
+                data: JSON.stringify(_data),
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){

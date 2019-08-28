@@ -183,7 +183,7 @@ var vm = new Vue({
                 }
                 $.ajax({
                     type: "POST",
-                    url: "/meetingInfo/update",
+                    url: "/meetingInfo/push",
                     contentType: "application/json",
                     data: JSON.stringify(data),
                     dataType: "json",
@@ -217,7 +217,7 @@ var vm = new Vue({
                 }
                 $.ajax({
                     type: "POST",
-                    url: "/meetingInfo/update",
+                    url: "/meetingInfo/push",
                     contentType: "application/json",
                     data: JSON.stringify(data),
                     dataType: "json",
