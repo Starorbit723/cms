@@ -443,11 +443,11 @@ var vm = new Vue({
             $.ajax({
                 type: "GET",
                 contentType: "application/json",
-                url: baseURL + 'sys/user/list',
+                url: '/sys/user/allList',
                 dataType: "json",
                 success: function(res) {
                     if (res.code == 200) {
-                        self.editorOptions = res.page.list
+                        self.editorOptions = res.list
                     } else {
                         mapErrorStatus(res)
                         vm.error = true;
