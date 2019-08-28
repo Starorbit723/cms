@@ -9,6 +9,7 @@ var vm = new Vue({
             showHdPage: false, 
             showDetailPage: false,
             creatOrEdit:  0, //0新建  1修改
+            picCount: '',
             searchForm: {
                 diagramMeetingId: '',
                 diagramTitle: '', 
@@ -319,8 +320,11 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
+                    console.log(res)
                     if(res.code == 200) {
                         self.diagramTableData = res.page.list
+                        self.picCount = res.page.totalCount
+                        console.log(self.picCount)
                         self.pagination3 = {
                             currPage: res.page.currPage,
                             totalCount: res.page.totalCount,
@@ -440,16 +444,22 @@ var vm = new Vue({
         //选择了某一张封面图片
         addThisContentImg (item) {
             var self = this
-            var data = [{
-                diagramId: self.diaId.toString(),
-                diagramInfoPriority: '-1',
-                diagramInfoImg: item.picUrl,
-                diagramInfoTitle: item.picTitle,
-                diagramInfoCrtTime: item.picCrtTime,
-                diagramInfoStatus: "0"
-            }]
-            // console.log(data)
-            self.saveTable(data)
+            console.log(self.picCount)
+            if(self.picCount >= 20) {
+                self.$message.error('每个组图最多只能添加20张图片')
+            } else {
+                var data = [{
+                    diagramId: self.diaId.toString(),
+                    diagramInfoPriority: '-1',
+                    diagramInfoImg: item.picUrl,
+                    diagramInfoTitle: item.picTitle,
+                    diagramInfoCrtTime: item.picCrtTime,
+                    diagramInfoStatus: "0"
+                }]
+                // console.log(data)
+                self.saveTable(data)
+            }
+            
         },
         //返回编辑页
         backToEdit2 (){
@@ -471,28 +481,35 @@ var vm = new Vue({
         //多选批量
         handleSelectionChange (val) {
             this.multipleSelection = val;
+            console.log(val)
+            
         },
         // 批量添加图片至列表
         batchAddDia() {
             var self = this
             var len = self.multipleSelection.length
-            // console.log(len)
-            var data =[]
-            for(i=0; i < len; i++) {
-                data.push({
-                    diagramId: self.diaId,
-                    diagramInfoStatu: "0",
-                    diagramInfoPriority: '-1',
-                    diagramInfoImg: self.multipleSelection[i].picUrl,
-                    diagramInfoTitle: self.multipleSelection[i].picTitle,
-                    diagramInfoCrtTime: self.multipleSelection[i].picCrtTime,
-                })
+            console.log(len)
+            var proTotal = len + self.picCount
+            console.log(proTotal)
+            if(proTotal > 20) {
+                self.$message.error('每个组图最多只能添加20张图片')
+            } else {
+                var data =[]
+                for(i=0; i < len; i++) {
+                    data.push({
+                        diagramId: self.diaId,
+                        diagramInfoStatu: "0",
+                        diagramInfoPriority: '-1',
+                        diagramInfoImg: self.multipleSelection[i].picUrl,
+                        diagramInfoTitle: self.multipleSelection[i].picTitle,
+                        diagramInfoCrtTime: self.multipleSelection[i].picCrtTime,
+                    })
+                }
+                self.saveTable(data)
+                self.startSearch2(self.diaId, 0)
+                self.showContentImgLib = false
+                self.showDetailPage = true
             }
-            // console.log(data)
-            self.saveTable(data)
-            self.startSearch2(self.diaId, 0)
-            self.showContentImgLib = false
-            self.showDetailPage = true
         },
         // 权重发生改变时调整顺序
         scaleChange (item) {
@@ -571,6 +588,7 @@ var vm = new Vue({
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res) {
+                        console.log(res)
                         if(res.code == 200) {
                             self.startSearch2(self.diaId)
                             self.$message.success('删除成功')
