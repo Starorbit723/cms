@@ -52,8 +52,7 @@ var vm = new Vue({
                         voteId: '', //vote编号
                         voteOptionName: '', //选项名称
                         voteOptionCount: '', //选项数量
-                        voteOptionStatus: '', //选项状态 0正常 1删除
-                        voteCountRatio: '', //占比
+                        voteOptionStatus: '0', //选项状态 0正常 1删除
                         voteOptionCrtTime: '', //创建时间
                         voteOptionCrtUserId: '',//当前登录人
                     }
@@ -96,8 +95,9 @@ var vm = new Vue({
             var self = this
             let len = self.voteForm.voteOptionArray.length
             // console.log(this.voteForm)
+            // console.log(self.creatOrEdit)
             if(self.voteForm.voteOptionArray[len-1].voteOptionName.trim() !== '') {
-                if(self.creatOrEdit = 0) {
+                if(self.creatOrEdit == 0) {
                     self.voteForm.voteOptionArray.push({
                         voteOptionId: '',//选项编号
                         voteId: '', //vote编号
@@ -105,16 +105,14 @@ var vm = new Vue({
                         voteOptionCount: '', //选项数量
                         voteOptionStatus: '0', //选项状态 0正常 1删除
                     })
-                } else if(self.creatOrEdit = 1) {
-                    console.log(getCookie('userId'))
-                    console.log(new Date())
+                } else if(self.creatOrEdit == 1) {
                     self.voteForm.voteOptionArray.push({
                         voteOptionId: '',//选项编号
                         voteId: '', //vote编号
                         voteOptionName: '', //选项名称
                         voteOptionCount: '', //选项数量
                         voteOptionStatus: '0', //选项状态 0正常 1删除
-                        voteOptionCrtTime: new Date().getTime(), //创建时间
+                        voteOptionCrtTime: self.transformTime(new Date().getTime()), //创建时间
                         voteOptionCrtUserId: getCookie('userId'),//当前登录人
                     })
                 }
@@ -130,10 +128,44 @@ var vm = new Vue({
         },
         // 删除选项
         delOptions(index) {
-            if(this.voteForm.voteOptionArray.length <= 1) {
-                this.$message.error('至少保留一个选项')
+            var self = this
+            if(self.voteForm.voteOptionArray.length <= 1) {
+                self.$message.error('至少保留一个选项')
             } else{
-                this.voteForm.voteOptionArray.splice(index, 1) 
+                if(self.creatOrEdit == 1) {
+                    var self = this
+                    var data = JSON.parse(JSON.stringify(self.voteForm))
+                    data.voteStatus = '0'
+                    data.voteId = data.voteId.toString()
+                    for(let i = 0; i < data.voteOptionArray.length; i++) {
+                        data.voteOptionArray[i].voteOptionId = data.voteOptionArray[i].voteOptionId.toString()
+                    }
+                    data.voteOptionArray[index].voteOptionStatus = "1"
+                    $.ajax({
+                        type: "POST",
+                        url: '/vote/update',
+                        contentType: "application/json",
+                        data: JSON.stringify(data),
+                        dataType: "json",
+                        success: function(res) {
+                            if(res.code == 200) {
+                                self.voteForm.voteOptionArray.splice(index, 1)
+                                // self.$message.success('保存成功')
+                                // self.startSearch()
+                                // self.closeCreatOrEdit('voteForm')
+                            } else {
+                                mapErrorStatus(res)
+                                vm.error = true;
+                                vm.errorMsg = res.msg;
+                            }
+                        },
+                        error:function(res){
+                            mapErrorStatus(res)
+                        }
+                    })
+                } else {
+                    self.voteForm.voteOptionArray.splice(index, 1)
+                }
             }
         },
         testSubmit2(formName) {
@@ -142,7 +174,6 @@ var vm = new Vue({
             var numReg = /^([1-9]\d*|[0]{1,1})$/;
             for(let i = 0; i < self.voteForm.voteOptionArray.length; i++) {
                 var num1 = self.voteForm.voteOptionArray[i].voteOptionCount
-                // console.log(num1)
                 if(num1 == null || num1.trim() == "") {
                     self.$message.error("人数不能为空")
                     return
@@ -154,7 +185,6 @@ var vm = new Vue({
             var data = JSON.parse(JSON.stringify(self.voteForm))
             data.voteStatus = '0'
             data.voteId = data.voteId.toString()
-            console.log(JSON.stringify(data))
             for(let i = 0; i < data.voteOptionArray.length; i++) {
                 data.voteOptionArray[i].voteOptionId = data.voteOptionArray[i].voteOptionId.toString()
             }
@@ -235,11 +265,12 @@ var vm = new Vue({
             data.voteStatus = '0'
             data.voteId = data.voteId.toString()
             // console.log(JSON.stringify(data))
-            console.log(data)
+            // console.log(data)
             for(let i = 0; i < data.voteOptionArray.length; i++) {
                 data.voteOptionArray[i].voteOptionId = data.voteOptionArray[i].voteOptionId.toString()
             }
-            console.log('准备提交保存的FORM', data)
+            // console.log('准备提交保存的FORM', JSON.stringify(data))
+            // console.log(self.creatOrEdit)
             if (self.creatOrEdit == 0) {
                 var reqUrl = '/vote/save'
             } else if (self.creatOrEdit == 1) {
@@ -291,7 +322,6 @@ var vm = new Vue({
                         voteOptionName: '', //选项名称
                         voteOptionCount: '', //选项数量
                         voteOptionStatus: '', //选项状态 0正常 1删除
-                        voteCountRatio: '', //占比
                     }
                 ]
             },
@@ -330,7 +360,6 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
-                    // console.log(res)
                     if(res.code == 200) {
                         self.tableData = res.page.list
                         self.pagination1 = {
@@ -354,11 +383,10 @@ var vm = new Vue({
 
         // 新建或修改投票type:0  新增   type:1修改
         addOrEditVote(type, item) {
-            // console.log(this.creatOrEdit)
             var self = this
             self.creatOrEdit = type
             if(type == 0) {
-                console.log(item)
+                // console.log(item)
                 self.showVoteList = false
                 self.showChildList = true
             } else if(type == 1) {
@@ -368,7 +396,6 @@ var vm = new Vue({
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res) {
-                        // console.log(res)
                         if(res.code == 200) {
                             let data = res.dict
                             self.voteForm = data
@@ -392,21 +419,16 @@ var vm = new Vue({
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res) {
-                        console.log(res)
                         if(res.code == 200) {
                             let data = res.dict
                             var sum = 0
                             var numReg = /^[0-9]*[1-9][0-9]*$/;
                             for(let i = 0; i < data.voteOptionArray.length; i++) {
                                 var str = data.voteOptionArray[i].voteOptionCount
-                                // console.log(Number(str))
                                 sum = sum + Number(str)
-                                // console.log(sum)
                             }
                             self.voteForm = data
                             self.voteForm.totalVoteCount = sum
-                            // console.log(self.voteForm)
-
                             self.showVoteList = false
                             self.showDetailPage = true
                         } else {
@@ -424,7 +446,6 @@ var vm = new Vue({
         },
         //删除
         deleteThisVote(item) {
-            // console.log(item)
             var self = this
             self.$confirm('确实要删除该投票数据吗？', '提示', {
                 confirmButtonText: '确定',
@@ -433,8 +454,6 @@ var vm = new Vue({
             }).then(() => {
                 var data = JSON.parse(JSON.stringify(item))
                 data.voteStatus = "1"
-                // data.voteOptionArray.voteOptionStatus = "1"
-                // console.log(JSON.stringify(data))
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
@@ -470,6 +489,24 @@ var vm = new Vue({
                 contentType: "application/json",
                 dataType: "json",
             })
+        },
+        //时间格式转换工具
+        transformTime (timestamp = +new Date()) {
+            if (timestamp) {
+                var time = new Date(timestamp);
+                var y = time.getFullYear();
+                var M = time.getMonth() + 1;
+                var d = time.getDate();
+                var h = time.getHours();
+                var m = time.getMinutes();
+                var s = time.getSeconds();
+                return y + '-' + this.addZero(M) + '-' + this.addZero(d) + ' ' + this.addZero(h) + ':' + this.addZero(m) + ':' + this.addZero(s);
+              } else {
+                  return '';
+              }
+        },
+        addZero (m) {
+            return m < 10 ? '0' + m : m;
         }
     } 
 })

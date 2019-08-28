@@ -116,7 +116,7 @@ var vm = new Vue({
                 newsTitle:'',
                 newsStatus:['2']//0是下线，1是在线，2是未发布
             },
-
+            infoId: '',
             multipleSelection:[],
             contentArticleTableData:[],
             diaId: '',
@@ -358,8 +358,6 @@ var vm = new Vue({
         },
         //内容图页面变化
         handleCurrentChange4 (val) {
-            // console.log(val)
-            // console.log(this.diaId)
             this.pagination4.currPage = val
             this.startSearch2(this.diaId)
         },
@@ -408,6 +406,7 @@ var vm = new Vue({
         },
         //新建文章具体内容
         createOrEditArticles(type,item){
+            // console.log(item)
             var self = this
             self.creatOrEditArticle = type
             if(type == 0) {
@@ -415,13 +414,13 @@ var vm = new Vue({
                 self.showArticleDetail = true
             } else if(type == 1) {
                 self.selectedInteractionInfoType = item.interactionInfoType.toString()
+                self.infoId = item.interactionInfoId
                 $.ajax({
                     type: "POST",
                     url: "/interactionInfo/info/" + item.interactionInfoId.toString(),
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res){
-                        // console.log(res)
                         if(res.code == 200){
                             let data = res.dict
                             self.articleDetailForm = data
@@ -558,14 +557,11 @@ var vm = new Vue({
             return item.value === id
             })
             self.btnControl = false
-            // console.log(self.selectedOption)
         },
         //选择了某一篇文章
         addThisContentArticles (item) {
             var self = this
-            console.log(item)
-            
-            // console.log(self.selectedOption.value)
+            // console.log(item)
             var data = [{
                 // interactionInfoType: self.selectedOption.value,
                 interactionId: self.diaId.toString(),
@@ -585,7 +581,7 @@ var vm = new Vue({
             } else if (self.creatOrEditArticle == 1) {
                 self.articleDetailForm.interactionInfoType = self.selectedInteractionInfoType
             }
-            console.log(self.articleDetailForm)
+            // console.log(self.articleDetailForm)
             self.checkOpt1 =true
             self.checkOpt = false
             self.showContentLib = false
@@ -593,6 +589,7 @@ var vm = new Vue({
         },
         saveArticles(formName){
             var self = this 
+            // console.log(self.creatOrEditArticle)
             self.$refs[formName].validate((valid)=> {
                 if(valid) {
                     self.submitCreatEdit2()
@@ -605,8 +602,12 @@ var vm = new Vue({
         // 提交
         submitCreatEdit2() {
             var self = this
+            // console.log(self.creatOrEditArticle)
             var dataArr = []
             dataArr.push(self.articleDetailForm)
+            if(self.creatOrEditArticle == 1) {
+                self.articleDetailForm.interactionInfoId = self.infoId.toString()
+            }
             var data = JSON.parse(JSON.stringify(dataArr))
             // console.log('准备提交保存的FORM', data)
             if (self.creatOrEditArticle == 0) {
@@ -614,7 +615,6 @@ var vm = new Vue({
             } else if (self.creatOrEditArticle == 1) {
                 var reqUrl = '/interactionInfo/update'
             }
-            console.log(JSON.stringify(data))
             $.ajax({
                 type: "POST",
                 url: reqUrl,
