@@ -188,7 +188,7 @@
                     </el-form>
                     <el-row style="margin-top: 30px">
                         <el-col class="el-row-h40" :span="3" :offset="8">
-                            <el-button type="primary" style="width: 100%" @click="testSubmit('voteForm')">保存</el-button>
+                            <el-button type="primary" :disabled="saveBtn" style="width: 100%" @click="testSubmit('voteForm')">保存</el-button>
                         </el-col>
                         <el-col class="el-row-h40" :span="3" :offset="2">
                             <el-button type="primary" style="width: 100%" @click="closeCreatOrEdit('voteForm')">取消</el-button>

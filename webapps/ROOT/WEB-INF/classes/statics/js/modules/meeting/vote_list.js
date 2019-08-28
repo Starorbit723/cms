@@ -3,15 +3,11 @@ var vm = new Vue({
     data(){
         
         return {
-            // pickerOptions:{
-            //     disabledDate(time) {
-            //         return time.getTime() > Date.now();
-            //     }
-            // },
             //是否显示子页面
             showVoteList: true,
             showChildList: false,
             showDetailPage: false,
+            saveBtn: false, // 新建/编辑投票选项
             creatOrEdit: 0, //0新建  1修改
             checkOption: false,
             searchForm: {
@@ -70,17 +66,6 @@ var vm = new Vue({
                 ]
             },
         }
-    },
-    watch: {
-        // timeRange (val) {
-        //     if (val) {
-        //         this.searchForm.startTime = val[0]
-        //         this.searchForm.endTime = val[1]
-        //     } else {
-        //         this.searchForm.startTime = ''
-        //         this.searchForm.endTime = ''
-        //     }
-        // }
     },
     created() {
         this.startSearch(0)
@@ -213,19 +198,20 @@ var vm = new Vue({
         //保存
         testSubmit(formName) {
             var self = this
+            //验证第一个选项是否填写完成
+            for(let i = 0; i < self.voteForm.voteOptionArray.length; i++) {
+                if(self.voteForm.voteOptionArray[i].voteOptionName.trim() == ''){
+                    self.$message.error('还有选项未填写完成')
+                    return
+                } 
+            }
+            if(self.voteForm.voteOptionArray.length == 1){
+                self.$message.error('至少填两个选项')
+                return
+            }
             self.$refs[formName].validate((valid) => {
                 if(valid) {
-                    //验证第一个选项是否填写完成
-                    for(let i = 0; i < self.voteForm.voteOptionArray.length; i++) {
-                        if(self.voteForm.voteOptionArray[i].voteOptionName.trim() == ''){
-                            self.$message.error('还有选项未填写完成')
-                            return
-                        } 
-                    }
-                    if(self.voteForm.voteOptionArray.length == 1){
-                        self.$message.error('至少填两个选项')
-                        return
-                    }
+                    self.saveBtn = true
                     if(self.creatOrEdit == 0) {
                         var data = {
                             voteMeetingId: self.voteForm.voteMeetingId,
@@ -241,6 +227,7 @@ var vm = new Vue({
                             dataType: "json",
                             success: function(res) {
                                 if(res.code == 200) {
+                                    
                                     self.submitCreatEdit()
                                 } else {
                                     mapErrorStatus(res)
@@ -253,6 +240,7 @@ var vm = new Vue({
                             }
                         });
                     } else if (self.creatOrEdit == 1) {
+                        // self.saveBtn = true
                         self.submitCreatEdit()
                         self.checkOption = false
                     } 
@@ -287,6 +275,7 @@ var vm = new Vue({
                         self.$message.success('保存成功')
                         self.startSearch()
                         self.closeCreatOrEdit('voteForm')
+                        self.saveBtn = false
                     } else {
                         mapErrorStatus(res)
                         vm.error = true;
