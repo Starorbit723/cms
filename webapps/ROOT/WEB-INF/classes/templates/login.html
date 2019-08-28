@@ -237,19 +237,21 @@ var vm = new Vue({
 		login: function (event) {
             var self = this
 			var data = "username="+self.loginForm.username+"&password="+self.loginForm.password+"&mobile=" + self.phoneNumber +'&code=' + self.messageCode
-			$.ajax({
+            
+            $.ajax({
 				type: "POST",
 			    url: "sys/login",
 			    data: data,
 			    dataType: "json",
 			    success: function(result){
+                    console.log(result)
                     if(result.code == 200){//登录成功
                         console.log(result.token)
                         self.setCookie('esToken', result.token.toString(), 1)
                         self.setCookie ('createdit', '', 1)
                         self.setCookie ('createditreport', '', 1)
                         self.setCookie ('createditfastinfo', '', 1)
-                        //setCookie('userId', result.user.userId, 1)
+                        self.setCookie('userId', result.userId, 1)
                         parent.location.href ='index.html';
 					} else {
 						self.$message({

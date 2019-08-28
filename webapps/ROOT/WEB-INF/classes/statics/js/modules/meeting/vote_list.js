@@ -54,6 +54,8 @@ var vm = new Vue({
                         voteOptionCount: '', //选项数量
                         voteOptionStatus: '', //选项状态 0正常 1删除
                         voteCountRatio: '', //占比
+                        voteOptionCrtTime: '', //创建时间
+                        voteOptionCrtUserId: '',//当前登录人
                     }
                 ]
             },
@@ -91,23 +93,39 @@ var vm = new Vue({
         
         // 添加选项
         addOptions() {
-            let len = this.voteForm.voteOptionArray.length
+            var self = this
+            let len = self.voteForm.voteOptionArray.length
             // console.log(this.voteForm)
-            if(this.voteForm.voteOptionArray[len-1].voteOptionName.trim() !== '') {
-                this.voteForm.voteOptionArray.push({
-                    voteOptionId: '',//选项编号
-                    voteId: '', //vote编号
-                    voteOptionName: '', //选项名称
-                    voteOptionCount: '', //选项数量
-                    voteOptionStatus: '0', //选项状态 0正常 1删除
-                })
+            if(self.voteForm.voteOptionArray[len-1].voteOptionName.trim() !== '') {
+                if(self.creatOrEdit = 0) {
+                    self.voteForm.voteOptionArray.push({
+                        voteOptionId: '',//选项编号
+                        voteId: '', //vote编号
+                        voteOptionName: '', //选项名称
+                        voteOptionCount: '', //选项数量
+                        voteOptionStatus: '0', //选项状态 0正常 1删除
+                    })
+                } else if(self.creatOrEdit = 1) {
+                    console.log(getCookie('userId'))
+                    console.log(new Date())
+                    self.voteForm.voteOptionArray.push({
+                        voteOptionId: '',//选项编号
+                        voteId: '', //vote编号
+                        voteOptionName: '', //选项名称
+                        voteOptionCount: '', //选项数量
+                        voteOptionStatus: '0', //选项状态 0正常 1删除
+                        voteOptionCrtTime: new Date().getTime(), //创建时间
+                        voteOptionCrtUserId: getCookie('userId'),//当前登录人
+                    })
+                }
+                
             } else {
-                this.$message.error('请完成上一个选项')
+                self.$message.error('请完成上一个选项')
             }
-            if(this.voteForm.voteType == "pk" && len == 2) {
-                this.voteForm.voteOptionArray.length = 2
-                this.voteForm.voteOptionArray.slice(0,2)
-                this.$message.error('观点PK只能设置两个选项')
+            if(self.voteForm.voteType == "pk" && len == 2) {
+                self.voteForm.voteOptionArray.length = 2
+                self.voteForm.voteOptionArray.slice(0,2)
+                self.$message.error('观点PK只能设置两个选项')
             }
         },
         // 删除选项
@@ -217,10 +235,11 @@ var vm = new Vue({
             data.voteStatus = '0'
             data.voteId = data.voteId.toString()
             // console.log(JSON.stringify(data))
+            console.log(data)
             for(let i = 0; i < data.voteOptionArray.length; i++) {
                 data.voteOptionArray[i].voteOptionId = data.voteOptionArray[i].voteOptionId.toString()
             }
-            // console.log('准备提交保存的FORM', data)
+            console.log('准备提交保存的FORM', data)
             if (self.creatOrEdit == 0) {
                 var reqUrl = '/vote/save'
             } else if (self.creatOrEdit == 1) {
