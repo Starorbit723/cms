@@ -117,6 +117,7 @@ var vm = new Vue({
                 newsStatus:['2']//0是下线，1是在线，2是未发布
             },
             infoId: '',
+            PriorityNum: '',
             multipleSelection:[],
             contentArticleTableData:[],
             diaId: '',
@@ -406,7 +407,7 @@ var vm = new Vue({
         },
         //新建文章具体内容
         createOrEditArticles(type,item){
-            // console.log(item)
+            console.log(item)
             var self = this
             self.creatOrEditArticle = type
             if(type == 0) {
@@ -415,6 +416,7 @@ var vm = new Vue({
             } else if(type == 1) {
                 self.selectedInteractionInfoType = item.interactionInfoType.toString()
                 self.infoId = item.interactionInfoId
+                self.PriorityNum = item.interactionInfoPriority
                 $.ajax({
                     type: "POST",
                     url: "/interactionInfo/info/" + item.interactionInfoId.toString(),
@@ -607,6 +609,7 @@ var vm = new Vue({
             dataArr.push(self.articleDetailForm)
             if(self.creatOrEditArticle == 1) {
                 self.articleDetailForm.interactionInfoId = self.infoId.toString()
+                self.articleDetailForm.interactionInfoPriority = self.PriorityNum.toString()
             }
             var data = JSON.parse(JSON.stringify(dataArr))
             // console.log('准备提交保存的FORM', data)
