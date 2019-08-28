@@ -204,7 +204,6 @@ var vm = new Vue({
          //保存
          testSubmit(formName) {
             var self = this
-            // console.log(self.$refs[formName])
             self.$refs[formName].validate((valid) => {
                 if(valid) {
                     if(self.creatOrEdit == 0) {
@@ -320,11 +319,9 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
-                    console.log(res)
                     if(res.code == 200) {
                         self.diagramTableData = res.page.list
                         self.picCount = res.page.totalCount
-                        console.log(self.picCount)
                         self.pagination3 = {
                             currPage: res.page.currPage,
                             totalCount: res.page.totalCount,
@@ -384,7 +381,6 @@ var vm = new Vue({
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res){
-                    console.log(res)
                     if(res.code == 200){
                         self.contentImgTableData = res.page.list
                         self.pagination2 = {
@@ -444,7 +440,6 @@ var vm = new Vue({
         //选择了某一张封面图片
         addThisContentImg (item) {
             var self = this
-            console.log(self.picCount)
             if(self.picCount >= 20) {
                 self.$message.error('每个组图最多只能添加20张图片')
             } else {
@@ -481,16 +476,16 @@ var vm = new Vue({
         //多选批量
         handleSelectionChange (val) {
             this.multipleSelection = val;
-            console.log(val)
+            // console.log(val)
             
         },
         // 批量添加图片至列表
         batchAddDia() {
             var self = this
             var len = self.multipleSelection.length
-            console.log(len)
+            // console.log(len)
             var proTotal = len + self.picCount
-            console.log(proTotal)
+            // console.log(proTotal)
             if(proTotal > 20) {
                 self.$message.error('每个组图最多只能添加20张图片')
             } else {
@@ -513,15 +508,6 @@ var vm = new Vue({
         },
         // 权重发生改变时调整顺序
         scaleChange (item) {
-            // if(item < -1) {
-            //     this.$message.error('权重最低为-1')
-            // } else if(item > 1000) {
-            //     this.$message.error('权重最高为1000')
-            // }else if (item.trim() == ''){
-            //     this.$message.error('权重值不能为空')
-            // } else if (parseFloat(item).toString() == "NaN" ) {
-            //     this.$message.error('权重值不能为非数字')
-            // }
             var reg = new RegExp("^(?:[0-9]{1,3}|1000)$")
             if(!reg.test(item) && item !== -1) {
                 this.$message.error('权重值为-1到1000之间的整数')
@@ -588,7 +574,6 @@ var vm = new Vue({
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res) {
-                        console.log(res)
                         if(res.code == 200) {
                             self.startSearch2(self.diaId)
                             self.$message.success('删除成功')
