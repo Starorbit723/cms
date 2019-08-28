@@ -124,7 +124,7 @@ var vm = new Vue({
             var numReg = /^([1-9]\d*|[0]{1,1})$/;
             for(let i = 0; i < self.voteForm.voteOptionArray.length; i++) {
                 var num1 = self.voteForm.voteOptionArray[i].voteOptionCount
-                console.log(num1)
+                // console.log(num1)
                 if(num1 == null || num1.trim() == "") {
                     self.$message.error("人数不能为空")
                     return
