@@ -1214,11 +1214,20 @@
                     </el-row>
                     <div v-if="meetingForm.meetingJsonData.vote.isShowDefaultModel">
                         <el-row class="el-row-h60">
-                            <el-col :span="20">
+                            <el-col :span="10">
                                 <el-form-item label="投票Id" prop="" label-width="18%" style="margin:0;">
                                     <el-input
                                         :disabled="true"
                                         v-model="meetingForm.meetingVoteId"
+                                        auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="10">
+                                <el-form-item label="投票类型" prop="" label-width="18%" style="margin:0;">
+                                    <el-input
+                                        :disabled="true"
+                                        v-model="meetingForm.meetingJsonData.vote.voteType"
                                         auto-complete="off">
                                     </el-input>
                                 </el-form-item>
