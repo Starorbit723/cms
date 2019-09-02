@@ -297,6 +297,7 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
+                    console.log(self.meetingForm)
                     if (self.ajaxController) {
                         //关闭请求开关
                         var data = JSON.parse(JSON.stringify(self.meetingForm))
@@ -306,6 +307,7 @@ var vm = new Vue({
                         data.meetingJson = json64
                         console.log('6464',jsonString,json64)
                         self.ajaxController = false
+                        console.log(JSON.stringify(data))
                         $.ajax({
                             type: "POST",
                             url: '/meeting/special/update',
@@ -342,6 +344,7 @@ var vm = new Vue({
                 contentType: "application/json",
                 dataType: "json",
                 success: function(res){
+                    // console.log(res)
                     if(res.code == 200){
                         //json64反解
                         let data = res.dict
