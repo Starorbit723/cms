@@ -93,61 +93,100 @@
          <!------------------新增投票开始------------------>
          <div v-show="showAddorEditPage">
             <div class="cv_content_square">
-                <el-form :model="signupForm" :rules="signupFormRules" ref="signupForm" label-position="left" status-icon class="demo-ruleForm" label-width="15%" label-position="right">
+                <el-form :model="signupForm" :rules="signupFormRules" ref="signupForm" status-icon class="demo-ruleForm" label-width="15%" label-position="right">
                    <!--折叠面板开始-->
                     <el-collapse v-model="activeNames">
                          <!--会议基本信息区-->
-                        <el-collapse-item title="SEO-TDK" name="1">
+                        <el-collapse-item title="属性设置" name="1">
                             <el-row class="el-row-h70">
-                                <el-col :span="24">
-                                    <el-form-item prop="meetingTitle" label="会议标题" style="margin:0;">
+                                <el-col :span="22">
+                                    <el-form-item prop="signupTitle" label="报名名称" style="margin:0;">
                                         <el-input
                                         clearable
                                         type="text"
-                                        v-model="meetingForm.meetingTitle"
+                                        v-model="signupForm.signupTitle"
                                         auto-complete="on">
-                                        <template slot="append">最多50字</template>
+                                        <template slot="append">最多36个汉字</template>
                                     </el-input>
                                     </el-form-item>
                                 </el-col>
                             </el-row>
-                            <el-row class="el-row-h110">
-                                <el-col :span="24">
-                                    <el-form-item prop="meetingDesc" label="会议描述" style="margin:0;">
+                            <el-row class="el-row-h70">
+                                <el-col :span="22">
+                                    <el-form-item prop="signupTime" label="报名时间" style="margin:0;">
                                         <el-input
-                                            clearable
-                                            type="textarea"
-                                            :autosize="{ minRows: 3, maxRows: 3}"
-                                            placeholder="限200个汉字"
-                                            v-model="meetingForm.meetingDesc"
-                                            :maxlength="200"
-                                            auto-complete="on">
-                                        </el-input>
+                                        clearable
+                                        type="text"
+                                        v-model="signupForm.signupTime"
+                                        auto-complete="on">
+                                        <template slot="append">最多36个汉字</template>
+                                    </el-input>
                                     </el-form-item>
                                 </el-col>
                             </el-row>
                             <el-row class="el-row-h70">
-                                <el-col :span="24">
-                                    <el-form-item label="关键词" prop="meetingKeywords" style="margin:0;">
-                                        <el-select
-                                            @change="meetingTagChange"
-                                            style="width:100%;"
-                                            v-model="meetingTagArray"
-                                            multiple
-                                            filterable
-                                            allow-create
-                                            default-first-option
-                                            placeholder="请编辑文章标签，不超过5个，不可重复用词">
-                                            <el-option
-                                            v-for="item in labelOptions"
-                                            :key="item.value"
-                                            :label="item.label"
-                                            :value="item.value">
-                                            </el-option>
-                                        </el-select>
+                                <el-col :span="22">
+                                    <el-form-item prop="signupPlace" label="地点" style="margin:0;">
+                                        <el-input
+                                        clearable
+                                        type="text"
+                                        v-model="signupForm.signupPlace"
+                                        auto-complete="on">
+                                        <template slot="append">最多36个汉字</template>
+                                    </el-input>
                                     </el-form-item>
                                 </el-col>
                             </el-row>
+                            <el-row class="el-row-h70">
+                                <el-col :span="22">
+                                    <el-form-item label="报名截止时间" style="margin:0;">
+                                        <el-date-picker
+                                            clearable
+                                            style="width:40%;"
+                                            v-model="timeRange"
+                                            type="datetimerange"
+                                            start-placeholder="开始日期"
+                                            end-placeholder="结束日期"
+                                            :picker-options="pickerOptions"
+                                            value-format="yyyy-MM-dd HH:mm:ss"
+                                            :default-time="['00:00:00', '00:00:00']">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row class="el-row-h70">
+                                <el-col :span="22">
+                                    <el-form-item label="是否使用邀请码" prop="isUseCode" style="margin:0;">
+                                        <template slot-scope="scope">
+                                            <el-radio v-model="signupForm.isUseCode" label="singleChoose">使用</el-radio>
+                                            <el-radio v-model="signupForm.isUseCode" label="pk">不使用</el-radio>
+                                        </template>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row class="el-row-h70">
+                                <el-col :span="22">
+                                    <el-form-item label="设置签到日期" prop="signupDate" style="margin:0;">
+
+                                        <el-date-picker
+                                        v-model="value3"
+                                        type="date"
+                                        placeholder="选择日期"
+                                        format="yyyy 年 MM 月 dd 日"
+                                        value-format="timestamp">
+                                        </el-date-picker>
+
+                                      
+
+
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+
+
+
+
+
                         </el-collapse-item>
 
 
@@ -180,6 +219,12 @@
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
 
 <style>
+.el-collapse-item__header{
+background:rgb(248, 248, 248)!important;
+}
+.el-collapse-item__content{
+    padding: 15px 0 10px 0!important;
+}
 
 </style>
 </html>

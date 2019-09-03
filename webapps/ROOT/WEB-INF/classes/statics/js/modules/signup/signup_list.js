@@ -32,7 +32,13 @@ var vm = new Vue({
             totalPage:0,
             pageSize:10
         },
-        
+        // 报名基本信息
+        signupForm: {
+            signupTitle: '',
+            signupTime: '',
+            isUseCode: '',
+
+        }
     },
     watch: {
         timeRange (val) {
