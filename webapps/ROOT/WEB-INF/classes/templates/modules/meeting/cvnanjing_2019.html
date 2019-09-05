@@ -78,7 +78,7 @@
                 </el-collapse-item>
 
                 <!--会议日程-->
-                <el-collapse-item title="会议日程" name="5">
+                <el-collapse-item title="会议日程" name="2">
                     <el-row class="el-row-h50">
                         <el-col :span="10">
                             <el-form-item label="日程编号" prop="" label-width="30%" style="margin:0;">
@@ -94,7 +94,7 @@
                 </el-collapse-item>
 
                 <!--嘉宾管理-->
-                <el-collapse-item title="嘉宾管理" name="6">
+                <el-collapse-item title="嘉宾管理" name="3">
                     <el-row class="el-row-h50">
                         <el-col :span="10">
                             <el-form-item label="嘉宾编号" prop="" label-width="30%" style="margin:0;">
@@ -110,7 +110,7 @@
                 </el-collapse-item>
 
                 <!--榜单管理-->
-                <el-collapse-item title="榜单管理" name="7">
+                <el-collapse-item title="榜单管理" name="4">
                     <el-row class="el-row-h50">
                         <el-col :span="10">
                             <el-form-item label="榜单编号" prop="" label-width="30%" style="margin:0;">
@@ -125,8 +125,24 @@
                     </el-row>
                 </el-collapse-item>
 
+                <!--合作伙伴-->
+                <el-collapse-item title="合作机构" name="5">
+                    <el-row class="el-row-h50">
+                        <el-col :span="10">
+                            <el-form-item label="合作机构编号" prop="" label-width="30%" style="margin:0;">
+                                <el-input
+                                    :disabled="true"
+                                    v-model="meetingForm.meetingCooperationId"
+                                    auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col class="el-row-h40" :offset="1" :span="13">请到<b style="color: #175CE9;">机构管理—会议机构</b>中配置相关内容，本次会议的会议编号为：<b style="color: #175CE9;">2</b></el-col>
+                    </el-row>
+                </el-collapse-item>
+
                 <!--活动报名-->
-                <el-collapse-item title="活动报名" name="9">
+                <el-collapse-item title="活动报名" name="6">
                     <el-row class="el-row-h60">
                         <el-col :span="24">
                             <el-form-item prop="meetingJson.signUpLink" label-width="14.5%" label="报名链接" style="margin:0;">
