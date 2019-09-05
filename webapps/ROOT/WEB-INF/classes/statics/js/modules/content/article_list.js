@@ -128,6 +128,7 @@ var vm = new Vue({
             data.newsChannel = data.newsChannel.toString()
             data.recommendStatus = data.recommendStatus.toString()
             data.newsCrtUserId = data.newsCrtUserId.toString()
+            console.log(data)
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',

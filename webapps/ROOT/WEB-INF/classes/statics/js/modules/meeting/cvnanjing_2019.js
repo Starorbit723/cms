@@ -35,7 +35,7 @@ var vm = new Vue({
             //切换展示内容图库
             showContentImgLib:false,
             //折叠面板组件实例
-            activeNames: ['1','2','3','4','5','6','7','8','9','10'],
+            activeNames: ['1','2','3','4','5','6'],
             //文章基本信息
             meetingForm:{
                 meetingId:'2',//会议编号
@@ -49,7 +49,7 @@ var vm = new Vue({
                 meetingDesc:'',//描述
                 meetingAgendaId:'2',//日程ID,写死
                 meetingGuestId:'2',//嘉宾ID,写死
-                // meetingCooperationId:'2',//合作机构ID,写死
+                meetingCooperationId:'2',//合作机构ID,写死
                 meetingRankId:'2',//榜单ID,写死
                 meetingJson:{
                     introduce:[{
