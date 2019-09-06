@@ -6,9 +6,9 @@ var vm = new Vue({
         showSingupInfoPage: false, // 报名信息页面
         showInvitationCodePage: false, // 邀请码页面信息
         createInvitationCodePage: false, // 生成邀请码页面
+        chooseMeeting: true, // 绑定会议按钮是否能点击
+
         creatOrEdit:0,//0新建  1修改
-        //折叠面板组件实例
-        activeNames: ['1','2','3','4','5','6','7','8','9','10','11','12'],
         pickerOptions:{
             disabledDate(time) {
                 return time.getTime() > Date.now();
@@ -16,18 +16,11 @@ var vm = new Vue({
         }, 
         timeRange: [], //时间需要特殊处理,并且同步到searchForm
         searchForm:{
-            signUpTitle: [''], //报名页面名称
+            signUpTitle: '', //报名页面名称
             startTime:'',//
             endTime:''//
         },
-        tableData:[
-            {
-                // singupTitle: '南京报名南京报名南京报名南京报名南京报名南京报名南京报名南京报名南京报名',
-                // signupCheck: '-1',
-                // signupModTime: '2018年3月',
-                // modUserName: 'shenda',
-            }
-        ],
+        tableData:[],
         //分页器相关
         pagination1: {
             currPage: 1,
@@ -37,19 +30,38 @@ var vm = new Vue({
         },
         // 报名表基本信息
         signupForm: {
-            meetingBaseInfoTitle: '',
-            meetingBaseInfoMeetingId: '',
-            signupTime: '',
-            isUseCode: '',
-            checkinTime: [],
-            headPic: '',
+            signUpTitle: '', // 报名名称
+            signUpMeetingType: '', //会议类型
+            signUpMeetingId: '',// 关联会议详情ID
+            signUpInvitationCode: '', //是否使用邀请码 0是1否
+            signUpExamine: '', // 是否需要审核 0是1否
+            signUpDate: '', // 签到日期
+            signUpImg: '', // 头图图片
+            signUpName: true, //姓名
+            signUpMobileCode: true, //手机号+验证码
+            signUpPosition: false, //职位
+            signUpCompany: false, //公司
+            signUpEmail: false, //邮箱
+            signUpJson: '', //报名属性
         },
         signupFormRules: {
-            meetingBaseInfoTitle: [
+            signUpTitle: [
                 {required: true, message: '报名名称为必填项', trigger: 'change'}
             ],
-            meetingBaseInfoMeetingId: [
-                {required: true, message: '会议详情ID为必填项', trigger: 'change'}
+            signUpMeetingType: [
+                {required: true, message: '会议类型为必填项', trigger: 'change'}
+            ],
+            signUpMeetingId: [
+                {required: true, message: '关联会议详情ID为必填项', trigger: 'change'}
+            ],
+            signUpInvitationCode: [
+                {required: true, message: '是否使用邀请码为必填项', trigger: 'change'}
+            ],
+            signUpExamine: [
+                {required: true, message: '是否需要审核为必填项', trigger: 'change'}
+            ],
+            signUpImg: [
+                {required: true, message: '头图图片为必填项', trigger: 'change'}
             ]
         },
 
@@ -222,46 +234,46 @@ var vm = new Vue({
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.signUpTitle = data.signUpTitle.toString().trim()
             console.log(data)
-            // if (type == 0) {
-            //     Object.assign(data,{
-            //         page: '1',
-            //         limit: self.pagination1.pageSize.toString()
-            //     })
-            // } else {
-            //     Object.assign(data,{
-            //         page: self.pagination1.currPage.toString(),
-            //         limit: self.pagination1.pageSize.toString()
-            //     })
-            // }
-            // $.ajax({
-            //     type: "POST",
-            //     url: "/signUp/list",
-            //     contentType: "application/json",
-            //     data: JSON.stringify(data),
-            //     dataType: "json",
-            //     success: function(res){
-            //         console.log(res)
-            //         if(res.code == 200){
-            //             self.tableData = res.page.list
-            //             for (let i = 0; i < self.tableData.length; i++){
-            //                 self.tableData[i].singupModTime = self.transformTime(parseInt(self.tableData[i].singupModTime))
-            //             }
-            //             self.pagination1 = {
-            //                 currPage: res.page.currPage,
-            //                 totalCount:res.page.totalCount,
-            //                 totalPage: res.page.totalPage,
-            //                 pageSize: res.page.pageSize
-            //             }
-            //         }else{
-            //             mapErrorStatus(res)
-            //             vm.error = true;
-            //             vm.errorMsg = res.msg;
-            //         }
-            //     },
-            //     error:function(res){
-            //         mapErrorStatus(res)
-            //     }
-            // });
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination1.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination1.currPage.toString(),
+                    limit: self.pagination1.pageSize.toString()
+                })
+            }
+            $.ajax({
+                type: "POST",
+                url: "/signUp/list",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    console.log(res)
+                    if(res.code == 200){
+                        self.tableData = res.page.list
+                        for (let i = 0; i < self.tableData.length; i++){
+                            self.tableData[i].signUpModTime = self.transformTime(parseInt(self.tableData[i].signUpModTime))
+                        }
+                        self.pagination1 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage: res.page.totalPage,
+                            pageSize: res.page.pageSize
+                        }
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
         },
         //新建或修改报名信息 type:0  新增   type:1修改
         addOrEditSignup(type,item){
@@ -329,6 +341,10 @@ var vm = new Vue({
             //     })
             // })
         },
+
+        // --------------------------------新建报名列表部分---------------------------------------
+        addMeeting() {},
+        modMeeting() {},
 
 
 
