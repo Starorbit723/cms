@@ -95,7 +95,7 @@
             <div class="cv_content_square">
                 <el-form :model="signupForm" ref="signupForm"  :rules="signupFormRules" status-icon class="demo-ruleForm" label-width="20%" label-position="right">
                     
-                    <el-row class="el-row-h70">
+                    <el-row class="el-row-h70" style="margin-top: 60px">
                         <el-col :span="18">
                             <el-form-item prop="signUpTitle" label="报名名称" style="margin:0;">
                                 <el-input
@@ -129,7 +129,7 @@
                                     <el-button size="medium" type="primary" icon="el-icon-plus" :disabled="true" @click="addMeeting()">绑定会议</el-button>
                                 </div>
                                 <div v-if="signupForm.signUpMeetingId !== ''">
-                                    <el-col :span="10">
+                                    <el-col :span="18">
                                         <el-input
                                         clearable
                                         type="text"
@@ -137,7 +137,7 @@
                                         :disabled="true"
                                         auto-complete="on">
                                     </el-col>
-                                    <el-col :span="3" :offset="1">
+                                    <el-col :span="5" :offset="1">
                                         <el-button size="medium" type="primary" @click="modMeeting">修改</el-button>
                                     </el-col>
                                 </div>
@@ -145,49 +145,109 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <!-- <el-row class="el-row-h70">
-                        <el-col :span="18">
-                            <el-form-item prop="" label="关联会议名称" style="margin:0;">
-                                <el-input
-                                clearable
-                                type="text"
-                                v-model="signupForm."
-                                auto-complete="on">
-                                <template slot="append">最多36个汉字</template>
-                            </el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row class="el-row-h70">
-                        <el-col :span="18">
-                            <el-form-item prop="signupPlace" label="地点" style="margin:0;">
-                                <el-input
-                                clearable
-                                type="text"
-                                v-model="signupForm.signupPlace"
-                                auto-complete="on">
-                                <template slot="append">最多36个汉字</template>
-                            </el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row class="el-row-h70">
-                        <el-col :span="18">
-                            <el-form-item label="报名截止时间" style="margin:0;">
-                                <el-date-picker
-                                    clearable
-                                    style="width:60%;"
-                                    v-model="timeRange"
-                                    type="datetimerange"
-                                    start-placeholder="开始日期"
-                                    end-placeholder="结束日期"
-                                    :picker-options="pickerOptions"
-                                    value-format="yyyy-MM-dd HH:mm:ss"
-                                    :default-time="['00:00:00', '00:00:00']">
-                                </el-date-picker>
-                            </el-form-item>
-                        </el-col>
-                    </el-row> -->
+
+                    <div v-if="signupForm.signUpMeetingId !== ''">
+                        <el-form :model="meetingBaseInfoForm"  status-icon class="demo-ruleForm" label-width="25%" label-position="right" @submit.native.prevent>
+                            <el-row class="el-row-h70">
+                                <el-col :span="18">
+                                    <el-form-item label="关联会议名称" style="margin:0;">
+                                        <el-input
+                                        disabled
+                                        type="text"
+                                        v-model="meetingBaseInfoForm.meetingBaseInfoTitle"
+                                        auto-complete="on">
+                                    </el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row class="el-row-h70">
+                                <el-col :span="18">
+                                    <el-form-item label="会议起止时间" style="margin:0;">
+                                        <el-col :span="10">
+                                            <el-input
+                                            disabled
+                                            type="text"
+                                            v-model="meetingBaseInfoForm.meetingBaseInfoStartTime"
+                                            auto-complete="on">
+                                            </el-input>
+                                        </el-col>
+                                        <el-col :span="10" :offset="1">
+                                            <el-input
+                                            disabled
+                                            type="text"
+                                            v-model="meetingBaseInfoForm.meetingBaseInfoEndTime"
+                                            auto-complete="on">
+                                            </el-input>
+                                        </el-col>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row class="el-row-h70">
+                                <el-col :span="18">
+                                    <el-form-item label="报名起止时间" style="margin:0;">
+                                        <el-col :span="10">
+                                            <el-input
+                                            disabled
+                                            type="text"
+                                            v-model="meetingBaseInfoForm.meetingBaseInfoSignUpStartTime"
+                                            auto-complete="on">
+                                            </el-input>
+                                        </el-col>
+                                        <el-col :span="10" :offset="1">
+                                            <el-input
+                                            type="text"
+                                            disabled
+                                            v-model="meetingBaseInfoForm.meetingBaseInfoSignUpEndTime"
+                                            auto-complete="on">
+                                            </el-input>
+                                        </el-col>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row class="el-row-h70">
+                                <el-col :span="18">
+                                    <el-form-item label="所在区域" style="margin:0;">
+                                        <el-col :span="6">
+                                            <el-input
+                                            disabled
+                                            type="text"
+                                            v-model="meetingBaseInfoForm.meetingBaseInfoProvince"
+                                            auto-complete="on">
+                                            </el-input>
+                                        </el-col>
+                                        <el-col :span="6" :offset="1">
+                                            <el-input
+                                            type="text"
+                                            disabled
+                                            v-model="meetingBaseInfoForm.meetingBaseInfoCity"
+                                            auto-complete="on">
+                                            </el-input>
+                                        </el-col>
+                                        <el-col :span="6" :offset="1">
+                                            <el-input
+                                            type="text"
+                                            disabled
+                                            v-model="meetingBaseInfoForm.meetingBaseInfogArea"
+                                            auto-complete="on">
+                                            </el-input>
+                                        </el-col>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row class="el-row-h70">
+                                <el-col :span="18">
+                                    <el-form-item label="关联会议名称" style="margin:0;">
+                                        <el-input
+                                        disabled
+                                        type="text"
+                                        v-model="meetingBaseInfoForm.meetingBaseInfoAddress"
+                                        auto-complete="on">
+                                    </el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </div>
 
 
                     <div class="sparate_line">属性设置</div>
@@ -211,27 +271,27 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <!-- <div class="el-row-h70" style="margin-top:70px" v-for="(item, index) in signupForm.checkinTime"> -->
-                    <el-row class="el-row-h40">
-                        <el-col :span="10">
-                            <el-form-item label="设置签到日期" label-width="36%" prop="signUpDate">
-                                <el-date-picker
-                                v-model="signupForm.signUpDate"
-                                type="date"
-                                placeholder="选择日期"
-                                format="yyyy 年 MM 月 dd 日"
-                                value-format="timestamp">
-                                </el-date-picker>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="1" :offset="1" style="margin-top: 0px">
-                            <el-button size="medium" type="primary" icon="el-icon-plus" @click="addOptions('voteForm')" circle ></el-button>
-                        </el-col>
-                        <el-col :span="1"  :offset="1" style="margin-top: 0px">
-                            <el-button size="medium" type="plain" icon="el-icon-minus" @click="delOptions(index)" circle ></el-button>
-                        </el-col>
-                    </el-row> 
-                    <!-- </div> -->
+                    <div class="el-row-h70" v-for="(value, index) in checkinTime">
+                        <el-row class="el-row-h40">
+                            <el-col :span="10">
+                                <el-form-item label="设置签到日期" label-width="36%" prop="signUpDate">
+                                    <el-date-picker
+                                    v-model="checkinTime[index]"
+                                    type="date"
+                                    placeholder="选择日期"
+                                    format="yyyy 年 MM 月 dd 日"
+                                    value-format="timestamp">
+                                    </el-date-picker>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="1" :offset="1" style="margin-top: 0px">
+                                <el-button size="medium" type="primary" icon="el-icon-plus" @click="addOptions()" circle ></el-button>
+                            </el-col>
+                            <el-col :span="1"  :offset="1" style="margin-top: 0px">
+                                <el-button size="medium" type="plain" icon="el-icon-minus" @click="delOptions(index)" circle ></el-button>
+                            </el-col>
+                        </el-row> 
+                    </div>
 
 
 
@@ -272,7 +332,7 @@
                             <el-col :span="18">
                                 <el-form-item label="" label-width="10%" style="margin:0">
                                     <template slot-scope="scope">
-                                        <el-checkbox v-model="signupForm.selfConfig">自定义选项</el-checkbox>
+                                        <el-checkbox v-model="signupForm.signUpCustom">自定义选项</el-checkbox>
                                     </template>
                                 </el-form-item>
                             </el-col>
@@ -280,8 +340,8 @@
                     </el-row>
 
                     <!-- 自定义选项 -->
-                    <el-row v-if="isShowselfConfig" class="el-row-h70" style="margin-top: 70px">
-                        <div v-for="(item,index) in signupForm.signUpJson">
+                    <el-row v-if="isShowselfConfig" class="el-row-h70" style="margin-top: 40px">
+                        <div v-for="(item,index) in signupForm.signUpJson" class="option_line">
                             <el-row class="el-row-h70">
                                 <el-col :span="18">
                                     <el-form-item label="自定义标题" style="margin:0;">
@@ -309,9 +369,8 @@
                                     </el-form-item>
                                 </el-col>
                             </el-row>
-
-                            <div style="margin-top: 50px;" v-for="(item2, index2) in item.itemList"></div>
-                                <el-row class="el-row-h70">
+                            <div v-for="(item2, index2) in item.itemList">
+                                <el-row class="el-row-h40" style="margin-bottom: 20px;">
                                     <el-col :span="18">
                                         <el-form-item label="选项" style="margin:0;">
                                             <el-input
@@ -323,22 +382,20 @@
                                             </el-input>
                                         </el-form-item>
                                     </el-col>
-                                    <el-col :span="1" :offset="1">
+                                    <el-col :span="5" :offset="1">
                                         <template>
                                             <el-radio v-model="item2.ifShow" label="true">显示</el-radio>
                                             <el-radio v-model="item2.ifShow" label="false">不显示</el-radio>
                                         </template>
                                     </el-col>
-                                
                                 </el-row>
                             </div>
                         </div>
-
                     </el-row>
 
 
-                    <el-row class="el-row-h70" style="margin-top: 70px" v-if="signupForm.selfConfig" >
-                        <el-col :span="4" :offset="2">
+                    <el-row class="el-row-h80" v-if="signupForm.signUpCustom" >
+                        <el-col :span="4" :offset="7">
                             <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="">自定义选项</el-button>
                         </el-col>
                         <el-col :span="4" :offset="2">
@@ -696,7 +753,7 @@ background:rgb(248, 248, 248)!important;
 }
 .sparate_line {
     display: block;
-    margin:70px auto;
+    margin:40px auto;
     width: 900px;
     height:40px;
     line-height: 40px;
@@ -705,6 +762,14 @@ background:rgb(248, 248, 248)!important;
     color: #7f7f7f;
     text-align: center;
     border-bottom: 1px dotted #7f7f7f;
+}
+.option_line {
+    width: 900px;
+    margin:40px auto;
+    border-bottom: 1px #ccc solid;
+}
+.option_line:last-child {
+    border-bottom: none;
 }
 </style>
 </html>

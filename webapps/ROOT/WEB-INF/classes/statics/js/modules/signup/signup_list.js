@@ -30,6 +30,7 @@ var vm = new Vue({
             pageSize:10
         },
         // --------------------------新建报名表基本信息---------------
+        checkinTime: [],
         signupForm: {
             signUpTitle: '', // 报名名称
             signUpMeetingType: '', //会议类型
@@ -43,7 +44,7 @@ var vm = new Vue({
             signUpPosition: false, //职位
             signUpCompany: false, //公司
             signUpEmail: false, //邮箱
-            selfConfig: true,
+            signUpCustom: true,
             signUpJson: [{
                 sectionId:0,
                 sectionTitle:'您的身份',
@@ -125,6 +126,20 @@ var vm = new Vue({
             signUpImg: [
                 {required: true, message: '头图图片为必填项', trigger: 'change'}
             ]
+        },
+        //会议基础信息表
+        meetingBaseInfoForm: {
+            meetingBaseInfoId: '2',
+            meetingBaseInfoMeetingId: '2',
+            meetingBaseInfoTitle: '3',
+            meetingBaseInfoStartTime:'3',
+            meetingBaseInfoEndTime:'3',
+            meetingBaseInfoSignUpStartTime:'3',
+            meetingBaseInfoSignUpEndTime: '3',
+            meetingBaseInfoProvince: '3',
+            meetingBaseInfoCity:'3',
+            meetingBaseInfogArea: '3',
+            meetingBaseInfoAddress:'3',
         },
         //内容图库相关
         showCoverimgLib: false,
@@ -278,8 +293,12 @@ var vm = new Vue({
                 this.searchForm.endTime = ''
             }
             console.log(this.searchForm)
+        },
+        checkinTime(val) {
+            console.log(val)
         }
     },
+    
     created () {
         this.startSearch(0)
     },
@@ -671,7 +690,10 @@ var vm = new Vue({
 
 
 
+        showtime(){
+            console.log(event)
 
+        },
 
 
         //时间格式转换工具
