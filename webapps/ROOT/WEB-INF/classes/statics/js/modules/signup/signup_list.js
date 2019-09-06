@@ -7,6 +7,7 @@ var vm = new Vue({
         showInvitationCodePage: false, // 邀请码页面信息
         createInvitationCodePage: false, // 生成邀请码页面
         chooseMeeting: true, // 绑定会议按钮是否能点击
+        isShowselfConfig: true, // 自定义选项是否显示
 
         creatOrEdit:0,//0新建  1修改
         pickerOptions:{
@@ -28,7 +29,7 @@ var vm = new Vue({
             totalPage:0,
             pageSize:10
         },
-        // 报名表基本信息
+        // --------------------------新建报名表基本信息---------------
         signupForm: {
             signUpTitle: '', // 报名名称
             signUpMeetingType: '', //会议类型
@@ -42,9 +43,70 @@ var vm = new Vue({
             signUpPosition: false, //职位
             signUpCompany: false, //公司
             signUpEmail: false, //邮箱
-            signUpJson: '', //报名属性
+            selfConfig: true,
+            signUpJson: [{
+                sectionId:0,
+                sectionTitle:'您的身份',
+                sectionStatus:'1',
+                limit:1,
+                itemList:[{
+                    itemId:0,
+                    itemText:'LP',
+                    itemStatus:'1',
+                    ifShow:true,
+                    ifChoose:false
+                },{
+                    itemId:1,
+                    itemText:'GP',
+                    itemStatus:'1',
+                    ifShow:false,
+                    ifChoose:false
+                },{
+                    itemId:2,
+                    itemText:'NP',
+                    itemStatus:'1',
+                    ifShow:true,
+                    ifChoose:false
+                }]
+            },{
+                sectionId:1,
+                sectionTitle:'参会权益',
+                sectionStatus:'1',
+                limit:2,
+                itemList:[{
+                    itemId:0,
+                    itemText:'主会场-投资者年会上午场',
+                    itemStatus:'1',
+                    ifShow:true,
+                    ifChoose:false
+                },{
+                    itemId:1,
+                    itemText:'分会场-投资者年会第二天的下午场',
+                    itemStatus:'1',
+                    ifShow:true,
+                    ifChoose:false
+                },{
+                    itemId:2,
+                    itemText:'专家论坛-投资者的数据分享大会',
+                    itemStatus:'1',
+                    ifShow:false,
+                    ifChoose:false
+                },{
+                    itemId:3,
+                    itemText:'分会场2-国际商业专家评审团演讲',
+                    itemStatus:'1',
+                    ifShow:true,
+                    ifChoose:false
+                },{
+                    itemId:4,
+                    itemText:'晚宴-投资者之夜',
+                    itemStatus:'1',
+                    ifShow:true,
+                    ifChoose:false
+                }]
+            }]
         },
-        signupFormRules: {
+        signupFormRules:{
             signUpTitle: [
                 {required: true, message: '报名名称为必填项', trigger: 'change'}
             ],
@@ -64,6 +126,13 @@ var vm = new Vue({
                 {required: true, message: '头图图片为必填项', trigger: 'change'}
             ]
         },
+        //内容图库相关
+        showCoverimgLib: false,
+        searchCoverimgForm:{
+            picTitle:'',
+            picType:'0'//0封面图库 1内容图库 2图为图库
+        },
+        contentImgTableData:[],
 
 
         // 报名人列表信息
@@ -197,10 +266,6 @@ var vm = new Vue({
                 {required: true, message: '生成人为必填项', trigger: 'change'}
             ]
         }
-
-
-
-
     },
     watch: {
         timeRange (val) {
@@ -345,6 +410,74 @@ var vm = new Vue({
         // --------------------------------新建报名列表部分---------------------------------------
         addMeeting() {},
         modMeeting() {},
+        //头图图片
+        chooseCovertImg() {
+            this.showCoverimgLib = true
+            this.searchCoverImg(0)
+        },
+        //搜索内容图库
+        searchCoverImg(type){
+            var self = this
+            var data = JSON.parse(JSON.stringify(this.searchCoverimgForm))
+            data.picTitle = data.picTitle.trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination3.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination3.currPage.toString(),
+                    limit: self.pagination3.pageSize.toString()
+                })
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/picture/list",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.contentImgTableData = res.page.list
+                        self.pagination3 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage:res.page.totalPage,
+                            pageSize:res.page.pageSize
+                        }
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        //选择了某一张封面图片
+        addThisCoverImg (item) {
+            this.signupForm.signUpImg = item.picUrl
+            this.backToEdit()
+        },
+         //返回编辑页
+         backToEdit (){
+            this.showCoverimgLib = false
+            this.showArticleDetail = true
+            this.searchCoverimgForm = {
+                picTitle:'',
+                picType:'0'//0封面图库 1内容图库 2图为图库
+            }
+            this.contentImgTableData = [],
+            this.pagination3 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+        },
 
 
 
@@ -558,6 +691,6 @@ var vm = new Vue({
         },
         addZero (m) {
             return m < 10 ? '0' + m : m;
-        }   
+        },
     }
 })
