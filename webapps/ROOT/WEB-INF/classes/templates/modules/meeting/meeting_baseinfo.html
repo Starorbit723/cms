@@ -112,8 +112,9 @@
                     </el-row>
                     <el-row class="el-row-h70">
                         <el-col :span="24">
-                            <el-form-item prop="meetingTimes" label="会议起止时间" style="margin:0;">
+                            <el-form-item prop="meetingTimes" label="会议时间" style="margin:0;">
                                 <el-date-picker
+                                    clearable
                                     style="width:100%;"
                                     v-model="meetingBaseinfoForm.meetingTimes"
                                     type="datetimerange"
@@ -130,6 +131,7 @@
                         <el-col :span="24">
                             <el-form-item prop="meetingBaomingTimes" label="会议报名时间" style="margin:0;">
                                 <el-date-picker
+                                    clearable
                                     style="width:100%;"
                                     v-model="meetingBaseinfoForm.meetingBaomingTimes"
                                     type="datetimerange"

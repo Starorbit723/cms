@@ -2,9 +2,9 @@ var vm = new Vue({
     el: '#meeting_baseinfo',
     data () {
         var validateMeetingTimes = (rule, value, callback) => {
-            console.log(value,value[0])
-            if (value[0]) {
-                if (value[0] == value[1]) {
+            console.log(value)
+            if (value !== null) {
+                if (value !== [] && (value[0] == value[1])) {
                     callback(new Error('会议开始时间不能与会议结束时间相同'));
                 } else {
                     callback();
@@ -15,14 +15,14 @@ var vm = new Vue({
             
         }
         var validateMeetingBaomingTimes = (rule, value, callback) => {
-            if (value[0]) {
-                if (value[0] == value[1]) {
-                    callback(new Error('会议报名开始时间不能与会议报名结束时间相同'));
+            if (value !== null && value !== undefined) {
+                if (value[0] !== '#' && value[0] !== undefined && (value[0] == value[1])) {
+                    callback(new Error('报名开始时间不能与报名结束时间相同'));
                 } else {
                     callback();
                 }
             } else {
-                callback(new Error('会议报名时间为必填项'));
+                callback();
             }
         }
         return {
@@ -47,7 +47,7 @@ var vm = new Vue({
                 meetingBaseInfoSignUpEndTime:'',//报名结束时间
                 meetingBaseInfoProvince:'',//所在省
                 meetingBaseInfoCity:'',//所在市
-                meetingBaseInfoArea:'',//所在区
+                meetingBaseInfogArea:'',//所在区
                 meetingBaseInfoAddress:'',//详细地址
                 meetingBaseInfoCrtUserId:'',//
                 meetingBaseInfoModUserId:'',//
@@ -74,7 +74,7 @@ var vm = new Vue({
                 meetingBaseInfoSignUpEndTime:'',//报名结束时间
                 meetingBaseInfoProvince:'',//所在省
                 meetingBaseInfoCity:'',//所在市
-                meetingBaseInfoArea:'',//所在区
+                meetingBaseInfogArea:'',//所在区
                 meetingBaseInfoAddress:'',//详细地址
                 meetingRegion:[],//会议所在区域-----前端自用字段
                 meetingTimes:[],//会议时间数组-----前端自用字段
@@ -171,13 +171,18 @@ var vm = new Vue({
             } else {
                 $.ajax({
                     type: "POST",
-                    url: "/meetingBaseInfo/info/" + item.meetingBaseInfoId.toString(),
+                    url: "/meeting/guest/info/" + item.meetingGuestId.toString(),
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res){
                         if(res.code == 200){
-                            console.log('请求修改的会议返回结果：',res.dict)
-                            self.editMeetingFilter(res.dict)
+                            //json64反解
+                            let data = res.dict
+                            let map = $.base64.atob(data.meetingGuestJson, true)
+                            data.meetingGuestJson = JSON.parse(map)
+                            console.log(data)
+                            self.meetingBaseinfoForm = data
+                            self.showChildPage = true
                         }else{
                             mapErrorStatus(res)
                             vm.error = true;
@@ -188,49 +193,23 @@ var vm = new Vue({
                         mapErrorStatus(res)
                     }
                 });
+                console.log('修改机构',self.meetingBaseinfoForm.picUrl)
             }
-        },
-        //编辑反显前数据过滤
-        editMeetingFilter (tempObj) {
-            console.log('tempObj',tempObj)
-            //省市区反显
-            tempObj.meetingRegion = []
-            for (let i = 0; i < this.RegionOptions.length; i++) {
-                if (this.RegionOptions[i].label == tempObj.meetingBaseInfoProvince) {
-                    tempObj.meetingRegion[0] = this.RegionOptions[i].value
-                    for (let j = 0; j <this.RegionOptions[i].children.length; j ++) {
-                        if (this.RegionOptions[i].children[j].label == tempObj.meetingBaseInfoCity) {
-                            tempObj.meetingRegion[1] = this.RegionOptions[i].children[j].value
-                            for (let k = 0; k < this.RegionOptions[i].children[j].children.length; k++) {
-                                if (this.RegionOptions[i].children[j].children[k].label == tempObj.meetingBaseInfoArea) {
-                                    tempObj.meetingRegion[2] = this.RegionOptions[i].children[j].children[k].value
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            //会议时间反显
-            tempObj.meetingTimes = [parseInt(tempObj.meetingBaseInfoStartTime),parseInt(tempObj.meetingBaseInfoEndTime)]
-            tempObj.meetingBaomingTimes = [parseInt(tempObj.meetingBaseInfoSignUpStartTime),parseInt(tempObj.meetingBaseInfoSignUpEndTime)]
-            this.meetingBaseinfoForm = tempObj
-            this.$refs['meetingBaseinfoForm'].resetFields()
-            this.showChildPage = true
         },
         //删除
         deleteThisBaseinfo (item){
             var self = this
-            self.$confirm('确实要删除该基本信息数据吗?', '提示', {
+            self.$confirm('确实要删除该嘉宾数据吗?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
                 var data = JSON.parse(JSON.stringify(item))
-                data.meetingBaseInfoStatus = 1  //0 正常  1 删除
+                data.meetingGuestStatus = 1  //0 正常  1 删除
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: "/meetingBaseInfo/update",
+                    url: "/meeting/guest/update",
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res) {
@@ -259,14 +238,14 @@ var vm = new Vue({
                             this.meetingBaseinfoForm.meetingBaseInfoCity = this.RegionOptions[i].children[j].label
                             for (let k = 0; k < this.RegionOptions[i].children[j].children.length; k++) {
                                 if (this.RegionOptions[i].children[j].children[k].value == val[2]) {
-                                    this.meetingBaseinfoForm.meetingBaseInfoArea = this.RegionOptions[i].children[j].children[k].label
+                                    this.meetingBaseinfoForm.meetingBaseInfogArea = this.RegionOptions[i].children[j].children[k].label
                                 }
                             }
                         }
                     }
                 }
             }
-            console.log('省市区发生变化',this.meetingBaseinfoForm.meetingBaseInfoProvince,this.meetingBaseinfoForm.meetingBaseInfoCity,this.meetingBaseinfoForm.meetingBaseInfoArea)
+            console.log('省市区发生变化',this.meetingBaseinfoForm.meetingBaseInfoProvince,this.meetingBaseinfoForm.meetingBaseInfoCity,this.meetingBaseinfoForm.meetingBaseInfogArea)
         },
         //会议起止时间变化
         handleMeetingTimesChange(val){
@@ -295,11 +274,7 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
-                    //判断报名时间和开始时间规则
-                    if (self.meetingBaseinfoForm.meetingBaseInfoSignUpEndTime > self.meetingBaseinfoForm.meetingBaseInfoStartTime) {
-                        self.$message.error('会议报名截至时间不能大于会议开始时间')
-                        return
-                    }
+                    //验证是否有重复数据
                     self.submitCreatEdit()
                 }
             })
@@ -348,7 +323,7 @@ var vm = new Vue({
                 meetingBaseInfoSignUpEndTime:'',//报名结束时间
                 meetingBaseInfoProvince:'',//所在省
                 meetingBaseInfoCity:'',//所在市
-                meetingBaseInfoArea:'',//所在区
+                meetingBaseInfogArea:'',//所在区
                 meetingBaseInfoAddress:'',//详细地址
                 meetingBaseInfoCrtUserId:'',//
                 meetingBaseInfoModUserId:'',//
@@ -360,7 +335,6 @@ var vm = new Vue({
             this.showChildPage = false
             this.creatOrEdit = 0
         },
-        
 
     }
 })

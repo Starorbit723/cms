@@ -77,7 +77,6 @@
                     </el-table-column>
                 </el-table>
             </div>
-            <!--分页器-->
             <div class="cv_page_zone">
                 <el-pagination
                     @current-change="handleCurrentChange"
@@ -108,16 +107,16 @@
                         </el-col>
                     </el-row>
 
-
-
-
                     <div class="sparate_line">关联会议详情</div>
                     <el-row class="el-row-h70">
                         <el-col :span="18">
                             <el-form-item label="会议类型" prop="signUpMeetingType" style="margin:0;">
                                 <template slot-scope="scope">
-                                    <el-radio v-model="signupForm.signUpMeetingType" label="0">定制会议</el-radio>
-                                    <el-radio v-model="signupForm.signUpMeetingType" label="1">通用会议</el-radio>
+                                    <el-radio-group @change="changeLabel" v-model="signupForm.signUpMeetingType" >
+                                        <el-radio label="0">定制会议</el-radio>
+                                        <el-radio label="1">通用会议</el-radio>
+
+                                    </el-radio-group>
                                 </template>
                             </el-form-item>
                         </el-col>
@@ -126,7 +125,7 @@
                         <el-col :span="18">
                             <el-form-item prop="signUpMeetingId" label="关联会议详情ID" style="margin:0;">
                                 <div v-if="signupForm.signUpMeetingId == ''">
-                                    <el-button size="medium" type="primary" icon="el-icon-plus" :disabled="true" @click="addMeeting()">绑定会议</el-button>
+                                    <el-button size="medium" type="primary" icon="el-icon-plus" :disabled="isBindMeeting" @click="bindMeeting()">绑定会议</el-button>
                                 </div>
                                 <div v-if="signupForm.signUpMeetingId !== ''">
                                     <el-col :span="18">
@@ -138,7 +137,7 @@
                                         auto-complete="on">
                                     </el-col>
                                     <el-col :span="5" :offset="1">
-                                        <el-button size="medium" type="primary" @click="modMeeting">修改</el-button>
+                                        <el-button size="medium" type="primary" @click="bindMeeting()">修改</el-button>
                                     </el-col>
                                 </div>
                             </el-input>
@@ -146,7 +145,7 @@
                         </el-col>
                     </el-row>
 
-                    <div v-if="signupForm.signUpMeetingId !== ''">
+                    <!-- <div v-if="signupForm.signUpMeetingId !== ''">
                         <el-form :model="meetingBaseInfoForm"  status-icon class="demo-ruleForm" label-width="25%" label-position="right" @submit.native.prevent>
                             <el-row class="el-row-h70">
                                 <el-col :span="18">
@@ -247,7 +246,7 @@
                                 </el-col>
                             </el-row>
                         </el-form>
-                    </div>
+                    </div> -->
 
 
                     <div class="sparate_line">属性设置</div>
@@ -293,8 +292,6 @@
                         </el-row> 
                     </div>
 
-
-
                     <div class="sparate_line">页面设置</div>
                     <el-row class="el-row-h70" style="margin-top: 70px" >
                         <el-col :span="10">
@@ -309,7 +306,6 @@
                             <div style="line-height: 26px; font-size:12px; color:#666;">只支持JPG、PNG格式</div>
                         </el-col>
                     </el-row>
-                    
                     <el-row class="el-row-h70" style="margin-top: 70px">
                         <el-row  style="margin: 0">
                             <el-form-item label="选择报名属性" label-width="15%" style="margin:0">
@@ -340,88 +336,175 @@
                     </el-row>
 
                     <!-- 自定义选项 -->
-                    <el-row v-if="isShowselfConfig" class="el-row-h70" style="margin-top: 40px">
-                        <div v-for="(item,index) in signupForm.signUpJson" class="option_line">
-                            <el-row class="el-row-h70">
-                                <el-col :span="18">
-                                    <el-form-item label="自定义标题" style="margin:0;">
-                                        <el-input
-                                            clearable
-                                            type="text"
-                                            v-model="item.sectionTitle"
-                                            placeholder="您的身份"
-                                            auto-complete="on">
-                                            <template slot="append">最多36字</template>
-                                        </el-input>
-                                    </el-form-item>
-                                </el-col>
-                            </el-row>
-                            <el-row class="el-row-h70">
-                                <el-col :span="18">
-                                    <el-form-item label="最大选项值" style="margin:0;">
-                                        <el-input
-                                            clearable
-                                            type="text"
-                                            placeholder="不填默认为单选"
-                                            v-model="item.limit"
-                                            auto-complete="on">
-                                        </el-input>
-                                    </el-form-item>
-                                </el-col>
-                            </el-row>
-                            <div v-for="(item2, index2) in item.itemList">
-                                <el-row class="el-row-h40" style="margin-bottom: 20px;">
+                   <el-row v-if="signupForm.signUpCustom" class="el-row-h70" style="margin-top: 40px">
+                        <div v-for="(item,index) in signupForm.signUpJson">
+                            <div v-if="item.sectionStatus == '1'">
+                                <el-row class="el-row-h70">
                                     <el-col :span="18">
-                                        <el-form-item label="选项" style="margin:0;">
+                                        <el-form-item label="自定义标题" style="margin:0;">
                                             <el-input
                                                 clearable
                                                 type="text"
-                                                placeholder="LP"
-                                                v-model="item2.itemText"
+                                                v-model="item.sectionTitle"
+                                                placeholder="您的身份"
+                                                auto-complete="on">
+                                                <template slot="append">最多36字</template>
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row class="el-row-h70">
+                                    <el-col :span="18">
+                                        <el-form-item label="最大选项值" style="margin:0;">
+                                            <el-input
+                                                clearable
+                                                type="text"
+                                                placeholder="不填默认为单选"
+                                                v-model="item.limit"
                                                 auto-complete="on">
                                             </el-input>
                                         </el-form-item>
                                     </el-col>
-                                    <el-col :span="5" :offset="1">
-                                        <template>
-                                            <el-radio v-model="item2.ifShow" label="true">显示</el-radio>
-                                            <el-radio v-model="item2.ifShow" label="false">不显示</el-radio>
-                                        </template>
-                                    </el-col>
                                 </el-row>
+                                <div v-for="(item2, index2) in item.itemList">
+                                    <div v-if="item2.itemStatus == '1'">
+                                        <el-row class="el-row-h40" style="margin-bottom: 20px;">
+                                            <el-col :span="18">
+                                                <el-form-item label="选项" style="margin:0;">
+                                                    <el-input
+                                                        clearable
+                                                        maxlength = "36"
+                                                        type="text"
+                                                        placeholder="LP"
+                                                        v-model="item2.itemText"
+                                                        auto-complete="on">
+                                                    </el-input>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="5" :offset="1">
+                                                <template>
+                                                    <el-radio v-model="item2.ifShow" label="false">不显示</el-radio>
+                                                    <el-radio v-model="item2.ifShow" label="true">显示</el-radio>
+                                                </template>
+                                            </el-col>
+                                        </el-row>
+                                    </div>
+                                </div>
+                            
+                            
+                            <el-row class="el-row-h70">
+                                <el-col :span="1" :offset="4" style="margin-top: 0px">
+                                    <el-button size="medium" type="primary" icon="el-icon-plus" @click="addSpecialOptions(index)" circle ></el-button>
+                                </el-col>
+                                <el-col :span="1"  :offset="1" style="margin-top: 0px">
+                                    <el-button size="medium" :disabled="isDelSpecialBtn" type="plain" icon="el-icon-minus" @click="delSpecialOptions(index)" circle ></el-button>
+                                </el-col>
+                            </el-row>
                             </div>
                         </div>
+                    </el-row> 
+
+
+                    <el-row class="el-row-h80" >
+                        <div v-if="signupForm.signUpCustom">
+                            <el-col :span="4" :offset="4">
+                                <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addSelfOptions()">自定义选项</el-button>
+                            </el-col>
+                        </div>
+                        <div v-if="signupForm.signUpJson.length !== 1">
+                            <el-col :span="4" :offset="2">
+                                <el-button type="primary" :disabled ="isDelBtn" plain icon="el-icon-minus" style="width:100%" @click="delSelfOptions()">自定义选项</el-button>
+                            </el-col>
+                        </div>
                     </el-row>
-
-
-                    <el-row class="el-row-h80" v-if="signupForm.signUpCustom" >
-                        <el-col :span="4" :offset="7">
-                            <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="">自定义选项</el-button>
-                        </el-col>
-                        <el-col :span="4" :offset="2">
-                            <el-button type="primary" plain icon="el-icon-minus" style="width:100%" @click="">自定义选项</el-button>
-                        </el-col>
-                    </el-row>
-
-                    
-
-
-
-
-
                 </el-form>
-
-
                 <el-row style="margin-top: 30px">
                     <el-col class="el-row-h40" :span="3" :offset="8">
-                        <el-button type="primary" style="width: 100%" @click="testSubmit('voteForm')">保存</el-button>
+                        <el-button type="primary" style="width: 100%" @click="testSubmit('signupForm')">保存</el-button>
                     </el-col>
                     <el-col class="el-row-h40" :span="3" :offset="2">
-                        <el-button type="primary" style="width: 100%" @click="closeCreatOrEdit('voteForm')">取消</el-button>
+                        <el-button type="primary" style="width: 100%" @click="closeCreatOrEdit('signupForm')">取消</el-button>
                     </el-col>
                 </el-row>
             </div>
         </div>
+
+
+        <!-------------------- 会议详情列表弹出层 ------------------>
+        <el-dialog title="通用会议列表" :visible.sync="showCommonMeetingList" width="100%" :fullscreen="true" :show-close="false" >
+            <el-form :model="searchMeetingForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                <el-row class="el-row-h60">
+                    <el-col :span="8">
+                        <el-form-item label="会议名称" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="searchMeetingForm.meetingTitle"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-form-item label="创建时间" style="margin:0;">
+                            <el-date-picker
+                                clearable
+                                style="width:100%;"
+                                v-model="timeRange2"
+                                type="datetimerange"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                                value-format="yyyy-MM-dd HH:mm:ss"
+                                :default-time="['00:00:00', '00:00:00']">
+                            </el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchMeeting(0)">搜索</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" style="width:100%" @click="backToEdit2()">返回</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <el-table :data="commonMeetingTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="contentImgTableData" stripe>
+                
+                <el-table-column prop="meetingId" label="会议编号" width="90"></el-table-column>
+                <el-table-column prop="meetingTitle" label="会议标题">
+                    <template v-if="scope.row.meetingTitle" slot-scope="scope">
+                        <div v-text="scope.row.meetingTitle" @click="openUrlPage(scope.row.meetingUrl)"></div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="meetingUrl" label="会议页面地址" width="300"></el-table-column>
+                <el-table-column prop="meetingStatus" label="发布状态"  width="110">
+                    <template slot-scope="scope">
+                        <el-tag v-if="scope.row.meetingStatus == 0">未发布</el-tag>
+                        <el-tag v-if="scope.row.meetingStatus == 1" type="warning">待发布</el-tag>
+                        <el-tag v-if="scope.row.meetingStatus == 2" type="success">已发布</el-tag>
+                        <el-tag v-if="scope.row.meetingStatus == 3" type="danger">发布失败 </el-tag>
+                        <el-tag v-if="scope.row.meetingStatus == 4" type="warning">待下线</el-tag>
+                        <el-tag v-if="scope.row.meetingStatus == 5" type="danger">已删除</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="meetingCrtTime" label="创建时间" width="100"></el-table-column>
+                <el-table-column prop="meetingCrtUserName" label="创建人" width="90"></el-table-column>
+                <el-table-column label="操作" width="100" fixed="right">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" @click="addThisMeeting(scope.row)">添加</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange5"
+                    :current-page="pagination5.currPage"
+                    :page-size="pagination5.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination5.totalCount">
+                </el-pagination>
+            </div>
+        </el-dialog>
+        <!---------------------- 通用会议列表弹出层结束 --------------->
+
+        
 
          <!--封面图弹出层开始-->
          <el-dialog title="封面图库" :visible.sync="showCoverimgLib" width="100%" :fullscreen="true" :show-close="false" >
@@ -463,15 +546,15 @@
                     </template>
                 </el-table-column>
             </el-table>
-            <div class="cv_page_zone">
+            <!-- <div class="cv_page_zone">
                 <el-pagination
-                    @current-change="handleCurrentChange3"
-                    :current-page="pagination3.currPage"
-                    :page-size="pagination3.pageSize"
+                    @current-change="handleCurrentChange4"
+                    :current-page="pagination4.currPage"
+                    :page-size="pagination4.pageSize"
                     layout="total, prev, pager, next, jumper"
-                    :total="pagination3.totalCount">
+                    :total="pagination4.totalCount">
                 </el-pagination>
-            </div>
+            </div> -->
         </el-dialog>
         <!--封面图库弹出层结束-->
         <!----------------- 创建/编辑报名信息结束 ------------------>
@@ -490,7 +573,7 @@
                                 clearable
                                 placeholder="请输入姓名"
                                 type="text"
-                                v-model="searchInfoForm.participateName"
+                                v-model="searchInfoForm.signUpInfoName"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
@@ -500,7 +583,7 @@
                                 clearable
                                 placeholder="请输入手机号"
                                 type="text"
-                                v-model="searchInfoForm.phoneNum"
+                                v-model="searchInfoForm.signUpInfoMobile"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
@@ -518,22 +601,22 @@
             <!--表格查询结果区-->
             <div class="cv_content_square">
                 <el-table :data="tableInfoData" style="width: 100%; margin:10px auto;" stripe>
-                    <el-table-column prop="ID" label="ID" width="70"></el-table-column>
-                    <el-table-column prop="name" label="姓名" width="90"></el-table-column>
-                    <el-table-column prop="title" label="职位" width="90"></el-table-column>
-                    <el-table-column prop="company" label="公司" width="110"></el-table-column>
-                    <el-table-column prop="phoneNum" label="手机号" width="110"></el-table-column>
-                    <el-table-column prop="code" label="邀请码" width="110"></el-table-column>
-                    <el-table-column prop="email" label="邮箱" width="200"></el-table-column>
-                    <el-table-column prop="checkStatus" width="140" label="是否需要审核" >
+                    <el-table-column prop="signUpInfoId" label="ID" width="70"></el-table-column>
+                    <el-table-column prop="signUpInfoName" label="姓名" width="90"></el-table-column>
+                    <el-table-column prop="signUpInfoPosition" label="职位" width="90"></el-table-column>
+                    <el-table-column prop="signUpInfoCompany" label="公司" width="110"></el-table-column>
+                    <el-table-column prop="signUpInfoMobile" label="手机号" width="110"></el-table-column>
+                    <el-table-column prop="signUpInfoInvitationCode" label="邀请码" width="110"></el-table-column>
+                    <el-table-column prop="signUpInfoEmail" label="邮箱" width="200"></el-table-column>
+                    <el-table-column prop="signUpInfoStatus" width="140" label="是否需要审核" >
                         <template slot-scope="scope">
-                            <el-tag v-if="scope.row.checkStatus == '1'">待审核</el-tag>
-                            <el-tag v-if="scope.row.checkStatus == '0'">审核通过</el-tag>
+                            <el-tag v-if="scope.row.checkStatus == '0'">待审核</el-tag>
+                            <el-tag v-if="scope.row.checkStatus == '1'">审核通过</el-tag>
                         </template>
                     </el-table-column>
                     <el-table-column label="操作" fixed="right">
                         <template slot-scope="scope">
-                            <el-button type="text" size="small" @click="editsinupInfo(scope.row)">编辑</el-button>
+                            <el-button type="text" size="small" @click="editsignupInfo(scope.row)">编辑</el-button>
                             <span prop="signupStatus">
                                 <el-button v-if="scope.row.signupStatus == '0'" type="text" size="small" @click="changeSignupStatus(scope.row)">报名通过</el-button>
                                 <el-button v-if="scope.row.signupStatus == '1'" type="text" size="small" @click="changeSignupStatus(scope.row)">取消报名</el-button>
@@ -558,6 +641,136 @@
 
 
 
+
+        <!----------------- 编辑报名信息开始 ------------------>
+        <div v-show="showEditInfoPage">
+            <div class="cv_content_square">
+                <el-form :model="searchDetailForm" label-position="right" status-icon style="margin-top: 40px" class="demo-ruleForm" @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="6">
+                            <el-form-item label-width="30%" label="用户" style="margin:0;">
+                                <el-input
+                                clearable
+                                disabled
+                                type="text"
+                                v-model="searchDetailForm.signUpInfoName"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8" :offset="1">
+                            <el-form-item label-width="30%" label="手机号" style="margin:0;">
+                                <el-input
+                                clearable
+                                disabled
+                                type="text"
+                                v-model="searchDetailForm.signUpInfoMobile"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8" :offset="1">
+                            <el-form-item label-width="30%" label="报名时间" style="margin:0;">
+                                <el-input
+                                clearable
+                                disabled
+                                type="text"
+                                v-model="searchDetailForm.signUpInfoCrtTime"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-60"> 
+                        <el-col :span="6">
+                            <el-form-item label-width="30%" label="签到记录:" style="margin:0;"></el-form-item>
+                        </el-col>
+                    </el-row>
+                    <div style="margin-bottom: 10px" v-for="(value, index) in searchDetailForm.signInEntities">
+                        <el-row class="el-row-60">
+                            <el-col :span="8" :offset="2">
+                                <el-input
+                                clearable
+                                disabled
+                                type="text"
+                                v-model="searchDetailForm.signInEntities[index]"
+                                auto-complete="off"></el-input>
+                            </el-col>
+                        </el-row> 
+                    </div>
+                   
+                    <div style="margin-top: 40px" v-for="(item, index) in searchDetailForm.signUpInfoJson">
+                        <div v-if="item.sectionStatus == '1'">
+                            <el-row class="el-row-60" style="margin-bottom: 10px;">
+                                <el-col :span="18">
+                                    <el-form-item label-width="20%" label="自定义标题" style="margin:0;">
+                                        <el-input
+                                        clearable
+                                        disabled
+                                        type="text"
+                                        v-model="item.sectionTitle"
+                                        auto-complete="off"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row class="el-row-60" style="margin-bottom: 10px;">
+                                <el-col :span="18" :offset="2">
+                                    <el-form-item label-width="20%" label="选项设置" style="margin:0;">
+                                        <el-input
+                                        clearable
+                                        disabled
+                                        type="text"
+                                        v-model="item.limit"
+                                        auto-complete="off"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <div v-for="(item2, index2) in item.itemList">
+                                <div v-if="item2.itemStatus == '1'">
+                                    <el-row class="el-row-h40">
+                                        <el-col :span="1" :offset="4">
+                                            <template>
+                                                <el-checkbox v-model="item2.ifChoose"></el-checkbox>
+                                            </template>
+                                        </el-col>
+                                        <el-col :span="2">
+                                            <el-form-item label="选项" style="margin:0;">
+                                        </el-col>
+                                        <el-col :span="13">
+                                            <el-form-item>
+                                                <el-input
+                                                    disabled
+                                                    maxlength = "36"
+                                                    type="text"
+                                                    placeholder="LP"
+                                                    v-model="item2.itemText"
+                                                    auto-complete="on">
+                                                </el-input>
+                                            </el-form-item>
+                                        </el-col>
+                                    </el-row>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </el-form>
+
+                <el-row style="margin-top: 30px">
+                    <el-col class="el-row-h40" :span="3" :offset="8">
+                        <el-button type="primary" style="width: 100%" @click="testSubmit2('searchDetailForm')">保存</el-button>
+                    </el-col>
+                    <el-col class="el-row-h40" :span="3" :offset="2">
+                        <el-button type="primary" style="width: 100%" @click="closeCreatOrEdit2('searchDetailForm')">取消</el-button>
+                    </el-col>
+                </el-row>
+            </div>
+
+
+
+
+        </div>
+
+        <!----------------- 编辑报名信息结束 ------------------->
+
+
+
         <!------------------ 查看邀请码开始 ------------------>
         <div v-show="showInvitationCodePage">
             <!--列表搜索区-->
@@ -570,27 +783,25 @@
                                 clearable
                                 placeholder="请输入名称"
                                 type="text"
-                                v-model="searchCodeForm.signupUser"
+                                v-model="searchCodeForm.meetingInvitationCodeName"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6" :offset="1">
-                            <el-form-item  label-width="30%" label="手机号" style="margin:0;">
+                            <el-form-item  label-width="30%" label="电话" style="margin:0;">
                                 <el-input
                                 clearable
-                                placeholder="请输入手机号"
                                 type="text"
-                                v-model="searchCodeForm.phoneNum"
+                                v-model="searchCodeForm.meetingInvitationCodeMobile"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6" :offset="1">
-                            <el-form-item  label-width="30%" label="创建人" style="margin:0;">
+                            <el-form-item  label-width="30%" label="生成人" style="margin:0;">
                                 <el-input
                                 clearable
-                                placeholder="请输入创建人"
                                 type="text"
-                                v-model="searchCodeForm.crtUser"
+                                v-model="searchCodeForm.meetingInvitationCodePerson"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
@@ -615,17 +826,18 @@
             <!--表格查询结果区-->
             <div class="cv_content_square">
                 <el-table :data="tableCodeData" style="width: 100%; margin:10px auto;" stripe>
-                    <el-table-column prop="signupUser" label="姓名" width="220"></el-table-column>
-                    <el-table-column prop="phoneNum" label="电话" width="150"></el-table-column>
-                    <el-table-column prop="codeCompany" label="公司" width="180"></el-table-column>
-                    <el-table-column prop="code" label="邀请码" width="140"></el-table-column>
-                    <el-table-column prop="useStatus" width="220" label="使用状态" >
+                    <el-table-column prop="meetingInvitationCodeName" label="姓名" width="220"></el-table-column>
+                    <el-table-column prop="meetingInvitationCodeMobile" label="电话" width="150"></el-table-column>
+                    <el-table-column prop="meetingInvitationCodeCompany" label="公司" width="180"></el-table-column>
+                    <el-table-column prop="meetingInvitationCode" label="邀请码" width="140"></el-table-column>
+                    <el-table-column prop="meetingInvitationCodeStatus" width="220" label="使用状态" >
                         <template slot-scope="scope">
-                            <el-tag v-if="scope.row.useStatus == '-1'">已使用</el-tag>
-                            <el-tag v-if="scope.row.useStatus == 0">未使用</el-tag>
+                            <el-tag v-if="scope.row.meetingInvitationCodeStatus == '0'">未使用</el-tag>
+                            <el-tag v-if="scope.row.meetingInvitationCodeStatus == '1'">已使用</el-tag>
+                            <el-tag v-if="scope.row.meetingInvitationCodeStatus == '2'">已删除</el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="crtUser" label="邀请生成人"></el-table-column>
+                    <el-table-column prop="meetingInvitationCodePerson" label="邀请生成人"></el-table-column>
                    
                 </el-table>
             </div>
@@ -766,7 +978,7 @@ background:rgb(248, 248, 248)!important;
 .option_line {
     width: 900px;
     margin:40px auto;
-    border-bottom: 1px #ccc solid;
+    /* border-bottom: 1px #ccc solid; */
 }
 .option_line:last-child {
     border-bottom: none;
