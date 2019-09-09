@@ -61,9 +61,9 @@ var vm = new Vue({
                 },
             },
             meetingFormRules:{
-                meetingTitle: [
-                    { required: true, message: '会议标题不能为空', trigger: 'change' }
-                ],
+                // meetingTitle: [
+                //     { required: true, message: '会议标题不能为空', trigger: 'change' }
+                // ],
                 meetingImg:[
                     { required: true, message: '请选择封面图', trigger: 'change' }
                 ],

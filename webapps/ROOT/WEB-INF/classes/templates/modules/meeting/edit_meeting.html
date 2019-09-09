@@ -301,19 +301,6 @@
                     <div v-if="meetingForm.meetingJsonData.basicInformation.isShowDefaultModel">
                         <el-row class="el-row-h70">
                             <el-col :span="24">
-                                <el-form-item prop="meetingTheme" label="会议主题" style="margin:0;">
-                                    <el-input
-                                        clearable
-                                        type="text"
-                                        v-model="meetingForm.meetingTheme"
-                                        auto-complete="on">
-                                        <template slot="append">最多36字</template>
-                                    </el-input>
-                                </el-form-item>
-                            </el-col>
-                        </el-row>
-                        <el-row class="el-row-h70">
-                            <el-col :span="24">
                                 <el-form-item prop="meetingOrganizer" label="主办单位" style="margin:0;">
                                     <el-input
                                         clearable
@@ -353,26 +340,13 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
-                                <el-form-item prop="meetingHoldTime" label="举办时间" style="margin:0;" label-width="30%">
+                                <el-form-item prop="meetingHoldTime" label="举办时间(用于显示)" style="margin:0;" label-width="40%">
                                     <el-input
                                         clearable
                                         type="text"
                                         v-model="meetingForm.meetingHoldTime"
                                         auto-complete="on"
                                         maxlength="80">
-                                    </el-input>
-                                </el-form-item>
-                            </el-col>
-                        </el-row>
-                        <el-row class="el-row-h70">
-                            <el-col :span="24">
-                                <el-form-item prop="meetingAddress" label="举办地址" style="margin:0;">
-                                    <el-input
-                                        clearable
-                                        type="text"
-                                        v-model="meetingForm.meetingAddress"
-                                        auto-complete="on"
-                                        maxlength="100">
                                     </el-input>
                                 </el-form-item>
                             </el-col>
@@ -387,32 +361,6 @@
                                         auto-complete="on"
                                         maxlength="500">
                                     </el-input>
-                                </el-form-item>
-                            </el-col>
-                        </el-row>
-                        <el-row class="el-row-h70">
-                            <el-col :span="24">
-                                <el-form-item prop="meetingEnrollStartTime" label="报名开始时间" style="margin:0;">
-                                    <el-date-picker
-                                        style="width:100%;"
-                                        v-model="meetingForm.meetingEnrollStartTime"
-                                        type="datetime"
-                                        value-format="timestamp"
-                                        placeholder="报名入口开放起始时间">
-                                    </el-date-picker>
-                                </el-form-item>
-                            </el-col>
-                        </el-row>
-                        <el-row class="el-row-h70">
-                            <el-col :span="24">
-                                <el-form-item prop="meetingEnrollEndTime" label="报名结束时间" style="margin:0;">
-                                    <el-date-picker
-                                        style="width:100%;"
-                                        v-model="meetingForm.meetingEnrollEndTime"
-                                        type="datetime"
-                                        value-format="timestamp"
-                                        placeholder="报名入口开放终止时间">
-                                    </el-date-picker>
                                 </el-form-item>
                             </el-col>
                         </el-row>
