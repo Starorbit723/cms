@@ -117,7 +117,7 @@
                         <el-col :span="18">
                             <el-form-item label="会议类型" prop="signUpMeetingType" style="margin:0;">
                                 <template slot-scope="scope">
-                                    <el-radio-group @change="changeLabel" v-model="signupForm.signUpMeetingType" >
+                                    <el-radio-group @change="changeLabel" :disabled="isToEdit" v-model="signupForm.signUpMeetingType" >
                                         <el-radio label="0">定制会议</el-radio>
                                         <el-radio label="1">通用会议</el-radio>
 
@@ -150,7 +150,7 @@
                         </el-col>
                     </el-row>
 
-                    <!-- <div v-if="signupForm.signUpMeetingId !== ''">
+                    <div v-if="signupForm.signUpMeetingId !== ''">
                         <el-form :model="meetingBaseInfoForm"  status-icon class="demo-ruleForm" label-width="25%" label-position="right" @submit.native.prevent>
                             <el-row class="el-row-h70">
                                 <el-col :span="18">
@@ -231,7 +231,7 @@
                                             <el-input
                                             type="text"
                                             disabled
-                                            v-model="meetingBaseInfoForm.meetingBaseInfogArea"
+                                            v-model="meetingBaseInfoForm.meetingBaseInfoArea"
                                             auto-complete="on">
                                             </el-input>
                                         </el-col>
@@ -251,7 +251,7 @@
                                 </el-col>
                             </el-row>
                         </el-form>
-                    </div> -->
+                    </div>
 
 
                     <div class="sparate_line">属性设置</div>
@@ -321,7 +321,7 @@
                                 <el-form-item label="" label-width="10%" style="margin-top: 20px">
                                     <template slot-scope="scope">
                                         <el-checkbox v-model="signupForm.signUpName" disabled>姓名</el-checkbox>
-                                        <el-checkbox v-model="signupForm.signUpMobileCode" diabled>手机号+验证码</el-checkbox>
+                                        <el-checkbox v-model="signupForm.signUpMobileCode" disabled>手机号+验证码</el-checkbox>
                                         <el-checkbox v-model="signupForm.signUpPosition">职位</el-checkbox>
                                         <el-checkbox v-model="signupForm.signUpCompany">公司</el-checkbox>
                                         <el-checkbox v-model="signupForm.signUpEmail">邮箱</el-checkbox>
@@ -351,7 +351,7 @@
                                                 clearable
                                                 type="text"
                                                 v-model="item.sectionTitle"
-                                                placeholder="您的身份"
+                                                placeholder="请输入选项标题"
                                                 auto-complete="on">
                                                 <template slot="append">最多36字</template>
                                             </el-input>
@@ -380,7 +380,7 @@
                                                         clearable
                                                         maxlength = "36"
                                                         type="text"
-                                                        placeholder="LP"
+                                                        placeholder="请输入选项内容"
                                                         v-model="item2.itemText"
                                                         auto-complete="on">
                                                     </el-input>
@@ -413,10 +413,10 @@
                             <el-col :span="4" :offset="4">
                                 <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addSelfOptions()">自定义选项</el-button>
                             </el-col>
-                        </div>
-                        <div v-if="isShowMinus">
+                        <!-- </div>
+                        <div v-if="isShowMinus"> -->
                             <el-col :span="4" :offset="2">
-                                <el-button type="primary" :disabled ="isDelBtn" plain icon="el-icon-minus" style="width:100%" @click="delSelfOptions()">自定义选项</el-button>
+                                <el-button type="primary" plain icon="el-icon-minus" style="width:100%" @click="delSelfOptions()">自定义选项</el-button>
                             </el-col>
                         </div>
                     </el-row>
@@ -481,9 +481,9 @@
                         <el-tag v-if="scope.row.meetingStatus == 0">未发布</el-tag>
                         <el-tag v-if="scope.row.meetingStatus == 1" type="warning">待发布</el-tag>
                         <el-tag v-if="scope.row.meetingStatus == 2" type="success">已发布</el-tag>
-                        <el-tag v-if="scope.row.meetingStatus == 3" type="danger">发布失败 </el-tag>
+                        <!-- <el-tag v-if="scope.row.meetingStatus == 3" type="danger">发布失败 </el-tag>
                         <el-tag v-if="scope.row.meetingStatus == 4" type="warning">待下线</el-tag>
-                        <el-tag v-if="scope.row.meetingStatus == 5" type="danger">已删除</el-tag>
+                        <el-tag v-if="scope.row.meetingStatus == 5" type="danger">已删除</el-tag> -->
                     </template>
                 </el-table-column>
                 <el-table-column prop="meetingCrtTime" label="创建时间" width="100"></el-table-column>
@@ -568,7 +568,7 @@
             <div class="cv_content_square">
                 <el-form :model="searchInfoForm" status-icon class="demo-ruleForm" @submit.native.prevent>
                     <el-row class="el-row-h60">
-                        <el-col :span="6">
+                        <el-col :span="5">
                             <el-form-item  label-width="30%" label="姓名" style="margin:0;">
                                 <el-input
                                 clearable
@@ -578,7 +578,7 @@
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="6" :offset="1">
+                        <el-col :span="5" :offset="1">
                             <el-form-item  label-width="30%" label="手机号" style="margin:0;">
                                 <el-input
                                 clearable
@@ -588,11 +588,14 @@
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="3" :offset="2" class="el-row-h40">
+                        <el-col :span="3" :offset="1" class="el-row-h40">
                             <el-button type="primary" icon="el-icon-search" style="width:100%"  @click="startSearchInfo(0)">搜索</el-button>
                         </el-col>
                         <el-col :span="3" :offset="1" class="el-row-h40">
                             <el-button type="primary" style="width:100%"  @click="downloadInfo()">下载参会信息</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="3" :offset="1">
+                            <el-button type="primary" style="width: 100%" @click="closeSingupInfoPage('searchInfoForm')">取消</el-button>
                         </el-col>
                     </el-row>
                 </el-form>

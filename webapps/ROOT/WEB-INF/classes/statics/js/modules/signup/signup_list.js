@@ -9,9 +9,9 @@ var vm = new Vue({
         showEditInfoPage: false, // 编辑报名信息页面
         chooseMeeting: true, // 绑定会议按钮是否能点击
         creatOrEdit:0,//0新建  1修改
-        isDelBtn: false,
-        isDelSpecialBtn: false,
-        isShowMinus: false, // 自定义减项是否显示
+        isDelSpecialBtn: true,
+        // isShowMinus: false, // 自定义减项是否显示
+        isToEdit: false, // 会议类型是否可选
         pickerOptions:{
             disabledDate(time) {
                 return time.getTime() > Date.now();
@@ -51,19 +51,20 @@ var vm = new Vue({
             signUpCustom: false,
             signUpStatus: '0', //0正常1删除
             signUpJson: [
+                {
+                sectionId:0,
+                sectionTitle:'',
+                sectionStatus:'1', //0不存在 1存在
+                limit:1,
+                itemList:[
                 // {
-            //     sectionId:0,
-            //     sectionTitle:'',
-            //     sectionStatus:'1', //0不存在 1存在
-            //     limit:1,
-            //    itemList:[
-            //   {
-            //         itemId:0,
-            //         itemText:'LP',
-            //         itemStatus:'1',
-            //         ifShow:true,
-            //         ifChoose:false
-            //     },{
+                //     itemId:0,
+                //     itemText:'',
+                //     itemStatus:'1',
+                //     ifShow:true,
+                //     ifChoose:false
+                // }
+            // ,{
             //         itemId:1,
             //         itemText:'GP',
             //         itemStatus:'1',
@@ -112,8 +113,7 @@ var vm = new Vue({
             //         ifShow:true,
             //         ifChoose:false
             //     }
-                // ]
-            // }
+            ]}
         ]
         },
         signupFormRules:{
@@ -138,17 +138,17 @@ var vm = new Vue({
         },
         //会议基础信息表
         meetingBaseInfoForm: {
-            meetingBaseInfoId: '2',
-            meetingBaseInfoMeetingId: '2',
-            meetingBaseInfoTitle: '3',
-            meetingBaseInfoStartTime:'3',
-            meetingBaseInfoEndTime:'3',
-            meetingBaseInfoSignUpStartTime:'3',
-            meetingBaseInfoSignUpEndTime: '3',
-            meetingBaseInfoProvince: '3',
-            meetingBaseInfoCity:'3',
-            meetingBaseInfogArea: '3',
-            meetingBaseInfoAddress:'3',
+            meetingBaseInfoId: '',
+            meetingBaseInfoMeetingId: '',
+            meetingBaseInfoTitle: '',
+            meetingBaseInfoStartTime:'',
+            meetingBaseInfoEndTime:'',
+            meetingBaseInfoSignUpStartTime:'',
+            meetingBaseInfoSignUpEndTime: '',
+            meetingBaseInfoProvince: '',
+            meetingBaseInfoCity:'',
+            meetingBaseInfogArea: '',
+            meetingBaseInfoAddress:'',
         },
         // 会议列表相关
         isBindMeeting: true,
@@ -471,9 +471,25 @@ var vm = new Vue({
 
         // 选择会议类型
         changeLabel(val){
-            // console.log(val)
-            this.isBindMeeting = false
-            this.signUpMeetingType = val
+            var self = this
+            self.isBindMeeting = false
+            self.signUpMeetingType = val
+            if(self.signupForm.signUpMeetingId !== ''){
+                self.signupForm.signUpMeetingId = ''
+                self.meetingBaseInfoForm = {
+                    meetingBaseInfoId: '',
+                    meetingBaseInfoMeetingId: '',
+                    meetingBaseInfoTitle: '',
+                    meetingBaseInfoStartTime:'',
+                    meetingBaseInfoEndTime:'',
+                    meetingBaseInfoSignUpStartTime:'',
+                    meetingBaseInfoSignUpEndTime: '',
+                    meetingBaseInfoProvince: '',
+                    meetingBaseInfoCity:'',
+                    meetingBaseInfogArea: '',
+                    meetingBaseInfoAddress:'',
+                }
+            }
         },
         // 点击绑定会议按钮打开不同的会议列表
         bindMeeting(){
@@ -546,36 +562,53 @@ var vm = new Vue({
             var self = this
             console.log(item)
             self.signupForm.signUpMeetingId = item.meetingId
-            self.showCommonMeetingList = false  //关联基础信息表接通后删除
-            self.showAddorEditPage = true  //关联基础信息表接通后删除
-            // $.ajax({
-			// 	type: "POST",
-            //     url: '/meetingBaseInfo/info'+item.meetingBaseInfoId.toString(),
-            //     contentType: "application/json",
-			//     dataType: "json",
-			//     success: function(res){
-			// 		if(res.code == 200){
-            //             var data = res.page.list
-            //             self.meetingBaseInfoTitle = data.meetingBaseInfoTitle
-            //             self.meetingBaseInfoStartTime = self.transform(data.meetingBaseInfoStartTime)
-            //             self.meetingBaseInfoEndTime = self.transform(data.meetingBaseInfoEndTime)
-            //             self.meetingBaseInfoSignUpStartTime = self.transform(data.meetingBaseInfoSignUpStartTime)
-            //             self.meetingBaseInfoSignUpEndTime = self.transform(data.meetingBaseInfoSignUpEndTime)
-            //             self.meetingBaseInfoProvince = data.meetingBaseInfoProvince
-            //             self.meetingBaseInfoCity =data.meetingBaseInfoCity
-            //             self.meetingBaseInfogArea = data.meetingBaseInfogArea
-            //             self.meetingBaseInfoAddress = data.meetingBaseInfoAddress
-            //             self.backToEdit2()     
-			// 		}else{
-			// 			mapErrorStatus(res)
-            //             vm.error = true;
-            //             vm.errorMsg = res.msg;
-            //         }
-            //     },
-            //     error:function(res){
-            //         mapErrorStatus(res)
-            //     }
-            // });
+            $.ajax({
+				type: "POST",
+                url: '/meetingBaseInfo/info/'+item.meetingBaseInfoId.toString(),
+                contentType: "application/json",
+			    dataType: "json",
+			    success: function(res){
+                    console.log(res)
+					if(res.code == 200){
+                        var data = res.dict
+                        self.meetingBaseInfoForm.meetingBaseInfoTitle = data.meetingBaseInfoTitle
+                        if(data.meetingBaseInfoStartTime == '') {
+                            self.meetingBaseInfoForm.meetingBaseInfoStartTime = ''
+                        } else {
+                            self.meetingBaseInfoForm.meetingBaseInfoStartTime = self.transformTime(parseInt(data.meetingBaseInfoStartTime))
+                        }
+                        if(data.meetingBaseInfoEndTime == '') {
+                            self.meetingBaseInfoForm.meetingBaseInfoEndTime = ''
+                        } else {
+                            self.meetingBaseInfoForm.meetingBaseInfoEndTime = self.transformTime(parseInt(data.meetingBaseInfoEndTime))
+                        }
+                        if(data.meetingBaseInfoSignUpEndTime == '') {
+                            self.meetingBaseInfoForm.meetingBaseInfoSignUpEndTime = ''
+                        } else {
+                            self.meetingBaseInfoForm.meetingBaseInfoSignUpEndTime = self.transformTime(parseInt(data.meetingBaseInfoSignUpEndTime))
+                        }
+                        if(data.meetingBaseInfoSignUpStartTime == '') {
+                            self.meetingBaseInfoForm.meetingBaseInfoSignUpStartTime = ''
+                        } else {
+                            self.meetingBaseInfoForm.meetingBaseInfoSignUpStartTime = self.transformTime(parseInt(data.meetingBaseInfoSignUpStartTime))
+                        }
+                        self.meetingBaseInfoForm.meetingBaseInfoProvince = data.meetingBaseInfoProvince
+                        self.meetingBaseInfoForm.meetingBaseInfoCity =data.meetingBaseInfoCity
+                        self.meetingBaseInfoForm.meetingBaseInfoArea = data.meetingBaseInfoArea
+                        self.meetingBaseInfoForm.meetingBaseInfoAddress = data.meetingBaseInfoAddress
+                        self.backToEdit2()
+                        
+                        
+					}else{
+						mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
             
 
         },
@@ -692,24 +725,24 @@ var vm = new Vue({
         // },
         //添加整条自定义选项
         addSelfOptions () {
-            // console.log(this.signupForm.signUpJson.length)  //0
+            console.log(this.signupForm.signUpJson)  //0
             var self = this
             // self.isDelBtn = false
             var dataLength = self.signupForm.signUpJson.length
-            // console.log(dataLength)
-            console.log(self.signupForm.signUpJson)
+            console.log(dataLength)  //1
+            // console.log(self.signupForm.signUpJson)
             var id = dataLength-1
             var numReg = /^([1-9]\d*|[0]{1,1})$/;
             var optionIndex = self.signupForm.signUpJson[dataLength-1]
-            if(dataLength == 0) {
-                self.signupForm.signUpJson.push({
-                    sectionId: id+1,
-                    sectionTitle:'',
-                    sectionStatus:'1',
-                    limit:1,
-                    itemList:[]
-                })
-            } else {
+            // if(dataLength == 0) {
+            //     self.signupForm.signUpJson.push({
+            //         sectionId: id+1,
+            //         sectionTitle:'',
+            //         sectionStatus:'1',
+            //         limit:1,
+            //         itemList:[]
+            //     })
+            // } else {
                     if(optionIndex.sectionStatus == '1') {
                         if(optionIndex.sectionTitle.trim() == ''){
                             self.$message.error('标题不能为空')
@@ -741,48 +774,42 @@ var vm = new Vue({
                             itemList:[]
                         })
                     }
-            }
-            self.isShowMinus = true
+            // }
+            // self.isShowMinus = true
         },
         //删除整条自定义选项
         delSelfOptions () {
             var self = this
             var dataLength = self.signupForm.signUpJson.length
-            // console.log(dataLength)
-            if(dataLength == 0) {
-                // if(self.creatOrEdit == '0') {
-                //     self.signupForm.signUpJson.pop()
-                // } else if(self.creatOrEdit == '1') {
-
-
-
-
-                // }
-
-                self.isShowMinus = false
-                self.signupForm.signUpCustom = false
-            } else {
-                if(self.creatOrEdit == '0') {
+            console.log(dataLength)
+            if(self.creatOrEdit == '0') {
+                if(dataLength == 1) {
                     self.signupForm.signUpJson.pop()
-                } else if(self.creatOrEdit == '1') {
-                    for(var i = dataLength-1; i >= 0; i--){
-                        if(self.signupForm.signUpJson[i].sectionStatus == '1') {
-                            self.signupForm.signUpJson[i].sectionStatus = '0'
-                        } else if(self.signupForm.signUpJson[i].sectionStatus == '0') {
-                            for(var k = i; k >= 0; k--){
-                                if(self.signupForm.signUpJson[k].sectionStatus == '1') {
-                                    self.signupForm.signUpJson[k].sectionStatus = '0'
-                                    return
-                                } else if(k = 0 && self.signupForm.signUpJson[k].sectionStatus == '0'){
-                                    self.isShowMinus = false
-                                    self.signupForm.signUpCustom = false
-                                }
+                    self.signupForm.signUpCustom = false
+                } else {
+                    self.signupForm.signUpJson.pop()
+                }
+            } else if(self.creatOrEdit == '1') {
+                var len = dataLength-1
+                for(var i = len; i >= 0; i--){
+                    if(self.signupForm.signUpJson[i].sectionStatus == '1') {
+                        self.signupForm.signUpJson[i].sectionStatus = '0'
+                        return
+                    } else if(self.signupForm.signUpJson[i].sectionStatus == '0') {
+                        for(var k = i-1; k >= 0; k--){
+                            if(k > 0 && self.signupForm.signUpJson[k].sectionStatus == '1') {
+                                self.signupForm.signUpJson[k].sectionStatus = '0'
+                                return
+                            } if(k == 0) {
+                                self.signupForm.signUpJson[k].sectionStatus == '0'
+                                self.signupForm.signUpCustom = false
                             }
                         }
+                        // console.log(self.signupForm.signUpJson)
                     }
-                    // console.log(self.signupForm.signUpJson)
                 }
             }
+
         },
         //添加具体的选项
         addSpecialOptions(index) {
@@ -822,8 +849,8 @@ var vm = new Vue({
                         ifChoose:false
                     })
                 } 
-            }
-            self.isDelSpecialBtn = false
+                self.isDelSpecialBtn = false
+            } 
             // console.log(self.signupForm.signUpJson[index].itemList)
         },
         //删除具体的选项
@@ -832,26 +859,48 @@ var vm = new Vue({
             var self = this
             var len = self.signupForm.signUpJson[index].itemList.length
             console.log(len)
-            if(len == 0) {
-                self.isDelBtn = true
+            if(len == 1 || len == 0) {
+                self.isDelSpecialBtn = true
             } else {
+
+                
                 if(self.creatOrEdit == '0') {
                     self.signupForm.signUpJson[index].itemList.pop()
                 } else if (self.creatOrEdit == '1') {
+                    self.isDelSpecialBtn = false
                     for(var i = len-1; i >= 0; i--){
                         if(self.signupForm.signUpJson[index].itemList[i].itemStatus == '1') {
                             self.signupForm.signUpJson[index].itemList[i].itemStatus = '0'
                         } else if(self.signupForm.signUpJson[index].itemList[i].itemStatus == '0') {
-                            for(var k = i; k >= 0; k--){
+                            for(var k = i-1; k >= 0; k--){
                                 if(self.signupForm.signUpJson[index].itemList[k].itemStatus == '1') {
                                     self.signupForm.signUpJson[index].itemList[k].itemStatus = '0'
                                     return
-                                } else if(k = 0 && self.signupForm.signUpJson[index].itemList[k].itemStatus == '0'){
-                                    self.isDelBtn = true
-                                }
+                                } 
                             }
+                            console.log(self.signupForm.signUpJson[index].itemList)
                         }
                     }
+
+
+                    // var len = dataLength-1
+                    // for(var i = len; i >= 0; i--){
+                    //     if(self.signupForm.signUpJson[i].sectionStatus == '1') {
+                    //         self.signupForm.signUpJson[i].sectionStatus = '0'
+                    //         return
+                    //     } else if(self.signupForm.signUpJson[i].sectionStatus == '0') {
+                    //         for(var k = i-1; k >= 0; k--){
+                    //             if(k > 0 && self.signupForm.signUpJson[k].sectionStatus == '1') {
+                    //                 self.signupForm.signUpJson[k].sectionStatus = '0'
+                    //                 return
+                    //             } if(k == 0) {
+                    //                 self.signupForm.signUpJson[k].sectionStatus == '0'
+                    //                 self.signupForm.signUpCustom = false
+                    //             }
+                    //         }
+                    //         // console.log(self.signupForm.signUpJson)
+                    //     }
+                    // }
 
                 }
 
@@ -1230,6 +1279,18 @@ var vm = new Vue({
                     }
                 }
             })
+        },
+        closeSingupInfoPage(formName){
+            this.showSingupInfoPage = false
+            this.showSignupList = true
+            this.searchInfoForm = {
+                signUpId:'',
+                signUpInfoName: '',
+                signUpInfoMobile: ''
+            }
+            this.tableInfoData =[]
+
+
         },
 
 
