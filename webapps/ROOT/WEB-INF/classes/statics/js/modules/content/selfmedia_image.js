@@ -376,6 +376,10 @@ var vm = new Vue({
             this.showChildPage = false
             this.creatOrEdit = 0
         },
-
+        //下载当前图片
+        downLoadThisPic (item) {
+            console.log(item.picUrl)
+            window.open(item.picUrl)
+        }
     }
 })
