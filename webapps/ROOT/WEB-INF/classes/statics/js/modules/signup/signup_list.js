@@ -201,14 +201,14 @@ var vm = new Vue({
         },
         tableInfoData: [
             {
-                signUpInfoId: 5,
-                signUpInfoName: 'zs',
-                signUpInfoPosition: 'ali',
-                signUpInfoCompany: 'ali',
-                signUpInfoMobile: 'ali',
-                signUpInfoInvitationCode: 'uudfY6',
-                signUpInfoEmail: '10e8je@qq.com',
-                signUpInfoStatus: '0'
+                // signUpInfoId: 5,
+                // signUpInfoName: 'zs',
+                // signUpInfoPosition: 'ali',
+                // signUpInfoCompany: 'ali',
+                // signUpInfoMobile: 'ali',
+                // signUpInfoInvitationCode: 'uudfY6',
+                // signUpInfoEmail: '10e8je@qq.com',
+                // signUpInfoStatus: '0'
             }
         ],
 
@@ -290,13 +290,14 @@ var vm = new Vue({
         saveBtn: false,
         createCodeForm: {
             number: '',
-            crtUser: ''
+            meetingInvitationCodePerson: '',
+            meetingInvitationCodeSignUpId: ''
         },
         createCodeFormRules: {
             number: [
                 {required: true, message: '数量为必填项', trigger: 'change'}
             ],
-            crtUser: [
+            meetingInvitationCodePerson: [
                 {required: true, message: '生成人为必填项', trigger: 'change'}
             ]
         }
@@ -1190,6 +1191,7 @@ var vm = new Vue({
             this.startSearchCode() 
         },
         checkInvitationCode(item) {
+            console.log(item)
             var self = this
             self.searchInfoForm.signUpId = item.signUpId
             self.showSignupList = false
@@ -1200,46 +1202,81 @@ var vm = new Vue({
         startSearchCode(type) {
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchCodeForm))
-            data.meetingInvitationCodeName = data.meetingInvitationCodeName.toString().trim()
-            data.meetingInvitationCodeMobile = data.meetingInvitationCodeMobile.toString().trim()
-            data.meetingInvitationCodePerson = data.meetingInvitationCodePerson.toString().trim()
-            // console.log(data)
-            // if (type == 0) {
-            //     Object.assign(data,{
-            //         page: '1',
-            //         limit: self.pagination3.pageSize.toString()
-            //     })
-            // } else {
-            //     Object.assign(data,{
-            //         page: self.pagination3.currPage.toString(),
-            //         limit: self.pagination3.pageSize.toString()
-            //     })
-            // }
-            // $.ajax({
-            //     type: "POST",
-            //     url: "+signupId",
-            //     contentType: "application/json",
-            //     data: JSON.stringify(data),
-            //     dataType: "json",
-            //     success: function(res){
-            //         if(res.code == 200){
-            //             self.tableCodeData = res.page.list
-            //             self.pagination3 = {
-            //                 currPage: res.page.currPage,
-            //                 totalCount:res.page.totalCount,
-            //                 totalPage: res.page.totalPage,
-            //                 pageSize: res.page.pageSize
-            //             }
-            //         }else{
-            //             mapErrorStatus(res)
-            //             vm.error = true;
-            //             vm.errorMsg = res.msg;
-            //         }
-            //     },
-            //     error:function(res){
-            //         mapErrorStatus(res)
-            //     }
-            // });
+            // data.meetingInvitationCodeName = data.meetingInvitationCodeName.toString().trim()
+            // data.meetingInvitationCodeMobile = data.meetingInvitationCodeMobile.toString().trim()
+            // data.meetingInvitationCodePerson = data.meetingInvitationCodePerson.toString().trim()
+            console.log(data)
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination3.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination3.currPage.toString(),
+                    limit: self.pagination3.pageSize.toString()
+                })
+            }
+            $.ajax({
+                type: "POST",
+                url: "/meetingInvitationCode/list",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.tableCodeData = res.page.list
+                        self.pagination3 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage: res.page.totalPage,
+                            pageSize: res.page.pageSize
+                        }
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        downloadInvitaionCode() {
+            var self = this
+            var data = {
+                meetingInvitationCodeSignUpId:1,
+            }
+            $.ajax({
+                type: "POST",
+                url: "/meetingInvitationCode/excels",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                complete: function() {
+                    console.log(res)
+                },
+                success: function(res) {
+                    console.log(res)
+                //     // window.location.href=""
+                //     // console.log(res)
+                //     // if(res.code == 200) {
+                //     //     self.$message.success('保存成功')
+                //     //     self.startSearchCode()
+                //     //     self.closeCreateCode('createCodeForm')
+                //     //     self.saveBtn = false
+                //     // } else {
+                //     //     mapErrorStatus(res)
+                //     //     vm.error = true;
+                //     //     vm.errorMsg = res.msg;
+                //     // }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            })
+
         },
 
         // --------------------------生成邀请码页面--------------------
@@ -1248,25 +1285,29 @@ var vm = new Vue({
             this.createInvitationCodePage = true
         },
         saveCreateCodeForm(formName) {
+            var self = this
+            console.log(self.$refs[formName])
             self.$refs[formName].validate((valid) => {
                 if(valid) {
                     self.saveBtn = true
+                    console.log(self.searchInfoForm.signUpId)
                     var data = {
+                        meetingInvitationCodeSignUpId: self.searchInfoForm.signUpId,
                         number: self.createCodeForm.number,
-                        crtUser: self.createCodeForm.crtUser,
-                        // voteStatus: '0',
-                        page: '1',
-                        limit: '100'
+                        meetingInvitationCodePerson: self.createCodeForm.meetingInvitationCodePerson,
+                    
                     }
                     $.ajax({
                         type: "POST",
-                        url: "update",
+                        // url: "/meetingInvitationCode/codes?meetingInvitationCodeSignUpId="+self.searchInfoForm.signUpId+"&number="+self.createCodeForm.number+"&meetingInvitationCodePerson="+self.createCodeForm.meetingInvitationCodePerson,
+                       url: '/meetingInvitationCode/codes',
                         contentType: "application/json",
                         data: JSON.stringify(data),
                         dataType: "json",
                         success: function(res) {
+                            console.log(res)
                             if(res.code == 200) {
-                                self.$message.success('保存成功')
+                                // self.$message.success('保存成功')
                                 self.startSearchCode()
                                 self.closeCreateCode('createCodeForm')
                                 self.saveBtn = false

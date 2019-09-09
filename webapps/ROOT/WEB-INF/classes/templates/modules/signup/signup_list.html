@@ -823,7 +823,7 @@
                     <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="createInvitaionCode()">生成邀请码</el-button>
                 </el-col>
                 <el-col :span="3" :offset="1">
-                    <el-button type="primary" plain icon="el-icon-download" style="width:100%" @click="downloadInvitaionCode()">下载</el-button>
+                    <el-button type="primary" plain icon="el-icon-download" style="width:100%" @click="downloadInvitaionCode()">下载邀请码</el-button>
                 </el-col>
             </el-row>
 
@@ -864,7 +864,7 @@
         <div v-show="createInvitationCodePage">
             <div class="cv_content_square">
                 <div class="createCode">生成邀请码</div>
-                <el-form :model="createCodeForm" :rules="createCodeFormRules" status-icon class="demo-ruleForm" label-width="20%" label-position="left" @submit.native.prevent>
+                <el-form :model="createCodeForm" ref="createCodeForm"  :rules="createCodeFormRules" status-icon class="demo-ruleForm" label-width="20%" label-position="left" @submit.native.prevent>
                     <el-row class="el-row-h60">
                         <el-col :span="9">
                             <el-form-item prop="number" label="数量" style="margin:0;">
@@ -878,11 +878,11 @@
                     </el-row>
                     <el-row class="el-row-h60">
                         <el-col :span="9">
-                            <el-form-item prop="crtUser" label="生成人" style="margin:0;">
+                            <el-form-item prop="meetingInvitationCodePerson" label="生成人" style="margin:0;">
                                 <el-input
                                 clearable
                                 type="text"
-                                v-model="createCodeForm.crtUser"
+                                v-model="createCodeForm.meetingInvitationCodePerson"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
