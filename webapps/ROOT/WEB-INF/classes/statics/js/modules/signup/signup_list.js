@@ -9,7 +9,7 @@ var vm = new Vue({
         showEditInfoPage: false, // 编辑报名信息页面
         chooseMeeting: true, // 绑定会议按钮是否能点击
         creatOrEdit:0,//0新建  1修改
-        isDelSpecialBtn: true,
+        isDelSpecialBtn: false,
         // isShowMinus: false, // 自定义减项是否显示
         isToEdit: false, // 会议类型是否可选
         pickerOptions:{
@@ -52,17 +52,17 @@ var vm = new Vue({
             signUpStatus: '0', //0正常1删除
             signUpJson: [
                 {
-                sectionId:0,
-                sectionTitle:'',
-                sectionStatus:'1', //0不存在 1存在
-                limit:1,
-                itemList:[
+                sectionId:0,  //id
+                sectionTitle:'', //自定义标题
+                sectionStatus:'1', //0删除 1正常
+                limit:1,  //限制数量
+                itemList:[   //选项
                 // {
-                //     itemId:0,
-                //     itemText:'',
-                //     itemStatus:'1',
-                //     ifShow:true,
-                //     ifChoose:false
+                //     itemId:0,  //选项id
+                //     itemText:'',  // 选项文本
+                //     itemStatus:'1',  // 1正常 0删除
+                //     ifShow:true,   // 前端是否显示
+                //     ifChoose:false  // 报名人是否选择该项
                 // }
             // ,{
             //         itemId:1,
@@ -199,11 +199,18 @@ var vm = new Vue({
             totalPage:0,
             pageSize:10
         },
-        searchInfoForm: {
-            participateName: '',
-            phoneNum: ''
-        },
-        tableInfoData: [],
+        tableInfoData: [
+            {
+                signUpInfoId: 5,
+                signUpInfoName: 'zs',
+                signUpInfoPosition: 'ali',
+                signUpInfoCompany: 'ali',
+                signUpInfoMobile: 'ali',
+                signUpInfoInvitationCode: 'uudfY6',
+                signUpInfoEmail: '10e8je@qq.com',
+                signUpInfoStatus: '0'
+            }
+        ],
 
 
         //----------------------编辑报名信息---------------
@@ -316,8 +323,17 @@ var vm = new Vue({
             // console.log(this.searchMeetingForm)
         },
         checkinTime(val) {
+            // console.log(val)
+            // if(val.length == 1 && val[0] !== 1567267200000) {
+            //     this.signupForm.signUpDate = val.join(',')
+            // } else if(val.length == 2 && val[0] !== val[1]) {
+            //     this.signupForm.signUpDate = val.join(',')
+            // } else if (val.length == 3 && (val[0] !== val[1] && val[0] !== val[2] && val[1] !== val[2]) ) {
+            //     this.signupForm.signUpDate = val.join(',')
+            // } else {
+            //     this.$message.error('请选择正确时间')
+            // }
             this.signupForm.signUpDate = val.join(',')
-            // console.log(this.signupForm.signUpDate)
         }
     },
     
@@ -339,7 +355,7 @@ var vm = new Vue({
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.signUpTitle = data.signUpTitle.toString().trim()
-            console.log(data)
+            // console.log(data)
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -358,7 +374,6 @@ var vm = new Vue({
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res){
-                    console.log(res)
                     if(res.code == 200){
                         self.tableData = res.page.list
                         for (let i = 0; i < self.tableData.length; i++){
@@ -390,20 +405,21 @@ var vm = new Vue({
                 self.showAddorEditPage = true
                 self.showSignupList = false
             } else if (type == 1) {
+                // console.log(item)
+                self.showMeetingBaseInfo(item.signUpMeetingId.toString())
                 $.ajax({
                     type: "POST",
                     url: "/signUp/info/" + item.signUpId.toString(),
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res){
-                        console.log(res)
+                        // console.log(res)
                         if(res.code == 200){
                             //json64反解
                             let data = res.dict
                             let map = $.base64.atob(data.signUpJson, true)
-                            console.log()
                             data.signUpJson = JSON.parse(map)
-                            console.log(data)
+                            // console.log(data)
                             // console.log(JSON.stringify(data.signUpJson))
                             self.signupForm = data
                             var result = self.signupForm.signUpDate.split(",");
@@ -557,18 +573,16 @@ var vm = new Vue({
                 }
 			});
         },
-        // 绑定会议
-        addThisMeeting(item){
+
+        //重新编辑会议返显基础信息表
+        showMeetingBaseInfo(id){
             var self = this
-            console.log(item)
-            self.signupForm.signUpMeetingId = item.meetingId
             $.ajax({
 				type: "POST",
-                url: '/meetingBaseInfo/info/'+item.meetingBaseInfoId.toString(),
+                url: '/meetingBaseInfo/info/'+id,
                 contentType: "application/json",
 			    dataType: "json",
 			    success: function(res){
-                    console.log(res)
 					if(res.code == 200){
                         var data = res.dict
                         self.meetingBaseInfoForm.meetingBaseInfoTitle = data.meetingBaseInfoTitle
@@ -597,8 +611,6 @@ var vm = new Vue({
                         self.meetingBaseInfoForm.meetingBaseInfoArea = data.meetingBaseInfoArea
                         self.meetingBaseInfoForm.meetingBaseInfoAddress = data.meetingBaseInfoAddress
                         self.backToEdit2()
-                        
-                        
 					}else{
 						mapErrorStatus(res)
                         vm.error = true;
@@ -612,6 +624,59 @@ var vm = new Vue({
             
 
         },
+
+        // 绑定会议
+        addThisMeeting(item){
+            var self = this
+            // console.log(item)
+            self.signupForm.signUpMeetingId = item.meetingId
+            $.ajax({
+				type: "POST",
+                url: '/meetingBaseInfo/info/'+item.meetingBaseInfoId.toString(),
+                contentType: "application/json",
+			    dataType: "json",
+			    success: function(res){
+					if(res.code == 200){
+                        var data = res.dict
+                        self.meetingBaseInfoForm.meetingBaseInfoTitle = data.meetingBaseInfoTitle
+                        if(data.meetingBaseInfoStartTime == '') {
+                            self.meetingBaseInfoForm.meetingBaseInfoStartTime = ''
+                        } else {
+                            self.meetingBaseInfoForm.meetingBaseInfoStartTime = self.transformTime(parseInt(data.meetingBaseInfoStartTime))
+                        }
+                        if(data.meetingBaseInfoEndTime == '') {
+                            self.meetingBaseInfoForm.meetingBaseInfoEndTime = ''
+                        } else {
+                            self.meetingBaseInfoForm.meetingBaseInfoEndTime = self.transformTime(parseInt(data.meetingBaseInfoEndTime))
+                        }
+                        if(data.meetingBaseInfoSignUpEndTime == '') {
+                            self.meetingBaseInfoForm.meetingBaseInfoSignUpEndTime = ''
+                        } else {
+                            self.meetingBaseInfoForm.meetingBaseInfoSignUpEndTime = self.transformTime(parseInt(data.meetingBaseInfoSignUpEndTime))
+                        }
+                        if(data.meetingBaseInfoSignUpStartTime == '') {
+                            self.meetingBaseInfoForm.meetingBaseInfoSignUpStartTime = ''
+                        } else {
+                            self.meetingBaseInfoForm.meetingBaseInfoSignUpStartTime = self.transformTime(parseInt(data.meetingBaseInfoSignUpStartTime))
+                        }
+                        self.meetingBaseInfoForm.meetingBaseInfoProvince = data.meetingBaseInfoProvince
+                        self.meetingBaseInfoForm.meetingBaseInfoCity =data.meetingBaseInfoCity
+                        self.meetingBaseInfoForm.meetingBaseInfoArea = data.meetingBaseInfoArea
+                        self.meetingBaseInfoForm.meetingBaseInfoAddress = data.meetingBaseInfoAddress
+                        self.backToEdit2()
+					}else{
+						mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+
+
         //返回编辑页
         backToEdit2 (){
             this.showCommonMeetingList = false
@@ -725,11 +790,10 @@ var vm = new Vue({
         // },
         //添加整条自定义选项
         addSelfOptions () {
-            console.log(this.signupForm.signUpJson)  //0
+            // console.log(this.signupForm.signUpJson)  //0
             var self = this
-            // self.isDelBtn = false
             var dataLength = self.signupForm.signUpJson.length
-            console.log(dataLength)  //1
+            // console.log(dataLength)  //1
             // console.log(self.signupForm.signUpJson)
             var id = dataLength-1
             var numReg = /^([1-9]\d*|[0]{1,1})$/;
@@ -828,6 +892,7 @@ var vm = new Vue({
                     ifChoose:false
                 })
             } else if(len > 0) {
+                self.isDelSpecialBtn = false
                 if(specialOptIndex.itemStatus == '1') {
                     if(specialOptIndex.itemText.trim() !== ''){
                         self.signupForm.signUpJson[index].itemList.push({
@@ -848,9 +913,9 @@ var vm = new Vue({
                         ifShow:false,
                         ifChoose:false
                     })
-                } 
-                self.isDelSpecialBtn = false
+                }
             } 
+            
             // console.log(self.signupForm.signUpJson[index].itemList)
         },
         //删除具体的选项
@@ -859,18 +924,24 @@ var vm = new Vue({
             var self = this
             var len = self.signupForm.signUpJson[index].itemList.length
             console.log(len)
-            if(len == 1 || len == 0) {
-                self.isDelSpecialBtn = true
-            } else {
-
-                
+            // if(len == 1 || len == 0) {
+            //     self.isDelSpecialBtn = true
+            // } else {
                 if(self.creatOrEdit == '0') {
-                    self.signupForm.signUpJson[index].itemList.pop()
-                } else if (self.creatOrEdit == '1') {
+                   if(len == 1) {
+                    self.isDelSpecialBtn = true
+                   } else {
                     self.isDelSpecialBtn = false
+                    self.signupForm.signUpJson[index].itemList.pop() 
+                   }
+                } else if (self.creatOrEdit == '1') {
+                    // self.isDelSpecialBtn = false
+
                     for(var i = len-1; i >= 0; i--){
+                        console.log(i)
                         if(self.signupForm.signUpJson[index].itemList[i].itemStatus == '1') {
                             self.signupForm.signUpJson[index].itemList[i].itemStatus = '0'
+                            return
                         } else if(self.signupForm.signUpJson[index].itemList[i].itemStatus == '0') {
                             for(var k = i-1; k >= 0; k--){
                                 if(self.signupForm.signUpJson[index].itemList[k].itemStatus == '1') {
@@ -878,34 +949,10 @@ var vm = new Vue({
                                     return
                                 } 
                             }
-                            console.log(self.signupForm.signUpJson[index].itemList)
+                            // console.log(self.signupForm.signUpJson[index].itemList)
                         }
                     }
-
-
-                    // var len = dataLength-1
-                    // for(var i = len; i >= 0; i--){
-                    //     if(self.signupForm.signUpJson[i].sectionStatus == '1') {
-                    //         self.signupForm.signUpJson[i].sectionStatus = '0'
-                    //         return
-                    //     } else if(self.signupForm.signUpJson[i].sectionStatus == '0') {
-                    //         for(var k = i-1; k >= 0; k--){
-                    //             if(k > 0 && self.signupForm.signUpJson[k].sectionStatus == '1') {
-                    //                 self.signupForm.signUpJson[k].sectionStatus = '0'
-                    //                 return
-                    //             } if(k == 0) {
-                    //                 self.signupForm.signUpJson[k].sectionStatus == '0'
-                    //                 self.signupForm.signUpCustom = false
-                    //             }
-                    //         }
-                    //         // console.log(self.signupForm.signUpJson)
-                    //     }
-                    // }
-
                 }
-
-            }
-            // console.log(self.signupForm.signUpJson[index].itemList)
         },
         // 保存新建报名
         //保存
@@ -932,8 +979,8 @@ var vm = new Vue({
             var jsonString = JSON.stringify(data.signUpJson);
             var json64 = $.base64.btoa(jsonString);
             data.signUpJson = json64
-            console.log('6464',jsonString,json64)
-            console.log(JSON.stringify(data))
+            // console.log('6464',jsonString,json64)
+            // console.log(JSON.stringify(data))
             if (self.creatOrEdit == 0) {
                 var reqUrl = '/signUp/save'
             } else if (self.creatOrEdit == 1) {
@@ -963,12 +1010,12 @@ var vm = new Vue({
         },
          //关闭编辑页面
          closeCreatOrEdit(formName){
-            this.showAddorEditPage = false
-            this.showSignupList = true
+            this.checkinTime = [1567267200000],
             this.creatOrEdit = 0
+            this.$refs[formName].resetFields();
             this.signupForm = {
                 signUpTitle: '', // 报名名称
-                signUpMeetingType: '', //会议类型
+                signUpMeetingType: '', //会议类型 1通用会议 0定制会议
                 signUpMeetingId: '',// 关联会议详情ID
                 signUpInvitationCode: '', //是否使用邀请码 0是1否
                 signUpExamine: '', // 是否需要审核 0是1否
@@ -987,7 +1034,9 @@ var vm = new Vue({
                     limit:1,
                     itemList:[]
                 }]
-            }
+            },
+            this.showAddorEditPage = false
+            this.showSignupList = true
         },
 
 
@@ -1012,9 +1061,10 @@ var vm = new Vue({
         startSearchInfo(type){
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchInfoForm))
+            console.log(data)
             data.signUpInfoName = data.signUpInfoName.toString().trim()
             data.signUpInfoMobile = data.signUpInfoMobile.toString().trim()
-            console.log(data)
+            // console.log(data)
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -1056,17 +1106,13 @@ var vm = new Vue({
         changeSignupStatus(item) {
             console.log(item)
             if(item.signUpInfoStatus == '0') {
-                console.log(123)
                 item.signUpInfoStatus == "1"
-                
             } else if(item.signUpInfoStatus == '1') {
-                console.log(234)
                 item.signUpInfoStatus == "0"
             }
         },
         // 具体参会人信息编辑
         editsignupInfo(item){
-            console.log(item)
             $.ajax({
                 type: "POST",
                 url: " /signUpInfo/info/"+item.signUpInfoId.toString(),
@@ -1093,7 +1139,7 @@ var vm = new Vue({
         testSubmit2 (formName) {
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchDetailForm))
-            console.log(data)
+            // console.log(data)
             $.ajax({
                 type: "POST",
                 url: "/signUpInfo/update",
@@ -1157,7 +1203,7 @@ var vm = new Vue({
             data.meetingInvitationCodeName = data.meetingInvitationCodeName.toString().trim()
             data.meetingInvitationCodeMobile = data.meetingInvitationCodeMobile.toString().trim()
             data.meetingInvitationCodePerson = data.meetingInvitationCodePerson.toString().trim()
-            console.log(data)
+            // console.log(data)
             // if (type == 0) {
             //     Object.assign(data,{
             //         page: '1',
@@ -1198,7 +1244,6 @@ var vm = new Vue({
 
         // --------------------------生成邀请码页面--------------------
         createInvitaionCode() {
-            console.log(123)
             this.showInvitationCodePage = false
             this.createInvitationCodePage = true
         },
@@ -1250,15 +1295,6 @@ var vm = new Vue({
             this.showInvitationCodePage = true
         },
 
-
-
-
-
-
-        showtime(){
-            console.log(event)
-
-        },
 
         // 下载参会信息
         downloadInfo() {
