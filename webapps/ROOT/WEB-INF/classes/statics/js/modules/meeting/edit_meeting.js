@@ -50,6 +50,7 @@ var vm = new Vue({
                 meetingScaleNumber:'',//规模人数
                 meetingHoldTime:'',//举办时间字符串
                 meetingAddress:'',//会议举办地址
+                meetingBaseInfoId:'',//会议基本信息ID
                 meetingAgendaId:'',//日程ID
                 meetingGuestId:'',//嘉宾ID
                 meetingVoteId:'',//投票ID
@@ -220,6 +221,9 @@ var vm = new Vue({
                 meetingEnrollEndTime:[
                     { required: true, message: '报名结束时间必填', trigger: 'change' }
                 ],
+                meetingBaseInfoId:[
+                    { required: true, message: '会议基本信息必选', trigger: 'change' }
+                ],
             },
             //封面图库相关
             showCoverimgLib:false,
@@ -245,6 +249,20 @@ var vm = new Vue({
             },
             contentImgTableData:[],
             pagination2: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //展示基础信息表
+            showBaseInfoLib:false,
+            searchBaseInfoForm:{
+                meetingBaseInfoTitle:'',
+                meetingBaseInfoStatus:'0',
+                meetingBaseInfoMeetingId:'-1',
+            },
+            baseInfoTableData:[],
+            pagination10: {
                 currPage: 1,
                 totalCount:0,
                 totalPage:0,
@@ -647,6 +665,75 @@ var vm = new Vue({
             }
             this.contentImgTableData = [],
             this.pagination2 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+        },
+        //--------------------搜索基本信息表相关--------------------
+        openAddBaseInfoList() {
+            this.showBaseInfoLib = true
+            this.searchBaseInfo(0)
+        },
+        searchBaseInfo (type){
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchBaseInfoForm))
+            data.meetingBaseInfoTitle = data.meetingBaseInfoTitle.toString().trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination10.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination10.currPage.toString(),
+                    limit: self.pagination10.pageSize.toString()
+                })
+            }
+            $.ajax({
+				type: "POST",
+                url: "/meetingBaseInfo/list",
+                contentType: "application/json",
+			    data: JSON.stringify(data),
+			    dataType: "json",
+			    success: function(res){
+					if(res.code == 200){
+                        self.baseInfoTableData = res.page.list
+                        self.pagination10 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage: res.page.totalPage,
+                            pageSize: res.page.pageSize
+                        }
+					}else{
+						mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+			});
+        },
+        handleCurrentChange10 (val) {
+            this.pagination10.currPage = val
+            this.searchBaseInfo()
+        },
+        addThisBaseInfo (item) {
+            this.meetingForm.meetingBaseInfoId = item.meetingBaseInfoId
+            this.backToEditFromBaseInfo()
+        },
+        backToEditFromBaseInfo (){
+            this.showBaseInfoLib = false
+            this.searchBaseInfoForm = {
+                meetingBaseInfoTitle:'',
+                meetingBaseInfoStatus:'0',
+                meetingBaseInfoMeetingId:'-1',
+            }
+            this.baseInfoTableData = []
+            this.pagination10 = {
                 currPage: 1,
                 totalCount:0,
                 totalPage:0,

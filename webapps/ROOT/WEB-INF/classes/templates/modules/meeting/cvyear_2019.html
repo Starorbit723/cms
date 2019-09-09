@@ -23,6 +23,18 @@
                     </el-form-item>
                 </el-col>
             </el-row>
+            <el-row class="el-row-h60">
+                <el-col :span="10">
+                    <el-form-item label="基本信息编号" prop="" label-width="36%" style="margin:0;">
+                        <el-input
+                            :disabled="true"
+                            v-model="meetingForm.meetingBaseInfoId"
+                            auto-complete="off">
+                        </el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col class="el-row-h40" :offset="1" :span="13">请到<b style="color: #175CE9;">基本信息</b>中配置相关内容，本次会议的会议编号为：<b style="color: #175CE9;">1</b></el-col>
+            </el-row>
             <el-row class="el-row-h70">
                 <el-col :span="24">
                     <el-form-item prop="meetingTitle" label="会议标题" style="margin:0;">

@@ -47,6 +47,7 @@ var vm = new Vue({
                 meetingStatus:'',//状态 0 正常 1下线
                 meetingImg:'',//封面图
                 meetingDesc:'',//描述
+                meetingBaseInfoId:'1',//基础信息ID,写死
                 meetingAgendaId:'1',//日程ID,写死
                 meetingGuestId:'1',//嘉宾ID,写死
                 meetingCooperationId:'1',//合作机构ID,写死

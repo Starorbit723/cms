@@ -14,7 +14,7 @@
             <!--折叠面板开始-->
             <el-collapse v-model="activeNames" @change="handleChangeCollapse">
 
-                <!--会议基本信息区-->
+                <!--会议SDK基本信息区-->
                 <el-collapse-item title="SEO-TDK" name="1">
                     <el-row class="el-row-h70">
                         <el-col :span="24">
@@ -261,6 +261,21 @@
 
                 <!--会议基本信息-->
                 <el-collapse-item title="会议基本信息" name="3">
+                    <!--基本信息引入--必填项-->
+                    <el-row class="el-row-h70">
+                        <el-col :span="20">
+                            <el-form-item label="基本信息Id" prop="meetingBaseInfoId" label-width="18%" style="margin:0;">
+                                <el-input
+                                    :disabled="true"
+                                    v-model="meetingForm.meetingBaseInfoId"
+                                    auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col class="el-row-h40" :offset="1" :span="3">
+                            <el-button style="width: 100%;" @click="openAddBaseInfoList">修改</el-button>
+                        </el-col>
+                    </el-row>
                     <el-row class="el-row-h60">
                         <el-col :span="24">
                             <el-form-item label="【楼层开关】" prop="meetingJsonData.basicInformation.isShowFloor" label-width="15%" style="margin:0;">
@@ -2084,6 +2099,51 @@
             </div>
         </el-dialog>
         <!--封面图库弹出层结束-->
+
+        <!--基础信息表弹出层开始-->
+        <el-dialog title="会议基础信息表" :visible.sync="showBaseInfoLib" width="100%" :fullscreen="true" :show-close="false" >
+            <el-form :model="searchBaseInfoForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                <el-row class="el-row-h60">
+                    <el-col :span="16">
+                        <el-form-item label="会议基础信息标题" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="searchBaseInfoForm.meetingBaseInfoTitle"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchBaseInfo(0)">搜索</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" style="width:100%" @click="backToEditFromBaseInfo()">返回</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <el-table :data="baseInfoTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="baseInfoTableData" stripe>
+                <el-table-column prop="meetingBaseInfoId" label="基本信息编号" width="110"></el-table-column>
+                <el-table-column prop="meetingBaseInfoTitle" label="会议标题" width=""></el-table-column>
+                <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
+                <el-table-column prop="meetingBaseInfoCrtTime" label="创建时间" width="200"></el-table-column>
+                <el-table-column label="操作" width="100" fixed="right">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" @click="addThisBaseInfo(scope.row)">添加</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange10"
+                    :current-page="pagination10.currPage"
+                    :page-size="pagination10.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination10.totalCount">
+                </el-pagination>
+            </div>
+        </el-dialog>
+        <!--基础信息表弹出层结束-->
 
         <!--日程表弹出层开始-->
         <el-dialog title="会议日程列表" :visible.sync="showCalendarLib" width="100%" :fullscreen="true" :show-close="false" >
