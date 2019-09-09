@@ -193,10 +193,10 @@ var vm = new Vue({
                 meetingKeywords:[
                     { required: true, message: '请填写会议关键词', trigger: 'change' }
                 ],
-                meetingTheme: [
-                    { required: true, message: '主题不能为空', trigger: 'change' },
-                    { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
-                ],
+                // meetingTheme: [
+                //     { required: true, message: '主题不能为空', trigger: 'change' },
+                //     { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
+                // ],
                 meetingOrganizer:[
                     { required: true, message: '请填写主办单位', trigger: 'change' }
                 ],
@@ -209,18 +209,18 @@ var vm = new Vue({
                 meetingHoldTime:[
                     { required: true, message: '请填写举办时间', trigger: 'change' }
                 ],
-                meetingAddress:[
-                    { required: true, message: '请填写举办地址', trigger: 'change' }
-                ],
+                // meetingAddress:[
+                //     { required: true, message: '请填写举办地址', trigger: 'change' }
+                // ],
                 meetingSignUpUrl:[
                     { required: true, validator: validateUrl, trigger: 'change' }
                 ],
-                meetingEnrollStartTime:[
-                    { required: true, message: '报名开始时间必填', trigger: 'change' }
-                ],
-                meetingEnrollEndTime:[
-                    { required: true, message: '报名结束时间必填', trigger: 'change' }
-                ],
+                // meetingEnrollStartTime:[
+                //     { required: true, message: '报名开始时间必填', trigger: 'change' }
+                // ],
+                // meetingEnrollEndTime:[
+                //     { required: true, message: '报名结束时间必填', trigger: 'change' }
+                // ],
                 meetingBaseInfoId:[
                     { required: true, message: '会议基本信息必选', trigger: 'change' }
                 ],
@@ -1283,10 +1283,10 @@ var vm = new Vue({
             var self = this
             console.log('数据',self.meetingForm)
             //判断报名开始时间和报名结束时间规则
-            if (self.meetingForm.meetingEnrollStartTime >= self.meetingForm.meetingEnrollEndTime) {
-                self.$message.error('报名开始时间必须小于报名结束时间');
-                return
-            }
+            // if (self.meetingForm.meetingEnrollStartTime >= self.meetingForm.meetingEnrollEndTime) {
+            //     self.$message.error('报名开始时间必须小于报名结束时间');
+            //     return
+            // }
             self.$refs[formName].validate((valid) =>{
                 if (valid) {
                     self.saveMeeting(type)
