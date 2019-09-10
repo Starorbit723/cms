@@ -1245,20 +1245,22 @@ var vm = new Vue({
         },
         downloadInvitaionCode() {
             var self = this
-            var data = {
-                meetingInvitationCodeSignUpId:1,
-            }
+            // var data = {
+            //     meetingInvitationCodeSignUpId:1,
+            // }
+            console.log(JSON.stringify(data))
             $.ajax({
-                type: "POST",
-                url: "/meetingInvitationCode/excels",
+                type: "GET",
+                url: "/meetingInvitationCode/excels?meetingInvitationCodeSignUpId=1",
                 contentType: "application/json",
-                data: JSON.stringify(data),
-                dataType: "json",
-                complete: function() {
-                    console.log(res)
-                },
+                // data: JSON.stringify(data),
+                dataType: "string",
+                // complete: function() {
+                //     console.log(res)
+                // },
                 success: function(res) {
                     console.log(res)
+                    // window.open('../../eldercare/excel/downFromCache?key='+data.rows, '_self');
                 //     // window.location.href=""
                 //     // console.log(res)
                 //     // if(res.code == 200) {
@@ -1299,8 +1301,7 @@ var vm = new Vue({
                     }
                     $.ajax({
                         type: "POST",
-                        // url: "/meetingInvitationCode/codes?meetingInvitationCodeSignUpId="+self.searchInfoForm.signUpId+"&number="+self.createCodeForm.number+"&meetingInvitationCodePerson="+self.createCodeForm.meetingInvitationCodePerson,
-                       url: '/meetingInvitationCode/codes',
+                        url: '/meetingInvitationCode/codes',
                         contentType: "application/json",
                         data: JSON.stringify(data),
                         dataType: "json",
