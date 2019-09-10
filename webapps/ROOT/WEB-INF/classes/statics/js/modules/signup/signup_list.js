@@ -375,11 +375,12 @@ var vm = new Vue({
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res){
+                    console.log(res)
                     if(res.code == 200){
                         self.tableData = res.page.list
                         for (let i = 0; i < self.tableData.length; i++){
                             self.tableData[i].signUpLink = "https://m.chinaventure.com.cn/signup/signupinfo.html?signUpId="+self.tableData[i].signUpId
-                            self.tableData[i].signUpModTime = self.transformTime(parseInt(self.tableData[i].signUpModTime))
+                            // self.tableData[i].signUpModTime = self.transformTime(parseInt(self.tableData[i].signUpModTime))
                         }
                         self.pagination1 = {
                             currPage: res.page.currPage,
@@ -406,7 +407,7 @@ var vm = new Vue({
                 self.showAddorEditPage = true
                 self.showSignupList = false
             } else if (type == 1) {
-                // console.log(item)
+                console.log(item)
                 self.showMeetingBaseInfo(item.signUpMeetingId.toString())
                 $.ajax({
                     type: "POST",
@@ -424,6 +425,7 @@ var vm = new Vue({
                             // console.log(JSON.stringify(data.signUpJson))
                             self.signupForm = data
                             var result = self.signupForm.signUpDate.split(",");
+                            
                             for(var i = 0; i< result.length; i++) {
                                 self.checkinTime.push(Number(result[i]))
                             }
@@ -577,13 +579,15 @@ var vm = new Vue({
 
         //重新编辑会议返显基础信息表
         showMeetingBaseInfo(id){
+            console.log(id)
             var self = this
             $.ajax({
 				type: "POST",
-                url: '/meetingBaseInfo/info/'+id,
+                url: '/meetingBaseInfo/info/'+id.toString(),
                 contentType: "application/json",
 			    dataType: "json",
 			    success: function(res){
+                    console.log(res)
 					if(res.code == 200){
                         var data = res.dict
                         self.meetingBaseInfoForm.meetingBaseInfoTitle = data.meetingBaseInfoTitle
@@ -959,8 +963,6 @@ var vm = new Vue({
         //保存
         testSubmit (formName) {
             var self = this
-
-            
             self.$refs[formName].validate((valid) => {
                 if (valid) {
                     //验证自定义选项是否填写完成
@@ -989,6 +991,7 @@ var vm = new Vue({
             } else if (self.creatOrEdit == 1) {
                 var reqUrl = '/signUp/update'
             }
+            console.log(JSON.stringify(data))
             $.ajax({
                 type: "POST",
                 url: reqUrl,
@@ -1038,6 +1041,19 @@ var vm = new Vue({
                     itemList:[]
                 }]
             },
+            this.meetingBaseInfoForm = {
+                meetingBaseInfoId: '',
+                meetingBaseInfoMeetingId: '',
+                meetingBaseInfoTitle: '',
+                meetingBaseInfoStartTime:'',
+                meetingBaseInfoEndTime:'',
+                meetingBaseInfoSignUpStartTime:'',
+                meetingBaseInfoSignUpEndTime: '',
+                meetingBaseInfoProvince: '',
+                meetingBaseInfoCity:'',
+                meetingBaseInfogArea: '',
+                meetingBaseInfoAddress:'',
+            }
             this.showAddorEditPage = false
             this.showSignupList = true
         },
@@ -1104,6 +1120,18 @@ var vm = new Vue({
                     mapErrorStatus(res)
                 }
             });
+        },
+        closeInvitationCodePage(formName){
+            this.showInvitationCodePage = false
+            this.showSignupList = true
+            this.searchCodeForm = {
+                meetingInvitationCodeSignUpId: '', //报名id
+                meetingInvitationCodeName: '', //名称
+                meetingInvitationCodePerson: '', // 生成人
+                meetingInvitationCodeMobile: '', //手机号
+                meetingInvitationCodeStatus: '', //状态 0 未使用 1 已使用 2已删除
+            }
+            this.tableCodeData =[]
         },
         // 报名控制按钮
         changeSignupStatus(item) {
@@ -1245,6 +1273,7 @@ var vm = new Vue({
                 }
             });
         },
+
         downloadInvitaionCode() {
             var self = this
             $.ajax({
@@ -1344,8 +1373,6 @@ var vm = new Vue({
                 signUpInfoMobile: ''
             }
             this.tableInfoData =[]
-
-
         },
 
 

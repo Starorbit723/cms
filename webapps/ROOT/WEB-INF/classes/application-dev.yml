@@ -85,6 +85,8 @@ subjectNewsList: /cms/api/updateSubjectNewsList
 pvRedisUrl: /cms/api/updateCountNewsList
 versionUrl: /cms/api/updateAppVersion
 talkUrl: /cms/api/updateVtalkList
+updateSignUpUrl: /cms/api/updateCmsSignUp
+updateSignUpInfoUrl: /cms/api/updateCmsSignUpInfo
 endPoint: https://obs.cn-north-1.myhuaweicloud.com
 ak: 2FBSHRRFZ5YLE3VPBMDK
 sk: vqYIdh3xmKfjlhcM0qEwCeuY8QfRKHYnGYHWoDBx
@@ -94,3 +96,4 @@ baiduUrl: http://data.zz.baidu.com/urls?site=https://www.chinaventure.com.cn&tok
 cvinfoUrl: https://www.chinaventure.com.cn
 cvinfoMUrl: https://m.chinaventure.com.cn
 baiduToken: EAN4cqLpc6TbSSFO
+

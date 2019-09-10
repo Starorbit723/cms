@@ -595,7 +595,7 @@
                             <el-button type="primary" style="width:100%"  @click="downloadInfo()">下载参会信息</el-button>
                         </el-col>
                         <el-col class="el-row-h40" :span="3" :offset="1">
-                            <el-button type="primary" style="width: 100%" @click="closeSingupInfoPage('searchInfoForm')">取消</el-button>
+                            <el-button type="primary" style="width: 100%" @click="closeSingupInfoPage('searchInfoForm')">返回</el-button>
                         </el-col>
                     </el-row>
                 </el-form>
@@ -781,7 +781,7 @@
             <div class="cv_content_square">
                 <el-form :model="searchCodeForm" status-icon class="demo-ruleForm" label-position="right" @submit.native.prevent>
                     <el-row class="el-row-h60">
-                        <el-col :span="6">
+                        <el-col :span="4">
                             <el-form-item  label-width="30%" label="名称" style="margin:0;">
                                 <el-input
                                 clearable
@@ -791,7 +791,7 @@
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="6" :offset="1">
+                        <el-col :span="5" :offset="1">
                             <el-form-item  label-width="30%" label="电话" style="margin:0;">
                                 <el-input
                                 clearable
@@ -800,7 +800,7 @@
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="6" :offset="1">
+                        <el-col :span="5" :offset="1">
                             <el-form-item  label-width="30%" label="生成人" style="margin:0;">
                                 <el-input
                                 clearable
@@ -811,6 +811,9 @@
                         </el-col>
                         <el-col :span="3" :offset="1" class="el-row-h40">
                             <el-button type="primary" icon="el-icon-search" style="width:100%"  @click="startSearchCode(0)">搜索</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="3" :offset="1">
+                            <el-button type="primary" style="width: 100%" @click="closeInvitationCodePage('searchInfoForm')">返回</el-button>
                         </el-col>
                     </el-row>
                 </el-form>
