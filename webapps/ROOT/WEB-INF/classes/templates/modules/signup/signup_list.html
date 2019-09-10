@@ -104,6 +104,7 @@
                             <el-form-item prop="signUpTitle" label="报名名称" style="margin:0;">
                                 <el-input
                                 clearable
+                                maxlength = "36"
                                 type="text"
                                 v-model="signupForm.signUpTitle"
                                 auto-complete="on">
@@ -240,7 +241,7 @@
                             </el-row>
                             <el-row class="el-row-h70">
                                 <el-col :span="18">
-                                    <el-form-item label="关联会议名称" style="margin:0;">
+                                    <el-form-item label="详细地址" style="margin:0;">
                                         <el-input
                                         disabled
                                         type="text"
@@ -434,9 +435,9 @@
         
         <!----------------- 1.会议列表弹出层开始 ---------------->
         <el-dialog title="会议列表" :visible.sync="showCommonMeetingList" width="100%" :fullscreen="true" :show-close="false" >
-            <el-form :model="searchMeetingForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+            <el-form :model="searchMeetingForm" status-icon class="demo-ruleForm" label-width="25%" label-position="right" @submit.native.prevent>
                 <el-row class="el-row-h60">
-                    <el-col :span="8">
+                    <el-col :span="7">
                         <el-form-item label="会议名称" style="margin:0;">
                             <el-input
                             clearable
@@ -445,7 +446,7 @@
                             auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="8" :offset="1">
                         <el-form-item label="创建时间" style="margin:0;">
                             <el-date-picker
                                 clearable

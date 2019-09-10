@@ -265,10 +265,6 @@ var vm = new Vue({
 
         },
 
-
-
-
-
         //邀请码管理页面
         searchCodeForm: {
             meetingInvitationCodeSignUpId: '', //报名id
@@ -324,7 +320,7 @@ var vm = new Vue({
             // console.log(this.searchMeetingForm)
         },
         checkinTime(val) {
-            // console.log(val)
+            console.log(val)
             // if(val.length == 1 && val[0] !== 1567267200000) {
             //     this.signupForm.signUpDate = val.join(',')
             // } else if(val.length == 2 && val[0] !== val[1]) {
@@ -334,6 +330,8 @@ var vm = new Vue({
             // } else {
             //     this.$message.error('请选择正确时间')
             // }
+            
+            
             this.signupForm.signUpDate = val.join(',')
         }
     },
@@ -408,9 +406,7 @@ var vm = new Vue({
                 self.showSignupList = false
             } else if (type == 1) {
                 console.log(item)
-                self.getEditMeetingOrign(item.signUpMeetingId)
-
-                // self.showMeetingBaseInfo(item.signUpMeetingId.toString())
+                self.getEditMeetingOrign(item.signUpMeetingType, item.signUpMeetingId)
                 $.ajax({
                     type: "POST",
                     url: "/signUp/info/" + item.signUpId.toString(),
@@ -454,11 +450,16 @@ var vm = new Vue({
         },
         //数据反显
 
-        getEditMeetingOrign(type) {
+        getEditMeetingOrign(type, id) {
             var self = this
+            if(type == "0") {
+                var reqUrl = "/meeting/special/info/"
+            } else if(type == "1") {
+                var reqUrl = "/meetingInfo/info/"
+            }
             $.ajax({
                 type: "POST",
-                url: "/meetingInfo/info/"+ type.toString(),
+                url: reqUrl + id.toString(),
                 contentType: "application/json",
                 dataType: "json",
                 success: function(res){
@@ -989,6 +990,7 @@ var vm = new Vue({
         //保存
         testSubmit (formName) {
             var self = this
+            console.log(self.checkinTime)
             self.$refs[formName].validate((valid) => {
                 if (valid) {
                      //验证自定义选项是否填写完成
@@ -1001,15 +1003,12 @@ var vm = new Vue({
                         }
 
                     }
-                    
-                    
-                    self.submitCreatEdit()
+                    // self.submitCreatEdit()
                 }
             })
         },
         submitCreatEdit() {
             var self = this
-            // console.log(self.signupForm)
             var data = JSON.parse(JSON.stringify(self.signupForm))
             console.log('准备提交保存的Form',data)
             if(data.signUpDate !== '') {
@@ -1029,9 +1028,6 @@ var vm = new Vue({
                     }
                 }
             }
-            // var arr = data.signUpDate.split(',')
-            // if(arr.length = )
-
 
             $.base64.utf8encode = true;
             var jsonString = JSON.stringify(data.signUpJson);
@@ -1045,7 +1041,7 @@ var vm = new Vue({
             } else if (self.creatOrEdit == 1) {
                 var reqUrl = '/signUp/update'
             }
-            console.log(JSON.stringify(data))
+            // console.log(JSON.stringify(data))
             $.ajax({
                 type: "POST",
                 url: reqUrl,
@@ -1112,11 +1108,6 @@ var vm = new Vue({
             this.showSignupList = true
         },
 
-
-
-
-
-
         // -----------------------报名用户列表搜索区开始-----------------------------------------
         handleCurrentChange2(val){
             // this.pagination2.currPage = val
@@ -1134,7 +1125,7 @@ var vm = new Vue({
         startSearchInfo(type){
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchInfoForm))
-            console.log(data)
+            // console.log(data)
             data.signUpInfoName = data.signUpInfoName.toString().trim()
             data.signUpInfoMobile = data.signUpInfoMobile.toString().trim()
             // console.log(data)
@@ -1198,14 +1189,24 @@ var vm = new Vue({
         },
         // 具体参会人信息编辑
         editsignupInfo(item){
+            console.log(item)
+            var self = this
             $.ajax({
                 type: "POST",
                 url: " /signUpInfo/info/"+item.signUpInfoId.toString(),
                 contentType: "application/json",
                 dataType: "json",
                 success: function(res){
+                    console.log(res)
                     if(res.code == 200){
-                        self.searchDetailForm = res.dict
+                        let data  = res.dict
+                        
+                        let map = $.base64.atob(data.signUpInfoJson, true)
+                        data.signUpInfoJson = JSON.parse(map)
+                        console.log(data)
+                        self.searchDetailForm = data
+
+
                         self.showSingupInfoPage = false
                         self.showEditInfoPage = true
                     }else{
@@ -1400,23 +1401,23 @@ var vm = new Vue({
 
         // 下载参会信息
         downloadInfo() {
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: params,
-                success: function(response, status, request) {
-                    var disp = request.getResponseHeader('Content-Disposition');
-                    if (disp && disp.search('attachment') != -1) {
-                        var form = $('<form method="POST" action="' + url + '">');
-                        $.each(params, function(k, v) {
-                            form.append($('<input type="hidden" name="' + k +
-                                    '" value="' + v + '">'));
-                        });
-                        $('body').append(form);
-                        form.submit();
-                    }
-                }
-            })
+            // $.ajax({
+            //     type: "POST",
+            //     url: url,
+            //     data: params,
+            //     success: function(response, status, request) {
+            //         var disp = request.getResponseHeader('Content-Disposition');
+            //         if (disp && disp.search('attachment') != -1) {
+            //             var form = $('<form method="POST" action="' + url + '">');
+            //             $.each(params, function(k, v) {
+            //                 form.append($('<input type="hidden" name="' + k +
+            //                         '" value="' + v + '">'));
+            //             });
+            //             $('body').append(form);
+            //             form.submit();
+            //         }
+            //     }
+            // })
         },
         closeSingupInfoPage(formName){
             this.showSingupInfoPage = false
