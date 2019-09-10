@@ -959,6 +959,8 @@ var vm = new Vue({
         //保存
         testSubmit (formName) {
             var self = this
+
+            
             self.$refs[formName].validate((valid) => {
                 if (valid) {
                     //验证自定义选项是否填写完成
@@ -1245,42 +1247,15 @@ var vm = new Vue({
         },
         downloadInvitaionCode() {
             var self = this
-            // var data = {
-            //     meetingInvitationCodeSignUpId:1,
-            // }
-            console.log(JSON.stringify(data))
             $.ajax({
                 type: "GET",
-                url: "/meetingInvitationCode/excels?meetingInvitationCodeSignUpId=1",
+                url: "/meetingInvitationCode/excels?meetingInvitationCodeSignUpId="+self.searchInfoForm.signUpId,
                 contentType: "application/json",
-                // data: JSON.stringify(data),
                 dataType: "string",
-                // complete: function() {
-                //     console.log(res)
-                // },
-                success: function(res) {
-                    console.log(res)
-                    // window.open('../../eldercare/excel/downFromCache?key='+data.rows, '_self');
-                //     // window.location.href=""
-                //     // console.log(res)
-                //     // if(res.code == 200) {
-                //     //     self.$message.success('保存成功')
-                //     //     self.startSearchCode()
-                //     //     self.closeCreateCode('createCodeForm')
-                //     //     self.saveBtn = false
-                //     // } else {
-                //     //     mapErrorStatus(res)
-                //     //     vm.error = true;
-                //     //     vm.errorMsg = res.msg;
-                //     // }
-                },
-                error:function(res){
-                    console.log('err',res)
-                    alert(11111)
-                    mapErrorStatus(res)
+                complete: function() {
+                    window.open("/meetingInvitationCode/excels?meetingInvitationCodeSignUpId="+self.searchInfoForm.signUpId)
                 }
             })
-
         },
 
         // --------------------------生成邀请码页面--------------------
