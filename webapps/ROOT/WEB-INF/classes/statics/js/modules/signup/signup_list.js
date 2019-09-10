@@ -1245,16 +1245,18 @@ var vm = new Vue({
         },
         downloadInvitaionCode() {
             var self = this
-            var data = {
-                meetingInvitationCodeSignUpId:1,
-            }
+            window.open('/meetingInvitationCode/excels?meetingInvitationCodeSignUpId=1')
+            // var data = {
+            //     meetingInvitationCodeSignUpId:1,
+            // }
             $.ajax({
-                type: "POST",
-                url: "/meetingInvitationCode/excels",
+                type: "GET",
+                url: "/meetingInvitationCode/excels?meetingInvitationCodeSignUpId=1",
                 contentType: "application/json",
-                data: JSON.stringify(data),
-                dataType: "json",
-                complete: function() {
+                //data: JSON.stringify(data),
+                //dataType: "json",
+                complete: function(res) {
+                    alert(2222)
                     console.log(res)
                 },
                 success: function(res) {
@@ -1273,6 +1275,8 @@ var vm = new Vue({
                 //     // }
                 },
                 error:function(res){
+                    console.log('err',res)
+                    alert(11111)
                     mapErrorStatus(res)
                 }
             })
