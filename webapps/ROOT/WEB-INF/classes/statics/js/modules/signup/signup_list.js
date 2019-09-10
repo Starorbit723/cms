@@ -202,7 +202,7 @@ var vm = new Vue({
         tableInfoData: [
             {
                 // signUpInfoId: 5,
-                // signUpInfoName: 'zs',
+                // signUpInfoName: '张三',
                 // signUpInfoPosition: 'ali',
                 // signUpInfoCompany: 'ali',
                 // signUpInfoMobile: 'ali',
@@ -408,24 +408,25 @@ var vm = new Vue({
                 self.showSignupList = false
             } else if (type == 1) {
                 console.log(item)
-                self.showMeetingBaseInfo(item.signUpMeetingId.toString())
+                self.getEditMeetingOrign(item.signUpMeetingId)
+
+                // self.showMeetingBaseInfo(item.signUpMeetingId.toString())
                 $.ajax({
                     type: "POST",
                     url: "/signUp/info/" + item.signUpId.toString(),
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res){
-                        // console.log(res)
+                        console.log(res)
                         if(res.code == 200){
                             //json64反解
                             let data = res.dict
                             let map = $.base64.atob(data.signUpJson, true)
                             data.signUpJson = JSON.parse(map)
-                            // console.log(data)
+                            console.log(data)
                             // console.log(JSON.stringify(data.signUpJson))
                             self.signupForm = data
                             var result = self.signupForm.signUpDate.split(",");
-                            
                             for(var i = 0; i< result.length; i++) {
                                 self.checkinTime.push(Number(result[i]))
                             }
@@ -436,6 +437,7 @@ var vm = new Vue({
                             self.signupForm.signUpCompany = JSON.parse(self.signupForm.signUpCompany)
                             self.signupForm.signUpPosition = JSON.parse(self.signupForm.signUpPosition)
                             self.signupForm.signUpCustom = JSON.parse(self.signupForm.signUpCustom)
+                            console.log(self.signupForm.signUpMobileCode)
                             self.showSignupList = false
                             self.showAddorEditPage = true
                         }else{
@@ -448,8 +450,83 @@ var vm = new Vue({
                         mapErrorStatus(res)
                     }
                 });
-            }
+             }
         },
+        //数据反显
+
+        getEditMeetingOrign(type) {
+            var self = this
+            $.ajax({
+                type: "POST",
+                url: "/meetingInfo/info/"+ type.toString(),
+                contentType: "application/json",
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        console.log('请求修改的会议返回结果：',res.dict)
+                        self.showMeetingBaseInfo(res.dict.meetingBaseInfoId)
+                    }else{
+                        mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+         //重新编辑会议返显基础信息表
+         showMeetingBaseInfo(id){
+            console.log(id)
+            var self = this
+            $.ajax({
+				type: "POST",
+                url: '/meetingBaseInfo/info/'+id.toString(),
+                contentType: "application/json",
+			    dataType: "json",
+			    success: function(res){
+                    console.log(res)
+					if(res.code == 200){
+                        var data = res.dict
+                        self.meetingBaseInfoForm.meetingBaseInfoTitle = data.meetingBaseInfoTitle
+                        if(data.meetingBaseInfoStartTime == '') {
+                            self.meetingBaseInfoForm.meetingBaseInfoStartTime = ''
+                        } else {
+                            self.meetingBaseInfoForm.meetingBaseInfoStartTime = self.transformTime(parseInt(data.meetingBaseInfoStartTime))
+                        }
+                        if(data.meetingBaseInfoEndTime == '') {
+                            self.meetingBaseInfoForm.meetingBaseInfoEndTime = ''
+                        } else {
+                            self.meetingBaseInfoForm.meetingBaseInfoEndTime = self.transformTime(parseInt(data.meetingBaseInfoEndTime))
+                        }
+                        if(data.meetingBaseInfoSignUpEndTime == '') {
+                            self.meetingBaseInfoForm.meetingBaseInfoSignUpEndTime = ''
+                        } else {
+                            self.meetingBaseInfoForm.meetingBaseInfoSignUpEndTime = self.transformTime(parseInt(data.meetingBaseInfoSignUpEndTime))
+                        }
+                        if(data.meetingBaseInfoSignUpStartTime == '') {
+                            self.meetingBaseInfoForm.meetingBaseInfoSignUpStartTime = ''
+                        } else {
+                            self.meetingBaseInfoForm.meetingBaseInfoSignUpStartTime = self.transformTime(parseInt(data.meetingBaseInfoSignUpStartTime))
+                        }
+                        self.meetingBaseInfoForm.meetingBaseInfoProvince = data.meetingBaseInfoProvince
+                        self.meetingBaseInfoForm.meetingBaseInfoCity =data.meetingBaseInfoCity
+                        self.meetingBaseInfoForm.meetingBaseInfoArea = data.meetingBaseInfoArea
+                        self.meetingBaseInfoForm.meetingBaseInfoAddress = data.meetingBaseInfoAddress
+                        self.backToEdit2()
+					}else{
+						mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+
         // 删除报名信息
         deleteThisSignup(item) {
             var self = this
@@ -577,58 +654,7 @@ var vm = new Vue({
 			});
         },
 
-        //重新编辑会议返显基础信息表
-        showMeetingBaseInfo(id){
-            console.log(id)
-            var self = this
-            $.ajax({
-				type: "POST",
-                url: '/meetingBaseInfo/info/'+id.toString(),
-                contentType: "application/json",
-			    dataType: "json",
-			    success: function(res){
-                    console.log(res)
-					if(res.code == 200){
-                        var data = res.dict
-                        self.meetingBaseInfoForm.meetingBaseInfoTitle = data.meetingBaseInfoTitle
-                        if(data.meetingBaseInfoStartTime == '') {
-                            self.meetingBaseInfoForm.meetingBaseInfoStartTime = ''
-                        } else {
-                            self.meetingBaseInfoForm.meetingBaseInfoStartTime = self.transformTime(parseInt(data.meetingBaseInfoStartTime))
-                        }
-                        if(data.meetingBaseInfoEndTime == '') {
-                            self.meetingBaseInfoForm.meetingBaseInfoEndTime = ''
-                        } else {
-                            self.meetingBaseInfoForm.meetingBaseInfoEndTime = self.transformTime(parseInt(data.meetingBaseInfoEndTime))
-                        }
-                        if(data.meetingBaseInfoSignUpEndTime == '') {
-                            self.meetingBaseInfoForm.meetingBaseInfoSignUpEndTime = ''
-                        } else {
-                            self.meetingBaseInfoForm.meetingBaseInfoSignUpEndTime = self.transformTime(parseInt(data.meetingBaseInfoSignUpEndTime))
-                        }
-                        if(data.meetingBaseInfoSignUpStartTime == '') {
-                            self.meetingBaseInfoForm.meetingBaseInfoSignUpStartTime = ''
-                        } else {
-                            self.meetingBaseInfoForm.meetingBaseInfoSignUpStartTime = self.transformTime(parseInt(data.meetingBaseInfoSignUpStartTime))
-                        }
-                        self.meetingBaseInfoForm.meetingBaseInfoProvince = data.meetingBaseInfoProvince
-                        self.meetingBaseInfoForm.meetingBaseInfoCity =data.meetingBaseInfoCity
-                        self.meetingBaseInfoForm.meetingBaseInfoArea = data.meetingBaseInfoArea
-                        self.meetingBaseInfoForm.meetingBaseInfoAddress = data.meetingBaseInfoAddress
-                        self.backToEdit2()
-					}else{
-						mapErrorStatus(res)
-                        vm.error = true;
-                        vm.errorMsg = res.msg;
-                    }
-                },
-                error:function(res){
-                    mapErrorStatus(res)
-                }
-            });
-            
-
-        },
+       
 
         // 绑定会议
         addThisMeeting(item){
@@ -965,27 +991,55 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
-                    //验证自定义选项是否填写完成
-                    for (let i = 0; i < self.signupForm.signUpJson.length; i++) {
-                        if (self.signupForm.signUpJson[i].sectionTitle.trim() == '' || (self.signupForm.signUpJson[i].itemList[0].itemText.trim() == '')) {
-                            self.$message.error('还有选项未填写完成')
-                            return
+                     //验证自定义选项是否填写完成
+                    if(self.signupForm.signUpCustom == true) {
+                        for (let i = 0; i < self.signupForm.signUpJson.length; i++) {
+                            if (self.signupForm.signUpJson[i].sectionTitle.trim() == '' || (self.signupForm.signUpJson[i].itemList.length > 0 && self.signupForm.signUpJson[i].itemList[0].itemText.trim() == '')) {
+                                self.$message.error('还有选项未填写完成')
+                                return
+                            }
                         }
+
                     }
+                    
+                    
                     self.submitCreatEdit()
                 }
             })
         },
         submitCreatEdit() {
             var self = this
+            // console.log(self.signupForm)
             var data = JSON.parse(JSON.stringify(self.signupForm))
             console.log('准备提交保存的Form',data)
+            if(data.signUpDate !== '') {
+                var arr = data.signUpDate.split(',')
+                for(var i = 0; i < arr.length; i++) {
+                    if(Number(arr[i]) < 0){
+                        self.$message.error("签到日期需设置在1970年1月1日北京时间8点之后")
+                        return
+                    } else {
+                        if(arr.length == 2 && (Number(arr[0]) == Number(arr[1]))) {
+                            self.$message.error('签到时间不能重复')
+                            return
+                        } else if(arr.length == 3 && (Number(arr[0]) == Number(arr[1]))|| (Number(arr[1]) == Number(arr[2])) || (Number(arr[0]) == Number(arr[2]))) {
+                            self.$message.error('签到时间不能重复')
+                            return
+                        }
+                    }
+                }
+            }
+            // var arr = data.signUpDate.split(',')
+            // if(arr.length = )
+
+
             $.base64.utf8encode = true;
             var jsonString = JSON.stringify(data.signUpJson);
             var json64 = $.base64.btoa(jsonString);
             data.signUpJson = json64
             // console.log('6464',jsonString,json64)
-            // console.log(JSON.stringify(data))
+            console.log(JSON.stringify(data))
+            console.log(data)
             if (self.creatOrEdit == 0) {
                 var reqUrl = '/signUp/save'
             } else if (self.creatOrEdit == 1) {
