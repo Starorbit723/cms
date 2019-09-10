@@ -1275,6 +1275,8 @@ var vm = new Vue({
                 //     // }
                 },
                 error:function(res){
+                    console.log('err',res)
+                    alert(11111)
                     mapErrorStatus(res)
                 }
             })
