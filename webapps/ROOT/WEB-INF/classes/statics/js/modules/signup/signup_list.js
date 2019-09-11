@@ -34,14 +34,14 @@ var vm = new Vue({
             pageSize:10
         },
         // --------------------------新建报名表基本信息---------------
-        checkinTime: [null],  //1567267200000
+        checkinTime: [1567267200000],  //1567267200000
         signupForm: {
             signUpTitle: '', // 报名名称
             signUpMeetingType: '', //会议类型
             signUpMeetingId: '',// 关联会议详情ID
-            signUpInvitationCode: '', //是否使用邀请码 0是1否
-            signUpExamine: '', // 是否需要审核 0是1否
-            signUpIsToCheck: '', // 是否需要签到 0是1否
+            signUpInvitationCode: '0', //是否使用邀请码 0是1否
+            signUpExamine: '0', // 是否需要审核 0是1否
+            signUpIsToCheck: '0', // 是否需要签到 0是1否
             signUpDate: '', // 签到日期
             signUpImg: '', // 头图图片
             signUpName: true, //姓名
@@ -415,6 +415,7 @@ var vm = new Vue({
             if (type == 0) {
                 self.showAddorEditPage = true
                 self.showSignupList = false
+                console.log(self.checkinTime)
             } else if (type == 1) {
                 console.log(item)
                 self.getEditMeetingOrign(item.signUpMeetingType, item.signUpMeetingId)
@@ -433,9 +434,14 @@ var vm = new Vue({
                             console.log(data)
                             // console.log(JSON.stringify(data.signUpJson))
                             self.signupForm = data
-                            var result = self.signupForm.signUpDate.split(",");
-                            for(var i = 0; i< result.length; i++) {
-                                self.checkinTime.push(Number(result[i]))
+                            console.log(self.checkinTime)
+                            if(self.signupForm.signUpDate !== '#') {
+                                var result = self.signupForm.signUpDate.split(",");
+                                for(var i = 0; i< result.length; i++) {
+                                    self.checkinTime.push(Number(result[i]))
+                                }
+                            } else if(self.signupForm.signUpDate == '#') {
+                                self.checkinTime= [1567267200000]
                             }
                             console.log(self.checkinTime)
                             self.checkinTime.shift()
@@ -743,7 +749,7 @@ var vm = new Vue({
             this.searchCoverImg(0)
         },
         handleCurrentChange4(val){
-            // this.pagination4.currPage = val
+            this.pagination4.currPage = val
             this.searchCoverImg() 
         },
         //搜索内容图库
@@ -1020,7 +1026,6 @@ var vm = new Vue({
         //保存
         testSubmit (formName) {
             var self = this
-            
             self.$refs[formName].validate((valid) => {
                 if (valid) {
                     console.log()
@@ -1043,10 +1048,8 @@ var vm = new Vue({
                             }
                         } 
                     } else if(self.signupForm.signUpIsToCheck == '1') {
-                        self.checkinTime.splice(0, 1)
-                        self.checkinTime[0] == null
+                        self.checkinTime =[1567267200000]
                         console.log(self.checkinTime)
-                        
                     }
                      //验证自定义选项是否填写完成
                      var numReg = /^([1-9]\d*|[0]{1,1})$/;
@@ -1060,7 +1063,7 @@ var vm = new Vue({
                             } else if (Number(self.signupForm.signUpJson[i].limit) == NaN || (!numReg.test(Number(self.signupForm.signUpJson[i].limit)) && self.signupForm.signUpJson[i].limit.trim !=="")){
                                 self.$message.error("最大选项值必须为正整数")
                                 return
-                            } else if (Number(self.signupForm.signUpJson[i].limit) > self.signupForm.signUpJson[i].limit.length) {
+                            } else if (Number(self.signupForm.signUpJson[i].limit) > self.signupForm.signUpJson[i].itemList.length) {
                                 self.$message.error('最大选项值不能大于选项数量')
                                 return
                             }
@@ -1075,6 +1078,7 @@ var vm = new Vue({
         submitCreatEdit() {
             var self = this
             console.log(self.checkinTime[0] == null)
+            console.log(self.checkinTime)
             if(self.checkinTime[0] == null){
                 self.signupForm.signUpDate = '#'
             } else {
@@ -1084,23 +1088,6 @@ var vm = new Vue({
             console.log(self.signupForm)
             console.log(data)
             console.log('准备提交保存的Form',data)
-            // if(data.signUpDate !== '') {
-            //     var arr = data.signUpDate.split(',')
-            //     for(var i = 0; i < arr.length; i++) {
-            //         if(Number(arr[i]) < 0){
-            //             self.$message.error("签到日期需设置在1970年1月1日北京时间8点之后")
-            //             return
-            //         } else {
-            //             if(arr.length == 2 && (Number(arr[0]) == Number(arr[1]))) {
-            //                 self.$message.error('签到时间不能重复')
-            //                 return
-            //             } else if(arr.length == 3 && (Number(arr[0]) == Number(arr[1]))|| (Number(arr[1]) == Number(arr[2])) || (Number(arr[0]) == Number(arr[2]))) {
-            //                 self.$message.error('签到时间不能重复')
-            //                 return
-            //             }
-            //         }
-            //     }
-            // }
 
             $.base64.utf8encode = true;
             var jsonString = JSON.stringify(data.signUpJson);
@@ -1183,7 +1170,7 @@ var vm = new Vue({
 
         // -----------------------报名用户列表搜索区开始-----------------------------------------
         handleCurrentChange2(val){
-            // this.pagination2.currPage = val
+            this.pagination2.currPage = val
             this.startSearchInfo() 
         },
         checkSignupDetail(item) {
@@ -1240,8 +1227,6 @@ var vm = new Vue({
             });
         },
         closeInvitationCodePage(formName){
-            this.showInvitationCodePage = false
-            this.showSignupList = true
             this.searchCodeForm = {
                 meetingInvitationCodeSignUpId: '', //报名id
                 meetingInvitationCodeName: '', //名称
@@ -1250,6 +1235,8 @@ var vm = new Vue({
                 meetingInvitationCodeStatus: '', //状态 0 未使用 1 已使用 2已删除
             }
             this.tableCodeData =[]
+            this.showInvitationCodePage = false
+            this.showSignupList = true
         },
         // 报名控制按钮
         changeSignupStatus(item) {
@@ -1478,16 +1465,16 @@ var vm = new Vue({
         },
 
         downloadInvitaionCode() {
-            var self = this
-            $.ajax({
-                type: "GET",
-                url: "/meetingInvitationCode/excels?meetingInvitationCodeSignUpId="+self.searchInfoForm.signUpId,
-                contentType: "application/json",
-                dataType: "string",
-                complete: function() {
-                    window.open("/meetingInvitationCode/excels?meetingInvitationCodeSignUpId="+self.searchInfoForm.signUpId)
-                }
-            })
+            // var self = this
+            // $.ajax({
+            //     type: "GET",
+            //     url: "/meetingInvitationCode/excels?meetingInvitationCodeSignUpId="+self.searchInfoForm.signUpId,
+            //     contentType: "application/json",
+            //     dataType: "string",
+            //     complete: function() {
+            //         window.open("/meetingInvitationCode/excels?meetingInvitationCodeSignUpId="+self.searchInfoForm.signUpId)
+            //     }
+            // })
         },
 
         // --------------------------生成邀请码页面--------------------
@@ -1501,12 +1488,11 @@ var vm = new Vue({
             self.$refs[formName].validate((valid) => {
                 if(valid) {
                     self.saveBtn = true
-                    console.log(self.searchInfoForm.signUpId)
+                    console.log( self.searchCodeForm.meetingInvitationCodeSignUpId)
                     var data = {
-                        meetingInvitationCodeSignUpId: self.searchInfoForm.signUpId,
+                        meetingInvitationCodeSignUpId: self.searchCodeForm.meetingInvitationCodeSignUpId,
                         number: self.createCodeForm.number,
                         meetingInvitationCodePerson: self.createCodeForm.meetingInvitationCodePerson,
-                    
                     }
                     $.ajax({
                         type: "POST",
@@ -1517,7 +1503,7 @@ var vm = new Vue({
                         success: function(res) {
                             console.log(res)
                             if(res.code == 200) {
-                                // self.$message.success('保存成功')
+                                self.$message.success('生成成功')
                                 self.startSearchCode()
                                 self.closeCreateCode('createCodeForm')
                                 self.saveBtn = false
@@ -1537,7 +1523,7 @@ var vm = new Vue({
         },
         // 取消生成邀请码页面
         closeCreateCode(formName) {
-            // this.$refs[formName].resetFields()
+            this.$refs[formName].resetFields()
             this.createCodeForm = {
                 number:'',
                 crtUser: ''
@@ -1549,17 +1535,16 @@ var vm = new Vue({
 
         // 下载参会信息
         downloadInfo() {
-
             var self = this
-            // $.ajax({
-            //     type: "GET",
-            //     url: "/meetingInvitationCode/excels?meetingInvitationCodeSignUpId="+self.searchInfoForm.signUpId,
-            //     contentType: "application/json",
-            //     dataType: "string",
-            //     complete: function() {
-            //         window.open("/meetingInvitationCode/excels?meetingInvitationCodeSignUpId="+self.searchInfoForm.signUpId)
-            //     }
-            // })
+            $.ajax({
+                type: "GET",
+                url: "/meetingInvitationCode/excels?meetingInvitationCodeSignUpId="+self.searchInfoForm.signUpId,
+                contentType: "application/json",
+                dataType: "string",
+                complete: function() {
+                    window.open("/meetingInvitationCode/excels?meetingInvitationCodeSignUpId="+self.searchInfoForm.signUpId)
+                }
+            })
            
         },
         closeSingupInfoPage(formName){
