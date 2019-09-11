@@ -756,31 +756,17 @@
                                                     disabled
                                                     maxlength = "36"
                                                     type="text"
-                                                    placeholder="LP"
                                                     v-model="item2.itemText"
                                                     auto-complete="on">
                                                 </el-input>
                                             </el-form-item>
                                         </el-col>
-                                        <el-col :span="13">
+                                        <el-col :span="2" :offset="1">
                                             <el-form-item>
-                                                 <div v-if="item.ifshow == '1'">
-                                                    <el-input
-                                                    clearable
-                                                    type="text"
-                                                    placeholder="页面不显示"
-                                                    v-model="item.ifshow"
-                                                    auto-complete="off"></el-input>
+                                                 <div v-if="item2.ifShow = false">
+                                                    页面不显示
                                                 </div>
-                                                <!-- <div v-else="voteForm.voteType == 'singleChoose'">
-                                                <el-input
-                                                    clearable
-                                                    type="text"
-                                                    placeholder="请输入选项内容"
-                                                    maxlength= 50
-                                                    v-model="item.voteOptionName"
-                                                    auto-complete="off"></el-input>
-                                                </div> -->
+                                              
                                             </el-form-item>
                                         </el-col>
                                     </el-row>

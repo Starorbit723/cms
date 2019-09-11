@@ -223,6 +223,7 @@ var vm = new Vue({
             signUpInfoMobile: '', //手机
             signUpInfoCrtTime:'',  // 报名时间
             signInEntities: [], //签到列表
+            signUpInfoStatus: '', //状态 0 待审核 1 已审核
             signUpInfoJson:[{
                 sectionId: '',
                 sectionTitle:'',
@@ -1250,14 +1251,17 @@ var vm = new Vue({
         // 报名控制按钮
         changeSignupStatus(item) {
             console.log(item)
-            if(item.signUpInfoStatus == '0') {
-
-                this.tableInfoData.signUpInfoStatus == "1"
-                console.log(123)
-            } else if(item.signUpInfoStatus == '1') {
-                this.tableInfoData.signUpInfoStatus == "0"
-                console.log(234)
-            }
+            var self = this
+            // if(item.signUpInfoStatus == '0') {
+            //     self.searchDetailForm.signUpInfoStatus == '1'
+            //     // item.signUpInfoStatus == "1"
+            //     // console.log(123)
+            // } else if(item.signUpInfoStatus == '1') {
+            //     // item.signUpInfoStatus == "0"
+            //     self.searchDetailForm.signUpInfoStatus == '1'
+            //     // console.log(234)
+            // }
+            // testSubmit2('searchDetailForm')
         },
         // 具体参会人信息编辑
         editsignupInfo(item){
