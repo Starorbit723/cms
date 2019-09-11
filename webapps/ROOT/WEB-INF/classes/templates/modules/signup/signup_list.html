@@ -276,6 +276,17 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="18">
+                            <el-form-item label="是否需要签到" prop="signUpIsToCheck" style="margin:0;">
+                                <template slot-scope="scope">
+                                    <el-radio v-model="signupForm.signUpIsToCheck" label="0">使用</el-radio>
+                                    <el-radio v-model="signupForm.signUpIsToCheck" label="1">不使用</el-radio>
+                                </template>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+
                     <div class="el-row-h70" v-for="(value, index) in checkinTime">
                         <el-row class="el-row-h40">
                             <el-col :span="10">
@@ -351,6 +362,7 @@
                                             <el-input
                                                 clearable
                                                 type="text"
+                                                maxlength = "36"
                                                 v-model="item.sectionTitle"
                                                 placeholder="请输入选项标题"
                                                 auto-complete="on">
@@ -701,7 +713,7 @@
                         </el-row> 
                     </div>
                    
-                    <div style="margin-top: 40px" v-for="(item, index) in searchDetailForm.signUpInfoJson">
+                    <div style="margin-top: 40px" v-for="(item, index) in searchDetailForm.signUpJson">
                         <div v-if="item.sectionStatus == '1'">
                             <el-row class="el-row-60" style="margin-bottom: 10px;">
                                 <el-col :span="18">
@@ -748,6 +760,27 @@
                                                     v-model="item2.itemText"
                                                     auto-complete="on">
                                                 </el-input>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col :span="13">
+                                            <el-form-item>
+                                                 <div v-if="item.ifshow == '1'">
+                                                    <el-input
+                                                    clearable
+                                                    type="text"
+                                                    placeholder="页面不显示"
+                                                    v-model="item.ifshow"
+                                                    auto-complete="off"></el-input>
+                                                </div>
+                                                <!-- <div v-else="voteForm.voteType == 'singleChoose'">
+                                                <el-input
+                                                    clearable
+                                                    type="text"
+                                                    placeholder="请输入选项内容"
+                                                    maxlength= 50
+                                                    v-model="item.voteOptionName"
+                                                    auto-complete="off"></el-input>
+                                                </div> -->
                                             </el-form-item>
                                         </el-col>
                                     </el-row>
