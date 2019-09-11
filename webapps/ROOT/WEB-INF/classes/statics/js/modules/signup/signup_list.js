@@ -161,7 +161,8 @@ var vm = new Vue({
             meetingTitle:'',//标题
             startTime:'',//开始时间
             endTime:'',//结束时间
-            meetingStatus: ['0','1','2','3','4']
+            meetingStatus: ['0','1','2','3','4'],
+            meetingSignUpId: '-1'
         },
         commonMeetingTableData: [],
          //分页器相关
@@ -634,6 +635,7 @@ var vm = new Vue({
             } else if(self.signUpMeetingType == 1) {
                 var reqUrl = "/meetingInfo/list"
             }
+            console.log(JSON.stringify(data))
             $.ajax({
 				type: "POST",
                 url: reqUrl,
@@ -729,7 +731,8 @@ var vm = new Vue({
                 meetingTitle:'',//标题
                 startTime:'',//开始时间
                 endTime:'',//结束时间
-                meetingStatus: ['0','1','2','3','4']
+                meetingStatus: ['0','1','2','3','4'],
+                meetingSignUpId: '-1'
             }
             this.timeRange2 = []
             this.commonMeetingTableData = []
@@ -1252,16 +1255,16 @@ var vm = new Vue({
         changeSignupStatus(item) {
             console.log(item)
             var self = this
-            // if(item.signUpInfoStatus == '0') {
-            //     self.searchDetailForm.signUpInfoStatus == '1'
-            //     // item.signUpInfoStatus == "1"
-            //     // console.log(123)
-            // } else if(item.signUpInfoStatus == '1') {
-            //     // item.signUpInfoStatus == "0"
-            //     self.searchDetailForm.signUpInfoStatus == '1'
-            //     // console.log(234)
-            // }
-            // testSubmit2('searchDetailForm')
+            if(item.signUpInfoStatus == '0') {
+                self.searchDetailForm.signUpInfoStatus == '1'
+                // item.signUpInfoStatus == "1"
+                // console.log(123)
+            } else if(item.signUpInfoStatus == '1') {
+                // item.signUpInfoStatus == "0"
+                self.searchDetailForm.signUpInfoStatus == '1'
+                // console.log(234)
+            }
+            self.testSubmit2('self.searchDetailForm')
         },
         // 具体参会人信息编辑
         editsignupInfo(item){
