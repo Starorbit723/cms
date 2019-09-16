@@ -346,7 +346,7 @@
                             <el-col :span="18">
                                 <el-form-item label="" label-width="10%" style="margin:0">
                                     <template slot-scope="scope">
-                                        <el-checkbox v-model="signupForm.signUpCustom">自定义选项</el-checkbox>
+                                        <el-checkbox  @change="changeSelfOpt" v-model="signupForm.signUpCustom">自定义选项</el-checkbox>
                                     </template>
                                 </el-form-item>
                             </el-col>
@@ -636,8 +636,8 @@
                         <template slot-scope="scope">
                             <el-button type="text" size="small" @click="editsignupInfo(scope.row)">编辑</el-button>
                             <span prop="signUpInfoStatus" v-if="isToExamine == '0'">
-                                <el-button v-if="scope.row.signUpInfoStatus == '0'" type="text" size="small" @click="changeSignupStatus1(scope.row)">报名通过</el-button>
-                                <el-button v-if="scope.row.signUpInfoStatus == '1'" type="text" size="small" @click="changeSignupStatus2(scope.row)">取消报名</el-button>
+                                <el-button v-if="scope.row.signUpInfoStatus == '0'" type="text" size="small" @click="changeSignupStatus(scope.row)">报名通过</el-button>
+                                <el-button v-if="scope.row.signUpInfoStatus == '1'" type="text" size="small" @click="changeSignupStatus(scope.row)">取消报名</el-button>
                             </span>
                         </template>
                     </el-table-column>
@@ -696,43 +696,37 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <div v-if="searchDetailForm.signUpIsToCheck == '0'">
-                        <div class="signin_time">
-                            <h1 class="paperitem_title">签到记录</h1>
-                            <ul>
-                                <li class="clearfix"
-                                    :class="{'active':item.ifSignIn}"
-                                    v-for="(item,index) in signInTimeList">
-                                    <span class="time" v-text="item.timeText"></span>
-                                    <span class="status" v-if="item.ifSignIn">已签到</span>
-                                    <span class="status" v-if="!(item.ifSignIn)">未签到</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- <el-row class="el-row-60"> 
+                    <div v-if="isShowCheckTime">
+                        <el-row class="el-row-60"> 
                             <el-col :span="6">
-                                <el-form-item label-width="30%" label="签到记录:" style="margin:0;"></el-form-item>
+                                <el-form-item label-width="40%" label="签到记录:" style="margin:0;"></el-form-item>
                             </el-col>
                         </el-row>
-                        <div style="margin-bottom: 10px" v-for="(value, index) in searchDetailForm.signInEntities">
+                        <div style="margin-bottom: 10px" v-for="(item, index) in signInTimeList">
                             <el-row class="el-row-60">
-                                <el-col :span="8" :offset="2">
+                                <el-col :span="6" :offset="1">
                                     <el-input
                                     clearable
                                     disabled
                                     type="text"
-                                    v-model="searchDetailForm.signInEntities[index]"
+                                    v-model="item.timeText"
                                     auto-complete="off"></el-input>
                                 </el-col>
+                                <el-col :span="2" :offset="1">
+                                    <el-form-item>
+                                        <div v-if="item.ifSignIn">已签到</div>
+                                        <div v-if="!(item.ifSignIn)">未签到</div>
+                                    </el-form-item>
+                                </el-col>
                             </el-row> 
-                        </div> -->
+                        </div>
                     </div>
                    
                     <div style="margin-top: 40px" v-for="(item, index) in showAllBaseInfo">
                         <div v-if="item.sectionStatus == '1'">
                             <el-row class="el-row-60" style="margin-bottom: 10px;">
                                 <el-col :span="24">
-                                    <el-form-item label-width="20%" label="自定义标题" style="margin:0;">
+                                    <el-form-item label-width="10%" label="自定义标题" style="margin:0;">
                                         <el-input
                                         clearable
                                         disabled
@@ -743,7 +737,7 @@
                                 </el-col>
                             </el-row>
                             <el-row class="el-row-60" style="margin-bottom: 10px;">
-                                <el-col :span="22" :offset="2">
+                                <el-col :span="22" >
                                     <el-form-item label-width="20%" label="选项设置" style="margin:0;">
                                         <el-input
                                         clearable
@@ -778,7 +772,7 @@
                                         </el-col>
                                         <el-col :span="2" :offset="1">
                                             <el-form-item>
-                                                 <div class="warning_color" v-if="item2.ifShow == false">
+                                                 <div v-if="item2.ifShow == false">
                                                     页面不显示
                                                 </div>
                                             </el-form-item>
@@ -1027,48 +1021,7 @@ background:rgb(248, 248, 248)!important;
     color: red;
 }
 
-/* 签到时间 */
-.signin_time{
-    padding: 0.3rem 6%;
-}
-.signin_time ul{
-    display: block;
-}
-.signin_time ul.itemcenter li{
-    text-align: center;
-}
-.signin_time ul li{
-    display: block;
-    box-sizing: border-box;
-    width: 100%;
-    height: 0.9rem;
-    line-height: 0.9rem;
-    padding: 0 3.5%;
-    margin-bottom: 0.25rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space:nowrap;
-    border-radius: 2px;
-    border:1px solid rgba(232,232,232,1);
-}
-.signin_time ul li.active{
-    background: #DFEEFF;
-    border:none;
-}
-.signin_time ul li .time{
-    float: left;
-    display: block;
-    width: 80%;
-    height: 0.9rem;
-    line-height: 0.9rem;
-}
-.signin_time ul li .status{
-    float: right;
-    display: block;
-    width: 20%;
-    height: 0.9rem;
-    line-height: 0.9rem;
-    text-align: center;
-}
+
+
 </style>
 </html>
