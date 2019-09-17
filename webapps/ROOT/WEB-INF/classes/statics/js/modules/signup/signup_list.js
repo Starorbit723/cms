@@ -39,7 +39,7 @@ var vm = new Vue({
         checkinTime: [1567267200000],  //1567267200000
         signupForm: {
             signUpTitle: '', // 报名名称
-            signUpMeetingType: '', //会议类型
+            signUpMeetingType: '', //会议类型 0 定制会议  1 通用会议
             signUpMeetingId: '',// 关联会议详情ID
             signUpInvitationCode: '0', //是否使用邀请码 0是1否
             signUpExamine: '0', // 是否需要审核 0是1否
@@ -53,7 +53,8 @@ var vm = new Vue({
             signUpEmail: false, //邮箱
             signUpCustom: false,
             signUpStatus: '0', //0正常1删除
-            signUpOldMeetingId: '',
+            signUpOldMeetingId: '', //0 定制会议  1 通用会议
+            signUpOldMeetingType: '',
             signUpJson: [
             //     {
             //     sectionId:0,  //id
@@ -245,8 +246,7 @@ var vm = new Vue({
                 {required: true, message: '生成人为必填项', trigger: 'change'}
             ]
         },
-        // 新生成的邀请码
-        
+        // 新生成的邀请码 
         ids: [],
     },
     watch: {
@@ -353,6 +353,7 @@ var vm = new Vue({
                             data.signUpJson = JSON.parse(map)
                             self.signupForm = data
                             self.signupForm.signUpOldMeetingId = self.signupForm.signUpMeetingId
+                            self.signupForm.signUpOldMeetingType = self.signupForm.signUpMeetingType
                             if(self.signupForm.signUpDate !== '#') {
                                 var result = self.signupForm.signUpDate.split(",");
                                 for(var i = 0; i< result.length; i++) {
@@ -467,7 +468,11 @@ var vm = new Vue({
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
+                console.log(item)
+                item.signUpOldMeetingType = item.signUpMeetingType
+                item.signUpOldMeetingId = item.signUpMeetingId
                 var data = JSON.parse(JSON.stringify(item))
+                console.log(data)
                 data.signUpStatus = "1"
                 $.ajax({
                     type: "POST",
@@ -746,25 +751,16 @@ var vm = new Vue({
         },
         changeSelfOpt(){
             var self = this
-            if(self.creatOrEdit == '0'){
-                if(self.signupForm.signUpCustom == true){
-                    self.signupForm.signUpJson.push({
-                        sectionId: 0,
-                        sectionTitle:'',
-                        sectionStatus:'1',
-                        limit:1,
-                        itemList:[]
-                    })
-                } else {
-                    for(var i = 0; i < self.signupForm.signUpJson.length; i++){
-                        self.signupForm.signUpJson = []
+            if(self.signupForm.signUpCustom == true){
+                var dataLength = self.signupForm.signUpJson.length
+                var id = dataLength-1
+                var showArr = []
+                for(var k = 0; k < dataLength; k++) {
+                    if(self.signupForm.signUpJson[k].sectionStatus == '1'){
+                        showArr.push(self.signupForm.signUpJson[k])
                     }
                 }
-            } else
-             if(self.creatOrEdit == '1') {
-                if(self.signupForm.signUpCustom == true){
-                    var dataLength = self.signupForm.signUpJson.length
-                    var id = dataLength-1
+                if(showArr.length == 0) {
                     self.signupForm.signUpJson.push({
                         sectionId: id+1,
                         sectionTitle:'',
@@ -772,12 +768,8 @@ var vm = new Vue({
                         limit:1,
                         itemList:[]
                     })
-                } else {
-                    for(var i = 0; i < self.signupForm.signUpJson.length; i++){
-                        self.signupForm.signUpJson[i].sectionStatus = '0'
-                    }
                 }
-            }
+            } 
         },
         //添加整条自定义选项
         addSelfOptions () {
@@ -868,6 +860,8 @@ var vm = new Vue({
                         statusTrueArr.push(self.signupForm.signUpJson[i])
                     }
                 }
+                console.log(statusTrueArr)
+                console.log(self.signupForm.signUpJson)
                 if(statusTrueArr.length == 1) {
                     for(var i = 0; i < dataLength; i++) {
                         if(self.signupForm.signUpJson[i].sectionId == statusTrueArr[0].sectionId){
@@ -878,8 +872,10 @@ var vm = new Vue({
                     }
                 } else if(statusTrueArr.length > 1) {
                     console.log(23)
-                    for(var i = dataLength-1; i >0; i++ ){
+                    for(var i = dataLength-1; i >0; i-- ){
                         for(var k = statusTrueArr.length-1; k> 0; k--){
+                            console.log(self.signupForm.signUpJson[i].sectionId)
+                            console.log(statusTrueArr[k].sectionId)
                             if(self.signupForm.signUpJson[i].sectionId == statusTrueArr[k].sectionId){
                                 self.signupForm.signUpJson[i].sectionStatus = '0'
                                 return
@@ -1249,6 +1245,7 @@ var vm = new Vue({
                         self.renderTimeList(data.signUpDate)
                         self.checkBaseInfoJson = JSON.parse(JSON.stringify(data.signUpJson))
                         self.checkResultInfo(item.signUpInfoId.toString())
+
                     }else{
                         mapErrorStatus(res)
                         vm.error = true;
@@ -1292,15 +1289,12 @@ var vm = new Vue({
                          data.signUpInfoJson = JSON.parse(map)
                          console.log('报名信息返回列表', data)
                         //  data.signInEntities = ['1568131290000']
-                          // 更新签到时间和状态
-                        var signInSpecialTime = JSON.parse(JSON.stringify(data.signInEntities))
-                        if(signInSpecialTime.length !== 0) {
-                            for(var i = 0; i <signInSpecialTime.length; i++){
-                                for(var k = 0; k < self.signInTimeList.length; k++){
-                                    if(self.transformTime2(parseInt(signInSpecialTime[i])) == self.signInTimeList[k].timeText) {
-                                        self.signInTimeList[k].timeText = self.transformTime(parseInt(signInSpecialTime[i]))
-                                        self.signInTimeList[k].ifSignIn = true
-                                    }
+                        // console.log(self.signInTimeList)
+                        for(var i = 0; i < data.signInEntities.length; i++) {
+                            for(var k = 0; k < self.signInTimeList.length; k++) {
+                                if(data.signInEntities[i].signInTime == self.signInTimeList[k].timeDate) {
+                                    self.signInTimeList[k].timeText = self.transformTime(parseInt(data.signInEntities[i].signInDate))
+                                    self.signInTimeList[k].ifSignIn = true
                                 }
                             }
                         }
@@ -1338,6 +1332,11 @@ var vm = new Vue({
             })
            
         },
+        //更新签到时间
+        updateSigninTime() {
+
+        },
+
 
         //保存
         testSubmit2 (formName) {
