@@ -1312,7 +1312,6 @@ var vm = new Vue({
                                          }
                                      }
                                  }
-                 
                              }
                          }
                          self.searchDetailForm = data
@@ -1473,7 +1472,7 @@ var vm = new Vue({
                 contentType: "application/json",
                 dataType: "string",
                 complete: function() {
-                    window.open("/meetingInvitationCode/excelsCode")
+                    window.open("/meetingInvitationCode/excelsCode?meetingInvitationCodeSignUpId="+self.searchCodeForm.meetingInvitationCodeSignUpId)
                 }
             })
         },
