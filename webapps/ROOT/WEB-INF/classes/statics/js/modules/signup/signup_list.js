@@ -337,7 +337,7 @@ var vm = new Vue({
                 self.showAddorEditPage = true
                 self.showSignupList = false
             } else if (type == 1) {
-                console.log(item)
+                // console.log(item)
                 self.getEditMeetingOrign(item.signUpMeetingType, item.signUpMeetingId)
                 $.ajax({
                     type: "POST",
@@ -345,7 +345,7 @@ var vm = new Vue({
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res){
-                        console.log(res)
+                        // console.log(res)
                         if(res.code == 200){
                             //json64反解
                             let data = res.dict
@@ -468,11 +468,11 @@ var vm = new Vue({
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                console.log(item)
+                // console.log(item)
                 item.signUpOldMeetingType = item.signUpMeetingType
                 item.signUpOldMeetingId = item.signUpMeetingId
                 var data = JSON.parse(JSON.stringify(item))
-                console.log(data)
+                // console.log(data)
                 data.signUpStatus = "1"
                 $.ajax({
                     type: "POST",
@@ -527,9 +527,9 @@ var vm = new Vue({
         // 点击绑定会议按钮打开不同的会议列表
         bindMeeting(){
             var self = this
-            self.showCommonMeetingList = true
+            console.log(self.signupForm)
             self.searchMeeting()
-
+            self.showCommonMeetingList = true
         },
         handleCurrentChange5 (val) {
             this.pagination5.currPage = val
@@ -551,12 +551,11 @@ var vm = new Vue({
                     limit: self.pagination5.pageSize.toString()
                 })
             }
-            if(self.signUpMeetingType == 0) {
+            if(self.signupForm.signUpMeetingType == 0) {
                 var reqUrl = "/meeting/special/list"
-            } else if(self.signUpMeetingType == 1) {
+            } else if(self.signupForm.signUpMeetingType == 1) {
                 var reqUrl = "/meetingInfo/list"
             }
-            // console.log(JSON.stringify(data))
             $.ajax({
 				type: "POST",
                 url: reqUrl,
@@ -564,7 +563,6 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
 			    dataType: "json",
 			    success: function(res){
-                    // console.log(res)
 					if(res.code == 200){
                         self.commonMeetingTableData = res.page.list
                         for (let i = 0; i < self.commonMeetingTableData.length; i++){
@@ -860,8 +858,8 @@ var vm = new Vue({
                         statusTrueArr.push(self.signupForm.signUpJson[i])
                     }
                 }
-                console.log(statusTrueArr)
-                console.log(self.signupForm.signUpJson)
+                // console.log(statusTrueArr)
+                // console.log(self.signupForm.signUpJson)
                 if(statusTrueArr.length == 1) {
                     for(var i = 0; i < dataLength; i++) {
                         if(self.signupForm.signUpJson[i].sectionId == statusTrueArr[0].sectionId){
@@ -871,7 +869,6 @@ var vm = new Vue({
                         }
                     }
                 } else if(statusTrueArr.length > 1) {
-                    console.log(23)
                     for(var i = dataLength-1; i >0; i-- ){
                         for(var k = statusTrueArr.length-1; k> 0; k--){
                             console.log(self.signupForm.signUpJson[i].sectionId)
@@ -1466,15 +1463,15 @@ var vm = new Vue({
         //下载全部邀请码
         downloadInvitaionCode() {
             var self = this
-            $.ajax({
-                type: "GET",
-                url: "/meetingInvitationCode/excelsCode?meetingInvitationCodeSignUpId="+self.searchCodeForm.meetingInvitationCodeSignUpId,
-                contentType: "application/json",
-                dataType: "string",
-                complete: function() {
+            // $.ajax({
+            //     type: "GET",
+                // url: "/meetingInvitationCode/excelsCode?meetingInvitationCodeSignUpId="+self.searchCodeForm.meetingInvitationCodeSignUpId,
+                // contentType: "application/json",
+                // dataType: "string",
+                // complete: function() {
                     window.open("/meetingInvitationCode/excelsCode?meetingInvitationCodeSignUpId="+self.searchCodeForm.meetingInvitationCodeSignUpId)
-                }
-            })
+                // }
+            // })
         },
 
         // --------------------------生成邀请码页面--------------------
@@ -1528,17 +1525,17 @@ var vm = new Vue({
         downloadNewCreatedCode(id){
             var self = this
             var data = JSON.parse(JSON.stringify(id))
-            $.ajax({
-                type: "GET",
-                url: "/meetingInvitationCode/excelsCodeIds?ids=" + data,
-                contentType: "application/json",
-                // data: JSON.stringify(data),
-                dataType: "string",
-                complete: function() {
+            // $.ajax({
+            //     type: "GET",
+            //     url: "/meetingInvitationCode/excelsCodeIds?ids=" + data,
+            //     contentType: "application/json",
+            //     // data: JSON.stringify(data),
+            //     dataType: "string",
+            //     complete: function() {
                     window.parent.open("/meetingInvitationCode/excelsCodeIds?ids="+data)
                     self.ids = []
-                }
-            })
+            //     }
+            // })
         },
         // 取消生成邀请码页面
         closeCreateCode(formName) {
@@ -1555,15 +1552,15 @@ var vm = new Vue({
         // 下载参会信息
         downloadInfo() {
             var self = this
-            $.ajax({
-                type: "GET",
-                url: "/meetingInvitationCode/excels?meetingInvitationCodeSignUpId="+self.searchInfoForm.signUpId,
-                contentType: "application/json",
-                dataType: "string",
-                complete: function() {
+            // $.ajax({
+            //     type: "GET",
+            //     url: "/meetingInvitationCode/excels?meetingInvitationCodeSignUpId="+self.searchInfoForm.signUpId,
+            //     contentType: "application/json",
+            //     dataType: "string",
+            //     complete: function() {
                     window.open("/meetingInvitationCode/excels?meetingInvitationCodeSignUpId="+self.searchInfoForm.signUpId)
-                }
-            })
+            //     }
+            // })
            
         },
         closeSingupInfoPage(formName){
