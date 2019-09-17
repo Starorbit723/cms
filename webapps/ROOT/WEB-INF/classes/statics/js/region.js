@@ -15714,5 +15714,22 @@ var regionJSON =  [
           ]
         }
       ]
+    },
+    {
+      'value': '830000',
+      'label': '其他地区',
+      'children': [
+        {
+          'value': '830100',
+          'label': '其他地区',
+          'children': [
+            {
+              'value': '830101',
+              'label': '其他地区'
+            },
+            
+          ]
+        }
+      ]
     }
   ]
