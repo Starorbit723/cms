@@ -527,7 +527,7 @@ var vm = new Vue({
         // 点击绑定会议按钮打开不同的会议列表
         bindMeeting(){
             var self = this
-            console.log(self.signupForm)
+            // console.log(self.signupForm)
             self.searchMeeting()
             self.showCommonMeetingList = true
         },
@@ -871,8 +871,8 @@ var vm = new Vue({
                 } else if(statusTrueArr.length > 1) {
                     for(var i = dataLength-1; i >0; i-- ){
                         for(var k = statusTrueArr.length-1; k> 0; k--){
-                            console.log(self.signupForm.signUpJson[i].sectionId)
-                            console.log(statusTrueArr[k].sectionId)
+                            // console.log(self.signupForm.signUpJson[i].sectionId)
+                            // console.log(statusTrueArr[k].sectionId)
                             if(self.signupForm.signUpJson[i].sectionId == statusTrueArr[k].sectionId){
                                 self.signupForm.signUpJson[i].sectionStatus = '0'
                                 return
@@ -1029,7 +1029,7 @@ var vm = new Vue({
                 self.signupForm.signUpDate = self.checkinTime.join(',')
             }
             var data = JSON.parse(JSON.stringify(self.signupForm))
-            console.log('准备提交保存的Form',data)
+            // console.log('准备提交保存的Form',data)
             $.base64.utf8encode = true;
             var jsonString = JSON.stringify(data.signUpJson);
             var json64 = $.base64.btoa(jsonString);
@@ -1230,7 +1230,7 @@ var vm = new Vue({
                 contentType: "application/json",
                 dataType: "json",
                 success: function(res){
-                    console.log('联表查询的报名信息', res)
+                    // console.log('联表查询的报名信息', res)
                     if(res.code == 200){
                         //json64反解
                         let data = res.dict
@@ -1284,7 +1284,7 @@ var vm = new Vue({
                          let data = res.dict
                          let map = $.base64.atob(data.signUpInfoJson, true)
                          data.signUpInfoJson = JSON.parse(map)
-                         console.log('报名信息返回列表', data)
+                        //  console.log('报名信息返回列表', data)
                         //  data.signInEntities = ['1568131290000']
                         // console.log(self.signInTimeList)
                         for(var i = 0; i < data.signInEntities.length; i++) {
@@ -1311,9 +1311,12 @@ var vm = new Vue({
                                  }
                              }
                          }
-                         self.searchDetailForm = data
-                         self.showAllBaseInfo = self.checkBaseInfoJson
-                        //  console.log('反显拼好的数据',self.ShowAllBaseInfo)
+                         self.searchDetailForm = JSON.parse(JSON.stringify(data))
+                         self.showAllBaseInfo = JSON.parse(JSON.stringify(self.checkBaseInfoJson))
+                        //  console.log(data)
+                        //  console.log(self.searchDetailForm)
+                        //  console.log(self.checkBaseInfoJson)
+                        //  console.log('反显拼好的数据',self.showAllBaseInfo)
                          self.showSingupInfoPage = false
                          self.showEditInfoPage = true
                     }else{
@@ -1337,21 +1340,26 @@ var vm = new Vue({
         //保存
         testSubmit2 (formName) {
             var self = this
-            for(var i = 0; i < self.searchDetailForm.signUpInfoJson.length; i++) {
-                for(var k = 0; k < self.showAllBaseInfo.length; k++) {
-                    if(self.searchDetailForm.signUpInfoJson[i].sectionId == self.showAllBaseInfo[k].sectionId) {
-                        for(var m = 0; m < self.searchDetailForm.signUpInfoJson[i].itemList.length; m++) {
-                            for(var n = 0; n < self.showAllBaseInfo[k].itemList.length; n++) {
-                                if(self.searchDetailForm.signUpInfoJson[i].itemList[m].itemId == self.showAllBaseInfo[k].itemList[n].itemId){
-                                    self.searchDetailForm.signUpInfoJson[i].itemList[m].ifChoose =self.showAllBaseInfo[k].itemList[n].ifChoose
-                                }
-                            }
-                        }
-                    }
+            // console.log(self.searchDetailForm.signUpInfoJson)
+            // console.log(self.showAllBaseInfo)
+            // for(var i = 0; i < self.searchDetailForm.signUpInfoJson.length; i++) {
+            //     for(var k = 0; k < self.showAllBaseInfo.length; k++) {
+            //         if(self.searchDetailForm.signUpInfoJson[i].sectionId == self.showAllBaseInfo[k].sectionId) {
+            //             for(var m = 0; m < self.searchDetailForm.signUpInfoJson[i].itemList.length; m++) {
+            //                 for(var n = 0; n < self.showAllBaseInfo[k].itemList.length; n++) {
+            //                     if(self.searchDetailForm.signUpInfoJson[i].itemList[m].itemId == self.showAllBaseInfo[k].itemList[n].itemId){
+            //                         self.searchDetailForm.signUpInfoJson[i].itemList[m].ifChoose =self.showAllBaseInfo[k].itemList[n].ifChoose
+            //                     }
+            //                 }
+            //             }
+            //         }
     
-                }
-            }
+            //     }
+            // }
+            self.searchDetailForm.signUpInfoJson = JSON.parse(JSON.stringify(self.showAllBaseInfo))
+            // console.log(self.searchDetailForm.signUpInfoJson)
             var data = JSON.parse(JSON.stringify(self.searchDetailForm))
+            // console.log(data)
             $.base64.utf8encode = true;
             var jsonString = JSON.stringify(data.signUpInfoJson);
             var json64 = $.base64.btoa(jsonString);
