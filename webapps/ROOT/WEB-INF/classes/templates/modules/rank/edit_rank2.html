@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+
+<title>新建/编辑榜单</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">新建/编辑榜单</div>
+    <div id="edit_rank" class="cv_page_content">
+        <!--基本信息区-->
+        <div class="cv_content_square">
+            <div class="custom-tree-container">
+                <!--功能按钮区-->
+                <el-row class="el-row-h70">
+                    <el-col :span="4">
+                        <el-button type="primary" style="width:100%" icon="el-icon-plus" @click="addNewLevelOrRank">添加目录/榜单</el-button>
+                    </el-col>
+                </el-row>
+                <el-tree
+                    :data="rankDataTree"
+                    node-key="id"
+                    default-expand-all
+                    :expand-on-click-node="true">
+                    <span class="custom-tree-node" slot-scope="{ node, data }">
+                        <span>{{ node.label }}</span>
+                        <span>{{ data.ifLastNode }}</span>
+                        <span>{{ data.rankInfoType }}</span>
+                        <div>
+                            <el-button v-if="data.ifLastNode == '0'" type="text" size="mini" @click="appendLevelOrRank(node, data)">添加</el-button>
+                            <el-button type="text" size="mini" @click="change(node, data)">修改</el-button>
+                            <el-button type="text" size="mini" @click="remove(node, data)">删除</el-button>
+                        </div>
+                    </span>
+                </el-tree>
+            </div>
+
+        </div>
+
+        <!--日程表弹出层开始-->
+        <el-dialog title="新增/修改榜单信息" :visible.sync="showAddOrChangeRankInfo" width="80%" :close-on-click-modal="false" :close-on-press-escape="false" :fullscreen="false" :show-close="false" >
+            <el-form :model="rankInfoForm" :rules="rankInfoFormRules" ref="rankInfoForm" status-icon class="demo-ruleForm" label-width="15%" label-position="right" @submit.native.prevent style="margin-top:20px;">
+                <el-row class="el-row-h70">
+                    <el-col :span="24">
+                        <el-form-item prop="rankInfoTitle" label="目录/榜单标题" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="rankInfoForm.rankInfoTitle"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <el-col :span="24">
+                        <el-form-item prop="rankInfoDesc" label="目录/榜单描述" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="rankInfoForm.rankInfoDesc"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <el-col :span="24">
+                        <el-form-item prop="rankInfoType" prop="rankInfoTitle" label="类型" style="margin:0;">
+                            <el-select v-model="rankInfoForm.rankInfoType" style="width:100%;">
+                                <el-option
+                                    v-for="item in rankTypeOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70">
+                    <el-col :span="24">
+                        <el-form-item prop="rankInfoGravity" label="排序权重" style="margin:0;">
+                            <el-input
+                            type="text"
+                            v-model="rankInfoForm.rankInfoGravity"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row class="el-row-h70" style="margin-top: 10px;">
+                    <el-row>
+                        <el-col class="el-row-h40" :span="3" :offset="8">
+                            <el-button type="primary" style="width:100%" @click="saveRankInfoForm('rankInfoForm')">保存</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="3" :offset="2">
+                            <el-button type="primary" style="width:100%" @click="closeRankInfoForm('rankInfoForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </el-row>
+
+            </el-form>
+        </el-dialog>
+        <!--日程表弹出层结束-->
+
+
+
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/rank/edit_rank2.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+<style>
+.custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right: 8px;
+}
+.scaleNum .el-input__inner{
+    text-align: center;
+}
+</style>
+</html>
