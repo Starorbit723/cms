@@ -1176,14 +1176,15 @@ var vm = new Vue({
 
 
         // 控制审核是否通过的按钮
-        changeSignupStatus(item){
+        changeSignupStatus1(item){
             var self = this
             var changeStatus = ''
             if(item.signUpInfoStatus == '0'){
                 changeStatus = '1'
-            } else if(item.signUpInfoStatus == '1') {
-                changeStatus = '0'
-            }
+            } 
+            // else if(item.signUpInfoStatus == '1') {
+            //     changeStatus = '0'
+            // }
             var data1 = {
                 signUpId: item.signUpId,
                 signUpInfoId: item.signUpInfoId,
@@ -1217,12 +1218,48 @@ var vm = new Vue({
                     mapErrorStatus(res)
                 }
             });
-
+        },
+        changeSignupStatus(item){
+            // console.log(item)
+            var self = this
+            var changeStatus = ''
+            if(item.signUpInfoStatus == '1') {
+                changeStatus = '0'
+            }
+            var data1 = item
+            data1.signUpInfoStatus = changeStatus
+            var data = JSON.parse(JSON.stringify(data1))
+            // console.log(data)
+            $.ajax({
+                type: "POST",
+                url: "/signUpInfo/update",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.searchInfoForm= {
+                            signUpId: item.signUpId,
+                            signUpInfoName: '',
+                            signUpInfoMobile: ''
+                        }
+                        self.startSearchInfo()
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
 
         },
       
         // 具体参会人信息编辑
         editsignupInfo(item){
+            // console.log(item)
             var self = this
             $.ajax({
                 type: "POST",
