@@ -636,7 +636,7 @@
                         <template slot-scope="scope">
                             <el-button type="text" size="small" @click="editsignupInfo(scope.row)">编辑</el-button>
                             <span prop="signUpInfoStatus" v-if="isToExamine == '0'">
-                                <el-button v-if="scope.row.signUpInfoStatus == '0'" type="text" size="small" @click="changeSignupStatus(scope.row)">报名通过</el-button>
+                                <el-button v-if="scope.row.signUpInfoStatus == '0'" type="text" size="small" @click="changeSignupStatus1(scope.row)">报名通过</el-button>
                                 <el-button v-if="scope.row.signUpInfoStatus == '1'" type="text" size="small" @click="changeSignupStatus(scope.row)">取消报名</el-button>
                             </span>
                         </template>
