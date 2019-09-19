@@ -90,17 +90,31 @@ var mapErrorStatus = function(res){
     switch(res.code)
     {
         case 7001:
-        vm.$message.error('登录已过期');
-        setCookie ('JSESSIONID', '', 1)
-        setCookie ('esToken', '', 1)
-        setCookie ('userId', '', 1)
-        setCookie ('createdit', '', 1)
-        setCookie ('createditreport', '', 1)
-        setCookie ('createditfastinfo', '', 1)
-        window.parent.location.href = '/login.html'
-        break;
+            vm.$message.error('登录已过期');
+            setCookie ('JSESSIONID', '', 1)
+            setCookie ('esToken', '', 1)
+            setCookie ('userId', '', 1)
+            setCookie ('createdit', '', 1)
+            setCookie ('createditreport', '', 1)
+            setCookie ('createditfastinfo', '', 1)
+            window.parent.location.href = '/login.html'
+            break;
+        case 7366:
+            console.log('图片错了',res)
+            vm.$confirm('抱歉，您复制的 '+ res.contentUrl +' 图片，不支持复制到编辑器中，请选择本地上传至内容图库后再使用！' , '图片提示', {
+                dangerouslyUseHTMLString: true,
+                closeOnClickModal: false,
+                showCancelButton:false,
+                showClose:false,
+                confirmButtonText:'我知道了',
+                type: 'warning'
+            }).then(() => {
+                setCookie ('createdit', '', 1)
+                window.parent.location.href = '/index.html#modules/content/article_list.html'
+            })
+            break;
         default:
-        vm.$message.error(res.msg);
+            vm.$message.error(res.msg);
     }
     
 }
