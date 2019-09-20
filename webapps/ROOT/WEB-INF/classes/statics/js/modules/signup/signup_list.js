@@ -563,6 +563,7 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
 			    dataType: "json",
 			    success: function(res){
+                    // console.log(res)
 					if(res.code == 200){
                         self.commonMeetingTableData = res.page.list
                         for (let i = 0; i < self.commonMeetingTableData.length; i++){
@@ -593,51 +594,58 @@ var vm = new Vue({
         // 绑定会议
         addThisMeeting(item){
             var self = this
-            self.signupForm.signUpMeetingId = item.meetingId
-            $.ajax({
-				type: "POST",
-                url: '/meetingBaseInfo/info/'+item.meetingBaseInfoId.toString(),
-                contentType: "application/json",
-			    dataType: "json",
-			    success: function(res){
-					if(res.code == 200){
-                        var data = res.dict
-                        self.meetingBaseInfoForm.meetingBaseInfoTitle = data.meetingBaseInfoTitle
-                        if(data.meetingBaseInfoStartTime == '') {
-                            self.meetingBaseInfoForm.meetingBaseInfoStartTime = ''
-                        } else {
-                            self.meetingBaseInfoForm.meetingBaseInfoStartTime = self.transformTime(parseInt(data.meetingBaseInfoStartTime))
+            if(item.meetingBaseInfoId == '') {
+                self.$message.error('该会议缺失基础信息表')
+                self.signupForm.signUpMeetingId = ''
+                self.showCommonMeetingList = false
+                self.showAddorEditPage = true
+            } else if(item.meetingBaseInfoId !== '') {
+                self.signupForm.signUpMeetingId = item.meetingId
+                $.ajax({
+                    type: "POST",
+                    url: '/meetingBaseInfo/info/'+item.meetingBaseInfoId.toString(),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function(res){
+                        if(res.code == 200){
+                            var data = res.dict
+                            self.meetingBaseInfoForm.meetingBaseInfoTitle = data.meetingBaseInfoTitle
+                            if(data.meetingBaseInfoStartTime == '') {
+                                self.meetingBaseInfoForm.meetingBaseInfoStartTime = ''
+                            } else {
+                                self.meetingBaseInfoForm.meetingBaseInfoStartTime = self.transformTime(parseInt(data.meetingBaseInfoStartTime))
+                            }
+                            if(data.meetingBaseInfoEndTime == '') {
+                                self.meetingBaseInfoForm.meetingBaseInfoEndTime = ''
+                            } else {
+                                self.meetingBaseInfoForm.meetingBaseInfoEndTime = self.transformTime(parseInt(data.meetingBaseInfoEndTime))
+                            }
+                            if(data.meetingBaseInfoSignUpEndTime == '') {
+                                self.meetingBaseInfoForm.meetingBaseInfoSignUpEndTime = ''
+                            } else {
+                                self.meetingBaseInfoForm.meetingBaseInfoSignUpEndTime = self.transformTime(parseInt(data.meetingBaseInfoSignUpEndTime))
+                            }
+                            if(data.meetingBaseInfoSignUpStartTime == '') {
+                                self.meetingBaseInfoForm.meetingBaseInfoSignUpStartTime = ''
+                            } else {
+                                self.meetingBaseInfoForm.meetingBaseInfoSignUpStartTime = self.transformTime(parseInt(data.meetingBaseInfoSignUpStartTime))
+                            }
+                            self.meetingBaseInfoForm.meetingBaseInfoProvince = data.meetingBaseInfoProvince
+                            self.meetingBaseInfoForm.meetingBaseInfoCity =data.meetingBaseInfoCity
+                            self.meetingBaseInfoForm.meetingBaseInfoArea = data.meetingBaseInfoArea
+                            self.meetingBaseInfoForm.meetingBaseInfoAddress = data.meetingBaseInfoAddress
+                            self.backToEdit2()
+                        }else{
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
                         }
-                        if(data.meetingBaseInfoEndTime == '') {
-                            self.meetingBaseInfoForm.meetingBaseInfoEndTime = ''
-                        } else {
-                            self.meetingBaseInfoForm.meetingBaseInfoEndTime = self.transformTime(parseInt(data.meetingBaseInfoEndTime))
-                        }
-                        if(data.meetingBaseInfoSignUpEndTime == '') {
-                            self.meetingBaseInfoForm.meetingBaseInfoSignUpEndTime = ''
-                        } else {
-                            self.meetingBaseInfoForm.meetingBaseInfoSignUpEndTime = self.transformTime(parseInt(data.meetingBaseInfoSignUpEndTime))
-                        }
-                        if(data.meetingBaseInfoSignUpStartTime == '') {
-                            self.meetingBaseInfoForm.meetingBaseInfoSignUpStartTime = ''
-                        } else {
-                            self.meetingBaseInfoForm.meetingBaseInfoSignUpStartTime = self.transformTime(parseInt(data.meetingBaseInfoSignUpStartTime))
-                        }
-                        self.meetingBaseInfoForm.meetingBaseInfoProvince = data.meetingBaseInfoProvince
-                        self.meetingBaseInfoForm.meetingBaseInfoCity =data.meetingBaseInfoCity
-                        self.meetingBaseInfoForm.meetingBaseInfoArea = data.meetingBaseInfoArea
-                        self.meetingBaseInfoForm.meetingBaseInfoAddress = data.meetingBaseInfoAddress
-                        self.backToEdit2()
-					}else{
-						mapErrorStatus(res)
-                        vm.error = true;
-                        vm.errorMsg = res.msg;
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
                     }
-                },
-                error:function(res){
-                    mapErrorStatus(res)
-                }
-            });
+                });
+            }
         },
 
 
@@ -826,40 +834,12 @@ var vm = new Vue({
                     self.signupForm.signUpJson.pop()
                 }
             } else if(self.creatOrEdit == '1') {
-                // var len = dataLength-1
-                // for(var i = len; i >= 0; i--){
-                //     if(self.signupForm.signUpJson[i].sectionStatus == '1') {
-                //         self.signupForm.signUpJson[i].sectionStatus = '0'
-                //         return
-                //     } else if(self.signupForm.signUpJson[i].sectionStatus == '0') {
-                //         for(var k = i-1; k >= 0; k--){
-                //             if(k > 0 && self.signupForm.signUpJson[k].sectionStatus == '1') {
-                //                 self.signupForm.signUpJson[k].sectionStatus = '0'
-                //                 return
-                //             } if(k == 0) {
-                //                 self.signupForm.signUpJson[k].sectionStatus == '0'
-                //                 self.signupForm.signUpCustom = false
-                //                 // self.signupForm.signUpJson.push({
-                //                 //     sectionId: id+1,
-                //                 //     sectionTitle:'',
-                //                 //     sectionStatus:'1',
-                //                 //     limit:1,
-                //                 //     itemList:[]
-                //                 // })
-                //             }
-                //         }
-                //         // console.log(self.signupForm.signUpJson)
-                //     }
-                // }
-
                 var statusTrueArr = []
                 for(var i = 0; i < dataLength; i++){
                     if(self.signupForm.signUpJson[i].sectionStatus == '1') {
                         statusTrueArr.push(self.signupForm.signUpJson[i])
                     }
                 }
-                // console.log(statusTrueArr)
-                // console.log(self.signupForm.signUpJson)
                 if(statusTrueArr.length == 1) {
                     for(var i = 0; i < dataLength; i++) {
                         if(self.signupForm.signUpJson[i].sectionId == statusTrueArr[0].sectionId){
@@ -871,8 +851,6 @@ var vm = new Vue({
                 } else if(statusTrueArr.length > 1) {
                     for(var i = dataLength-1; i >0; i-- ){
                         for(var k = statusTrueArr.length-1; k> 0; k--){
-                            // console.log(self.signupForm.signUpJson[i].sectionId)
-                            // console.log(statusTrueArr[k].sectionId)
                             if(self.signupForm.signUpJson[i].sectionId == statusTrueArr[k].sectionId){
                                 self.signupForm.signUpJson[i].sectionStatus = '0'
                                 return
@@ -1220,7 +1198,6 @@ var vm = new Vue({
             });
         },
         changeSignupStatus(item){
-            // console.log(item)
             var self = this
             var changeStatus = ''
             if(item.signUpInfoStatus == '1') {
@@ -1229,7 +1206,6 @@ var vm = new Vue({
             var data1 = item
             data1.signUpInfoStatus = changeStatus
             var data = JSON.parse(JSON.stringify(data1))
-            // console.log(data)
             $.ajax({
                 type: "POST",
                 url: "/signUpInfo/update",
@@ -1322,8 +1298,6 @@ var vm = new Vue({
                          let map = $.base64.atob(data.signUpInfoJson, true)
                          data.signUpInfoJson = JSON.parse(map)
                         //  console.log('报名信息返回列表', data)
-                        //  data.signInEntities = ['1568131290000']
-                        // console.log(self.signInTimeList)
                         for(var i = 0; i < data.signInEntities.length; i++) {
                             for(var k = 0; k < self.signInTimeList.length; k++) {
                                 if(data.signInEntities[i].signInTime == self.signInTimeList[k].timeDate) {
@@ -1350,9 +1324,7 @@ var vm = new Vue({
                          }
                          self.searchDetailForm = JSON.parse(JSON.stringify(data))
                          self.showAllBaseInfo = JSON.parse(JSON.stringify(self.checkBaseInfoJson))
-                        //  console.log(data)
-                        //  console.log(self.searchDetailForm)
-                        //  console.log(self.checkBaseInfoJson)
+                     
                         //  console.log('反显拼好的数据',self.showAllBaseInfo)
                          self.showSingupInfoPage = false
                          self.showEditInfoPage = true
@@ -1377,22 +1349,6 @@ var vm = new Vue({
         //保存
         testSubmit2 (formName) {
             var self = this
-            // console.log(self.searchDetailForm.signUpInfoJson)
-            // console.log(self.showAllBaseInfo)
-            // for(var i = 0; i < self.searchDetailForm.signUpInfoJson.length; i++) {
-            //     for(var k = 0; k < self.showAllBaseInfo.length; k++) {
-            //         if(self.searchDetailForm.signUpInfoJson[i].sectionId == self.showAllBaseInfo[k].sectionId) {
-            //             for(var m = 0; m < self.searchDetailForm.signUpInfoJson[i].itemList.length; m++) {
-            //                 for(var n = 0; n < self.showAllBaseInfo[k].itemList.length; n++) {
-            //                     if(self.searchDetailForm.signUpInfoJson[i].itemList[m].itemId == self.showAllBaseInfo[k].itemList[n].itemId){
-            //                         self.searchDetailForm.signUpInfoJson[i].itemList[m].ifChoose =self.showAllBaseInfo[k].itemList[n].ifChoose
-            //                     }
-            //                 }
-            //             }
-            //         }
-    
-            //     }
-            // }
             self.searchDetailForm.signUpInfoJson = JSON.parse(JSON.stringify(self.showAllBaseInfo))
             // console.log(self.searchDetailForm.signUpInfoJson)
             var data = JSON.parse(JSON.stringify(self.searchDetailForm))
