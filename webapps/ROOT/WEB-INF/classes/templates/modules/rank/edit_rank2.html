@@ -19,12 +19,15 @@
                     </el-col>
                 </el-row>
                 <el-tree
+                    style="margin-top:15px;"
                     :data="rankDataTree"
                     node-key="id"
                     default-expand-all
-                    :expand-on-click-node="true">
+                    :expand-on-click-node="false"
+                    :indent="30">
                     <span class="custom-tree-node" slot-scope="{ node, data }">
-                        <span>{{ node.label }}</span>
+                        <span v-if="data.level == '2'" style="font-size: 15px; color: #175CE9;font-weight: 700;">{{ node.label }}</span>
+                        <span v-if="data.level !== '2'">{{ node.label }}</span>
                         <span>{{ data.ifLastNode }}</span>
                         <span>{{ data.rankInfoType }}</span>
                         <div>
@@ -117,7 +120,8 @@
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
-    padding-right: 8px;
+    height: 30px;
+    line-height: 30px;
 }
 .scaleNum .el-input__inner{
     text-align: center;
