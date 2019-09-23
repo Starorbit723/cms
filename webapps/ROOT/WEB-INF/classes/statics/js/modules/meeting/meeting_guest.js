@@ -1,33 +1,28 @@
 var vm = new Vue({
     el: '#meeting_guest',
     data () {
-        var validateId = (rule, value, callback) => {
-            var urlReg = /^[0-9]*[1-9][0-9]*$/;
-            if (value.trim() == '') {
-                callback(new Error('所属会议编号为必填项'));
-            } else if (value !== '' && !urlReg.test(value)) {
-                callback(new Error('所属会议编号只能为正整数'));
-            } else {
-                callback();
-            }
-        }
         return {
             showChildPage: false,
             creatOrEdit:0,//0新建  1修改
             //搜索提交
             searchForm:{
                 meetingGuestMeetingId:'',
+                meetingGuestTitle:'',
                 meetingGuestStatus:'0',
             },
             //列表查询结果
             tableData: [{
                 meetingGuestId:'',//主键
+                meetingGuestTitle:'',//会议嘉宾标题
                 meetingGuestMeetingId:'',//所属会议编号
                 meetingGuestCrtUserId:'',
                 meetingGuestModUserId:'',
                 meetingGuestCrtTime:'',
                 meetingGuestModTime:'',
-                meetingGuestStatu:'',//状态 0正常 1删除
+                meetingGuestStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingGuestJson:'',//json
             }],
             //分页器相关
@@ -45,19 +40,23 @@ var vm = new Vue({
                 meetingGuestModUserId:'',
                 meetingGuestCrtTime:'',
                 meetingGuestModTime:'',
-                meetingGuestStatu:'',//状态 0正常 1删除
+                meetingGuestStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingGuestJson:[
                     // {
                     //    guestName:'',
                     //    guestImg:'',
                     //    guestPosition:'',//嘉宾职位
                     //    guestCompany:'',//嘉宾公司
+                    //    scale:'',//权重
                     // }
                 ],//json
             },
             meetingGuestFormRules:{
-                meetingGuestMeetingId: [
-                    { required: true, validator: validateId, trigger: 'change' }
+                meetingGuestTitle: [
+                    { required: true, message: '会议嘉宾标题不能为空', trigger: 'change' }
                 ]
                 
             },
@@ -114,6 +113,7 @@ var vm = new Vue({
         startSearch (type) {
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
+            data.meetingGuestTitle = data.meetingGuestTitle.toString().trim()
             data.meetingGuestMeetingId = data.meetingGuestMeetingId.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
@@ -152,33 +152,46 @@ var vm = new Vue({
                 }
             });
         },
-        //前移
-        moveUp(index){
-            var moveArr = JSON.parse(JSON.stringify(this.meetingGuestForm.meetingGuestJson))
-            let temp = moveArr[index - 1]
-            let temp2 = moveArr[index]
-            moveArr[index - 1] = temp2
-            moveArr[index] = temp
-            this.meetingGuestForm.meetingGuestJson = moveArr
+        //权重发生改变时调整顺序
+        scaleChange (index) {
+            console.log('发生变化',index)
+            if (this.meetingGuestForm.meetingGuestJson[index].scale.trim() == '') {
+                this.meetingGuestForm.meetingGuestJson[index].scale = '-1'
+                this.$message.error('嘉宾显示权重值不能为空')
+            }
+            let arrSort = JSON.parse(JSON.stringify(this.meetingGuestForm.meetingGuestJson));
+            this.meetingGuestForm.meetingGuestJson = arrSort.sort(this.compare('scale'))
         },
-        //后移
-        moveDown(index){
-            var moveArr = JSON.parse(JSON.stringify(this.meetingGuestForm.meetingGuestJson))
-            let temp = moveArr[index]
-            let temp2 = moveArr[index + 1]
-            moveArr[index + 1] = temp
-            moveArr[index] = temp2
-            this.meetingGuestForm.meetingGuestJson = moveArr
+        //排序比较函数
+        compare (prop) {
+            console.log(prop)
+            return function (obj1, obj2) {
+                var val1 = obj1[prop];
+                var val2 = obj2[prop];
+                if (!isNaN(Number(val1)) && !isNaN(Number(val2))) {
+                    val1 = Number(val1);
+                    val2 = Number(val2);
+                }
+                if (val1 > val2) {
+                    return -1;
+                } else if (val1 < val2) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }            
         },
         //添加嘉宾
         addGuestToList(){
             this.searchGuest(0)
             this.showGuestLibDialog = true
         },
+        
         //搜索嘉宾库
         searchGuest (type){
             var self = this
             var data = self.searchGuestForm
+            data.guestName = data.guestName.trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -221,8 +234,11 @@ var vm = new Vue({
         addThisImg (item) {
             console.log('单个选择添加某个logo',item)
             this.meetingGuestForm.meetingGuestJson.push({
-                guestName: this.multipleSelection[i].guestName,
-                guestImg: this.multipleSelection[i].guestImg
+                guestName: item.guestName,
+                guestPosition:item.guestPosition,
+                guestCompany:item.guestCompany,
+                guestImg: item.guestImg,
+                scale:'-1'
             });
             this.backToEdit()
         },
@@ -236,7 +252,10 @@ var vm = new Vue({
             for (let i=0; i < this.multipleSelection.length; i++) {
                 this.meetingGuestForm.meetingGuestJson.push({
                     guestName: this.multipleSelection[i].guestName,
-                    guestImg: this.multipleSelection[i].guestImg
+                    guestPosition:this.multipleSelection[i].guestPosition,
+                    guestCompany:this.multipleSelection[i].guestCompany,
+                    guestImg: this.multipleSelection[i].guestImg,
+                    scale:'-1'
                 });
             }
             this.backToEdit()
@@ -253,8 +272,8 @@ var vm = new Vue({
             this.chooseIndex = ''
             this.chooseIndex2 = ''
             this.searchGuestForm = {
-                picTitle:'',
-                picType:'4'
+                guestName:'',
+                guestStatus:'0'
             }
             this.guestTableData = []
             this.pagination3 = {
@@ -332,45 +351,51 @@ var vm = new Vue({
             })
         },
 
-        //新建或编辑保存--优先上传图片，再提交保存
-        submitCreatEdit(formName) {
+        //新建或编辑保存
+        testSubmit(formName) {
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
-                    if (self.creatOrEdit == 0) {
-                        var reqUrl = '/meeting/guest/save'
-                    } else if (self.creatOrEdit == 1) {
-                        var reqUrl = '/meeting/guest/update'
-                    }
-                    var data = JSON.parse(JSON.stringify(self.meetingGuestForm))
-                    $.base64.utf8encode = true;
-                    var jsonString = JSON.stringify(data.meetingGuestJson);
-                    var json64 = $.base64.btoa(jsonString);
-                    data.meetingGuestJson = json64
-                    console.log('6464',jsonString,json64)
-                    $.ajax({
-                        type: "POST",
-                        url: reqUrl,
-                        contentType: "application/json",
-                        data: JSON.stringify(data),
-                        dataType: "json",
-                        success: function(res){
-                            if(res.code == 200){
-                                self.$message.success('保存成功')
-                                self.startSearch()
-                                self.closeCreatOrEdit('meetingGuestForm')
-                            }else{
-                                mapErrorStatus(res)
-                                vm.error = true;
-                                vm.errorMsg = res.msg;
-                            }
-                        },
-                        error:function(res){
-                            mapErrorStatus(res)
-                        }
-                    });
+                    //验证是否有重复数据
+                    self.submitCreatEdit()
                 }
             })
+        },
+        //提交
+        submitCreatEdit(){
+            var self = this
+            if (self.creatOrEdit == 0) {
+                var reqUrl = '/meeting/guest/save'
+            } else if (self.creatOrEdit == 1) {
+                var reqUrl = '/meeting/guest/update'
+            }
+            var data = JSON.parse(JSON.stringify(self.meetingGuestForm))
+            $.base64.utf8encode = true;
+            var jsonString = JSON.stringify(data.meetingGuestJson);
+            var json64 = $.base64.btoa(jsonString);
+            data.meetingGuestJson = json64
+            console.log('6464',jsonString,json64)
+            $.ajax({
+                type: "POST",
+                url: reqUrl,
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.$message.success('保存成功')
+                        self.startSearch()
+                        self.closeCreatOrEdit('meetingGuestForm')
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
         },
         //取消编辑返回列表页
         closeCreatOrEdit (formName) {
@@ -382,7 +407,10 @@ var vm = new Vue({
                 meetingGuestModUserId:'',
                 meetingGuestCrtTime:'',
                 meetingGuestModTime:'',
-                meetingGuestStatu:'',//状态 0正常 1删除
+                meetingGuestStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingGuestJson:[],//json
             }
             this.showChildPage = false

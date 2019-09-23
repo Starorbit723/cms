@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+
+<title>高清组图管理</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">高清组图管理</div>
+    <div id="meeting_hdpicture" class="cv_page_content">
+        <div class="cv_content_square">
+            <!------------------列表开始------------------>
+            <div v-show="showDiagramPage">
+                <div class="cv_content_square">
+                    <el-form :model="searchForm" status-icon class="demo-ruleForm" style="width: 100%"  @submit.native.prevent>
+                        <el-row class="el-row-h60">
+                            <el-col :span="8">
+                                <el-form-item label="所属会议编号" label-width="40%" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    v-model="searchForm.diagramMeetingId"
+                                    placeholder="输入编号"
+                                    type="text"
+                                    auto-complete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="组图标题" label-width="25%" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    v-model="searchForm.diagramTitle"
+                                    placeholder="输入组图标题"
+                                    type="text"
+                                    auto-complete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="3" :offset="1" class="el-row-h40">
+                                <el-button type="primary" icon="el-icon-search" style="width:100%" @click="startSearch(0)">搜索</el-button>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                </div>
+                <!--功能按钮区-->
+                <el-row class="el-row-h50">
+                    <el-col :span="4">
+                        <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addOrEditPic(0)">新建高清组图</el-button>
+                    </el-col>
+                </el-row>
+                <!--表格查询结果区-->
+                <div class="cv_content_square">
+                    <el-table :data="tableData" style="width: 100%; margin: 10px auto;" stripe>
+                        <el-table-column prop="diagramId" width="160" label="会议组图编号"></el-table-column>
+                        <el-table-column prop="diagramMeetingId" width="160" label="所属会议编号">
+                            <template slot-scope="scope">
+                                <div v-if="scope.row.diagramMeetingId == '-1'"></div>
+                                <div v-else v-text="scope.row.diagramMeetingId"></div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="diagramTitle"  label="组图标题"></el-table-column>
+                        <el-table-column prop="diagramCrtTime" width="200" label="创建时间"></el-table-column>
+                        <el-table-column prop="userName" label="创建人" width="180"></el-table-column>
+                        <el-table-column label="操作" width="180" fixed="right">
+                            <template slot-scope="scope">
+                                <el-button type="text" size="small" @click="addOrEditPic(1,scope.row)">属性</el-button>
+                                <el-button type="text" size="small" @click="EditDetailList(scope.row)">编辑</el-button>
+                                <el-button v-if="scope.row.diagramMeetingId == '-1' || scope.row.diagramMeetingId == ''" type="text" size="small" @click="deleteThisDiagram(scope.row)">删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+                <!--分页器-->
+                <div class="cv_page_zone">
+                    <el-pagination
+                        @current-change="handleCurrentChange"
+                        :current-page="pagination1.currPage"
+                        :page-size="pagination1.pageSize"
+                        layout="total, prev, pager, next, jumper"
+                        :total="pagination1.totalCount">
+                    </el-pagination>
+                </div>
+            </div>
+            <!------------------列表结束------------------>
+
+            
+            <!------------------新建高清组图开始------------------>
+            <div v-show="showHdPage">
+                <div class="cv_content_square">
+                    <el-form :model="diagramForm" :rules="diagramFormRules" ref="diagramForm" label-position="left" status-icon class="demo-ruleForm" label-width="13%" label-position="right">
+                        
+                        <el-row class="el-row-h70">
+                            <el-col :span="18">
+                                <el-form-item label="高清组图名称" label-width="20%" prop="diagramTitle" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="36"
+                                        placeholder="高清组图名称"
+                                        v-model="diagramForm.diagramTitle"
+                                        auto-complete="off"
+                                        >
+                                        <template slot="append">限制36个字</template>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                    
+                    <el-row style="margin-top: 30px">
+                        <el-col class="el-row-h40" :span="2">
+                            <el-button type="primary" style="width: 100%" @click="testSubmit('diagramForm')">保存</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="2" :offset="1">
+                            <el-button type="primary" style="width: 100%" @click="closeCreatOrEdit('diagramForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </div>
+            </div>
+            <!------------------新建高清组图结束------------------>
+            
+            <!-- 高清组图列表开始 -->
+            <div v-show="showDetailPage">
+                <div class="cv_content_square">
+                        <el-row class="el-row-h50">
+                            <el-col class="el-row-h40" :span="3">
+                                <el-button type="primary" plain icon="el-icon-plus" style="width: 100%" @click="chooseContentImg()">添加图片</el-button>
+                            </el-col>
+                        </el-row>
+                    
+                        <el-table :data="diagramTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="contentImgTableData" stripe>
+                            <el-table-column prop="diagramInfoPriority" label="权重" width="150">
+                                <template slot-scope="scope">
+                                    <el-input
+                                    v-model="scope.row.diagramInfoPriority"
+                                    class="scaleText"
+                                    type="text"
+                                    auto-complete="off"
+                                    @input="scaleChange(scope.row.diagramInfoPriority)"></el-input>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="diagramInfoImg" label="图片" width="200">
+                                <template v-if="scope.row.diagramInfoImg" slot-scope="scope">
+                                    <img style="width:80px;height:60px;" :src="scope.row.diagramInfoImg">
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="diagramInfoTitle" label="标题" ></el-table-column>
+                            <el-table-column prop="diagramInfoCrtTime" label="创建时间" width="200"></el-table-column>
+                            
+                            <el-table-column label="操作" width="150" fixed="right">
+                                <template slot-scope="scope">
+                                    <el-button type="text" size="small" @click="deleteThisDiaDetail(scope.row)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    
+                </div>
+                <div class="cv_page_zone">
+                    <el-pagination
+                        @current-change="handleCurrentChange3"
+                        :current-page="pagination3.currPage"
+                        :page-size="pagination3.pageSize"
+                        layout="total, prev, pager, next, jumper"
+                        :total="pagination3.totalCount">
+                    </el-pagination>
+                </div>
+                <el-row style="margin-top: 30px">
+                    <el-col class="el-row-h40" :span="3" :offset="8">
+                        <el-button type="primary" style="width: 100%"  @click.native="submitForm">保存</el-button>
+                    </el-col>
+                    <el-col class="el-row-h40" :span="3" :offset="2">
+                        <el-button type="primary" style="width: 100%" @click="closeDiaTable()">取消</el-button>
+                    </el-col>
+                </el-row>
+            </div>
+            <!-- 高清组图列表结束 -->
+
+            <!--内容图弹出层开始-->
+            <el-dialog title="内容图库" :visible.sync="showContentImgLib" width="100%" :fullscreen="true" :show-close="false" >
+                <el-form :model="searchContentImgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="12">
+                            <el-form-item label="图片名称" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchContentImgForm.picTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchContentImg(0)">搜索</el-button>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                                <el-button type="primary" style="width:100%" icon="el-icon-plus" @click="batchAddDia()">批量添加</el-button>
+                            </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" @click="backToEdit2()">返回</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <el-table :data="contentImgTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="contentImgTableData" @selection-change="handleSelectionChange" stripe>
+                    <el-table-column
+                        type="selection"
+                        width="55">
+                    </el-table-column>
+                    <el-table-column prop="picUrl" label="内容图预览" width="180">
+                        <template v-if="scope.row.picUrl" slot-scope="scope">
+                            <img style="width:80px;height:60px;" :src="scope.row.picUrl">
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="picTitle" label="图片名称" width="250"></el-table-column>
+                    <el-table-column prop="picEditorName" label="修改人" width="120"></el-table-column>
+                    <el-table-column prop="picModTime" label="最后更新时间"></el-table-column>
+                    <el-table-column label="操作" width="100" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="addThisContentImg(scope.row)">添加</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <!--分页器-->
+                <div class="cv_page_zone">
+                    <el-pagination
+                        @current-change="handleCurrentChange2"
+                        :current-page="pagination2.currPage"
+                        :page-size="pagination2.pageSize"
+                        layout="total, prev, pager, next, jumper"
+                        :total="pagination2.totalCount">
+                    </el-pagination>
+                </div>
+            </el-dialog>
+            <!--内容图库弹出层结束-->
+        </div>
+
+
+   
+        
+
+    </div>
+
+</body>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.min.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.base64.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/meeting/meeting_hdpicture.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+</html>

@@ -1,33 +1,28 @@
 var vm = new Vue({
     el: '#meeting_institution',
     data () {
-        var validateId = (rule, value, callback) => {
-            var urlReg = /^[0-9]*[1-9][0-9]*$/;
-            if (value.trim() == '') {
-                callback(new Error('所属会议编号为必填项'));
-            } else if (value !== '' && !urlReg.test(value)) {
-                callback(new Error('所属会议编号只能为正整数'));
-            } else {
-                callback();
-            }
-        }
         return {
             showChildPage: false,
             creatOrEdit:0,//0新建  1修改
             //搜索提交
             searchForm:{
                 meetingCooperationMeetingId:'',
+                meetingCooperationTitle:'',
                 meetingCooperationStatus:'0',//图片分类查询 0封面 1内容  2图位 3广告 4自媒体头像
             },
             //列表查询结果
             tableData: [{
                 meetingCooperationId:'',//主键
+                meetingCooperationTitle:'',//会议机构标题
                 meetingCooperationMeetingId:'',//所属会议编号
                 meetingCooperationCrtUserId:'',//
                 meetingCooperationModUserId:'',//
                 meetingCooperationCrtTime:'',//
                 meetingCooperationModTime:'',//
                 meetingCooperationStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingCooperationJson:'',//
             }],
             //分页器相关
@@ -46,6 +41,9 @@ var vm = new Vue({
                 meetingCooperationCrtTime:'',//
                 meetingCooperationModTime:'',//
                 meetingCooperationStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingCooperationJson:[{ //JSON数据
                     type:'titleLv1',
                     labelText:'',
@@ -55,7 +53,9 @@ var vm = new Vue({
                         // labelText:'',
                         // children:[{
                         //     title:'',
-                        //     picUrl:''
+                        //     picUrl:'',
+                        //     cooperationUrl:'',
+                        //     scale:'',//权重
                         // }
                     //     ]
                     // }
@@ -64,10 +64,9 @@ var vm = new Vue({
             
             },
             meetingCopFormRules:{
-                meetingCooperationMeetingId: [
-                    { required: true, validator: validateId, trigger: 'change' }
-                ]
-                
+                meetingCooperationTitle: [
+                    { required: true, message: '机构标题不能为空', trigger: 'change' }
+                ],         
             },
             //当前打开图库时的索引记录
             chooseIndex:'',
@@ -75,11 +74,11 @@ var vm = new Vue({
             multipleSelection: [],
             //自媒体图库弹出层相关
             showMeidaLibDialog:false,
-            searchSelfmediaimgForm:{
-                picTitle:'',
-                picType:'4'//0封面图库 1内容图库 2图为图库 3广告  4自媒体
+            searchCoperForm:{
+                cooperationName:'',
+                cooperationStatus:'0'
             },
-            selfmediaimgTableData:[],
+            coperTableData:[],
             pagination3: {
                 currPage: 1,
                 totalCount:0,
@@ -100,12 +99,13 @@ var vm = new Vue({
         },
         handleCurrentChange3 (val) {
             this.pagination3.currPage = val
-            this.searchSelfmediaImg()
+            this.searchCoper()
         },
         //开始搜索专题列表
         startSearch (type) {
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
+            data.meetingCooperationTitle = data.meetingCooperationTitle.toString().trim()
             data.meetingCooperationMeetingId = data.meetingCooperationMeetingId.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
@@ -143,6 +143,35 @@ var vm = new Vue({
                     mapErrorStatus(res)
                 }
             });
+        },
+        //权重发生改变时调整顺序
+        scaleChange (index,index2,index3) {
+            console.log('发生变化',index,index2,this.meetingCopForm.meetingCooperationJson[index].children[index2].children)
+            if (this.meetingCopForm.meetingCooperationJson[index].children[index2].children[index3].scale.trim() == '') {
+                this.meetingCopForm.meetingCooperationJson[index].children[index2].children[index3].scale = '-1'
+                this.$message.error('权重值不能为空')
+            }
+            let arrSort = JSON.parse(JSON.stringify(this.meetingCopForm.meetingCooperationJson[index].children[index2].children));
+            this.meetingCopForm.meetingCooperationJson[index].children[index2].children = arrSort.sort(this.compare('scale'))
+        },
+        //排序比较函数
+        compare (prop) {
+            console.log(prop)
+            return function (obj1, obj2) {
+                var val1 = obj1[prop];
+                var val2 = obj2[prop];
+                if (!isNaN(Number(val1)) && !isNaN(Number(val2))) {
+                    val1 = Number(val1);
+                    val2 = Number(val2);
+                }
+                if (val1 > val2) {
+                    return -1;
+                } else if (val1 < val2) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }            
         },
         //添加一级标题---1级维度
         addCopLv1 () {
@@ -196,31 +225,15 @@ var vm = new Vue({
         addCopLv3(index,index2) {
             this.chooseIndex = index
             this.chooseIndex2 = index2
-            this.searchSelfmediaImg(0)
+            this.searchCoper(0)
             this.showMeidaLibDialog = true
         },
-        //前移
-        moveUp(index,index2,index3){
-            var moveArr = JSON.parse(JSON.stringify(this.meetingCopForm.meetingCooperationJson[index].children[index2].children))
-            let temp = moveArr[index3 - 1]
-            let temp2 = moveArr[index3]
-            moveArr[index3 - 1] = temp2
-            moveArr[index3] = temp
-            this.meetingCopForm.meetingCooperationJson[index].children[index2].children = moveArr
-        },
-        //后移
-        moveDown(index,index2,index3){
-            var moveArr = JSON.parse(JSON.stringify(this.meetingCopForm.meetingCooperationJson[index].children[index2].children))
-            let temp = moveArr[index3]
-            let temp2 = moveArr[index3 + 1]
-            moveArr[index3 + 1] = temp
-            moveArr[index3] = temp2
-            this.meetingCopForm.meetingCooperationJson[index].children[index2].children = moveArr
-        },
         //搜索图库
-        searchSelfmediaImg (type){
+        searchCoper (type){
             var self = this
-            var data = self.searchSelfmediaimgForm
+            var data = self.searchCoperForm
+            data.cooperationName = data.cooperationName.trim()
+            console.log(data)
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -235,13 +248,14 @@ var vm = new Vue({
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
-                url: "/picture/list",
+                url: "/cooperation/list",
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res){
+                    console.log(res)
                     if(res.code == 200){
-                        self.searchSelfmediaimgForm.picTitle = ''
-                        self.selfmediaimgTableData = res.page.list
+                        self.searchCoperForm.cooperationName = ''
+                        self.coperTableData = res.page.list
                         self.pagination3 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
@@ -260,11 +274,13 @@ var vm = new Vue({
             });
         },
         //添加图片至页面
-        addThisImg (item) {
+        addThisCoper (item) {
             console.log('单个选择添加某个logo',item)
             this.meetingCopForm.meetingCooperationJson[this.chooseIndex].children[this.chooseIndex2].children.push({
-                title: item.picTitle,
-                picUrl: item.picUrl
+                title: item.cooperationName,
+                picUrl: item.cooperationImg,
+                cooperationUrl:item.cooperationUrl,
+                scale:'-1'
             });
             this.backToEdit()
         },
@@ -277,8 +293,10 @@ var vm = new Vue({
             console.log(this.multipleSelection)
             for (let i=0; i < this.multipleSelection.length; i++) {
                 this.meetingCopForm.meetingCooperationJson[this.chooseIndex].children[this.chooseIndex2].children.push({
-                    title: this.multipleSelection[i].picTitle,
-                    picUrl: this.multipleSelection[i].picUrl
+                    title: this.multipleSelection[i].cooperationName,
+                    picUrl: this.multipleSelection[i].cooperationImg,
+                    cooperationUrl:this.multipleSelection[i].cooperationUrl,
+                    scale:'-1'
                 });
             }
             this.backToEdit()
@@ -294,11 +312,11 @@ var vm = new Vue({
             this.multipleSelection = []
             this.chooseIndex = ''
             this.chooseIndex2 = ''
-            this.searchSelfmediaimgForm = {
-                picTitle:'',
-                picType:'4'
+            this.searchCoperForm = {
+                cooperationName:'',
+                cooperationStatus:'0'
             }
-            this.selfmediaimgTableData = []
+            this.coperTableData = []
             this.pagination3 = {
                 currPage: 1,
                 totalCount:0,
@@ -375,44 +393,56 @@ var vm = new Vue({
         },
 
         //新建或编辑保存--优先上传图片，再提交保存
-        submitCreatEdit(formName) {
+        testSubmit(formName) {
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
-                    if (self.creatOrEdit == 0) {
-                        var reqUrl = '/meeting/cooperation/save'
-                    } else if (self.creatOrEdit == 1) {
-                        var reqUrl = '/meeting/cooperation/update'
-                    }
-                    var data = JSON.parse(JSON.stringify(self.meetingCopForm))
-                    $.base64.utf8encode = true;
-                    var jsonString = JSON.stringify(data.meetingCooperationJson);
-                    var json64 = $.base64.btoa(jsonString);
-                    data.meetingCooperationJson = json64
-                    console.log('6464',jsonString,json64)
-                    $.ajax({
-                        type: "POST",
-                        url: reqUrl,
-                        contentType: "application/json",
-                        data: JSON.stringify(data),
-                        dataType: "json",
-                        success: function(res){
-                            if(res.code == 200){
-                                self.$message.success('保存成功')
-                                self.startSearch()
-                                self.closeCreatOrEdit('meetingCopForm')
-                            }else{
-                                mapErrorStatus(res)
-                                vm.error = true;
-                                vm.errorMsg = res.msg;
-                            }
-                        },
-                        error:function(res){
-                            mapErrorStatus(res)
-                        }
-                    });
+                    //验证一级表单是否填写完成
+                    // for (let i = 0; i < self.meetingCopForm.meetingCooperationJson.length; i++) {
+                    //     if (self.meetingCopForm.meetingCooperationJson[i].labelText.trim() == '') {
+                    //         self.$message.error('还有机构未填写完成')
+                    //         return
+                    //     }
+                    // }
+                    self.submitCreatEdit()
                 }
             })
+        },
+        //提交
+        submitCreatEdit(){
+            var self = this
+            if (self.creatOrEdit == 0) {
+                var reqUrl = '/meeting/cooperation/save'
+            } else if (self.creatOrEdit == 1) {
+                var reqUrl = '/meeting/cooperation/update'
+            }
+            var data = JSON.parse(JSON.stringify(self.meetingCopForm))
+            $.base64.utf8encode = true;
+            var jsonString = JSON.stringify(data.meetingCooperationJson);
+            var json64 = $.base64.btoa(jsonString);
+            data.meetingCooperationJson = json64
+            console.log('6464',jsonString,json64)
+            $.ajax({
+                type: "POST",
+                url: reqUrl,
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.$message.success('保存成功')
+                        self.startSearch()
+                        self.closeCreatOrEdit('meetingCopForm')
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
         },
         //取消编辑返回列表页
         closeCreatOrEdit (formName) {
@@ -425,6 +455,9 @@ var vm = new Vue({
                 meetingCooperationCrtTime:'',//
                 meetingCooperationModTime:'',//
                 meetingCooperationStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingCooperationJson:[{ //JSON数据
                     type:'titleLv1',
                     labelText:'',

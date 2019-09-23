@@ -18,6 +18,7 @@
     <#include "/header.html">
     <div class="cvpage_title_common">新建/编辑文章</div>
     <div id="edit_article" class="cv_page_content">
+        <div class="loading" v-if="!ajaxController"></div>
         <!--文章基本信息区-->
         <div class="cv_content_square">
             <el-form :model="articleForm" :rules="articleFormRules" ref="articleForm" status-icon class="demo-ruleForm" label-width="12%" label-position="right">
@@ -131,8 +132,8 @@
                             </el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="主频道" prop="newsChannel" label-width="24%" style="margin:0;">
+                    <el-col :span="7">
+                        <el-form-item label="主频道" prop="newsChannel" label-width="41%" style="margin:0;">
                             <el-select v-model="articleForm.newsChannel" placeholder="请选择主频道" style="width:100%;">
                                 <el-option
                                     v-for="item in channelOptions"
@@ -141,6 +142,11 @@
                                     :value="item.channelId">
                                 </el-option>
                             </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-form-item prop="recommendStatus" label="是否推送" label-width="50%" style="margin:0;">
+                            <el-checkbox v-model="ifPushIndex" @change="changeIfPush" :disabled="ifControllerPush"></el-checkbox>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -389,6 +395,15 @@
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
 
 <style>
+.loading{
+    position: fixed;
+    top: 0;
+    bottom:0;
+    right: 0;
+    left: 0;
+    background: rgba(255,255,255,0.4);
+    z-index: 999;
+}
 .fengmian_show{
     width: 240px;
     height: 150px;

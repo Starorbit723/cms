@@ -99,7 +99,6 @@ var vm = new Vue({
         this.getMenuList();
         this.getUser();
     },updated:function(){
-
         if($("#larry-side .layui-nav-item>a").length==0 || !isquery){
             return;
         }

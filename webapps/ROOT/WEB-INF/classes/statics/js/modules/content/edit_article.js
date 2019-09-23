@@ -17,6 +17,8 @@ var vm = new Vue({
         showContentimgLib:false,
         //是否展示定时任务的选择器
         showChangeReserveTime: true,
+        //控制推送开关的启用和禁用---新建为启用，编辑为禁用
+        ifControllerPush:true,
         //提交保存按钮状态
         submitBtnStatus:'0', //0实时发布   1定时发布   2全部隐藏
         //初始化数据
@@ -28,6 +30,7 @@ var vm = new Vue({
         baiduWordSuggest:'',
         newsTagArray:[],
         ifOrignCheck: false, //1：原创 2：非原创, 默认为2非原创
+        ifPushIndex: true, // 1：推荐 2：非推荐
         ifReserveTime: false, //是否开启定时发布
         articleForm:{
             newsId:'',
@@ -71,12 +74,13 @@ var vm = new Vue({
             updatePvAt:'',//更新点击量时间
             newsStatus:'',//0未发布，1是待发布，2是已发布3是发布失败 4是待删除 5 删除
             newsChannel:'',//新闻属于频道
-            recommendStatus:'2',//推荐状态： 1：推荐 2：非推荐
+            recommendStatus:'1',//推荐状态： 1：推荐 2：非推荐
             newsFlashStatus:'',//是否快讯 0 否 1 是
             newsOrderCount:'',//手工点击量
             newsContentNumber:'',//正文字数
             newsContentReadTime:'',//阅读时间
             newsReleaseTime:'',
+            newsOldChannel:'',//暂时记录之前的频道用于MQ修改
             pictureEntity:{},//封面图的item全部信息
             newsContentList:[{//新闻内容图片列表
                 srcName:'',//图片地址
@@ -176,9 +180,11 @@ var vm = new Vue({
         var type = getCookie('createdit')
         if (type == '' || type == undefined) {
             this.typeOfPage = 'creat'
+            this.ifControllerPush = false //启用推送开关
         } else {
             this.typeOfPage = 'edit'
             this.getEditArticleOrign(type)
+            this.ifControllerPush = true //禁用推送开关
         }
         console.log('type',this.typeOfPage)
     },
@@ -257,7 +263,7 @@ var vm = new Vue({
                     if(res.code == 200){
                         console.log('自媒体下拉列表返回：', res)
                         self.selfmediaOptions = res.page.list
-
+                        
                     } else {
                         mapErrorStatus(res)
                         vm.error = true;
@@ -287,6 +293,16 @@ var vm = new Vue({
                 this.articleForm.originalStatus = 2
                 this.articleForm.newsFrom = ''
             }
+        },
+        //切换推送状态
+        changeIfPush(val){
+            //原创状态 1：推荐 2：非推荐
+            if (val) {
+                this.articleForm.recommendStatus = 1
+            } else {
+                this.articleForm.recommendStatus = 2
+            }
+            console.log('推送状态',this.articleForm.recommendStatus)
         },
         //新闻标签改变
         newsTagChange (val) {
@@ -571,6 +587,7 @@ var vm = new Vue({
                                     type: 'warning'
                                 }).then(() => {
                                     self.reqSaveArticle(type)
+                                    self.ajaxController = false
                                 })
                             }
                         } else {
@@ -789,6 +806,8 @@ var vm = new Vue({
         //文章数据转换反显
         editArticleFilter (tempObj) {
             console.log('tempObj',tempObj)
+            //暂时记录一下用户编辑之前的频道Id用于MQ修改
+            tempObj.newsOldChannel = tempObj.newsChannel
             /*
                 回显定时发布时间:
                 已上线文章 status = 2, 不能修改定时时间---不显示
@@ -825,6 +844,14 @@ var vm = new Vue({
                 this.ifOrignCheck = false
             } else {
                 this.$message.error('原创状态，后台反显回传不能为0或空')
+            }
+            //回显推送状态  1.推送   2.非推送
+            if (tempObj.recommendStatus == '1') {
+                this.ifPushIndex = true
+            } else if (tempObj.recommendStatus == '2' || tempObj.recommendStatus == '0') {
+                this.ifPushIndex = false
+            } else {
+                this.$message.error('推送状态，后台反显回传不能为0或空')
             }
             
             //UE.getEditor('editor').execCommand('insertHtml', tempObj.newsContent)
@@ -915,6 +942,11 @@ var vm = new Vue({
                 return
             }
             
+        },
+        //替换sention标签
+        replaceSectionTag () {
+            var html = UE.getEditor('editor').getContent()
+            ue.setContent(html.replace(/section/g, 'p'));
         }
     },
     beforeDestroy () {

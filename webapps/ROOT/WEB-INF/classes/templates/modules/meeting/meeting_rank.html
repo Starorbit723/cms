@@ -13,14 +13,23 @@
         <div v-show="!showChildPage">
             <!--列表搜索区-->
             <div class="cv_content_square">
-                <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="25%" label-position="right" @submit.native.prevent>
                     <el-row class="el-row-h60">
-                        <el-col :span="14">
-                            <el-form-item label="所属会议编号" style="margin:0;">
+                        <el-col :span="8">
+                            <el-form-item  label-width="40%" label="所属会议编号" style="margin:0;">
                                 <el-input
                                 clearable
                                 type="text"
                                 v-model="searchForm.meetingRankMeetingId"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="会议榜单标题" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchForm.meetingRankTitle"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
@@ -39,15 +48,22 @@
             <!--表格查询结果区-->
             <div class="cv_content_square">
                 <el-table :data="tableData" style="width: 100%; margin:10px auto;" ref="multipleTable" stripe>
-                    <el-table-column prop="meetingRankMeetingId" label="所属会议编号" width=""></el-table-column>
-                    <el-table-column prop="meetingRankCrtUserId" label="创建人" width="90"></el-table-column>
+                    <el-table-column prop="meetingRankId" label="榜单编号" width="110"></el-table-column>
+                    <el-table-column prop="meetingRankMeetingId" label="所属会议编号" width="110">
+                        <template slot-scope="scope">
+                            <div v-if="scope.row.meetingRankMeetingId == '-1'"></div>
+                            <div v-else v-text="scope.row.meetingRankMeetingId"></div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="meetingRankTitle" label="会议榜单标题" width=""></el-table-column>
+                    <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
+                    <el-table-column prop="modUserName" label="更新人" width="90"></el-table-column>
                     <el-table-column prop="meetingRankCrtTime" label="创建时间" width="200"></el-table-column>
-                    <el-table-column prop="meetingRankModUserId" label="更新人" width="90"></el-table-column>
                     <el-table-column prop="meetingRankModTime" label="更新时间" width="200"></el-table-column>
                     <el-table-column label="操作" width="100" fixed="right">
                         <template slot-scope="scope">
                             <el-button type="text" size="small" @click="addOrEditRank(1,scope.row)">修改</el-button>
-                            <el-button type="text" size="small" @click="deleteThisRank(scope.row)">删除</el-button>
+                            <el-button v-if="scope.row.meetingRankMeetingId == '-1' || scope.row.meetingRankMeetingId == ''" type="text" size="small" @click="deleteThisRank(scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -71,21 +87,27 @@
             <!--表单信息-->
             <div class="cv_content_square">
                 <el-form :model="rankForm" :rules="rankFormRules"  ref="rankForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
-                    <el-row class="el-row-h80">
-                        <el-col :span="16">
-                            <el-form-item label-width="20%" prop="meetingRankMeetingId" label="所属会议编号" style="margin:0;">
+                    <el-row class="el-row-h70">
+                        <el-col>
+                            <el-form-item label-width="16%" prop="meetingRankMeetingId" label="所属会议编号" style="margin:0;">
                                 <el-input
                                 clearable
                                 type="text"
                                 v-model="rankForm.meetingRankMeetingId"
-                                auto-complete="off"></el-input>
+                                auto-complete="off"
+                                :disabled="true"></el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col class="el-row-h40" :span="3" :offset="1">
-                            <el-button type="primary" style="width:100%" @click="submitCreatEdit('rankForm')">保存</el-button>
-                        </el-col>
-                        <el-col class="el-row-h40" :span="3" :offset="1">
-                            <el-button type="primary" style="width:100%" @click="closeEditCreatEdit('rankForm')">取消</el-button>
+                    </el-row>
+                    <el-row class="el-row-h80">
+                        <el-col>
+                            <el-form-item label-width="16%" prop="meetingRankTitle" label="会议榜单标题" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="rankForm.meetingRankTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
                         </el-col>
                     </el-row>
 
@@ -195,7 +217,15 @@
                         </el-col>
                     </el-row>
 
-
+                    <el-row style="margin-top:30px;">
+                        <el-col class="el-row-h40" :span="3" :offset="8">
+                            <el-button type="primary" style="width:100%" @click="testSubmit('rankForm')">保存</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="3" :offset="2">
+                            <el-button type="primary" style="width:100%" @click="closeEditCreatEdit('rankForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                
 
                 </el-form>
             </div>

@@ -1,36 +1,22 @@
 var vm = new Vue({
     el: '#edit_meeting',
     data () {
-        var validateUrl = (rule, value, callback) => {
-            var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
-            if (value =='') {
-                callback(new Error('链接不能为空'));
-            } else if (!urlReg.test(value)) {
-                callback(new Error('链接格式不正确'));
+        var validateScaleNumber = (rule, value, callback) => {
+            var urlReg = /^[0-9]*[1-9][0-9]*$/;
+            if (!urlReg.test(value)) {
+                callback(new Error('规模人数只能为正整数'));
             } else {
                 callback();
             }
         }
-        var validateMeetingTimes = (rule, value, callback) => {
-            console.log(value)
-            if (value !== null) {
-                if (value !== [] && (value[0] == value[1])) {
-                    callback(new Error('会议开始时间不能与会议结束时间相同'));
-                } else {
-                    callback();
-                }
-            } else {
-                callback(new Error('会议时间为必填项'));
-            }
-            
-        }
-        var validateMeetingBaomingTimes = (rule, value, callback) => {
-            if (value !== null && value !== undefined) {
-                if (value[0] !== '#' && value[0] !== undefined && (value[0] == value[1])) {
-                    callback(new Error('报名开始时间不能与报名结束时间相同'));
-                } else {
-                    callback();
-                }
+        var validateUrl = (rule, value, callback) => {
+            var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
+            if (value == '') {
+                callback(new Error('链接不能为空'));
+            } else if (value.trim() == '#') {
+                callback();
+            } else if (!urlReg.test(value)) {
+                callback(new Error('链接格式不正确，暂无链接可填写"#"'));
             } else {
                 callback();
             }
@@ -40,79 +26,158 @@ var vm = new Vue({
             typeOfPage:'creat',
             //按钮请求开关
             ajaxController:true,
-            //切换展示封面图库
-            showCoverimgLib:false,
-            //切换展示内容图库
-            showContentImgLib:false,
-            //省市区选项
-            RegionOptions: [],
-            //会议类型下拉选项
-            meetingTypeOptions:[],
             //折叠面板组件实例
-            activeNames: ['1','2','3','4','5','6','7','8','9','10'],
+            activeNames: ['1','2','3','4','5','6','7','8','9','10','11','12'],
+            //会议关键词数组
+            meetingTagArray:[],
+            labelOptions:[],
             //文章基本信息
             meetingForm:{
                 meetingId:'',//主键
                 meetingTitle:'',//标题
                 meetingStarTime:'',//开始时间
                 meetingEndTime:'',//结束时间
-                meetingImg:'',//封面图
+                meetingEnrollStartTime:'',//报名开始时间
+                meetingEnrollEndTime:'',//报名结束时间
                 meetingType:'',//类型
                 meetingUrl:'',//会议链接
-                meetingRegion:[],//会议所在区域-----前端自用字段
-                meetingTimes:[],//会议时间数组-----前端自用字段
-                meetingBaomingTimes:[], //会议报名时间-----前端自用字段
-                meetingProvince:'',//省
-                meetingCity:'',//市
-                meetingArea:'',//区
-                meetingAddress:'',//详细地址
-                meetingOrganizers:'',//举办方
                 meetingDesc:'',//简介
+                meetingStatus:'',//会议状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
+                meetingKeywords:'', //会议关键词
+                meetingTheme:'',//会议主题
+                meetingOrganizer:'',//主办单位
+                meetingCoOrganizer:'',//协办单位
+                meetingScaleNumber:'',//规模人数
+                meetingHoldTime:'',//举办时间字符串
+                meetingAddress:'',//会议举办地址
+                meetingBaseInfoId:'',//会议基本信息ID
+                meetingAgendaId:'',//日程ID
+                meetingGuestId:'',//嘉宾ID
+                meetingVoteId:'',//投票ID
+                meetingInteractionId:'',//文章问答互动ID
+                meetingDiagramId:'',//高清组图ID
+                meetingCooperationId:'',//合作机构ID
                 meetingCrtUserId:'',//创建人编号
                 meetingCrtTime:'',//创建时间
                 meetingModUserId:'',//更新人编号
                 meetingModTime:'',//更新时间
-                meetingStatus:'',//会议状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
-                meetingEnrollStarTime:'',//报名开始时间
-                meetingEnrollEndTime:'',//报名结束时间
                 meetingCrtUserName:'',//创建人姓名
+                meetingTemplateId:'',
+                meetingTemplateMid:'',
+                meetingTemplateAddress:'',
+                meetingTemplateMaddress:'',
+                meetingSignUpUrl:'',//报名链接
                 meetingJsonData:{ //前端渲染大数据
-                    headPic:{
-                        isShow: true,
-                        picUrl: '',
-                        isShowSelfConfig: true,
-                        selfConfigZone:[{
-                            type:'text',
-                            titleCn:'标题',
-                            titleEn:'TITLE',
-                            innerText:'内容',
-                        },{
-                            type:'img',
-                            titleCn:'标题',
-                            titleEn:'TITLE',
-                            imgUrl:'https://cvinfo-test.obs.cn-north-1.myhuaweicloud.com/head/6546992352198656.jpg',
-                        }]
+                    headPicBanner:{
+                        isShowFloor:true,
+                        isShowDefaultModel: true,
+                        isShowSelfConfig: false,
+                        picUrlPc: '',
+                        picUrlMobile: '',
+                        picLink:'',
+                        selfConfigZone:[
+                        // {
+                        //     type:'text',
+                        //     titleCn:'标题',
+                        //     titleEn:'TITLE',
+                        //     innerText:'内容',
+                        // },{
+                        //     type:'img',
+                        //     titleCn:'标题',
+                        //     titleEn:'TITLE',
+                        //     toLinkUrl:"https://www.baidu.com",
+                        //     imgUrl:'https://cvinfo-test.obs.cn-north-1.myhuaweicloud.com/head/6546992352198656.jpg',
+                        // }
+                        ]
                     },
-                    introduce:{
-                        isShow: true,
-                        isShowSelfConfig: true,
+                    basicInformation:{
+                        isShowFloor:true,
+                        isShowDefaultModel: true,
+                        isShowSelfConfig: false,
+                        selfConfigZone:[]
+                    },
+                    meetingIntroduce:{
+                        floorTitleCn:'活动介绍',
+                        floorTitleEn:'ACTIVITY DESCRIPTION',
+                        isShowFloor:true,
+                        isShowDefaultModel: true,
+                        isShowSelfConfig: false,
+                        paragraph:[{
+                            innerText:''
+                        }],
+                        selfConfigZone:[]
+                    },
+                    calendar:{
+                        floorTitleCn:'会议议程',
+                        floorTitleEn:'MEETING AGENDA',
+                        isShowFloor:true,
+                        isShowDefaultModel: false,
+                        isShowSelfConfig: false,
                         selfConfigZone:[]
                     },
                     guest:{
-                        isShow: true,
-                        isShowSelfConfig: true,
+                        floorTitleCn:'嘉宾介绍',
+                        floorTitleEn:'GUEST INTRODUCTION',
+                        isShowFloor:true,
+                        isShowDefaultModel: false,
+                        isShowSelfConfig: false,
                         selfConfigZone:[]
                     },
-                    timeLine:{
-                        isShow: true,
-                        timeConfig:[{
-                            singleDate:'',
-                            list:[{
-                                time:'',
-                                text:''
-                            }]
+                    guestOpinion:{
+                        floorTitleCn:'嘉宾观点',
+                        floorTitleEn:'GUEST VIEWS',
+                        isShowFloor:true,
+                        isShowDefaultModel: true,
+                        isShowSelfConfig: false,
+                        opinionList:[{
+                            guestName:'',
+                            guestPosition:'',
+                            guestCompany:'',
+                            guestImg:'',
+                            guestOpinionText:''
                         }],
-                        isShowSelfConfig: true,
+                        selfConfigZone:[]
+                    },
+                    vote:{
+                        floorTitleCn:'投票',
+                        floorTitleEn:'VOTE',
+                        isShowFloor:true,
+                        isShowDefaultModel: false,
+                        isShowSelfConfig: false,
+                        voteType:'',
+                        selfConfigZone:[]
+                    },
+                    articleQuestion:{
+                        floorTitleCn:'相关报道',
+                        floorTitleEn:'RELEVANT REPORTS',
+                        isShowFloor:true,
+                        isShowDefaultModel: false,
+                        isShowSelfConfig: false,
+                        selfConfigZone:[]
+                    },
+                    pictureGroup:{
+                        floorTitleCn:'图片直播',
+                        floorTitleEn:'PICTURE',
+                        isShowFloor:true,
+                        isShowDefaultModel: false,
+                        isShowSelfConfig: false,
+                        selfConfigZone:[]
+                    },
+                    location:{
+                        floorTitleCn:'会议地点',
+                        floorTitleEn:'WHERE',
+                        isShowFloor:true,
+                        isShowDefaultModel: true,
+                        isShowSelfConfig: false,
+                        locationImgUrl:'',
+                        selfConfigZone:[]
+                    },
+                    coperation:{
+                        floorTitleCn:'合作伙伴',
+                        floorTitleEn:'PARTNER',
+                        isShowFloor:true,
+                        isShowDefaultModel: false,
+                        isShowSelfConfig: false,
                         selfConfigZone:[]
                     }
                 }
@@ -120,31 +185,48 @@ var vm = new Vue({
             meetingFormRules:{
                 meetingTitle: [
                     { required: true, message: '会议标题不能为空', trigger: 'change' },
-                    { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
-                ],
-                meetingTimes:[
-                    { type: 'array', required: true, validator: validateMeetingTimes, trigger: 'change' }
-                ],
-                meetingBaomingTimes:[
-                    { type: 'array', validator: validateMeetingBaomingTimes, trigger: 'change' }
-                ],
-                meetingRegion:[
-                    { type: 'array', required: true, message: '所在区域不能为空', trigger: 'change' }
-                ],
-                meetingType:[
-                    { required: true, message: '会议类型不能为空', trigger: 'change' }
-                ],
-                meetingUrl:[
-                    { required: true, validator: validateUrl, trigger: 'change' }
-                ],
-                meetingImg:[
-                    { required: true, message: '请选择会议封面图', trigger: 'change' }
+                    { max: 50, message: '您输入的字数超过50个字', trigger: 'change' }
                 ],
                 meetingDesc:[
                     { required: true, message: '请填写会议简介', trigger: 'change' }
-                ]
+                ],
+                meetingKeywords:[
+                    { required: true, message: '请填写会议关键词', trigger: 'change' }
+                ],
+                // meetingTheme: [
+                //     { required: true, message: '主题不能为空', trigger: 'change' },
+                //     { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
+                // ],
+                meetingOrganizer:[
+                    { required: true, message: '请填写主办单位', trigger: 'change' }
+                ],
+                meetingCoOrganizer:[
+                    { required: true, message: '协办单位必填，没有协办单位填写"#"', trigger: 'change' }
+                ],
+                meetingScaleNumber:[
+                    { required: true, validator: validateScaleNumber, trigger: 'change' }
+                ],
+                meetingHoldTime:[
+                    { required: true, message: '请填写举办时间', trigger: 'change' }
+                ],
+                // meetingAddress:[
+                //     { required: true, message: '请填写举办地址', trigger: 'change' }
+                // ],
+                meetingSignUpUrl:[
+                    { required: true, validator: validateUrl, trigger: 'change' }
+                ],
+                // meetingEnrollStartTime:[
+                //     { required: true, message: '报名开始时间必填', trigger: 'change' }
+                // ],
+                // meetingEnrollEndTime:[
+                //     { required: true, message: '报名结束时间必填', trigger: 'change' }
+                // ],
+                meetingBaseInfoId:[
+                    { required: true, message: '会议基本信息必选', trigger: 'change' }
+                ],
             },
             //封面图库相关
+            showCoverimgLib:false,
             chooseImgType:'',
             searchCoverimgForm:{
                 picTitle:'',
@@ -158,6 +240,7 @@ var vm = new Vue({
                 pageSize:10
             },
             //内容图库相关
+            showContentImgLib:false,
             chooseImgObjName:'',
             chooseImgObjIndex:'',
             searchContentImgForm:{
@@ -171,12 +254,122 @@ var vm = new Vue({
                 totalPage:0,
                 pageSize:10
             },
+            //展示基础信息表
+            showBaseInfoLib:false,
+            searchBaseInfoForm:{
+                meetingBaseInfoTitle:'',
+                meetingBaseInfoStatus:'0',
+                meetingBaseInfoMeetingId:'-1',
+            },
+            baseInfoTableData:[],
+            pagination10: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //展示日程表
+            showCalendarLib:false,
+            searchCalendarForm:{
+                meetingAgendaTitle:'',
+                meetingAgendaStatus:'0',
+                meetingAgendaMeetingId:'-1',
+            },
+            calendarTableData:[],
+            pagination3: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //展示嘉宾数据表
+            showGuestLib:false,
+            searchGuestForm:{
+                meetingGuestTitle:'',
+                meetingGuestStatus:'0',
+                meetingGuestMeetingId:'-1',
+            },
+            guestTableData:[],
+            pagination4: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //展示嘉宾库
+            currentOpinionIndex:'',
+            showGuestInfoLib:false,
+            searchGuestInfoForm:{
+                guestName:'',
+                guestStatus:'0',
+            },
+            guestInfoTableData:[],
+            pagination5: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //展示投票
+            showVoteLib:false,
+            searchVoteForm:{
+                voteTitle:'',
+                voteStatus:'0',
+                voteMeetingId: '-1',
+            },
+            voteTableData:[],
+            pagination6: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //展示文章问答
+            showArticleQuestionLib:false,
+            searchArticleQuestionForm:{
+                interactionTitle:'',
+                interactionStatus: '0',
+                interactionMeetingId: '-1',
+            },
+            articleQuestionTableData:[],
+            pagination7: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //展示高清组图
+            showPictrueGroupLib:false,
+            searchPictrueGroupForm:{
+                diagramTitle:'',
+                diagramStatus: "0",
+                diagramMeetingId: '-1',
+            },
+            pictrueGroupTableData:[],
+            pagination8: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //展示合作伙伴
+            showCoperationLib:false,
+            searchCoperationForm:{
+                meetingCooperationTitle:'',
+                meetingCooperationStatus: "0",
+                meetingCooperationMeetingId:'-1',
+            },
+            coperationTableData:[],
+            pagination9: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
         }
        
     },
     created () {
-       this.RegionOptions = regionJSON
-       this.getMeetingType()
     },
     mounted () {
         var type = getCookie('createditmeeting')
@@ -189,46 +382,88 @@ var vm = new Vue({
         console.log('type',this.typeOfPage)
     },
     methods:{
-        //省市区发生变化时
-        handleRegionChange(val){
-            for (let i = 0; i < this.RegionOptions.length; i++) {
-                if (this.RegionOptions[i].value == val[0]) {
-                    this.meetingForm.meetingProvince = this.RegionOptions[i].label
-                    for (let j = 0; j <this.RegionOptions[i].children.length; j ++) {
-                        if (this.RegionOptions[i].children[j].value == val[1]) {
-                            this.meetingForm.meetingCity = this.RegionOptions[i].children[j].label
-                            for (let k = 0; k < this.RegionOptions[i].children[j].children.length; k++) {
-                                if (this.RegionOptions[i].children[j].children[k].value == val[2]) {
-                                    this.meetingForm.meetingArea = this.RegionOptions[i].children[j].children[k].label
-                                }
-                            }
-                        }
-                    }
+        //嘉宾观点上移
+        opinionMoveUp(index){
+            console.log(index)
+            var moveArr = JSON.parse(JSON.stringify(this.meetingForm.meetingJsonData.guestOpinion.opinionList))
+            let temp = moveArr[index - 1]
+            let temp2 = moveArr[index]
+            moveArr[index - 1] = temp2
+            moveArr[index] = temp
+            this.meetingForm.meetingJsonData.guestOpinion.opinionList = moveArr
+        },
+        //嘉宾观点下移
+        opinionMoveDown(index){
+            var moveArr = JSON.parse(JSON.stringify(this.meetingForm.meetingJsonData.guestOpinion.opinionList))
+            let temp = moveArr[index]
+            let temp2 = moveArr[index + 1]
+            moveArr[index + 1] = temp
+            moveArr[index] = temp2
+            this.meetingForm.meetingJsonData.guestOpinion.opinionList = moveArr
+        },
+        //添加嘉宾观点
+        addGuestOpinion(index){
+            for (let i = 0; i < this.meetingForm.meetingJsonData.guestOpinion.opinionList.length; i++) {
+                if (this.meetingForm.meetingJsonData.guestOpinion.opinionList[i].guestOpinionText.trim() == '' || this.meetingForm.meetingJsonData.guestOpinion.opinionList[i].guestImg == '') {
+                    this.$message.error('您还有未完成的观点');
+                    return 
                 }
             }
-            console.log('省市区发生变化',this.meetingForm.meetingProvince,this.meetingForm.meetingCity,this.meetingForm.meetingArea)
+            this.meetingForm.meetingJsonData.guestOpinion.opinionList.splice((index + 1), 0, {
+                guestName:'',
+                guestPosition:'',
+                guestCompany:'',
+                guestImg:'',
+                guestOpinionText:''
+            }); 
         },
-        //会议起止时间变化
-        handleMeetingTimesChange(val){
-            if (val !== null) {
-                this.meetingForm.meetingStarTime = val[0]
-                this.meetingForm.meetingEndTime = val[1]
+        //删除嘉宾观点
+        delGuestOpinion(index) {
+            if (this.meetingForm.meetingJsonData.guestOpinion.opinionList.length >= 2) {
+                this.meetingForm.meetingJsonData.guestOpinion.opinionList.splice(index, 1);
             } else {
-                this.meetingForm.meetingStarTime = ''
-                this.meetingForm.meetingEndTime = ''
+                this.$message.warning('至少保留一条观点')
             }
-            console.log('会议时间变化',val,this.meetingForm.meetingStarTime,this.meetingForm.meetingEndTime)
         },
-        //会议报名时间变化
-        handleMeetingBaomingTimesChange(val){
-            if (val !== null) {
-                this.meetingForm.meetingEnrollStarTime = val[0]
-                this.meetingForm.meetingEnrollEndTime = val[1]
-            } else {
-                this.meetingForm.meetingEnrollStarTime = '#'
-                this.meetingForm.meetingEnrollEndTime = '#'
+        //会议标签改变
+        meetingTagChange (val) {
+            console.log('meetingTagChange',val)
+            for (let i = 0; i < this.meetingTagArray.length; i++) {
+                if (this.meetingTagArray[i].length > 20) {
+                    let tempArr = JSON.parse(JSON.stringify(this.meetingTagArray))
+                    tempArr.splice(i,1) 
+                    this.meetingTagArray = tempArr
+                    this.$message.warning('单一标签最多20字')
+                }
             }
-            console.log('报名时间变化',val,this.meetingForm.meetingEnrollStarTime,this.meetingForm.meetingEnrollEndTime)
+            if (this.meetingTagArray.length > 5) {
+                this.$message.warning('标签做多可设置为5个')
+                this.meetingTagArray = this.meetingTagArray.splice(0,5)
+            }
+            var tempStr = ''
+            tempStr = this.meetingTagArray.join(',')
+            this.meetingForm.meetingKeywords = tempStr
+            console.log('当前newsKeywords',this.meetingForm.meetingKeywords)
+        },
+        //添加会议介绍段落
+        addParagraph (index) {
+            for (let i = 0; i < this.meetingForm.meetingJsonData.meetingIntroduce.paragraph.length; i++) {
+                if (this.meetingForm.meetingJsonData.meetingIntroduce.paragraph[i].innerText.trim() == '') {
+                    this.$message.error('您还有未完成的段落');
+                    return 
+                }
+            }
+            this.meetingForm.meetingJsonData.meetingIntroduce.paragraph.splice((index+1), 0, {
+                innerText:''
+            }); 
+        },
+        //移除会议介绍段落
+        removeParagraph (index) {
+            if (this.meetingForm.meetingJsonData.meetingIntroduce.paragraph.length >= 2) {
+                this.meetingForm.meetingJsonData.meetingIntroduce.paragraph.splice(index, 1); 
+            } else {
+                this.$message.error('至少保留一个段落')
+            }
         },
         //折叠面板改变
         handleChangeCollapse(){
@@ -261,6 +496,7 @@ var vm = new Vue({
                     type:'img',
                     titleCn:'',
                     titleEn:'',
+                    toLinkUrl:'',
                     imgUrl:'',
                 })
             }
@@ -272,16 +508,12 @@ var vm = new Vue({
             this.meetingForm.meetingJsonData[objName].selfConfigZone.splice(index, 1); 
             console.log(this.meetingForm.meetingJsonData[objName].selfConfigZone)
         },
-        //会议日程——删除某一天日程中的某一条
-        delCalendar(index){
-
-        },
         //封面图页面变化
         handleCurrentChange (val) {
             this.pagination1.currPage = val
             this.searchCoverImg()
         },
-        //打开封面图库弹层  type：0  封面图  1会议头图
+        //打开封面图库弹层  type：0  封面图  1会议头图-pc  2会议头图-M
         openAddCoverImg (type) {
             this.showCoverimgLib = true
             this.searchCoverImg(0)
@@ -293,7 +525,9 @@ var vm = new Vue({
             if (this.chooseImgType == 0) {
                 this.meetingForm.meetingImg = item.picUrl
             } else if (this.chooseImgType == 1) {
-                this.meetingForm.meetingJsonData.headPic.picUrl = item.picUrl
+                this.meetingForm.meetingJsonData.headPicBanner.picUrlPc = item.picUrl
+            } else if (this.chooseImgType == 2) {
+                this.meetingForm.meetingJsonData.headPicBanner.picUrlMobile = item.picUrl
             }
             this.backToEdit()
         },
@@ -316,7 +550,7 @@ var vm = new Vue({
         //搜索封面图库
         searchCoverImg (type){
             var self = this
-            var data = JSON.parse(JSON.stringify(self.searchContentImgForm))
+            var data = JSON.parse(JSON.stringify(self.searchCoverimgForm))
             data.picTitle = data.picTitle.trim()
             if (type == 0) {
                 Object.assign(data,{
@@ -363,15 +597,15 @@ var vm = new Vue({
         //修改某一张内容图片
         chooseContentImg(objName,index){
             console.log(objName,index)
-            this.showContentImgLib = true
             this.chooseImgObjName = objName
             this.chooseImgObjIndex = index
+            this.showContentImgLib = true
             this.searchContentImg(0)
         },
         //搜索内容图库
         searchContentImg(type){
             var self = this
-            var data = JSON.parse(JSON.stringify(self.searchCoverimgForm))
+            var data = JSON.parse(JSON.stringify(self.searchContentImgForm))
             data.picTitle = data.picTitle.trim()
             if (type == 0) {
                 Object.assign(data,{
@@ -410,9 +644,14 @@ var vm = new Vue({
                 }
             });
         },
-        //选择了某一张封面图片
+        //选择了某一张内容图片
         addThisContentImg (item) {
-            this.meetingForm.meetingJsonData[this.chooseImgObjName].selfConfigZone[this.chooseImgObjIndex].imgUrl = item.picUrl
+            //当chooseImgObjName == map  单独处理一下，选择的是location中的地图图片
+            if (this.chooseImgObjName == 'map' && this.chooseImgObjIndex == '0') {
+                this.meetingForm.meetingJsonData.location.locationImgUrl = item.picUrl
+            } else {
+                this.meetingForm.meetingJsonData[this.chooseImgObjName].selfConfigZone[this.chooseImgObjIndex].imgUrl = item.picUrl
+            }
             this.backToEdit2()
         },
         //返回编辑页
@@ -432,15 +671,622 @@ var vm = new Vue({
                 pageSize:10
             }
         },
+        //--------------------搜索基本信息表相关--------------------
+        openAddBaseInfoList() {
+            this.showBaseInfoLib = true
+            this.searchBaseInfo(0)
+        },
+        searchBaseInfo (type){
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchBaseInfoForm))
+            data.meetingBaseInfoTitle = data.meetingBaseInfoTitle.toString().trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination10.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination10.currPage.toString(),
+                    limit: self.pagination10.pageSize.toString()
+                })
+            }
+            $.ajax({
+				type: "POST",
+                url: "/meetingBaseInfo/list",
+                contentType: "application/json",
+			    data: JSON.stringify(data),
+			    dataType: "json",
+			    success: function(res){
+					if(res.code == 200){
+                        self.baseInfoTableData = res.page.list
+                        self.pagination10 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage: res.page.totalPage,
+                            pageSize: res.page.pageSize
+                        }
+					}else{
+						mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+			});
+        },
+        handleCurrentChange10 (val) {
+            this.pagination10.currPage = val
+            this.searchBaseInfo()
+        },
+        addThisBaseInfo (item) {
+            this.meetingForm.meetingBaseInfoId = item.meetingBaseInfoId
+            this.backToEditFromBaseInfo()
+        },
+        backToEditFromBaseInfo (){
+            this.showBaseInfoLib = false
+            this.searchBaseInfoForm = {
+                meetingBaseInfoTitle:'',
+                meetingBaseInfoStatus:'0',
+                meetingBaseInfoMeetingId:'-1',
+            }
+            this.baseInfoTableData = []
+            this.pagination10 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+        },
+        //--------------------搜索日程表相关--------------------
+        calendarDefaultChange(val){
+            if (val && this.meetingForm.meetingAgendaId == '') {
+                this.openAddCalendarList()
+            }
+        },
+        openAddCalendarList () {
+            this.showCalendarLib = true
+            this.searchCalendar(0)
+        },
+        searchCalendar (type){
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchCalendarForm))
+            data.meetingAgendaTitle = data.meetingAgendaTitle.toString().trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination3.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination3.currPage.toString(),
+                    limit: self.pagination3.pageSize.toString()
+                })
+            }
+            $.ajax({
+				type: "POST",
+                url: "/meeting/agenda/list",
+                contentType: "application/json",
+			    data: JSON.stringify(data),
+			    dataType: "json",
+			    success: function(res){
+					if(res.code == 200){
+                        self.calendarTableData = res.page.list
+                        self.pagination3 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage: res.page.totalPage,
+                            pageSize: res.page.pageSize
+                        }
+					}else{
+						mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+			});
+        },
+        handleCurrentChange3 (val) {
+            this.pagination3.currPage = val
+            this.searchCalendar()
+        },
+        backToEditFromCalendar () {
+            if (this.meetingForm.meetingAgendaId == '') {
+                this.meetingForm.meetingJsonData.calendar.isShowDefaultModel = false
+            }
+            this.showCalendarLib = false
+            this.searchCalendarForm = {
+                meetingAgendaTitle:'',
+                meetingAgendaStatus:'0',
+                meetingAgendaMeetingId:'-1',
+            },
+            this.calendarTableData = []
+            this.pagination3 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+        },
+        addThisCalendar (item) {
+            this.meetingForm.meetingAgendaId = item.meetingAgendaId
+            this.backToEditFromCalendar()
+        },
+        //--------------------搜索嘉宾表相关--------------------
+        guestDefaultChange(val){
+            if (val && this.meetingForm.meetingGuestId == '') {
+                this.openAddGuestList()
+            }
+        },
+        openAddGuestList () {
+            this.showGuestLib = true
+            this.searchGuest(0)
+        },
+        searchGuest (type){
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchGuestForm))
+            data.meetingGuestTitle = data.meetingGuestTitle.toString().trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination4.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination4.currPage.toString(),
+                    limit: self.pagination4.pageSize.toString()
+                })
+            }
+            $.ajax({
+				type: "POST",
+                url: "/meeting/guest/list",
+                contentType: "application/json",
+			    data: JSON.stringify(data),
+			    dataType: "json",
+			    success: function(res){
+					if(res.code == 200){
+                        self.guestTableData = res.page.list
+                        self.pagination4 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage: res.page.totalPage,
+                            pageSize: res.page.pageSize
+                        }
+					}else{
+						mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+			});
+        },
+        handleCurrentChange4 (val) {
+            this.pagination4.currPage = val
+            this.searchGuest()
+        },
+        backToEditFromGuest () {
+            if (this.meetingForm.meetingGuestId == '') {
+                this.meetingForm.meetingJsonData.guest.isShowDefaultModel = false
+            }
+            this.showGuestLib=false
+            this.searchGuestForm={
+                meetingGuestTitle:'',
+                meetingGuestStatus:'0',
+                meetingGuestMeetingId:'-1',
+            },
+            this.guestTableData=[]
+            this.pagination4= {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+        },
+        addThisGuest (item) {
+            this.meetingForm.meetingGuestId = item.meetingGuestId
+            this.backToEditFromGuest()
+        },
+        //--------------------搜索嘉宾库相关--------------------
+        openGuestMessageLib(index) {
+            this.showGuestInfoLib = true
+            this.currentOpinionIndex = index
+            this.searchGuestInfo(0)
+        },
+        searchGuestInfo (type){
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchGuestInfoForm))
+            data.guestName = data.guestName.toString().trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination5.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination5.currPage.toString(),
+                    limit: self.pagination5.pageSize.toString()
+                })
+            }
+            $.ajax({
+				type: "POST",
+                url: "/guest/list",
+                contentType: "application/json",
+			    data: JSON.stringify(data),
+			    dataType: "json",
+			    success: function(res){
+					if(res.code == 200){
+                        self.guestInfoTableData = res.page.list
+                        self.pagination5 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage: res.page.totalPage,
+                            pageSize: res.page.pageSize
+                        }
+					}else{
+						mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+			});
+        },
+        handleCurrentChange5 (val) {
+            this.pagination5.currPage = val
+            this.searchGuestInfo()
+        },
+        addThisGuestInfo (item) {
+            this.meetingForm.meetingJsonData.guestOpinion.opinionList[this.currentOpinionIndex].guestName = item.guestName
+            this.meetingForm.meetingJsonData.guestOpinion.opinionList[this.currentOpinionIndex].guestPosition = item.guestPosition
+            this.meetingForm.meetingJsonData.guestOpinion.opinionList[this.currentOpinionIndex].guestCompany = item.guestCompany
+            this.meetingForm.meetingJsonData.guestOpinion.opinionList[this.currentOpinionIndex].guestImg = item.guestImg
+            this.backToEditFromGuestInfo()
+        },
+        backToEditFromGuestInfo(){
+            this.currentOpinionIndex = ''
+            this.showGuestInfoLib = false
+            this.searchGuestInfoForm = {
+                guestName:'',
+                guestStatus:'0',
+            }
+            this.guestInfoTableData = []
+            this.pagination5 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+        },
+        //--------------------搜索投票相关--------------------
+        voteDefaultChange (val){
+            if (val && this.meetingForm.meetingVoteId == '') {
+                this.openAddVoteList()
+            }
+        },
+        openAddVoteList () {
+            this.showVoteLib = true
+            this.searchVote(0)
+        },
+        searchVote (type){
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchVoteForm))
+            data.voteTitle = data.voteTitle.toString().trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination6.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination6.currPage.toString(),
+                    limit: self.pagination6.pageSize.toString()
+                })
+            }
+            $.ajax({
+				type: "POST",
+                url: "/vote/list",
+                contentType: "application/json",
+			    data: JSON.stringify(data),
+			    dataType: "json",
+			    success: function(res){
+					if(res.code == 200){
+                        self.voteTableData = res.page.list
+                        self.pagination6 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage: res.page.totalPage,
+                            pageSize: res.page.pageSize
+                        }
+					}else{
+						mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+			});
+        },
+        handleCurrentChange6 (val) {
+            this.pagination6.currPage = val
+            this.searchVote()
+        },
+        addThisVote (item) {
+            this.meetingForm.meetingVoteId = item.voteId
+            this.meetingForm.meetingJsonData.vote.voteType = item.voteType
+            console.log('voteType',this.meetingForm.meetingJsonData.vote.voteType)
+            this.backToEditFromVote()
+        },
+        backToEditFromVote (){
+            if (this.meetingForm.meetingVoteId == '') {
+                this.meetingForm.meetingJsonData.vote.isShowDefaultModel = false
+            }
+            this.showVoteLib = false
+            this.searchVoteForm = {
+                voteTitle:'',
+                voteStatus:'0',
+                voteMeetingId: '-1',
+            }
+            this.voteTableData = []
+            this.pagination6 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+        },
+        //--------------------搜索文章问答相关--------------------
+        articleQuestionDefaultChange (val){
+            if (val && this.meetingForm.meetingInteractionId == '') {
+                this.openAddArticleQuestionList()
+            }
+        },
+        openAddArticleQuestionList () {
+            this.showArticleQuestionLib = true
+            this.searchArticleQuestion(0)
+        },
+        searchArticleQuestion (type){
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchArticleQuestionForm))
+            data.interactionTitle = data.interactionTitle.toString().trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination7.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination7.currPage.toString(),
+                    limit: self.pagination7.pageSize.toString()
+                })
+            }
+            $.ajax({
+				type: "POST",
+                url: "/interaction/list",
+                contentType: "application/json",
+			    data: JSON.stringify(data),
+			    dataType: "json",
+			    success: function(res){
+					if(res.code == 200){
+                        self.articleQuestionTableData = res.page.list
+                        self.pagination7 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage: res.page.totalPage,
+                            pageSize: res.page.pageSize
+                        }
+					}else{
+						mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+			});
+        },
+        handleCurrentChange7 (val) {
+            this.pagination7.currPage = val
+            this.searchArticleQuestion()
+        },
+        addThisArticleQuestion (item) {
+            this.meetingForm.meetingInteractionId = item.interactionId
+            this.backToEditFromArticleQuestion()
+        },
+        backToEditFromArticleQuestion(){
+            if (this.meetingForm.meetingInteractionId == '') {
+                this.meetingForm.meetingJsonData.articleQuestion.isShowDefaultModel = false
+            }
+            this.showArticleQuestionLib=false
+            this.searchArticleQuestionForm={
+                interactionTitle:'',
+                interactionStatus: '0',
+                interactionMeetingId: '-1',
+            }
+            this.articleQuestionTableData=[]
+            this.pagination7= {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+        },
+        //--------------------搜索高清组图相关--------------------
+        pictureGroupDefaultChange (val){
+            if (val && this.meetingForm.meetingDiagramId == '') {
+                this.openAddPictureGroupList()
+            }
+        },
+        openAddPictureGroupList () {
+            this.showPictrueGroupLib = true
+            this.searchPictureGroup(0)
+        },
+        searchPictureGroup (type){
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchPictrueGroupForm))
+            data.diagramTitle = data.diagramTitle.toString().trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination8.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination8.currPage.toString(),
+                    limit: self.pagination8.pageSize.toString()
+                })
+            }
+            $.ajax({
+				type: "POST",
+                url: "/diagram/list",
+                contentType: "application/json",
+			    data: JSON.stringify(data),
+			    dataType: "json",
+			    success: function(res){
+					if(res.code == 200){
+                        self.pictrueGroupTableData = res.page.list
+                        self.pagination8 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage: res.page.totalPage,
+                            pageSize: res.page.pageSize
+                        }
+					}else{
+						mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+			});
+        },
+        handleCurrentChange8 (val) {
+            this.pagination8.currPage = val
+            this.searchPictureGroup()
+        },
+        addThisPictureGroup (item) {
+            this.meetingForm.meetingDiagramId = item.diagramId
+            this.backToEditFromPictureGroup()
+        },
+        backToEditFromPictureGroup(){
+            if (this.meetingForm.meetingDiagramId == '') {
+                this.meetingForm.meetingJsonData.pictureGroup.isShowDefaultModel = false
+            }
+            this.showPictrueGroupLib=false
+            this.searchPictrueGroupForm={
+                diagramTitle:'',
+                diagramStatus:'0',
+                diagramMeetingId: '-1',
+            }
+            this.pictrueGroupTableData=[]
+            this.pagination8={
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+        },
+        //--------------------搜索合作伙伴相关--------------------
+        coperationDefaultChange (val){
+            if (val && this.meetingForm.meetingCooperationId == '') {
+                this.openAddCoperationList()
+            }
+        },
+        openAddCoperationList () {
+            this.showCoperationLib = true
+            this.searchCoperation(0)
+        },
+        searchCoperation (type){
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchCoperationForm))
+            data.meetingCooperationTitle = data.meetingCooperationTitle.toString().trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination9.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination9.currPage.toString(),
+                    limit: self.pagination9.pageSize.toString()
+                })
+            }
+            $.ajax({
+				type: "POST",
+                url: "/meeting/cooperation/list",
+                contentType: "application/json",
+			    data: JSON.stringify(data),
+			    dataType: "json",
+			    success: function(res){
+					if(res.code == 200){
+                        self.coperationTableData = res.page.list
+                        self.pagination9 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage: res.page.totalPage,
+                            pageSize: res.page.pageSize
+                        }
+					}else{
+						mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+			});
+        },
+        handleCurrentChange9 (val) {
+            this.pagination9.currPage = val
+            this.searchCoperation()
+        },
+        addThisCoperation (item) {
+            this.meetingForm.meetingCooperationId = item.meetingCooperationId
+            this.backToEditFromCoperation()
+        },
+        backToEditFromCoperation(){
+            if (this.meetingForm.meetingCooperationId == '') {
+                this.meetingForm.meetingJsonData.coperation.isShowDefaultModel = false
+            }
+            this.showCoperationLib=false
+            this.searchCoperationForm={
+                meetingCooperationTitle:'',
+                meetingCooperationStatus: "0",
+                meetingCooperationMeetingId:'-1',
+            }
+            this.coperationTableData=[]
+            this.pagination9 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+
+        },
         //保存会议 formName---表单名称   type----提交类型
         testMeetingInfo(type,formName) {
             var self = this
-            //判断报名时间和开始时间规则
-            console.log(self.meetingForm)
-            if (self.meetingForm.meetingEnrollEndTime > self.meetingForm.meetingStarTime) {
-                self.$message.error('会议报名截至时间不能大于会议开始时间')
-                return
-            }
+            console.log('数据',self.meetingForm)
+            //判断报名开始时间和报名结束时间规则
+            // if (self.meetingForm.meetingEnrollStartTime >= self.meetingForm.meetingEnrollEndTime) {
+            //     self.$message.error('报名开始时间必须小于报名结束时间');
+            //     return
+            // }
             self.$refs[formName].validate((valid) =>{
                 if (valid) {
                     self.saveMeeting(type)
@@ -454,16 +1300,22 @@ var vm = new Vue({
                 //关闭请求开关
                 self.ajaxController = false
                 if (self.typeOfPage == 'creat') {
-                    var reqUrl = '/meeting/save'
-                    self.meetingForm.meetingStatus = '3'
+                    var reqUrl = '/meetingInfo/save'
+                    self.meetingForm.meetingStatus = '0'
                 } else if (self.typeOfPage == 'edit') {
-                    var reqUrl = '/meeting/update'
+                    var reqUrl = '/meetingInfo/update'
                 }
+                //大数据JSON处理
+                var submitData = JSON.parse(JSON.stringify(self.meetingForm))
+                $.base64.utf8encode = true;
+                var jsonString = JSON.stringify(submitData.meetingJsonData);
+                var json64 = $.base64.btoa(jsonString);
+                submitData.meetingJsonData = json64
                 $.ajax({
                     type: "POST",
                     url: reqUrl,
                     contentType: "application/json",
-                    data: JSON.stringify(self.meetingForm),
+                    data: JSON.stringify(submitData),
                     dataType: "json",
                     success: function(res){
                         if(res.code == 200){
@@ -502,13 +1354,16 @@ var vm = new Vue({
         //提交会议--更新发布状态即可
         submitMeeting () {
             var self = this
-            //不走CMS逻辑，只需要改状态即可  meetingStatus=1 已发布
-            self.meetingForm.meetingStatus = '1' 
+            //meetingStatus=1 待发布
+            var _data = {
+                meetingId: self.meetingForm.meetingId.toString(),
+                meetingStatus: '1'
+            }
             $.ajax({
                 type: "POST",
-                url: "/meeting/update",
+                url: "/meetingInfo/push",
                 contentType: "application/json",
-                data: JSON.stringify(self.meetingForm),
+                data: JSON.stringify(_data),
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){
@@ -532,7 +1387,7 @@ var vm = new Vue({
             var self = this
             $.ajax({
                 type: "POST",
-                url: "/meeting/info/"+ type.toString(),
+                url: "/meetingInfo/info/"+ type.toString(),
                 contentType: "application/json",
                 dataType: "json",
                 success: function(res){
@@ -553,34 +1408,15 @@ var vm = new Vue({
         //编辑反显前数据过滤
         editMeetingFilter (tempObj) {
             console.log('tempObj',tempObj)
-            //省市区反显
-            tempObj.meetingRegion = []
-            for (let i = 0; i < this.RegionOptions.length; i++) {
-                if (this.RegionOptions[i].label == tempObj.meetingProvince) {
-                    tempObj.meetingRegion[0] = this.RegionOptions[i].value
-                    for (let j = 0; j <this.RegionOptions[i].children.length; j ++) {
-                        if (this.RegionOptions[i].children[j].label == tempObj.meetingCity) {
-                            tempObj.meetingRegion[1] = this.RegionOptions[i].children[j].value
-                            for (let k = 0; k < this.RegionOptions[i].children[j].children.length; k++) {
-                                if (this.RegionOptions[i].children[j].children[k].label == tempObj.meetingArea) {
-                                    tempObj.meetingRegion[2] = this.RegionOptions[i].children[j].children[k].value
-                                }
-                            }
-                        }
-                    }
-                }
+            let data = tempObj
+            //json64反解
+            let map = $.base64.atob(tempObj.meetingJsonData, true)
+            data.meetingJsonData = JSON.parse(map)
+            //关键词数组还原
+            if (tempObj.newsKeywords !== '') {
+                this.meetingTagArray = data.meetingKeywords.split(',')
             }
-            //会议时间反显
-            tempObj.meetingTimes = [parseInt(tempObj.meetingStarTime),parseInt(tempObj.meetingEndTime)]
-            //会议报名时间反显--非必填项
-            if (tempObj.meetingEnrollStarTime !== '#') {
-                tempObj.meetingBaomingTimes = [parseInt(tempObj.meetingEnrollStarTime),parseInt(tempObj.meetingEnrollEndTime)]
-            } else {
-                tempObj.validateMeetingBaomingTimes = []
-            }
-            //会议类型转换
-            tempObj.meetingType = tempObj.meetingType.toString()
-            this.meetingForm = tempObj
+            this.meetingForm = data
             this.$refs['meetingForm'].resetFields()
         },
         //返回列表页
@@ -588,29 +1424,7 @@ var vm = new Vue({
             setCookie ('createditmeeting', '', 1) 
             window.parent.location.href = '/index.html#modules/meeting/meeting_list.html'
         },
-        //获取会议类型
-        getMeetingType () {
-            var self = this
-            $.ajax({
-				type: "POST",
-                url: "/sys/dict/list?type=meetingType" ,
-			    dataType: "json",
-			    success: function(res){
-					if(res.code == 200){
-                        self.meetingTypeOptions = res.page.list
-					} else {
-						mapErrorStatus(res)
-                        vm.error = true;
-                        vm.errorMsg = res.msg;
-                    }
-                },
-                error:function(res){
-                    mapErrorStatus(res)
-                }
-			});
-        },
-
-        
+ 
     }
     
 })

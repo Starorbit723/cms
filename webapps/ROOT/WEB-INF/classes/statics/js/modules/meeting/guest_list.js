@@ -128,8 +128,8 @@ var vm = new Vue({
                 self.showChildPage = true
                 self.creatOrEdit = 1
                 self.guestForm = JSON.parse(JSON.stringify(item))
-                self.originUrl = self.guestForm.picUrl
-                console.log('修改嘉宾','原始',self.originUrl,'表单',self.guestForm.picUrl)
+                self.originUrl = self.guestForm.guestImg
+                console.log('修改嘉宾','原始',self.originUrl,'表单',self.guestForm.guestImg)
             }
         },
         //删除图片

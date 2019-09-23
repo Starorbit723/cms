@@ -192,7 +192,7 @@
         
         <!--封面图库弹出层开始-->
         <el-dialog title="封面图库" :visible.sync="showCoverimgLib" width="100%" :fullscreen="true" :show-close="false">
-            <el-form :model="searchCoverimgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right">
+            <el-form :model="searchCoverimgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
                 <el-row class="el-row-h60">
                     <el-col :span="16">
                         <el-form-item label="图片名称" style="margin:0;">
@@ -241,7 +241,7 @@
 
         <!--内容图弹出层开始-->
         <el-dialog title="内容图库" :visible.sync="showContentimgLib" width="100%" :fullscreen="true" :show-close="false">
-            <el-form :model="searchContentimgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right">
+            <el-form :model="searchContentimgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
                 <el-row class="el-row-h60">
                     <el-col :span="11">
                         <el-form-item label="图片名称" style="margin:0;">

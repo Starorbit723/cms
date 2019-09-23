@@ -1,22 +1,13 @@
 var vm = new Vue({
     el: '#meeting_rank',
     data () { 
-        var validateId = (rule, value, callback) => {
-            var urlReg = /^[0-9]*[1-9][0-9]*$/;
-            if (value.trim() == '') {
-                callback(new Error('所属会议编号为必填项'));
-            } else if (value !== '' && !urlReg.test(value)) {
-                callback(new Error('所属会议编号只能为正整数'));
-            } else {
-                callback();
-            }
-        }
         return {
             showChildPage:false,
             creatOrEdit:0,//0新建  1修改
             //搜索提交
             searchForm:{
                 meetingRankMeetingId:'',
+                meetingRankTitle:'',
                 meetingRankStatus:'0',
             },
             //列表查询结果
@@ -28,6 +19,9 @@ var vm = new Vue({
                 meetingRankCrtTime:'',//
                 meetingRankModTime:'',//
                 meetingRankStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingRankJson:[],//
             }],
             //分页器相关
@@ -39,13 +33,17 @@ var vm = new Vue({
             },
             //封面图表单
             rankForm:{
-                meetingRankId:'',//主键  
+                meetingRankId:'',//主键
+                meetingRankTitle:'',//会议榜单标题
                 meetingRankMeetingId:'',//所属会议编号
                 meetingRankCrtUserId:'',//
                 meetingRankModUserId:'',//
                 meetingRankCrtTime:'',//
                 meetingRankModTime:'',//
                 meetingRankStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingRankJson:[{
                         rankLevel:'1',
                         rankTitle:'',
@@ -67,8 +65,8 @@ var vm = new Vue({
                 ],
             },
             rankFormRules:{
-                meetingRankMeetingId: [
-                    { required: true, validator: validateId, trigger: 'change' }
+                meetingRankTitle: [
+                    { required: true, message: '榜单标题不能为空', trigger: 'change' }
                 ]
             }
         }
@@ -258,6 +256,7 @@ var vm = new Vue({
         startSearch (type) {
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
+            data.meetingRankTitle = data.meetingRankTitle.toString().trim()
             data.meetingRankMeetingId = data.meetingRankMeetingId.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
@@ -362,47 +361,61 @@ var vm = new Vue({
             })
         },
         //提交表单
-        submitCreatEdit (formName) {
+        testSubmit (formName) {
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
-                    if (self.creatOrEdit == 0) {
-                        var reqUrl = '/meeting/rank/save'
-                    } else if (self.creatOrEdit == 1){
-                        var reqUrl = '/meeting/rank/update'
-                    }
-                    var data = JSON.parse(JSON.stringify(self.rankForm))
-                    $.base64.utf8encode = true;
-                    var jsonString = JSON.stringify(data.meetingRankJson);
-                    var json64 = $.base64.btoa(jsonString);
-                    data.meetingRankJson = json64
-                    console.log('6464',jsonString,json64)
-                    $.ajax({
-                        type: "POST",
-                        contentType: "application/json",
-                        url: reqUrl,
-                        data: JSON.stringify(data),
-                        dataType: "json",
-                        success: function(res){
-                            if (res.code == 200) {
-                                self.$message.success('保存成功');
-                                self.startSearch() //列表回显
-                                self.closeEditCreatEdit('rankForm')
-                            } else {
-                                mapErrorStatus(res)
-                                vm.error = true;
-                                vm.errorMsg = res.msg;
-                            }
-                        },
-                        error:function(res){
-                            mapErrorStatus(res)
+                    //验证一级表单是否填写完成
+                    for (let i = 0; i < self.rankForm.meetingRankJson.length; i++) {
+                        if (self.rankForm.meetingRankJson[i].rankTitle.trim() == '') {
+                            self.$message.error('还有榜单未填写完成')
+                            return
                         }
-                    });         
+                    }
+                    self.submitCreatEdit() 
                 }
             })
         },
+        //提交保存
+        submitCreatEdit (){
+            var self = this
+            if (self.creatOrEdit == 0) {
+                var reqUrl = '/meeting/rank/save'
+            } else if (self.creatOrEdit == 1){
+                var reqUrl = '/meeting/rank/update'
+            }
+            var data = JSON.parse(JSON.stringify(self.rankForm))
+            console.log(data)
+            $.base64.utf8encode = true;
+            var jsonString = JSON.stringify(data.meetingRankJson);
+            var json64 = $.base64.btoa(jsonString);
+            data.meetingRankJson = json64
+            console.log('6464',jsonString,json64)
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: reqUrl,
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if (res.code == 200) {
+                        self.$message.success('保存成功');
+                        self.startSearch() //列表回显
+                        self.closeEditCreatEdit('rankForm')
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });         
+        },
         //取消编辑返回列表页
         closeEditCreatEdit (formName) {
+            this.creatOrEdit = 0
             this.$refs[formName].resetFields();
             this.rankForm = {
                 meetingRankId:'',//主键  
@@ -412,6 +425,9 @@ var vm = new Vue({
                 meetingRankCrtTime:'',//
                 meetingRankModTime:'',//
                 meetingRankStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingRankJson:[{
                         rankLevel:'1',
                         rankTitle:'',
@@ -420,7 +436,7 @@ var vm = new Vue({
                 ],
             }
             this.showChildPage = false
-            this.creatOrEdit = 0
+            
         },
         handleAvatarSuccess(res, file) {
             //this.articleForm.imageUrl = URL.createObjectURL(file.raw);

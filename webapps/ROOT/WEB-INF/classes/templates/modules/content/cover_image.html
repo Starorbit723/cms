@@ -68,8 +68,9 @@
                     <el-table-column prop="picTitle" label="图片名称" width="250"></el-table-column>
                     <el-table-column prop="picEditorName" label="创建人" width="120"></el-table-column>
                     <el-table-column prop="picCrtTime" label="创建时间"></el-table-column>
-                    <el-table-column label="操作" width="100" fixed="right">
+                    <el-table-column label="操作" width="150" fixed="right">
                         <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="downLoadThisPic(scope.row)">下载</el-button>
                             <el-button type="text" size="small" @click="addEditImg(scope.row)">修改</el-button>
                             <el-button type="text" size="small" @click="deleteThisImg(scope.row)">删除</el-button>
                         </template>

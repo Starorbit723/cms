@@ -383,7 +383,11 @@ var vm = new Vue({
         handleAvatarSuccess(res, file) {
             //this.articleForm.imageUrl = URL.createObjectURL(file.raw);
         },
-        
+        //下载当前图片
+        downLoadThisPic (item) {
+            console.log(item.picUrl)
+            window.open(item.picUrl)
+        }
         
     }
 })

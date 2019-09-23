@@ -1,16 +1,6 @@
 var vm = new Vue({
     el: '#calendar_list',
     data(){
-        var validateId = (rule, value, callback) => {
-            var urlReg = /^[0-9]*[1-9][0-9]*$/;
-            if (value.trim() == '') {
-                callback(new Error('所属会议编号为必填项'));
-            } else if (value !== '' && !urlReg.test(value)) {
-                callback(new Error('所属会议编号只能为正整数'));
-            } else {
-                callback();
-            }
-        }
         return {
             //是否显示子页面
             showChildPage: false,
@@ -18,13 +8,12 @@ var vm = new Vue({
             timeRange:[],
             searchForm:{
                 meetingAgendaMeetingId:'',
+                meetingAgendaTitle:'',
                 meetingAgendaStatus:'0',
                 startTime:'',
                 endTime:''
             },
-            tableData:[{
-
-            }],
+            tableData:[{}],
             //分页器相关
             pagination1: {
                 currPage: 1,
@@ -35,37 +24,45 @@ var vm = new Vue({
             //日程对象
             calendarForm:{
                 meetingAgendaId:'',//主键
+                meetingAgendaTitle:'',//日程名称
                 meetingAgendaMeetingId:'',//所属会议编号
                 meetingAgendaCrtUserId:'',//
                 meetingAgendaModUserId:'',//
                 meetingAgendaCrtTime:'',//
                 meetingAgendaModTime:'',//
                 meetingAgendaStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingAgendaJson:[{//日程JSON数据
                     type:'date',
                     labelText:'',
                     timeValue:'',
                     children:[
-                    //     {
-                    //     type:'place',
-                    //     labelText:'',
-                    //     children:[{
-                    //         type:'theme',
-                    //         labelText:'',
-                    //         children:[{
-                    //             type:'issue',
-                    //             timeRange:'',
-                    //             labelText:'',        
-                    //             contentText:''
-                    //         }]
-                    //     }]
-                    // }
+                        //     {
+                        //     type:'place',
+                        //     labelText:'',
+                        //     children:[{
+                        //         type:'theme',
+                        //         labelText:'',
+                        //         children:[{
+                        //             type:'issue',
+                        //             timeRange:[],
+                        //             labelText:'',        
+                        //             children:[{
+                        //                 type:'item',
+                        //                 labelText:'',
+                        //                 labelContent:''
+                        //             }]
+                        //         }]
+                        //     }]
+                        // }
                     ]
                 }],
             },
             calendarFormRules:{
-                meetingAgendaMeetingId: [
-                    { required: true, validator: validateId, trigger: 'change' }
+                meetingAgendaTitle: [
+                    { required: true, message: '日程标题不能为空', trigger: 'change' }
                 ]
             },
         }
@@ -87,13 +84,102 @@ var vm = new Vue({
         this.startSearch(0)
     },
     mounted () {
-        
     },
     methods:{
+        //移动日程
+        moveUpLv1 (index) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson))
+            let temp = moveArr[index - 1]
+            let temp2 = moveArr[index]
+            moveArr[index - 1] = temp2
+            moveArr[index] = temp
+            this.calendarForm.meetingAgendaJson = moveArr
+        },
+        moveDownLv1(index) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson))
+            let temp = moveArr[index]
+            let temp2 = moveArr[index + 1]
+            moveArr[index + 1] = temp
+            moveArr[index] = temp2
+            this.calendarForm.meetingAgendaJson = moveArr
+        },
+        //移动会场
+        moveUpLv2(index,index2) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson[index].children))
+            let temp = moveArr[index2 - 1]
+            let temp2 = moveArr[index2]
+            moveArr[index2 - 1] = temp2
+            moveArr[index2] = temp
+            this.calendarForm.meetingAgendaJson[index].children = moveArr
+        },
+        moveDownLv2(index,index2) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson[index].children))
+            let temp = moveArr[index2]
+            let temp2 = moveArr[index2 + 1]
+            moveArr[index2 + 1] = temp
+            moveArr[index2] = temp2
+            this.calendarForm.meetingAgendaJson[index].children = moveArr
+        },
+        //移动主题
+        moveUpLv3(index,index2,index3) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson[index].children[index2].children))
+            let temp = moveArr[index3 - 1]
+            let temp2 = moveArr[index3]
+            moveArr[index3 - 1] = temp2
+            moveArr[index3] = temp
+            this.calendarForm.meetingAgendaJson[index].children[index2].children = moveArr
+        },
+        moveDownLv3(index,index2,index3) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson[index].children[index2].children))
+            let temp = moveArr[index3]
+            let temp2 = moveArr[index3 + 1]
+            moveArr[index3 + 1] = temp
+            moveArr[index3] = temp2
+            this.calendarForm.meetingAgendaJson[index].children[index2].children = moveArr
+        },
+        //移动议题
+        moveUpLv4(index,index2,index3,index4) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children))
+            let temp = moveArr[index4 - 1]
+            let temp2 = moveArr[index4]
+            moveArr[index4 - 1] = temp2
+            moveArr[index4] = temp
+            this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children = moveArr
+        },
+        moveDownLv4(index,index2,index3,index4) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children))
+            let temp = moveArr[index4]
+            let temp2 = moveArr[index4 + 1]
+            moveArr[index4 + 1] = temp
+            moveArr[index4] = temp2
+            this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children = moveArr
+        },
+        //移动条目
+        moveUpLv5(index,index2,index3,index4,index5) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4].children))
+            let temp = moveArr[index5 - 1]
+            let temp2 = moveArr[index5]
+            moveArr[index5 - 1] = temp2
+            moveArr[index5] = temp
+            this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4].children = moveArr
+        },
+        moveDownLv5(index,index2,index3,index4,index5) {
+            var moveArr = JSON.parse(JSON.stringify(this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4].children))
+            let temp = moveArr[index5]
+            let temp2 = moveArr[index5 + 1]
+            moveArr[index5 + 1] = temp
+            moveArr[index5] = temp2
+            this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4].children = moveArr
+        },
         //添加会场---1级维度
         addDaly () {
             let Lv1Length = this.calendarForm.meetingAgendaJson.length
-            if (this.calendarForm.meetingAgendaJson[Lv1Length - 1].labelText.trim() !== '' && this.calendarForm.meetingAgendaJson[Lv1Length - 1].timeValue !== '') {
+            if (Lv1Length >= 3) {
+                this.$message.error('日程最多添加3天')
+                return
+            }
+            if (this.calendarForm.meetingAgendaJson[Lv1Length - 1].labelText.trim() !== '' && this.calendarForm.meetingAgendaJson[Lv1Length - 1].timeValue) {
+                console.log(this.calendarForm.meetingAgendaJson[Lv1Length - 1].timeValue)
                 this.calendarForm.meetingAgendaJson.push({
                     type:'date',
                     labelText:'',
@@ -116,6 +202,7 @@ var vm = new Vue({
         addPlace (index) {
             console.log(index)
             let currentLv1 = this.calendarForm.meetingAgendaJson[index]
+            console.log(currentLv1)
             if (currentLv1.children.length == 0) {
                 this.calendarForm.meetingAgendaJson[index].children.push({
                     type:'place',
@@ -175,17 +262,17 @@ var vm = new Vue({
             if (currentLv3.children.length == 0) {
                 this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children.push({
                     type:'issue',
-                    timeRange:'',
+                    timeRange:[0, 0],
                     labelText:'',        
-                    contentText:''
+                    children:[]
                 })
             } else {
-                if ((currentLv3.children[currentLv3.children.length - 1].labelText.trim() !== '' || currentLv3.children[currentLv3.children.length - 1].labelText.trim() == '#') && currentLv3.children[currentLv3.children.length - 1].timeRange !== '') {
+                if ((currentLv3.children[currentLv3.children.length - 1].labelText.trim() !== '' || currentLv3.children[currentLv3.children.length - 1].labelText.trim() == '#') && currentLv3.children[currentLv3.children.length - 1].timeRange) {
                     this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children.push({
                         type:'issue',
-                        timeRange:'',
+                        timeRange:[0, 0],
                         labelText:'',        
-                        contentText:''
+                        children:[]
                     })
                 } else {
                     this.$message.error('请填写上一个议题相关内容')
@@ -193,51 +280,94 @@ var vm = new Vue({
             }
 
         },
+        //议题的时间范围发生变化时
+        issueTimeRangeChange(val){
+
+        },
         //删除议题index：所属一级索引  index2:所属二级索引 index3:所属三级索引 index4:所属四级索引
         delIssue (index,index2,index3,index4) {
             console.log(index,index2,index3,index4)
             this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children.splice(index4, 1);
         },
+        //添加条目
+        addItem(index,index2,index3,index4){
+            console.log(index,index2,index3,index4)
+            let currentLv4 = this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4]
+            console.log(currentLv4)
+            if (currentLv4.children.length == 0) {
+                this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4].children.push({
+                    type:'item',
+                    labelText:'',
+                    labelContent:''
+                })
+            } else {
+                if (currentLv4.children[currentLv4.children.length - 1].labelContent.trim() !== '') {
+                    this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4].children.push({
+                        type:'item',
+                        labelText:'',
+                        labelContent:''
+                    })
+                } else {
+                    this.$message.error('请填写上一个条目相关内容')
+                }
+            }
+        },
+        //删除条目
+        delItem(index,index2,index3,index4,index5){
+            console.log(index,index2,index3,index4,index5)
+            this.calendarForm.meetingAgendaJson[index].children[index2].children[index3].children[index4].children.splice(index5, 1);
+        },
         //保存
-        submitCreatEdit (formName) {
+        testSubmit (formName) {
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
-                    if (self.creatOrEdit == 0) {
-                        var reqUrl = '/meeting/agenda/save'
-                    } else if (self.creatOrEdit == 1) {
-                        var reqUrl = '/meeting/agenda/update'
-                    }
-                    var data = JSON.parse(JSON.stringify(self.calendarForm))
-                    $.base64.utf8encode = true;
-                    var jsonString = JSON.stringify(data.meetingAgendaJson);
-                    var json64 = $.base64.btoa(jsonString);
-                    data.meetingAgendaJson = json64
-                    console.log('6464',jsonString,json64)
-                    $.ajax({
-                        type: "POST",
-                        url: reqUrl,
-                        contentType: "application/json",
-                        data: JSON.stringify(data),
-                        dataType: "json",
-                        success: function(res){
-                            if(res.code == 200){
-                                self.$message.success('保存成功')
-                                self.startSearch()
-                                self.closeCreatOrEdit('calendarForm')
-                            }else{
-                                mapErrorStatus(res)
-                                vm.error = true;
-                                vm.errorMsg = res.msg;
-                            }
-                        },
-                        error:function(res){
-                            mapErrorStatus(res)
+                    //验证一级表单是否填写完成
+                    for (let i = 0; i < self.calendarForm.meetingAgendaJson.length; i++) {
+                        if (self.calendarForm.meetingAgendaJson[i].labelText.trim() == '' || (!self.calendarForm.meetingAgendaJson[i].timeValue)) {
+                            self.$message.error('还有日程未填写完成')
+                            return
                         }
-                    });
+                    }
+                    self.submitCreatEdit()
                 }
             })
-            
+        },
+        submitCreatEdit() {
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.calendarForm))
+            console.log('准备提交保存的Form',data)
+            $.base64.utf8encode = true;
+            var jsonString = JSON.stringify(data.meetingAgendaJson);
+            var json64 = $.base64.btoa(jsonString);
+            data.meetingAgendaJson = json64
+            console.log('6464',jsonString,json64)
+            if (self.creatOrEdit == 0) {
+                var reqUrl = '/meeting/agenda/save'
+            } else if (self.creatOrEdit == 1) {
+                var reqUrl = '/meeting/agenda/update'
+            }
+            $.ajax({
+                type: "POST",
+                url: reqUrl,
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.$message.success('保存成功')
+                        self.startSearch()
+                        self.closeCreatOrEdit('calendarForm')
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
         },
         //关闭编辑页面
         closeCreatOrEdit(formName){
@@ -251,6 +381,9 @@ var vm = new Vue({
                 agendaCrtTime:'',//
                 agendaModTime:'',//
                 agendaStatus:'',//状态 0正常 1删除
+                userName:'',//创建人
+                meetingTitle:'',//所属会议标题
+                modUserName:'',//更新人
                 meetingAgendaJson:[{
                     type:'date',
                     labelText:'',
@@ -269,6 +402,7 @@ var vm = new Vue({
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.meetingAgendaMeetingId = data.meetingAgendaMeetingId.toString().trim()
+            data.meetingAgendaTitle = data.meetingAgendaTitle.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',

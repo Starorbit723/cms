@@ -13939,7 +13939,7 @@ var regionJSON =  [
     },
     {
       'value': '710000',
-      'label': '台湾',
+      'label': '中国台湾',
       'children': [
         {
           'value': '710100',
@@ -15711,6 +15711,23 @@ var regionJSON =  [
               'value': '820108',
               'label': '圣方济各堂区'
             }
+          ]
+        }
+      ]
+    },
+    {
+      'value': '830000',
+      'label': '其他地区',
+      'children': [
+        {
+          'value': '830100',
+          'label': '其他地区',
+          'children': [
+            {
+              'value': '830101',
+              'label': '其他地区'
+            },
+            
           ]
         }
       ]
