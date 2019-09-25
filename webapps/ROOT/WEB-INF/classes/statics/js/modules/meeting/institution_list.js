@@ -3,6 +3,7 @@ var vm = new Vue({
     data () {
         var validateUrl = (rule, value, callback) => {
             var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
+            console.log('urlllll',value)
             if (value == '' || value == null) {
                 callback(new Error('链接不能为空'));
             } else if (value !== null) {
@@ -10,6 +11,8 @@ var vm = new Vue({
                     callback();
                 } else if (!urlReg.test(value)) {
                     callback(new Error('链接格式不正确，暂无链接可填写"#"'));
+                } else {
+                    callback();
                 }
             } else {
                 callback();
@@ -25,7 +28,7 @@ var vm = new Vue({
                 callback();
             }
         }
-        return{
+        return {
             showChildPage: false,
             creatOrEdit:0,//0新建  1修改
             //搜索提交
