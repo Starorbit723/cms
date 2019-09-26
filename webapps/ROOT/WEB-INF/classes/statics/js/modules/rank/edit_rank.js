@@ -122,7 +122,7 @@ var vm = new Vue({
         },
         //在第2级添加4级榜单详情
         addRankLevel24(index,index2) {
-            console.log(index,index2)
+            // console.log(index,index2)
             //判断上一级的内容是否为空
             if (this.rankDataTree[index].children[index2].rankTitle.trim() == '') {
                 this.$message.error('请完成上级榜单的内容')
