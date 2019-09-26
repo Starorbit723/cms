@@ -190,7 +190,6 @@ var vm = new Vue({
         },
         //封面图改变时
         coperImgFileChange (file,fileList) {
-            console.log(file)
             var self = this
             //开始图片验证
             if (file.size / 1024 / 1024 > 0.2 ) {

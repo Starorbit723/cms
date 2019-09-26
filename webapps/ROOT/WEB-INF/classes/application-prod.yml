@@ -87,7 +87,7 @@ versionUrl: /cms/api/updateAppVersion
 talkUrl: /cms/api/updateVtalkList
 updateSignUpUrl: /cms/api/updateCmsSignUp
 updateSignUpInfoUrl: /cms/api/updateCmsSignUpInfo
-updateUserSignInListUrl: /cms/api/updateUserProfile
+updateUserSignInListUrl: /cms/api/updateUserSignInList
 endPoint: https://obs.cn-north-1.myhuaweicloud.com
 ak: 2FBSHRRFZ5YLE3VPBMDK
 sk: vqYIdh3xmKfjlhcM0qEwCeuY8QfRKHYnGYHWoDBx

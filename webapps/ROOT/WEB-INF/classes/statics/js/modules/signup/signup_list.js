@@ -13,6 +13,18 @@ var vm = new Vue({
         isShowCheckTime: false, // 是否显示签到时间
         // isShowMinus: false, // 自定义减项是否显示
         isToEdit: false, // 会议类型是否可选
+        signUpInfoStatusOptions: [
+            {
+                value: '0',
+                label: '待审核'
+            },
+            {
+                value: '1',
+                label: '审核通过'
+            }
+
+        ], // 审核状态选项
+        
         pickerOptions:{
             disabledDate(time) {
                 return time.getTime() > Date.now();
@@ -148,6 +160,7 @@ var vm = new Vue({
         // 某个会议所有参会人信息搜索
         searchInfoForm:{
             signUpId:'',
+            signUpInfoStatus: '',
             signUpInfoName: '',
             signUpInfoMobile: ''
         },
