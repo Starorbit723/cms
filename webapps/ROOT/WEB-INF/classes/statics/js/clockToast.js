@@ -125,6 +125,18 @@ var mapErrorStatus = function(res){
             }).then(() => {
             })
             break;
+        case 7377:
+            console.log('特殊符号',res)
+            vm.$confirm('抱歉，您编辑的内容中含有非法特殊字符' , '提示', {
+                dangerouslyUseHTMLString: true,
+                closeOnClickModal: false,
+                showCancelButton:false,
+                showClose:false,
+                confirmButtonText:'我知道了',
+                type: 'warning'
+            }).then(() => {
+            })
+            break;
         default:
             vm.$message.error(res.msg);
     }
