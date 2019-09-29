@@ -1,73 +1,107 @@
 var vm = new Vue({
     el: '#edit_rank',
-    data: {
-        //新建或修改
-        typeOfPage:'creat',
-        rankDataTree:[
-            {
-                rankLevel:'1',
-                rankType:'level',
-                scale:'-1',
-                rankTitle:'我是一级榜单名称',
-                children:[{
-                    rankLevel:'2',
-                    rankType:'level',
-                    rankTitle:'我是二级榜单名称',
-                    scale:'-1',
-                    children:[{
-                        rankLevel:'3',
-                        rankType:'level',
-                        rankTitle:'我是三级榜单名称',
-                        scale:'-1',
-                        children:[]
+    data() {
+        return{
+            //新建或修改
+            typeOfPage:'creat',
+            rankDataTree:[{
+                id: 1,
+                label: '2级榜单目录名称',
+                ifLastNode: false,
+                rankInfoType:'0',
+                level:2,
+                children: [{
+                    id: 2,
+                    label: '3级榜单目录名称',
+                    ifLastNode: false,
+                    rankInfoType:'0',
+                    level:3,
+                    children: [{
+                            id: 3,
+                            label: '4级榜单名称1111111111',
+                            ifLastNode: true,
+                            rankInfoType:'1',
+                            level:4,
+                        }, {
+                            id: 4,
+                            label: '4级榜单名称12222222222222',
+                            ifLastNode: true,
+                            rankInfoType:'1',
+                            level:4,
                     }]
                 }]
-            },
-            {
-                rankLevel:'1',
-                rankType:'level',
-                scale:'-1',
-                rankTitle:'我是一级榜单名称',
+            },{
+                id: 8,
+                label: '2级榜单目录名称3333333333333333',
+                ifLastNode: false,
+                rankInfoType:'0',
+                level:2,
                 children:[{
-                    rankLevel:'4',
-                    rankType:'list',
-                    scale:'-1',
-                    rankTitle:'我是具体榜单名称'
+                    id: 112,
+                    label: '4级榜单目录名称8677867867',
+                    ifLastNode: true,
+                    rankInfoType:'1',
+                    level:4,
                 }]
+            },{
+                id: 5,
+                label: '4级榜单目录名称3333333333333333',
+                ifLastNode: true,
+                rankInfoType:'1',
+                level:4,
+            },{
+                id: 6,
+                label: '4级榜单目录名称44444444444444',
+                ifLastNode: true,
+                rankInfoType:'1',
+                level:4,
+            },{
+                id: 7,
+                label: '4级榜单目录名称555555555555555',
+                ifLastNode: true,
+                rankInfoType:'1',
+                level:4,
+            }],
+            //榜单类型选项
+            rankTypeOptions:[{
+                    label:'目录',
+                    value:'0'
+                },{
+                    label:'机构榜单',
+                    value:'1'
+                },{
+                    label:'人物榜单',
+                    value:'2'
+                }
+            ],
+            //展示榜单信息弹出层
+            showAddOrChangeRankInfo:false,
+            ifCreatOrChangeInfo:'0',//0新建  1修改
+            lsNode: {}, //临时存贮节点
+            lsData: {}, //临时存贮节点数据
+            rankInfoForm:{
+                rankInfoTitle:'',
+                rankInfoDesc:'',
+                rankInfoType:'0',
+                rankInfoGravity:'-1',
             },
-            
-        ],
-        //文章基本信息
-        newsTagArray:[],
-        rankinfoForm:{
-            flashId:'',//快讯主键
-            flashTitle:'',//快讯标题
-            flashDesc:'',//快讯摘要
-            flashSourceUrl:'',//快讯原文url
-            flashSourceName:'',//快讯原文名称
-            flashStatus:'',//快讯状态 0未发布，1是待发布，2是已发布3是发布失败 4是待删除 5 删除
-            flashCrtTime:'',//创建时间
-            flashCrtTimeMill:'',//创建时间毫秒值
-            flashCrtUserId:'',//快讯创建人
-            flashCount:'',//点击量
-            flashImg:'',//快讯图片
-            userName:'',//创建人名称
-            flashSourceLink:'',//快讯来源机构名称地址
-            flashReleaseTime:''//发布时间
-        },
-        rankinfoFormRules:{
-            flashTitle: [
-                { required: true, message: '快讯标题不能为空', trigger: 'change' },
-                { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
-            ],
-            flashDesc:[
-                { required: true, message: '摘要不能为空', trigger: 'change' }
-            ],
-            flashSourceName:[
-                { required: true, message: '来源名称不能为空', trigger: 'change' }
-            ]
-        },
-       
+            rankInfoFormRules:{
+                rankInfoTitle:[
+                    { required: true, message: '请填写标题', trigger: 'change' }
+                ],
+                rankInfoDesc:[
+                    { required: true, message: '请填写描述', trigger: 'change' }
+                ],
+                rankInfoType:[
+                    { required: true, message: '请选择类型', trigger: 'change' }
+                ],
+                rankInfoGravity:[
+                    { required: true, message: '请填写权重', trigger: 'change' }
+                ],
+            }
+
+        }
+        
     },
     mounted () {
         var type = getCookie('createditfastinfo')
@@ -80,219 +114,79 @@ var vm = new Vue({
         console.log('type',this.typeOfPage)
     },
     methods:{
-        //新增榜单---1级榜单
-        addNewRank(){
-            let Lv1Length = this.rankDataTree.length
-            if (this.rankDataTree[Lv1Length - 1].rankTitle.trim() !== '') {
-                this.rankDataTree.push({
-                    rankLevel:'1',
-                    rankType:'level',
-                    scale:'-1',
-                    rankTitle:'',
-                    children:[]
-                })
-            } else {
-                this.$message.error('请完成上一个榜单的内容')
-            }
+        //添加新榜单或目录
+        addNewLevelOrRank () {
+            this.ifCreatOrChangeInfo = '0' //0新建  1修改
+            this.lsNode = {id:0} //临时存贮节点
+            this.lsData = {id:0} //临时存贮节点数据
+            this.openRankInfoDialog()
         },
-        //在第1级添加4级榜单详情
-        addRankLevel14(index){
-            //判断上一级的内容是否为空
-            if (this.rankDataTree[index].rankTitle.trim() == '') {
-                this.$message.error('请完成上级榜单的内容')
-                return
-            }
-            if (this.rankDataTree[index].children.length == 0) {
-                this.rankDataTree[index].children.push({
-                    rankLevel:'4',
-                    rankType:'list',
-                    rankTitle:'',
-                    scale:'-1'
-                })
-            } else if (this.rankDataTree[index].children[0].rankType == 'list') {
-                this.rankDataTree[index].children.push({
-                    rankLevel:'4',
-                    rankType:'list',
-                    rankTitle:'',
-                    scale:'-1'
-                })
-            } else {
-                this.$message.error('不能添加榜单')
-            }
+        //打开榜单或目录属性对话框
+        openRankInfoDialog () {
+            this.showAddOrChangeRankInfo = true
         },
-        //在第2级添加4级榜单详情
-        addRankLevel24(index,index2) {
-            // console.log(index,index2)
-            //判断上一级的内容是否为空
-            if (this.rankDataTree[index].children[index2].rankTitle.trim() == '') {
-                this.$message.error('请完成上级榜单的内容')
-                return
-            }
-            if (this.rankDataTree[index].children[index2].children.length == 0) {
-                this.rankDataTree[index].children[index2].children.push({
-                    rankLevel:'4',
-                    rankType:'list',
-                    rankTitle:'',
-                    scale:'-1'
-                })
-            } else if (this.rankDataTree[index].children[index2].children[0].rankType == 'list') {
-                this.rankDataTree[index].children[index2].children.push({
-                    rankLevel:'4',
-                    rankType:'list',
-                    rankTitle:'',
-                    scale:'-1'
-                })
-            } else {
-                this.$message.error('不能添加榜单')
-            }
-            console.log(this.rankDataTree[index].children[index2])
-        },
-        //在第3级添加4级榜单详情
-        addRankLevel34(index,index2,index3){
-            //判断上一级的内容是否为空
-            if (this.rankDataTree[index].children[index2].children[index3].rankTitle.trim() == '') {
-                this.$message.error('请完成上级榜单的内容')
-                return
-            }
-            this.rankDataTree[index].children[index2].children[index3].children.push({
-                rankLevel:'4',
-                rankType:'list',
-                rankTitle:'',
-                scale:'-1'
+        //保存榜单目录信息
+        saveRankInfoForm (formName) {
+            var self = this
+            self.$refs[formName].validate((valid) =>{
+                if (valid) {
+                    
+                    self.rankDataTree.push({
+                        id: new Date().getTime(),
+                        label: self.rankInfoForm.rankInfoTitle,
+                        desc: self.rankInfoForm.rankInfoDesc,
+                        rankInfoType: '0',
+                        ifLastNode:false,
+                        level: 2,
+                        children:[]
+                    })
+                    self.closeRankInfoForm('rankInfoForm')
+                }
             })
         },
-        //添加2级目录
-        addTwoLevel(index){
-            //判断上一级的内容是否为空
-            if (this.rankDataTree[index].rankTitle.trim() == '') {
-                this.$message.error('请完成上级榜单的内容')
-                return
+        //关闭榜单目录信息
+        closeRankInfoForm (formName) {
+            this.showAddOrChangeRankInfo = false,
+            this.ifCreatOrChangeInfo='0'//0新建  1修改
+            this.rankInfoForm = {
+                rankInfoTitle:'',
+                rankInfoDesc:'',
+                rankInfoType:'0',
+                ifLastNode:false,
+                level:'',
+                rankInfoGravity:'-1',
             }
-            //判断同级上一条是否为空
-            if (this.rankDataTree[index].children.length == 0) {
-                this.rankDataTree[index].children.push({
-                    rankLevel:'2',
-                    rankType:'level',
-                    rankTitle:'',
-                    scale:'-1',
-                    children:[]
-                })
-            } else if (this.rankDataTree[index].children[0].rankType == 'level') {
-                this.rankDataTree[index].children.push({
-                    rankLevel:'2',
-                    rankType:'level',
-                    rankTitle:'',
-                    scale:'-1',
-                    children:[]
-                })
-            } else {
-                this.$message.error('不能添加2级目录')
+            this.$refs[formName].resetFields();
+        },
+        appendLevelOrRank (node,data) {
+            console.log('node',node,'data',data)
+            this.ifCreatOrChangeInfo = '0' //0新建  1修改
+            this.lsNode = node //临时存贮节点
+            this.lsData = data //临时存贮节点数据
+            this.openRankInfoDialog()
+
+            //模拟假数据请求
+            var newChild = { 
+                id: new Date().getTime(), 
+                label: '假数据榜单或目录标题',
+                ifLastNode: false,
+                rankInfoType:'0',
+                level:3, 
             }
-        },
-        //添加3级目录
-        addThreeLevel(index,index2) {
-            //判断上一级的内容是否为空
-            if (this.rankDataTree[index].children[index2].rankTitle.trim() == '') {
-                this.$message.error('请完成上级榜单的内容')
-                return
+            if (!data.children) {
+                this.$set(data, 'children', []);
             }
-            //判断同级上一条是否为空
-            if (this.rankDataTree[index].children[index2].children.length == 0) {
-                this.rankDataTree[index].children[index2].children.push({
-                    rankLevel:'3',
-                    rankType:'level',
-                    rankTitle:'',
-                    scale:'-1',
-                    children:[]
-                })
-            } else if (this.rankDataTree[index].children[index2].children[0].rankType == 'level') {
-                this.rankDataTree[index].children[index2].children.push({
-                    rankLevel:'3',
-                    rankType:'level',
-                    rankTitle:'',
-                    scale:'-1',
-                    children:[]
-                })
-            } else {
-                this.$message.error('不能添加3级目录')
-            }
+            data.children.push(newChild);
         },
-        //删除一级榜单
-        delThisLevel1(index){
-            if (this.rankDataTree.length <= 1) {
-                this.$message.error('至少保留一个榜单')
-            } else {
-                this.rankDataTree.splice(index, 1); 
-            }
+
+        remove(node, data) {
+            const parent = node.parent;
+            const children = parent.data.children || parent.data;
+            const index = children.findIndex(d => d.id === data.id);
+            children.splice(index, 1);
         },
-        //删除2级层级
-        delThisLevel2(index1,index2){
-            this.rankDataTree[index1].children.splice(index2, 1); 
-        },
-        //删除第3个层级
-        delThisLevel3(index,index2,index3){
-            this.rankDataTree[index].children[index2].children.splice(index3, 1); 
-        },
-        //删除第4个层级
-        delThisLevel4(index,index2,index3,index4){
-            this.rankDataTree[index].children[index2].children[index3].children.splice(index4, 1); 
-        },
-        //权重调整1级
-        scaleChangeLv1 (index){
-            console.log('发生变化',index)
-            if (this.rankDataTree[index].scale.trim() == '') {
-                this.rankDataTree[index].scale = '-1'
-                this.$message.error('权重值不能为空')
-            }
-            let arrSort = JSON.parse(JSON.stringify(this.rankDataTree));
-            this.rankDataTree = arrSort.sort(this.compare('scale'))
-        },
-        //权重调整1级下的2级和4级
-        scaleChangeLv124 (index,index2){
-            if (this.rankDataTree[index].children[index2].scale.trim() == '') {
-                this.rankDataTree[index].children[index2].scale = '-1'
-                this.$message.error('权重值不能为空')
-            }
-            let arrSort = JSON.parse(JSON.stringify(this.rankDataTree[index].children));
-            this.rankDataTree[index].children = arrSort.sort(this.compare('scale'))
-        },
-        //权重调整2级下的3级和4级
-        scaleChangeLv234(index,index2,index3) {
-            if (this.rankDataTree[index].children[index2].children[index3].scale.trim() == '') {
-                this.rankDataTree[index].children[index2].children[index3].scale = '-1'
-                this.$message.error('权重值不能为空')
-            }
-            let arrSort = JSON.parse(JSON.stringify(this.rankDataTree[index].children[index2].children));
-            this.rankDataTree[index].children[index2].children = arrSort.sort(this.compare('scale'))
-        },
-        //权重调整3级下4级
-        scaleChangeLv34(index,index2,index3,index4){
-            if (this.rankDataTree[index].children[index2].children[index3].children[index4].scale.trim() == '') {
-                this.rankDataTree[index].children[index2].children[index3].children[index4].scale = '-1'
-                this.$message.error('权重值不能为空')
-            }
-            let arrSort = JSON.parse(JSON.stringify(this.rankDataTree[index].children[index2].children[index3].children));
-            this.rankDataTree[index].children[index2].children[index3].children = arrSort.sort(this.compare('scale'))
-        },
-        //排序比较函数
-        compare (prop) {
-            console.log(prop)
-            return function (obj1, obj2) {
-                var val1 = obj1[prop];
-                var val2 = obj2[prop];
-                if (!isNaN(Number(val1)) && !isNaN(Number(val2))) {
-                    val1 = Number(val1);
-                    val2 = Number(val2);
-                }
-                if (val1 > val2) {
-                    return -1;
-                } else if (val1 < val2) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }            
-        },
+
+
 
     }
     
