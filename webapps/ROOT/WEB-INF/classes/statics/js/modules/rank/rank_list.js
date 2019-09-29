@@ -143,21 +143,15 @@ var vm = new Vue({
                 }
 			});
         },
-        //新增模板
-        creatNewTemplate (){
+        //新增总榜单
+        creatNewRank () {
             this.creatOrEdit = 'creat'
             this.showChildPage = 1
         },
-        //编辑模板
-        editThisTemplate (item) {
-            this.creatOrEdit = 'edit'
-            this.showChildPage = 1
-            this.templateForm = JSON.parse(JSON.stringify(item))
-            this.reqRelativeInc(item.id)
-        },
-        //请求相关模板下的INC
-        reqRelativeInc (templateId){
+        //编辑总榜单
+        editThisRank (item) {
             var self = this
+            self.creatOrEdit = 'edit'
             var data = {
                 templateId:templateId.toString(),
                 page:'1',
@@ -172,6 +166,7 @@ var vm = new Vue({
 			    success: function(res){
 					if(res.code == 200){
                         self.incTableData = res.page.list
+                        self.showChildPage = 1
 					}else{
 						mapErrorStatus(res)
                         vm.error = true;
@@ -182,6 +177,33 @@ var vm = new Vue({
                     mapErrorStatus(res)
                 }
 			});
+        },
+        //跳转至榜单编辑页面
+        linkToEditPage (item) {
+            setCookie ('createditrank', 123111, 1)
+            window.parent.location.href = '/index.html#modules/rank/edit_rank.html'
+        },
+        //发布上线
+        uplineThisRank(item) {
+            var self = this
+            self.$confirm('确实要发布上线此榜单吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                
+            })
+        },
+        //下线
+        offlineThisRank(item) {
+            var self = this
+            self.$confirm('确实要下线此榜单吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                
+            })
         },
         //打开添加INC页面
         addIncToTemplate () {
@@ -370,13 +392,13 @@ var vm = new Vue({
             })
         },
         //删除模板
-        deleteThisTemplate (item) {
+        deleteThisRank (item) {
             var self = this
             var data = {
                 id:item.id,
                 status: '2'
             }
-            self.$confirm('确实要删除此模板吗?', '提示', {
+            self.$confirm('确实要删除此榜单吗?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'

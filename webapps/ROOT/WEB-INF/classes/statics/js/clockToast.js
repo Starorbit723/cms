@@ -63,20 +63,30 @@ switch(pageId)
         setCookie ('createditreport', '', 1)
         setCookie ('createditfastinfo', '', 1)
         setCookie ('createditmeeting', '', 1)
+        setCookie ('createditrank', '', 1)
         break;
     case 'edit_report':
         setCookie ('createdit', '', 1)
         setCookie ('createditfastinfo', '', 1)
         setCookie ('createditmeeting', '', 1)
+        setCookie ('createditrank', '', 1)
         break;
     case 'edit_fastinfo':
         setCookie ('createdit', '', 1)
         setCookie ('createditreport', '', 1)
         setCookie ('createditmeeting', '', 1)
+        setCookie ('createditrank', '', 1)
         break;
     case 'edit_meeting':
         setCookie ('createdit', '', 1)
         setCookie ('createditreport', '', 1)
+        setCookie ('createditfastinfo', '', 1)
+        setCookie ('createditrank', '', 1)
+        break;
+    case 'edit_rank':
+        setCookie ('createdit', '', 1)
+        setCookie ('createditreport', '', 1)
+        setCookie ('createditmeeting', '', 1)
         setCookie ('createditfastinfo', '', 1)
         break;
     default:
@@ -84,6 +94,7 @@ switch(pageId)
         setCookie ('createditreport', '', 1)
         setCookie ('createditfastinfo', '', 1)
         setCookie ('createditmeeting', '', 1)
+        setCookie ('createditrank', '', 1)
 }
 
 var mapErrorStatus = function(res){
