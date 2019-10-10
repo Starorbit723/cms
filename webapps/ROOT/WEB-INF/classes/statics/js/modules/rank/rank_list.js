@@ -1,84 +1,110 @@
 var vm = new Vue({
     el: '#rank_list',
-    data: {
-        //当前显示页面
-        showChildPage:0,
-        //搜索文章列表提交
-        timeRange:[], //时间需要特殊处理,并且同步到searchForm
-        searchForm:{
-            name:'',
-            startTime:'',
-            endTime:''
-        },
-        //表格结果
-        tableData: [{
-            id:'',//编号
-            name:'',//名称
-            content:'',//内容
-            type:'',//分类
-            crtTime:'',//创建时间
-            modTime:'',//修稿时间
-            parentId:'',//父级编号
-        }],
-        //分页器相关
-        pagination1: {
-            currPage: 1,
-            totalCount:0,
-            totalPage:0,
-            pageSize:10
-        },
-        //新建编辑模板
-        creatOrEdit: 'creat',//creat为新增，edit为修改
-        templateForm:{
-            id:'',//编号
-            name:'',//名称
-            content:'',//内容
-            type:'',//分类
-            crtTime:'',//创建时间
-            modTime:'',//修稿时间
-            parentId:'',//父级编号
-        },
-        templateFormRules:{
-            name: [
-                { required: true, message: '标题不能为空', trigger: 'change' }
-            ],
-            content:[
-                { required: true, message: '内容不能为空', trigger: 'change' }
-            ]
-        },
-        //关联的INC列表
-        incTableData:[{
-            id:'',//主键编号
-            name:'',//inc名称
-            content:'',//inc内容
-            templateId:'',//模板编号
-            url:'',//请求接口url
-            address:'',//inc模板目录
-            type:'',//inc分类
-            para:'',//参数
-        }],
-        //搜索INC的列表
-        incsearchForm:{
-            name:''
-        },
-        multipleSelection: [],
-        incSearchTableData:[{
-            id:'',//主键编号
-            name:'',//inc名称
-            content:'',//inc内容
-            templateId:'',//模板编号
-            url:'',//请求接口url
-            address:'',//inc模板目录
-            type:'',//inc分类
-            para:'',//参数
-        }],
-        //分页器相关
-        pagination2: {
-            currPage: 1,
-            totalCount:0,
-            totalPage:0,
-            pageSize:10
-        },
+    data () {
+        var validateUrl = (rule, value, callback) => {
+            var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
+            if (value) {
+                if (value.trim() == '#') {
+                    callback();
+                } else if (!urlReg.test(value)) {
+                    callback(new Error('链接格式不正确'));
+                } else {
+                    callback();
+                }
+            } else {
+                callback(new Error('链接为必填项'));
+            }
+        }
+        return {
+            //当前显示页面
+            showChildPage:0,
+            //搜索文章列表提交
+            timeRange:[], //时间需要特殊处理,并且同步到searchForm
+            searchForm:{
+                name:'',
+                startTime:'',
+                endTime:''
+            },
+            //表格结果
+            tableData: [{
+                id:'',//主键
+                name:'',//榜单名称
+                meetId:'',//相关会议（内部ID）
+                meetUrl:'',//会议链接地址
+                coverImg:'',//封面图
+                year:'',//年份
+                province:'',//省
+                city:'',//市
+                publishAt:'',//发布时间
+                description:'',//描述
+                remark:'',//备注
+                createUserId:'',//创建者
+                updateUserId:'',//操作者
+                updateAt:'',//修改时间
+                createAt:'',//创建时间
+                publishStatus:'0',//发布状态 0未发布，1是待发布，2是已发布 3是发布失败 4是待删除 5 删除
+                delStatus:'',//已删除1未删除,后端控制前端不做操作
+            }],
+            //分页器相关
+            pagination1: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //新建编辑模板
+            creatOrEdit: 'creat',//creat为新增，edit为修改
+            rankForm:{
+                id:'',//主键
+                name:'',//榜单名称
+                meetId:'',//相关会议（内部ID）
+                meetUrl:'',//会议链接地址
+                coverImg:'',//封面图
+                year:'',//年份
+                province:'',//省
+                city:'',//市
+                publishAt:'',//发布时间
+                description:'',//描述
+                remark:'',//备注
+                createUserId:'',//创建者
+                updateUserId:'',//操作者
+                updateAt:'',//修改时间
+                createAt:'',//创建时间
+                publishStatus:'0',//发布状态 0未发布，1是待发布，2是已发布 3是发布失败 4是待删除 5 删除
+                delStatus:'',//已删除1未删除,后端控制前端不做操作
+            },
+            rankFormRules:{
+                name: [
+                    { required: true, message: '标题不能为空', trigger: 'change' }
+                ],
+                description:[
+                    { required: true, message: '描述不能为空', trigger: 'change' }
+                ],
+                coverImg:[
+                    { required: true, message: '榜单封面图为必选项', trigger: 'change' }
+                ],
+                meetUrl:[
+                    { required: true, validator: validateUrl, trigger: 'change' }
+                ],
+                publishAt:[
+                    { required: true, message: '发布时间为必填项', trigger: 'change' }
+                ]
+            },
+            //封面图库相关
+            showCoverimgLib:false,
+            searchCoverimgForm:{
+                picTitle:'',
+                picType:'0'//0封面图库 1内容图库 2图为图库
+            },
+            coverimgTableData:[],
+            pagination2: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+
+        }
     },
     watch: {
         timeRange (val) {
@@ -119,13 +145,16 @@ var vm = new Vue({
             }
             $.ajax({
 				type: "POST",
-                url: "/template/list",
+                url: "/rank/list",
                 contentType: "application/json",
 			    data: JSON.stringify(data),
 			    dataType: "json",
 			    success: function(res){
 					if(res.code == 200){
                         self.tableData = res.page.list
+                        for (let i = 0; i < self.tableData.length; i++){
+                            self.tableData[i].updateAt = self.transformTime(parseFloat(self.tableData[i].updateAt))
+                        }
                         self.pagination1 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
@@ -148,24 +177,174 @@ var vm = new Vue({
             this.creatOrEdit = 'creat'
             this.showChildPage = 1
         },
+        //打开封面图库弹层
+        openAddCoverImg () {
+            this.showCoverimgLib = true
+            this.searchCoverImg(0)
+        },
+        //搜索封面图库
+        searchCoverImg (type){
+            var self = this
+            var data = self.searchCoverimgForm
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination2.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination2.currPage.toString(),
+                    limit: self.pagination2.pageSize.toString()
+                })
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/picture/list",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    console.log(res)
+                    if(res.code == 200){
+                        self.coverimgTableData = res.page.list
+                        self.pagination2 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage:res.page.totalPage,
+                            pageSize:res.page.pageSize
+                        }
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        //选择了某一张封面图片
+        addThisCoverImg (item) {
+            this.rankForm.coverImg = item.picUrl
+            this.backToEdit()
+        },
+        //返回编辑页
+        backToEdit (){
+            this.showCoverimgLib = false
+            this.searchCoverimgForm = {
+                picTitle:'',
+                picType:'0'//0封面图库 1内容图库 2图为图库
+            }
+            this.coverimgTableData = []
+            this.pagination2 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+        },
+        handleCurrentChange2 (val) {
+            this.pagination2.currPage = val
+            this.searchCoverImg()
+        },
+        //提交新建或保存
+        creatOrEditSave(formName){
+            var self = this
+            self.$refs[formName].validate((valid) => {
+                if (valid) {
+                    var data = self.rankForm
+                    data.publishAt = data.publishAt.toString()
+                    //新建
+                    if (self.creatOrEdit == 'creat') {
+                        $.ajax({
+                            type: "POST",
+                            contentType: "application/json",
+                            url: "/rank/save",
+                            data: JSON.stringify(data),
+                            dataType: "json",
+                            success: function(res){
+                                console.log(res)
+                                if(res.code == 200){
+                                    self.$message.success('保存成功')
+                                    self.startSearch()
+                                    self.closeToMainpage('rankForm')
+                                }else{
+                                    mapErrorStatus(res)
+                                    vm.error = true;
+                                    vm.errorMsg = res.msg;
+                                }
+                            },
+                            error:function(res){
+                                mapErrorStatus(res)
+                            }
+                        });
+                    //修改
+                    } else if (self.creatOrEdit == 'edit') {
+                        $.ajax({
+                            type: "POST",
+                            contentType: "application/json",
+                            url: "/rank/update",
+                            data: JSON.stringify(data),
+                            dataType: "json",
+                            success: function(res){
+                                console.log(res)
+                                if(res.code == 200){
+                                    self.$message.success('保存成功')
+                                    self.startSearch()
+                                    self.closeToMainpage('rankForm')
+                                }else{
+                                    mapErrorStatus(res)
+                                    vm.error = true;
+                                    vm.errorMsg = res.msg;
+                                }
+                            },
+                            error:function(res){
+                                mapErrorStatus(res)
+                            }
+                        });
+                    }
+                    
+                }
+            })
+        },
+        closeToMainpage (formName) {
+            this.startSearch()
+            this.creatOrEdit = 'creat'
+            this.$refs[formName].resetFields();
+            this.showChildPage = 0
+            this.rankForm = {
+                id:'',//主键
+                name:'',//榜单名称
+                meetId:'',//相关会议（内部ID）
+                meetUrl:'',//会议链接地址
+                coverImg:'',//封面图
+                year:'',//年份
+                province:'',//省
+                city:'',//市
+                publishAt:'',//发布时间
+                description:'',//描述
+                remark:'',//备注
+                createUserId:'',//创建者
+                updateUserId:'',//操作者
+                updateAt:'',//修改时间
+                createAt:'',//创建时间
+                publishStatus:'0',//发布状态 0未发布，1是待发布，2是已发布 3是发布失败 4是待删除 5 删除
+                delStatus:'',//已删除1未删除,后端控制前端不做操作
+            }
+        },
         //编辑总榜单
         editThisRank (item) {
             var self = this
             self.creatOrEdit = 'edit'
-            var data = {
-                templateId:templateId.toString(),
-                page:'1',
-                limit:'1000'
-            }
             $.ajax({
 				type: "POST",
-                url: "/inc/list",
+                url: "/rank/info/" + item.id.toString(),
                 contentType: "application/json",
-			    data: JSON.stringify(data),
 			    dataType: "json",
 			    success: function(res){
 					if(res.code == 200){
-                        self.incTableData = res.page.list
+                        self.rankForm = res.dict
                         self.showChildPage = 1
 					}else{
 						mapErrorStatus(res)
@@ -180,18 +359,41 @@ var vm = new Vue({
         },
         //跳转至榜单编辑页面
         linkToEditPage (item) {
-            setCookie ('createditrank', 123111, 1)
+            setCookie ('createditrank', item.id.toString(), 1)
             window.parent.location.href = '/index.html#modules/rank/edit_rank.html'
         },
         //发布上线
-        uplineThisRank(item) {
+        onlineThisRank(item) {
             var self = this
             self.$confirm('确实要发布上线此榜单吗?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                
+                var data = {
+                    id: item.id.toString(),
+                    publishStatus: '1' //待发布
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/rank/update",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res){
+                        console.log(res)
+                        if(res.code == 200){
+                            self.startSearch()
+                        }else{
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
             })
         },
         //下线
@@ -202,113 +404,21 @@ var vm = new Vue({
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                
-            })
-        },
-        //打开添加INC页面
-        addIncToTemplate () {
-            this.showChildPage = 2
-            this.startSearchInc()
-        },
-        //开始搜索
-        startSearchInc (type) {
-            var self = this
-            var data = self.incsearchForm
-            if (type == 0) {
-                Object.assign(data,{
-                    page: '1',
-                    limit: self.pagination2.pageSize.toString()
-                })
-            } else {
-                Object.assign(data,{
-                    page: self.pagination2.currPage.toString(),
-                    limit: self.pagination2.pageSize.toString()
-                })
-            }
-            $.ajax({
-				type: "POST",
-                url: "/inc/list",
-                contentType: "application/json",
-			    data: JSON.stringify(data),
-			    dataType: "json",
-			    success: function(res){
-					if(res.code == 200){
-                        self.incSearchTableData = res.page.list
-                        self.pagination2 = {
-                            currPage: res.page.currPage,
-                            totalCount:res.page.totalCount,
-                            totalPage: res.page.totalPage,
-                            pageSize: res.page.pageSize
-                        }
-					}else{
-						mapErrorStatus(res)
-                        vm.error = true;
-                        vm.errorMsg = res.msg;
-                    }
-                },
-                error:function(res){
-                    mapErrorStatus(res)
-                }
-			});
-        },
-        //操作多选批量添加
-        handleSelectionChange(val) {
-            this.multipleSelection = val;
-        },
-        //添加多选至模板下
-        addIncToRelative () {
-            var self = this
-            var data = []
-            for (let i = 0; i< this.multipleSelection.length; i++){
-                data.push({
-                    id: this.multipleSelection[i].id,
-                    templateId : self.templateForm.id
-                })
-            }
-            $.ajax({
-				type: "POST",
-                url: "/inc/updateByList",
-                contentType: "application/json",
-			    data: JSON.stringify(data),
-			    dataType: "json",
-			    success: function(res){
-					if(res.code == 200){
-                        self.reqRelativeInc(self.templateForm.id)
-                        self.backToPage2()
-					}else{
-						mapErrorStatus(res)
-                        vm.error = true;
-                        vm.errorMsg = res.msg;
-                    }
-                },
-                error:function(res){
-                    mapErrorStatus(res)
-                }
-			});
-        },
-        //从当前模板中移除INC
-        removeThisInc(item){
-            var self = this
-            self.$confirm('确实要移除此INC吗?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
                 var data = {
-                    id:item.id.toString(),
-                    templateId:'-1'
+                    id: item.id.toString(),
+                    publishStatus: '0' //未发布
                 }
                 $.ajax({
                     type: "POST",
-                    url: '/inc/update',
                     contentType: "application/json",
+                    url: "/rank/update",
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res){
+                        console.log(res)
                         if(res.code == 200){
-                            self.$message.success('移除成功')
-                            self.reqRelativeInc(self.templateForm.id)
-                        }else{
+                            self.startSearch()
+                        } else {
                             mapErrorStatus(res)
                             vm.error = true;
                             vm.errorMsg = res.msg;
@@ -320,100 +430,28 @@ var vm = new Vue({
                 });
             })
         },
-        //返回新建编辑页面
-        backToPage2(){
-            this.showChildPage = 1
-            this.incsearchForm = {
-                name:''
-            }
-            this.multipleSelection = []
-            this.incSearchTableData = []
-            //分页器相关
-            this.pagination2 = {
-                currPage: 1,
-                totalCount:0,
-                totalPage:0,
-                pageSize:10
-            }
-        },
-        closeToMainpage () {
-            this.creatOrEdit = 'creat'
-            this.showChildPage = 0
-            this.incTableData = []
-            this.templateForm = {
-                id:'',//编号
-                name:'',//名称
-                content:'',//内容
-                type:'',//分类
-                crtTime:'',//创建时间
-                modTime:'',//修稿时间
-                parentId:'',//父级编号
-            }
-        },
-        //发布保存模板
-        creatOrEditTemplate (formName) {
-            var self = this
-            self.$refs[formName].validate((valid) => {
-                if (valid) {
-                    self.$confirm('确实要保存此模板吗?', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
-                        type: 'warning'
-                    }).then(() => {
-                        if (self.creatOrEdit == 'creat') {
-                            var reqUrl = '/template/save'
-                        } else {
-                            var reqUrl = '/template/update'
-                        }
-                        $.ajax({
-                            type: "POST",
-                            url: reqUrl,
-                            contentType: "application/json",
-                            data: JSON.stringify(self.templateForm),
-                            dataType: "json",
-                            success: function(res){
-                                if(res.code == 200){
-                                    self.$message.success('模板保存成功')
-                                    self.creatOrEdit = 'creat'
-                                    self.showChildPage = 0
-                                    self.startSearch()
-                                }else{
-                                    mapErrorStatus(res)
-                                    vm.error = true;
-                                    vm.errorMsg = res.msg;
-                                }
-                            },
-                            error:function(res){
-                                mapErrorStatus(res)
-                            }
-                        });
-                    })
-                }
-            })
-        },
-        //删除模板
         deleteThisRank (item) {
             var self = this
-            var data = {
-                id:item.id,
-                status: '2'
-            }
             self.$confirm('确实要删除此榜单吗?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
+                var data = {
+                    id: item.id.toString(),
+                    publishStatus: '4' //待删除
+                }
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: "/template/update",
+                    url: "/rank/update",
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res){
+                        console.log(res)
                         if(res.code == 200){
                             self.startSearch()
-                            self.$message.success('删除成功')
-                        }else{
+                        } else {
                             mapErrorStatus(res)
                             vm.error = true;
                             vm.errorMsg = res.msg;
@@ -424,8 +462,25 @@ var vm = new Vue({
                     }
                 });
             })
+        },
+        //时间格式转换工具
+        transformTime (timestamp = +new Date()) {
+            if (timestamp) {
+                var time = new Date(timestamp);
+                var y = time.getFullYear();
+                var M = time.getMonth() + 1;
+                var d = time.getDate();
+                var h = time.getHours();
+                var m = time.getMinutes();
+                var s = time.getSeconds();
+                return y + '-' + this.addZero(M) + '-' + this.addZero(d) + ' ' + this.addZero(h) + ':' + this.addZero(m) + ':' + this.addZero(s);
+              } else {
+                  return '';
+              }
+        },
+        addZero (m) {
+            return m < 10 ? '0' + m : m;
         }
-        
         
     }
 })

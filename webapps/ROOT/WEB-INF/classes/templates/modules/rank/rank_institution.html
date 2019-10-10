@@ -32,23 +32,24 @@
             </div>
             <!--功能按钮区-->
             <el-row class="el-row-h50">
-                <el-col :span="3">
+                <el-col :span="4">
                     <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addOrEditCoper(0)">新增机构</el-button>
                 </el-col>
             </el-row>
             <!--表格查询结果区-->
             <div class="cv_content_square">
                 <el-table :data="tableData" style="width: 100%; margin:10px auto;" ref="multipleTable" stripe>
-                    <el-table-column prop="cooperationName" label="机构名称" width=""></el-table-column>
-                    <el-table-column prop="cooperationImg" label="机构Logo" width="170">
-                        <template v-if="scope.row.cooperationImg" slot-scope="scope">
-                            <img style="width:150px;height:45px;" :src="scope.row.cooperationImg">
+                    <el-table-column prop="logoUrl" label="机构Logo" width="130">
+                        <template v-if="scope.row.logoUrl" slot-scope="scope">
+                            <div class="imgcontainer">
+                                <img :src="scope.row.logoUrl">
+                            </div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="cooperationCrtUserName" label="创建人" width="90"></el-table-column>
-                    <el-table-column prop="cooperationCrtTime" label="创建时间" width="160"></el-table-column>
-                    <el-table-column prop="cooperationModUserName" label="更新人" width="90"></el-table-column>
-                    <el-table-column prop="cooperationModTime" label="更新时间" width="160"></el-table-column>
+                    <el-table-column prop="name" label="机构名称" width=""></el-table-column>
+                    <el-table-column prop="userName" label="更新人" width="90"></el-table-column>
+                    <el-table-column prop="createAt" label="创建时间" width="160"></el-table-column>
+                    <el-table-column prop="updateAt" label="更新时间" width="160"></el-table-column>
                     <el-table-column label="操作" width="100" fixed="right">
                         <template slot-scope="scope">
                             <el-button type="text" size="small" @click="addOrEditCoper(1,scope.row)">修改</el-button>
@@ -75,41 +76,15 @@
         <div v-show="showChildPage">
             <!--表单信息-->
             <div class="cv_content_square">
-                <el-form :model="coperForm" :rules="coperFormRules"  ref="coperForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
+                <el-form :model="coperForm" :rules="coperFormRules"  ref="coperForm" status-icon class="demo-ruleForm" label-width="15%" label-position="right">
                     <el-row class="el-row-h70">
-                        <el-col :span="12">
-                            <el-form-item label="机构名称" prop="cooperationName" style="margin:0;">
+                        <el-col :span="24">
+                            <el-form-item label="机构名称" prop="name" style="margin:0;">
                                 <el-input
                                     maxlength="50"
                                     placeholder="限50字"
                                     type="text"
-                                    v-model="coperForm.cooperationName"
-                                    auto-complete="off">
-                                </el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="机构顺序" prop="cooperationPriority" style="margin:0;">
-                                <el-input
-                                    clearable
-                                    type="text"
-                                    maxlength="50"
-                                    placeholder="机构显示顺序，默认为-1"
-                                    v-model="coperForm.cooperationPriority"
-                                    auto-complete="off">
-                                </el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row class="el-row-h70">
-                        <el-col :span="24">
-                            <el-form-item label="机构链接" label-width="15%" prop="cooperationUrl" style="margin:0;">
-                                <el-input
-                                    clearable
-                                    type="text"
-                                    maxlength="500"
-                                    placeholder=""
-                                    v-model="coperForm.cooperationUrl"
+                                    v-model="coperForm.name"
                                     auto-complete="off">
                                 </el-input>
                             </el-form-item>
@@ -117,7 +92,7 @@
                     </el-row>
                     <el-row>
                         <el-col :span="14">
-                            <el-form-item label="机构Logo" prop="cooperationImg" label-width="26%" style="margin:0;">
+                            <el-form-item label="机构Logo" prop="logoUrl" label-width="26%" style="margin:0;">
                                 <el-upload
                                     class="avatar-uploader"
                                     action="https://jsonplaceholder.typicode.com/posts/"
@@ -125,13 +100,13 @@
                                     :auto-upload="false"
                                     :on-success="handleAvatarSuccess"
                                     :on-change="coperImgFileChange">
-                                    <img v-if="coperForm.cooperationImg" :src="coperForm.cooperationImg" class="avatar">
+                                    <img v-if="coperForm.logoUrl" :src="coperForm.logoUrl" class="avatar">
                                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                                 </el-upload>
                             </el-form-item>
                         </el-col>
                         <el-col :span="10">
-                            <div style="line-height: 26px; font-size:12px; color:#666;">建议尺寸：290*80(像素，PX)<br>建议格式：JPG,JPEG,PNG<br>图片大小：不超过200KB</div>
+                            <div style="line-height: 26px; font-size:12px; color:#666;">建议格式：JPG,JPEG,PNG<br>图片大小：不超过200KB</div>
                         </el-col>
                     </el-row>
                 </el-form>
@@ -158,8 +133,21 @@
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
 
 <style>
+.imgcontainer{
+    width:100px;
+    height:100px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+	border:1px solid #bebebe;
+}
+.imgcontainer img{
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+}
 .avatar-uploader .el-upload {
-    width:290px;
+    width:248px;
     border: 1px dashed #d9d9d9;
     border-radius: 6px;
     cursor: pointer;
@@ -172,14 +160,14 @@
 .avatar-uploader-icon {
     font-size: 28px;
     color: #8c939d;
-    width: 298px;
-    height: 78px;
-    line-height: 78px;
+    width: 248px;
+    height: 248px;
+    line-height: 248px;
     text-align: center;
 }
 .avatar {
-    width: 290px;
-    height: 80px;
+    width: 248px;
+    height: 248px;
     display: block;
 }
 </style>

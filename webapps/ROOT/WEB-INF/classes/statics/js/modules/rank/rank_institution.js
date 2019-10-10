@@ -1,55 +1,31 @@
 var vm = new Vue({
     el: '#rank_institution',
     data () {
-        var validateUrl = (rule, value, callback) => {
-            var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
-            console.log('urlllll',value)
-            if (value == '' || value == null) {
-                callback(new Error('链接不能为空'));
-            } else if (value !== null) {
-                if (value.trim() == '#') {
-                    callback();
-                } else if (!urlReg.test(value)) {
-                    callback(new Error('链接格式不正确，暂无链接可填写"#"'));
-                } else {
-                    callback();
-                }
-            } else {
-                callback();
-            }
-        }
-        var validatePriority = (rule, value, callback) => {
-            var urlReg = /^[0-9]*[1-9][0-9]*$/;
-            if (value !== '' && value == '-1') {
-                callback();
-            } else if (value !== '' && !urlReg.test(value)) {
-                callback(new Error('权重需改为正整数或-1,-1代表权重最低'));
-            } else {
-                callback();
-            }
-        }
         return {
             showChildPage: false,
             creatOrEdit:0,//0新建  1修改
             //搜索提交
             searchForm:{
-                cooperationName:'',
-                cooperationStatus:'0',
+                name:'',
+                delStatus:'1',
             },
             //列表查询结果
             tableData: [{
-                cooperationId:'',//主键编号
-                cooperationName:'',//合作机构名称
-                cooperationImg:'',//合作机构头像
-                cooperationUrl:'',//
-                cooperationPriority:'',//合作机构顺序
-                cooperationCrtUserId:'',//创建人用户编号
-                cooperationModUserId:'',//更新人用户编号
-                cooperationCrtTime:'',//创建时间
-                cooperationModTime:'',//更新时间
-                cooperationStatus:'',//合作机构 状态 0正常 1删除
-                cooperationCrtUserName:'',//创建人名称
-                cooperationModUserName:'',//更新人名称
+                id:'',//主键
+                cvId:'',//投In关联id
+                rankId:'',//榜单id
+                rankCatalogId:'',//榜单目录Id
+                institutionId:'',//机构管理ID
+                name:'',//名称
+                logoUrl:'',//logo图片
+                weight:'',//排序
+                sortOrder:'',//1，显示排序，2，不显示排序
+                type:'',//1：机构；2：企业；3：人物；4：其他
+                createUserId:'',//
+                updateUserId:'',//
+                updateAt:'',//
+                createAt:'',//
+                delStatus:'',//0已删除1未删除
             }],
             //分页器相关
             pagination1: {
@@ -60,32 +36,30 @@ var vm = new Vue({
             },
             //封面图表单
             coperForm:{
-                cooperationId:'',//主键编号
-                cooperationName:'',//合作机构名称
-                cooperationImg:'',//合作机构头像
-                cooperationUrl:'',//
-                cooperationPriority:'',//合作机构顺序
-                cooperationCrtUserId:'',//创建人用户编号
-                cooperationModUserId:'',//更新人用户编号
-                cooperationCrtTime:'',//创建时间
-                cooperationModTime:'',//更新时间
-                cooperationStatus:'',//合作机构 状态 0正常 1删除
-                cooperationCrtUserName:'',//创建人名称
-                cooperationModUserName:'',//更新人名称
+                id:'',//主键
+                cvId:'',//投In关联id
+                rankId:'',//榜单id
+                rankCatalogId:'',//榜单目录Id
+                institutionId:'',//机构管理ID
+                name:'',//名称
+                logoUrl:'',//logo图片
+                weight:'',//排序
+                sortOrder:'',//1，显示排序，2，不显示排序
+                type:'',//1：机构；2：企业；3：人物；4：其他
+                createUserId:'',//
+                updateUserId:'',//
+                updateAt:'',//
+                createAt:'',//
+                delStatus:'1',//0已删除1未删除
             },
             coperFormRules:{
-                cooperationName: [
+                name: [
                     { required: true, message: '机构姓名不能为空', trigger: 'change' }
                 ],
-                cooperationImg:[
+                logoUrl:[
                     { required: true, message: '请上传机构头像', trigger: 'change' }
                 ],
-                cooperationPriority: [
-                    { validator: validatePriority, trigger: 'change' }
-                ],
-                cooperationUrl:[
-                    { required: true, validator: validateUrl, trigger: 'change' }
-                ]
+                
             },
             //图片文件临时存储
             imgFormData:{},
@@ -102,11 +76,11 @@ var vm = new Vue({
             this.pagination1.currPage = val
             this.startSearch()
         },
-        //开始搜索专题列表
+        //开始搜索列表
         startSearch (type) {
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
-            data.cooperationName = data.cooperationName.toString().trim()
+            data.name = data.name.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -121,12 +95,16 @@ var vm = new Vue({
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
-                url: "/cooperation/list",
+                url: "/rankInstitution/list",
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){
                         self.tableData = res.page.list
+                        for (let i = 0; i < self.tableData.length; i++){
+                            self.tableData[i].createAt = self.transformTime(parseFloat(self.tableData[i].createAt))
+                            self.tableData[i].updateAt = self.transformTime(parseFloat(self.tableData[i].updateAt))
+                        }
                         self.pagination1 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
@@ -152,11 +130,29 @@ var vm = new Vue({
                 self.creatOrEdit = 0
                 console.log('新增机构')
             } else {
-                self.showChildPage = true
-                self.creatOrEdit = 1
-                self.coperForm = JSON.parse(JSON.stringify(item))
-                self.originUrl = self.coperForm.cooperationImg
-                console.log('修改机构','原始',self.originUrl,'表单',self.coperForm.cooperationImg)
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/rankInstitution/info/" + item.id.toString(),
+                    dataType: "json",
+                    success: function(res) {
+                        if (res.code == 200) {
+                            self.showChildPage = true
+                            self.creatOrEdit = 1
+                            self.coperForm = res.dict
+                            self.originUrl = self.coperForm.logoUrl
+                            console.log('修改机构','原始',self.originUrl,'表单',self.coperForm.logoUrl)
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+                
             }
         },
         //删除
@@ -167,12 +163,14 @@ var vm = new Vue({
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                var data = JSON.parse(JSON.stringify(item))
-                data.cooperationStatus = 1  //0 正常  1 删除
+                var data = {
+                    id: item.id.toString(),
+                    delStatus: '0'//0已删除1未删除
+                } 
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: "/cooperation/update",
+                    url: "/rankInstitution/update",
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res) {
@@ -207,7 +205,7 @@ var vm = new Vue({
             var fr = new FileReader()//创建new FileReader()对象
             fr.onload = function() {
                 //先临时显示一下本地图片
-                self.coperForm.cooperationImg = this.result
+                self.coperForm.logoUrl = this.result
             }
             fr.readAsDataURL(file.raw)
             let temp = new FormData();
@@ -233,7 +231,7 @@ var vm = new Vue({
                             success: function(res) {
                                 if(res.code == 200){
                                     console.log('图片上传返回',res)
-                                    self.coperForm.cooperationImg = res.url
+                                    self.coperForm.logoUrl = res.url
                                     console.log('接受到图片改变后的form',self.coperForm)
                                     self.submitForm()
                                 }else{
@@ -248,8 +246,8 @@ var vm = new Vue({
                             }
                         });
                     //修改，图片发生了改变
-                    } else if (self.creatOrEdit == 1 && (self.coperForm.cooperationImg !== self.originUrl )) {
-                        console.log('当前',self.coperForm.cooperationImg,'原始：',self.originUrl)
+                    } else if (self.creatOrEdit == 1 && (self.coperForm.logoUrl !== self.originUrl )) {
+                        console.log('当前',self.coperForm.logoUrl,'原始：',self.originUrl)
                         $.ajax({
                             type: "POST",
                             contentType: false,
@@ -260,7 +258,7 @@ var vm = new Vue({
                             success: function(res){
                                 if(res.code == 200){
                                     console.log('图片上传返回',res)
-                                    self.coperForm.cooperationImg = res.url
+                                    self.coperForm.logoUrl = res.url
                                     console.log('接受到图片改变后的form',self.coperForm)
                                     self.submitForm()
                                 }else{
@@ -276,7 +274,7 @@ var vm = new Vue({
                         });
                     //修改，图片未改变
                     } else {
-                        console.log('当前',self.coperForm.cooperationImg,'原始：',self.originUrl)
+                        console.log('当前',self.coperForm.logoUrl,'原始：',self.originUrl)
                         self.submitForm()
                     }
                 }
@@ -288,9 +286,9 @@ var vm = new Vue({
             self.$refs['coperForm'].validate((valid) => {
                 if (valid) {
                     if (self.creatOrEdit == 0) {
-                        var reqUrl = '/cooperation/save'
+                        var reqUrl = '/rankInstitution/save'
                     } else if (self.creatOrEdit == 1){
-                        var reqUrl = '/cooperation/update'
+                        var reqUrl = '/rankInstitution/update'
                     }
                     $.ajax({
                         type: "POST",
@@ -322,18 +320,21 @@ var vm = new Vue({
             this.imgFormData = ''
             this.$refs[formName].resetFields();
             this.coperForm = {
-                cooperationId:'',//主键编号
-                cooperationName:'',//合作机构名称
-                cooperationImg:'',//合作机构头像
-                cooperationUrl:'',//
-                cooperationPriority:'',//合作机构顺序
-                cooperationCrtUserId:'',//创建人用户编号
-                cooperationModUserId:'',//更新人用户编号
-                cooperationCrtTime:'',//创建时间
-                cooperationModTime:'',//更新时间
-                cooperationStatus:'',//合作机构 状态 0正常 1删除
-                cooperationCrtUserName:'',//创建人名称
-                cooperationModUserName:'',//更新人名称
+                id:'',//主键
+                cvId:'',//投In关联id
+                rankId:'',//榜单id
+                rankCatalogId:'',//榜单目录Id
+                institutionId:'',//机构管理ID
+                name:'',//名称
+                logoUrl:'',//logo图片
+                weight:'',//排序
+                sortOrder:'',//1，显示排序，2，不显示排序
+                type:'',//1：机构；2：企业；3：人物；4：其他
+                createUserId:'',//
+                updateUserId:'',//
+                updateAt:'',//
+                createAt:'',//
+                delStatus:'',//0已删除1未删除
             }
             this.showChildPage = false
             this.creatOrEdit = 0
@@ -341,7 +342,24 @@ var vm = new Vue({
         handleAvatarSuccess(res, file) {
             //this.articleForm.imageUrl = URL.createObjectURL(file.raw);
         },
-        
+        //时间格式转换工具
+        transformTime (timestamp = +new Date()) {
+            if (timestamp) {
+                var time = new Date(timestamp);
+                var y = time.getFullYear();
+                var M = time.getMonth() + 1;
+                var d = time.getDate();
+                var h = time.getHours();
+                var m = time.getMinutes();
+                var s = time.getSeconds();
+                return y + '-' + this.addZero(M) + '-' + this.addZero(d) + ' ' + this.addZero(h) + ':' + this.addZero(m) + ':' + this.addZero(s);
+              } else {
+                  return '';
+              }
+        },
+        addZero (m) {
+            return m < 10 ? '0' + m : m;
+        }
         
     }
 })

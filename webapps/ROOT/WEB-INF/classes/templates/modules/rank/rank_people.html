@@ -16,11 +16,11 @@
                 <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
                     <el-row class="el-row-h60">
                         <el-col :span="11">
-                            <el-form-item label="嘉宾名称" style="margin:0;">
+                            <el-form-item label="人物名称" style="margin:0;">
                                 <el-input
                                 clearable
                                 type="text"
-                                v-model="searchForm.guestName"
+                                v-model="searchForm.name"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
@@ -33,28 +33,27 @@
             <!--功能按钮区-->
             <el-row class="el-row-h50">
                 <el-col :span="3">
-                    <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addOrEditGuest(0)">新增嘉宾</el-button>
+                    <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addOrEditPeople(0)">新增嘉宾</el-button>
                 </el-col>
             </el-row>
             <!--表格查询结果区-->
             <div class="cv_content_square">
                 <el-table :data="tableData" style="width: 100%; margin:10px auto;" ref="multipleTable" stripe>
-                    <el-table-column prop="guestName" label="嘉宾名称" width="100"></el-table-column>
-                    <el-table-column prop="guestImg" label="头像" width="120">
-                        <template v-if="scope.row.guestImg" slot-scope="scope">
-                            <img style="width:90px;height:90px;" :src="scope.row.guestImg">
+                    <el-table-column prop="logoUrl" label="头像" width="130">
+                        <template v-if="scope.row.logoUrl" slot-scope="scope">
+                            <div class="imgcontainer">
+                                <img :src="scope.row.logoUrl">
+                            </div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="guestPosition" label="职位" width="100"></el-table-column>
-                    <el-table-column prop="guestCompany" label="公司"></el-table-column>
-                    <el-table-column prop="guestCrtUserName" label="创建人" width="90"></el-table-column>
-                    <el-table-column prop="guestCrtTime" label="创建时间" width="95"></el-table-column>
-                    <el-table-column prop="guestModUserName" label="更新人" width="90"></el-table-column>
-                    <el-table-column prop="guestModTime" label="更新时间" width="95"></el-table-column>
+                    <el-table-column prop="name" label="人物名称" width=""></el-table-column>
+                    <el-table-column prop="userName" label="更新人" width="100"></el-table-column>
+                    <el-table-column prop="createAt" label="创建时间" width="160"></el-table-column>
+                    <el-table-column prop="updateAt" label="更新时间" width="160"></el-table-column>
                     <el-table-column label="操作" width="100" fixed="right">
                         <template slot-scope="scope">
-                            <el-button type="text" size="small" @click="addOrEditGuest(1,scope.row)">修改</el-button>
-                            <el-button type="text" size="small" @click="deleteThisGuest(scope.row)">删除</el-button>
+                            <el-button type="text" size="small" @click="addOrEditPeople(1,scope.row)">修改</el-button>
+                            <el-button type="text" size="small" @click="deleteThisPeople(scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -77,49 +76,10 @@
         <div v-show="showChildPage">
             <!--表单信息-->
             <div class="cv_content_square">
-                <el-form :model="guestForm" :rules="guestFormRules"  ref="guestForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
-                    <el-row class="el-row-h70">
+                <el-form :model="peopleForm" :rules="peopleFormRules"  ref="peopleForm" status-icon class="demo-ruleForm" label-width="15%" label-position="right">
+                    <el-row class="el-row-h190">
                         <el-col :span="12">
-                            <el-form-item label="嘉宾姓名" prop="guestName" style="margin:0;">
-                                <el-input
-                                    maxlength="50"
-                                    placeholder="限50字"
-                                    type="text"
-                                    v-model="guestForm.guestName"
-                                    auto-complete="off">
-                                </el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="嘉宾职位" prop="guestPosition" style="margin:0;">
-                                <el-input
-                                    clearable
-                                    type="text"
-                                    maxlength="50"
-                                    placeholder="限50字"
-                                    v-model="guestForm.guestPosition"
-                                    auto-complete="off">
-                                </el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row class="el-row-h70">
-                        <el-col :span="24">
-                            <el-form-item label="所在公司" label-width="15%" prop="guestCompany" style="margin:0;">
-                                <el-input
-                                    clearable
-                                    type="text"
-                                    maxlength="50"
-                                    placeholder="限50字"
-                                    v-model="guestForm.guestCompany"
-                                    auto-complete="off">
-                                </el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-                        <el-col :span="8">
-                            <el-form-item label="嘉宾头像" prop="guestImg" label-width="45%" style="margin:0;">
+                            <el-form-item label="人物头像" prop="logoUrl" label-width="30%" style="margin:0;">
                                 <el-upload
                                     class="avatar-uploader"
                                     action="https://jsonplaceholder.typicode.com/posts/"
@@ -127,13 +87,50 @@
                                     :auto-upload="false"
                                     :on-success="handleAvatarSuccess"
                                     :on-change="guestImgFileChange">
-                                    <img v-if="guestForm.guestImg" :src="guestForm.guestImg" class="avatar">
+                                    <img v-if="peopleForm.logoUrl" :src="peopleForm.logoUrl" class="avatar">
                                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                                 </el-upload>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="16">
+                        <el-col :span="12">
                             <div style="line-height: 30px; font-size:12px; color:#666;">建议尺寸：200*200(像素，PX)<br>建议格式：JPG,JPEG,PNG<br>图片大小：不超过200KB</div>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item label="人物姓名" prop="name" style="margin:0;">
+                                <el-input
+                                    maxlength="50"
+                                    placeholder="限50字"
+                                    type="text"
+                                    v-model="peopleForm.name"
+                                    auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item label="所在机构" prop="institutionName" style="margin:0;">
+                                <el-input
+                                    clearable
+                                    type="text"
+                                    maxlength="50"
+                                    placeholder="限50字"
+                                    v-model="peopleForm.institutionName"
+                                    auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item label="是否已故" prop="alive" style="margin:0;">
+                                <el-radio-group style="margin-top: 5px;" v-model="peopleForm.alive">
+                                    <el-radio label="0">是</el-radio>
+                                    <el-radio label="1">否</el-radio>
+                                </el-radio-group>
+                            </el-form-item>
                         </el-col>
                     </el-row>
                 </el-form>
@@ -141,10 +138,10 @@
             <!--新建保存修改-->
             <el-row class="el-row-h60" style="margin-top:20px;">
                 <el-col :span="3" :offset="8">
-                    <el-button type="primary" style="width:100%" @click="submitCreatEdit('guestForm')">保存</el-button>
+                    <el-button type="primary" style="width:100%" @click="submitCreatEdit('peopleForm')">保存</el-button>
                 </el-col>
                 <el-col :span="3" :offset="2">
-                    <el-button type="primary" style="width:100%" @click="closeEditCreatEdit('guestForm')">取消</el-button>
+                    <el-button type="primary" style="width:100%" @click="closeEditCreatEdit('peopleForm')">取消</el-button>
                 </el-col>
             </el-row>
         </div>
@@ -160,6 +157,19 @@
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
 
 <style>
+.imgcontainer{
+    width:100px;
+    height:100px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+	border:1px solid #bebebe;
+}
+.imgcontainer img{
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+}
 .avatar-uploader .el-upload {
     width:150px;
     border: 1px dashed #d9d9d9;
