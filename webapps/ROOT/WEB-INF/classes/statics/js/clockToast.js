@@ -63,20 +63,30 @@ switch(pageId)
         setCookie ('createditreport', '', 1)
         setCookie ('createditfastinfo', '', 1)
         setCookie ('createditmeeting', '', 1)
+        setCookie ('createditrank', '', 1)
         break;
     case 'edit_report':
         setCookie ('createdit', '', 1)
         setCookie ('createditfastinfo', '', 1)
         setCookie ('createditmeeting', '', 1)
+        setCookie ('createditrank', '', 1)
         break;
     case 'edit_fastinfo':
         setCookie ('createdit', '', 1)
         setCookie ('createditreport', '', 1)
         setCookie ('createditmeeting', '', 1)
+        setCookie ('createditrank', '', 1)
         break;
     case 'edit_meeting':
         setCookie ('createdit', '', 1)
         setCookie ('createditreport', '', 1)
+        setCookie ('createditfastinfo', '', 1)
+        setCookie ('createditrank', '', 1)
+        break;
+    case 'edit_rank':
+        setCookie ('createdit', '', 1)
+        setCookie ('createditreport', '', 1)
+        setCookie ('createditmeeting', '', 1)
         setCookie ('createditfastinfo', '', 1)
         break;
     default:
@@ -84,6 +94,7 @@ switch(pageId)
         setCookie ('createditreport', '', 1)
         setCookie ('createditfastinfo', '', 1)
         setCookie ('createditmeeting', '', 1)
+        setCookie ('createditrank', '', 1)
 }
 
 var mapErrorStatus = function(res){
@@ -116,6 +127,18 @@ var mapErrorStatus = function(res){
         case 7367:
             console.log('图片错了',res)
             vm.$confirm('抱歉，您复制的 '+ res.contentUrl +' 图片，不支持复制到编辑器中，请选择本地上传至内容图库后再使用！' , '图片提示', {
+                dangerouslyUseHTMLString: true,
+                closeOnClickModal: false,
+                showCancelButton:false,
+                showClose:false,
+                confirmButtonText:'我知道了',
+                type: 'warning'
+            }).then(() => {
+            })
+            break;
+        case 7377:
+            console.log('特殊符号',res)
+            vm.$confirm('抱歉，您编辑的内容中含有非法特殊字符' , '提示', {
                 dangerouslyUseHTMLString: true,
                 closeOnClickModal: false,
                 showCancelButton:false,
