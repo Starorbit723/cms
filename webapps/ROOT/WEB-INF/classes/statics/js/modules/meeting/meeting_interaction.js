@@ -407,7 +407,7 @@ var vm = new Vue({
         },
         //新建文章具体内容
         createOrEditArticles(type,item){
-            console.log(item)
+            // console.log(item)
             var self = this
             self.creatOrEditArticle = type
             if(type == 0) {
