@@ -39,7 +39,7 @@ var vm = new Vue({
                 id:'',//主键
                 cvId:'',//投In关联id
                 rankId:'',//榜单id
-                rankCatalogId:'',//榜单目录Id
+                rankCatalogId:'-1',//榜单目录Id
                 institutionId:'',//机构管理ID
                 name:'',//名称
                 logoUrl:'',//logo图片
@@ -323,7 +323,7 @@ var vm = new Vue({
                 id:'',//主键
                 cvId:'',//投In关联id
                 rankId:'',//榜单id
-                rankCatalogId:'',//榜单目录Id
+                rankCatalogId:'-1',//榜单目录Id
                 institutionId:'',//机构管理ID
                 name:'',//名称
                 logoUrl:'',//logo图片

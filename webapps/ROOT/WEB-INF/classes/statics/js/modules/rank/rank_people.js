@@ -40,7 +40,7 @@ var vm = new Vue({
             id:'',//
             cvId:'',//投In关联id
             rankId:'',//榜单id
-            rankCatalogId:'',//榜单目录Id
+            rankCatalogId:'-1',//榜单目录Id
             name:'',//名称
             alive:'1',//是否已故，0已故，1在世
             logoUrl:'',//图片
@@ -334,7 +334,7 @@ var vm = new Vue({
                 id:'',//
                 cvId:'',//投In关联id
                 rankId:'',//榜单id
-                rankCatalogId:'',//榜单目录Id
+                rankCatalogId:'-1',//榜单目录Id
                 name:'',//名称
                 alive:'1',//是否已故，0已故，1在世
                 logoUrl:'',//图片
