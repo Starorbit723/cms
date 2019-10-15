@@ -36,9 +36,8 @@
                             <span v-if="data.level == 1 && data.type == 0" style="font-size: 15px; color: rgb(0, 0, 0);font-weight: 700;">{{ data.name }}</span>
                             <span v-if="data.level == 2 && data.type == 0" style="font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;">{{ data.name }}</span>
                             <span v-if="data.level == 3 && data.type == 0" style="font-size: 15px; color: rgb(4, 118, 248);font-weight: 700;">{{ data.name }}</span>
-                            <span v-if="data.level == 4 && data.type == 0" style="font-size: 15px; color: rgb(211, 65, 7);">{{ data.name }}</span>
+                            <span v-if="data.level == 4 && data.type == 0" style="font-size: 15px; color: rgb(4, 117, 0);font-weight: 700;">{{ data.name }}</span>
                             <span v-if="data.type !== 0" style="font-size: 15px; color: rgb(211, 65, 7);">{{ data.name }}</span>
-                            <span v-if="data.level !== 1">{{ data.name }}</span>
                             <span>权重:{{ data.weight }}</span>
                             <span>级别:{{ data.level }}</span>
                             <span>最后:{{ data.end }}</span>
@@ -113,6 +112,7 @@
                                 <el-input
                                 type="text"
                                 v-model="rankInfoForm.weight"
+                                maxlength="6"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
@@ -145,6 +145,8 @@
         </div>
         <!--树形结构主页面结束 0 -->
         
+
+
         <!--机构榜单编辑子页面开始  1 -->
         <div v-show="showChildPage == 1">
             <div class="cv_content_square">
@@ -189,7 +191,7 @@
                         <el-table-column prop="name" label="机构名称" width=""></el-table-column>
                         <el-table-column prop="weight" label="排序" width="150">
                             <template slot-scope="scope">
-                                <el-input type="text" style="width: 100px;" v-model="scope.row.weight" auto-complete="off" @change="instituteRankWeightChange(scope.row)"></el-input>
+                                <el-input type="text" maxlength="6" style="width: 100px;" v-model="scope.row.weight" auto-complete="off" @change="instituteRankWeightChange(scope.row)"></el-input>
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" width="100" fixed="right">
@@ -211,7 +213,7 @@
                                         <el-input
                                         clearable
                                         type="text"
-                                        v-model="searchInstituteLibForm.name"
+                                        v-model="searchInstituteLibForm.cooperationName"
                                         auto-complete="off"></el-input>
                                     </el-form-item>
                                 </el-col>
@@ -227,15 +229,15 @@
                     <!--机构库列表-->
                     <div class="cv_content_square">
                         <el-table :data="instituteLibData" style="width: 100%; margin:10px auto;" ref="multipleTable" stripe>
-                            <el-table-column prop="logoUrl" label="机构Logo" width="150">
-                                <template v-if="scope.row.logoUrl" slot-scope="scope">
+                            <el-table-column prop="cooperationImg" label="机构Logo" width="150">
+                                <template v-if="scope.row.cooperationImg" slot-scope="scope">
                                     <div class="imgcontainer">
-                                        <img :src="scope.row.logoUrl">
+                                        <img :src="scope.row.cooperationImg">
                                     </div>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="name" label="机构名称" width=""></el-table-column>
-                            <el-table-column prop="userName" label="更新人" width="90"></el-table-column>
+                            <el-table-column prop="cooperationName" label="机构名称" width=""></el-table-column>
+                            <el-table-column prop="cooperationModUserName" label="更新人" width="90"></el-table-column>
                             <el-table-column label="操作" width="100" fixed="right">
                                 <template slot-scope="scope">
                                     <el-button type="text" size="small" @click="addThisInstituteToRank(scope.row)">添加</el-button>
@@ -255,17 +257,335 @@
                     </div>
                 </el-dialog>
                 <!--机构库弹出层结束   所属页面级 1-->
-
             </div>
         </div>
         <!--机构榜单编辑子页面结束  1 -->
 
 
 
+        <!--人物榜单编辑子页面开始  2 -->
+        <div v-show="showChildPage == 2">
+            <div class="cv_content_square">
+                <!--人物榜单搜索区-->
+                <div class="cv_content_square">
+                    <el-form :model="searchPeopleForm" status-icon class="demo-ruleForm" label-width="15%" label-position="right" @submit.native.prevent>
+                        <el-row class="el-row-h60">
+                            <el-col :span="16">
+                                <el-form-item label="人物名称" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    type="text"
+                                    v-model="searchPeopleForm.name"
+                                    auto-complete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="3" :offset="1" class="el-row-h40">
+                                <el-button type="primary" style="width:100%" @click="searchCurrentPeople()">搜索</el-button>
+                            </el-col>
+                            <el-col :span="3" :offset="1" class="el-row-h40">
+                                <el-button style="width:100%" @click="backToRankListFromPeople">返回</el-button>
+                            </el-col>
+                        </el-row>    
+                    </el-form>
+                </div>
+                <!--功能按钮区-->
+                <el-row class="el-row-h50">
+                    <el-col :span="4">
+                        <el-button type="primary" plain style="width:100%" icon="el-icon-plus" @click="addPeopleToRank">添加人物</el-button>
+                    </el-col>
+                </el-row>
+                <!--表格查询结果区--不分页-->
+                <div class="cv_content_square">
+                    <el-table :data="currentPeopleTableData" style="width: 100%; margin:10px auto;" stripe>
+                        <el-table-column prop="logoUrl" label="人物头像" width="140">
+                            <template v-if="scope.row.logoUrl" slot-scope="scope">
+                                <div class="imgcontainer">
+                                    <img :src="scope.row.logoUrl">
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="name" label="人物名称" width=""></el-table-column>
+                        <el-table-column prop="weight" label="排序" width="150">
+                            <template slot-scope="scope">
+                                <el-input type="text" maxlength="6" style="width: 100px;" v-model="scope.row.weight" auto-complete="off" @change="peopleRankWeightChange(scope.row)"></el-input>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="操作" width="100" fixed="right">
+                            <template slot-scope="scope">
+                                <el-button type="text" size="small" @click="delThisPeopleFromRank(scope.row)">删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+
+                <!--人物库弹出层开始   所属页面级 2-->
+                <el-dialog title="榜单人物库" :visible.sync="showPeopleLib" width="80%" :close-on-click-modal="false" :close-on-press-escape="false" :fullscreen="true" :show-close="false" >
+                    <!--搜索区-->
+                    <div class="cv_content_square">
+                        <el-form :model="searchPeopleLibForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                            <el-row class="el-row-h60">
+                                <el-col :span="16">
+                                    <el-form-item label="人物名称" style="margin:0;">
+                                        <el-input
+                                        clearable
+                                        type="text"
+                                        v-model="searchPeopleLibForm.guestName"
+                                        auto-complete="off"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="3" :offset="1" class="el-row-h40">
+                                    <el-button type="primary" icon="el-icon-search" style="width:100%" @click="startSearchPeopleLib(0)">搜索</el-button>
+                                </el-col>
+                                <el-col :span="3" :offset="1" class="el-row-h40">
+                                    <el-button style="width:100%" @click="backToPeopleRank()">返回</el-button>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </div>
+                    <!--人物库列表-->
+                    <div class="cv_content_square">
+                        <el-table :data="peopleLibData" style="width: 100%; margin:10px auto;" ref="multipleTable" stripe>
+                            <el-table-column prop="guestImg" label="人物头像" width="150">
+                                <template v-if="scope.row.guestImg" slot-scope="scope">
+                                    <div class="imgcontainer">
+                                        <img :src="scope.row.guestImg">
+                                    </div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="guestName" label="人物名称" width=""></el-table-column>
+                            <el-table-column prop="guestModUserName" label="更新人" width="90"></el-table-column>
+                            <el-table-column label="操作" width="100" fixed="right">
+                                <template slot-scope="scope">
+                                    <el-button type="text" size="small" @click="addThisPeopleToRank(scope.row)">添加</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                    <!--分页器-->
+                    <div class="cv_page_zone">
+                        <el-pagination
+                            @current-change="handleCurrentChange2"
+                            :current-page="pagination2.currPage"
+                            :page-size="pagination2.pageSize"
+                            layout="total, prev, pager, next, jumper"
+                            :total="pagination2.totalCount">
+                        </el-pagination>
+                    </div>
+                </el-dialog>
+                <!--人物库弹出层结束   所属页面级 2-->
+            </div>
+        </div>
+        <!--人物榜单编辑子页面结束  2 -->
+
+
+        <!--案例榜单编辑子页面开始  3 -->
+        <div v-show="showChildPage == 3">
+            <div class="cv_content_square">
+                <!--案例榜单搜索区-->
+                <div class="cv_content_square">
+                    <el-form :model="searchCaseForm" status-icon class="demo-ruleForm" label-width="15%" label-position="right" @submit.native.prevent>
+                        <el-row class="el-row-h60">
+                            <el-col :span="16">
+                                <el-form-item label="案例名称" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    type="text"
+                                    v-model="searchCaseForm.name"
+                                    auto-complete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="3" :offset="1" class="el-row-h40">
+                                <el-button type="primary" style="width:100%" @click="searchCurrentCase()">搜索</el-button>
+                            </el-col>
+                            <el-col :span="3" :offset="1" class="el-row-h40">
+                                <el-button style="width:100%" @click="backToRankListFromCase">返回</el-button>
+                            </el-col>
+                        </el-row>    
+                    </el-form>
+                </div>
+                <!--功能按钮区-->
+                <el-row class="el-row-h50">
+                    <el-col :span="4">
+                        <el-button type="primary" plain style="width:100%" icon="el-icon-plus" @click="addOrEditCaseToRank(0)">添加案例</el-button>
+                    </el-col>
+                </el-row>
+                <!--表格查询结果区--不分页-->
+                <div class="cv_content_square">
+                    <el-table :data="currentCaseTableData" style="width: 100%; margin:10px auto;" stripe>
+                        <el-table-column prop="name" label="案例名称" width=""></el-table-column>
+                        <el-table-column prop="title" label="是否为表头" width="140">
+                            <template v-if="scope.row.title" slot-scope="scope">
+                                <el-tag v-if="scope.row.title == 1" type="success">表格头部</el-tag>
+                                <el-tag v-if="scope.row.title == 0">数据</el-tag>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="weight" label="排序" width="150">
+                            <template slot-scope="scope">
+                                <el-input :disabled="scope.row.title == 1" type="text" maxlength="6" style="width: 100px;" v-model="scope.row.weight" auto-complete="off" @change="caseRankWeightChange(scope.row)"></el-input>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="操作" width="150" fixed="right">
+                            <template slot-scope="scope">
+                                <el-button type="text" size="small" @click="addOrEditCaseToRank(scope.row)">编辑</el-button>
+                                <el-button type="text" size="small" @click="editInstituteToCaseItem(scope.row)">关联机构</el-button>
+                                <el-button type="text" size="small" @click="delThisCaseFromRank(scope.row)">删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+                
+                <!--新建编辑单条案例弹框开始   所属页面级 3-->
+                <el-dialog title="新建/编辑案例" :visible.sync="showAddOrEditCase" width="80%" :close-on-click-modal="false" :close-on-press-escape="false" :fullscreen="false" :show-close="false" >
+                    <el-form :model="singleCaseForm" :rules="singleCaseFormRules"  ref="singleCaseForm" status-icon class="demo-ruleForm" label-width="15%" label-position="right" >
+                        <el-row class="el-row-h70">
+                            <el-col :span="24">
+                                <el-form-item label="案例名称" prop="name" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    type="text"
+                                    v-model="singleCaseForm.name"
+                                    maxlength="36"
+                                    auto-complete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="24">
+                                <el-form-item label="排序" prop="weight" style="margin:0;">
+                                    <el-input
+                                    :disabled="singleCaseForm.title == 1"
+                                    type="text"
+                                    v-model="singleCaseForm.weight"
+                                    maxlength="6"
+                                    auto-complete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="24">
+                                <el-form-item label="是否为表头" prop="title" style="margin:0;">
+                                    <el-radio-group style="margin-top: 5px;" v-model="singleCaseForm.title" @change="ifTitleChange">
+                                        <el-radio label="0">数据</el-radio>
+                                        <el-radio label="1">表头</el-radio>
+                                    </el-radio-group>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70" style="margin-top: 10px;">
+                            <el-row>
+                                <el-col class="el-row-h40" :span="3" :offset="8">
+                                    <el-button type="primary" style="width:100%" @click="ifSaveSingleCaseForm('singleCaseForm')">保存</el-button>
+                                </el-col>
+                                <el-col class="el-row-h40" :span="3" :offset="2">
+                                    <el-button type="primary" style="width:100%" @click="closeSingleCaseForm('singleCaseForm')">取消</el-button>
+                                </el-col>
+                            </el-row>
+                        </el-row>
+                        
+                    </el-form>
+                </el-dialog>
+                <!--新建编辑单条案例弹框结束   所属页面级 3-->
+
+                <!--关联单条案例弹框开始   所属页面级 3-->
+                <el-dialog title="关联机构" :visible.sync="showCaseConnectPage" width="80%" :close-on-click-modal="false" :close-on-press-escape="false" :fullscreen="true" :show-close="false" >
+                    <!--功能按钮区-->
+                    <el-row class="el-row-h50">
+                        <el-col :span="4">
+                            <el-button type="primary" style="width:100%" icon="el-icon-plus" @click="addInstituteToThisCase()">添加机构</el-button>
+                        </el-col>
+                        <el-col :offset="16" :span="4">
+                            <el-button type="" plain style="width:100%" @click="backToInstituteToCaseList()">返回</el-button>
+                        </el-col>
+                    </el-row>
+                    <!--表格查询结果区--不分页-->
+                    <div class="cv_content_square">
+                        <el-table :data="caseInstitutionTableData" style="width: 100%; margin:10px auto;" stripe>
+                            <el-table-column prop="logoUrl" label="机构Logo" width="140">
+                                <template v-if="scope.row.logoUrl" slot-scope="scope">
+                                    <div class="imgcontainer">
+                                        <img :src="scope.row.logoUrl">
+                                    </div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="name" label="机构名称" width=""></el-table-column>
+                            <el-table-column prop="weight" label="排序" width="150">
+                                <template slot-scope="scope">
+                                    <el-input type="text" maxlength="6" style="width: 100px;" v-model="scope.row.weight" auto-complete="off" @change="caseRankInstituteWeightChange(scope.row)"></el-input>
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="操作" width="100" fixed="right">
+                                <template slot-scope="scope">
+                                    <el-button type="text" size="small" @click="delThisInstituteFromCase(scope.row)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                    
+                </el-dialog>
+                <!--关联单条案例弹框结束   所属页面级 3-->
+
+                <!--机构库弹出层开始   所属页面级 3-->
+                <el-dialog title="榜单机构库" :visible.sync="showCaseInstitutionCaseLib" width="80%" :close-on-click-modal="false" :close-on-press-escape="false" :fullscreen="true" :show-close="false" >
+                    <!--搜索区-->
+                    <div class="cv_content_square">
+                        <el-form :model="searchCaseInstitutionLibForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                            <el-row class="el-row-h60">
+                                <el-col :span="16">
+                                    <el-form-item label="机构名称" style="margin:0;">
+                                        <el-input
+                                        clearable
+                                        type="text"
+                                        v-model="searchCaseInstitutionLibForm.cooperationName"
+                                        auto-complete="off"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="3" :offset="1" class="el-row-h40">
+                                    <el-button type="primary" icon="el-icon-search" style="width:100%" @click="startSearchInstituteLib2(0)">搜索</el-button>
+                                </el-col>
+                                <el-col :span="3" :offset="1" class="el-row-h40">
+                                    <el-button style="width:100%" @click="backToInstituteCase()">返回</el-button>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </div>
+                    <!--机构库列表-->
+                    <div class="cv_content_square">
+                        <el-table :data="caseInstitutionLibData" style="width: 100%; margin:10px auto;" ref="multipleTable" stripe>
+                            <el-table-column prop="cooperationImg" label="机构Logo" width="150">
+                                <template v-if="scope.row.cooperationImg" slot-scope="scope">
+                                    <div class="imgcontainer">
+                                        <img :src="scope.row.cooperationImg">
+                                    </div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="cooperationName" label="机构名称" width=""></el-table-column>
+                            <el-table-column prop="cooperationModUserName" label="更新人" width="90"></el-table-column>
+                            <el-table-column label="操作" width="100" fixed="right">
+                                <template slot-scope="scope">
+                                    <el-button type="text" size="small" @click="addThisInstituteToCase(scope.row)">添加</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                    <!--分页器-->
+                    <div class="cv_page_zone">
+                        <el-pagination
+                            @current-change="handleCurrentChange3"
+                            :current-page="pagination3.currPage"
+                            :page-size="pagination3.pageSize"
+                            layout="total, prev, pager, next, jumper"
+                            :total="pagination3.totalCount">
+                        </el-pagination>
+                    </div>
+                </el-dialog>
+                <!--机构库弹出层结束   所属页面级 3-->
 
 
 
 
+
+            </div>
+        </div>
 
 
     </div>

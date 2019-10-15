@@ -21,14 +21,14 @@ var vm = new Vue({
         
         return{
             //页面显示维度
-            showChildPage:'0',//0 主页面  1机构榜编辑
+            showChildPage:'0',//0 主页面  1机构榜编辑  2人物榜单编辑 3案例榜单编辑
             //总榜单id
             rankId:'', 
             rankDataTree:[],
             //榜单类型选项 服务机构是--其他榜单
             rankTypeOptions:[{
-                    label:'目录',
-                    value:'0'
+                label:'目录',
+                value:'0'
                 },{
                     label:'机构榜单',
                     value:'1'
@@ -108,13 +108,89 @@ var vm = new Vue({
             currentInstituteTableData:[],
             showInstituteLib: false,
             searchInstituteLibForm:{
-                name:'',
-                delStatus:'1',
-                rankCatalogId:'-1'
+                cooperationName:'',
+                cooperationStatus:'0',
             },
             instituteLibData:[],
-            //分页器相关
             pagination1: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //////////////人物榜单
+            searchPeopleForm:{
+                rankCatalogId:'',
+                name:'',
+                delStatus:'1'
+            },
+            currentPeopleTableData:[],
+            showPeopleLib: false,
+            searchPeopleLibForm:{
+                guestName:'',
+            },
+            peopleLibData:[],
+            pagination2: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            //////////////案例榜单
+            searchCaseForm:{
+                rankCatalogId:'',
+                name:'',
+                delStatus:'1'
+            },
+            currentCaseTableData:[],
+            ifCreatOrEditSingleCase: 'creat',//0新建 1编辑
+            showAddOrEditCase:false, //新建编辑某条案例
+            singleCaseForm:{
+                id:'',//主键
+                cvId:'',//投In关联id
+                rankId:'',//榜单id
+                rankCatalogId:'',//榜单目录Id
+                name:'',//名称
+                title: '0',//是否为标题1 标题，0数据
+                logoUrl:'',//logo图片
+                weight:'-1',//排序
+                sortOrder:'',//排序方式，1，显示排序，2，不显示排序
+                type:'',//类型{1：机构；2：企业；3：人物；4：其他}
+                createUserId:'',//
+                updateUserId:'',//
+                updateAt:'',//
+                createAt:'',//
+                delStatus:'1',//已删除1未删除
+            },
+            singleCaseFormRules:{
+                name:[
+                    { required: true, message: '请填写标题', trigger: 'change' }
+                ],
+                title:[
+                    { required: true, message: '请选择表头类型', trigger: 'change' }
+                ],
+                weight:[
+                    { required: true, validator: validateWeight, trigger: 'change' }
+                ],
+            },
+            //关联某一条案例的机构相关数据
+            showCaseConnectPage:false, //打开关联机构浮层
+            currentCaseId:'',//当前的案例id
+            caseInnerSearchForm: {
+                name:'',//
+                rankCaseId:'',//案例的id
+                delStatus:'1',
+                title:'',
+                institutionId:''
+            },
+            caseInstitutionTableData:[],//案例关联机构列表
+            showCaseInstitutionCaseLib: false,//案例机构库
+            searchCaseInstitutionLibForm:{
+                cooperationName:'',
+                cooperationStatus:'0',
+            },
+            caseInstitutionLibData:[],
+            pagination3: {
                 currPage: 1,
                 totalCount:0,
                 totalPage:0,
@@ -206,24 +282,64 @@ var vm = new Vue({
             }
             this.openRankInfoDialog()
         },
+        //添加下一个层级
+        appendLevelOrRank (node,data) {
+            var parent = node.parent;
+            var children = parent.data.children || parent.data;
+            var index = children.findIndex(d => d.id == data.id);
+            console.log('node',node,'data',data,'parent',parent,'children',children,'index',index)
+            this.lsNode = node //临时存贮节点
+            this.lsData = data //临时存贮节点数据
+            this.ifCreatOrChangeInfo = '0' //0新建  1修改
+            this.ifFirstFloor = false //是否1级目录
+            this.rankInfoForm = {
+                id:'',//主键
+                parentId: data.id.toString(),//父节点,当前节点id作为下一级别的父节点id
+                rankId: this.rankId,//榜单id
+                name:'',//名称
+                weight:'-1',//权重排序
+                sortOrder:'1',//排序方式，1，显示排序，2，不显示排序
+                type:'',//榜单序列（类型）1：机构榜单；2：人物榜单；3：服务机构榜；4：案例榜单
+                orderType:'4',//榜单序列（类型）{1：PE主榜；2：VC主榜；3：LP主榜；4：其他}
+                level: parseFloat(data.level) + 1,//目录级别
+                end:'',//是否为最后1级，0不是，1是
+                description:'',//描述
+                remarks:'',//备注
+                createUserId:'',//
+                updateUserId:'',//
+                updateAt:'',//
+                createAt:'',//
+                delStatus:'1',//0已删除1未删除
+            }
+            console.log('子目录添加层级',this.rankInfoForm)
+
+            this.openRankInfoDialog()
+
+        },
         //保存榜单目录信息
         saveRankInfoForm (formName) {
             var self = this
             self.$refs[formName].validate((valid) =>{
                 if (valid) {
                     var data = JSON.parse(JSON.stringify(self.rankInfoForm))
-                    //判断是新建还是修改
-                    if (self.ifCreatOrChangeInfo == '0') {
-                        var reqUrl = '/rankCatalog/save'
-                    } else if (self.ifCreatOrChangeInfo == '1') {
-                        var reqUrl = '/rankCatalog/update'
-                    }
                     //判断是目录还是榜单
                     if (data.type == '0') {//0代表目录
                         data.end = 0 //是否为最后1级，0不是，1是
                     } else {
                         data.end = 1 //是否为最后1级，0不是，1是
                     }
+                    //业务逻辑判断，层级只能是4 + 1 = 5级最多,5级必须是榜单
+                    if (parseFloat(data.level) == 5 && data.end == 0) {
+                        self.$message.error('最后一级必须为榜单，不能是目录')
+                        return
+                    }
+                    //判断是新建还是修改
+                    if (self.ifCreatOrChangeInfo == '0') {
+                        var reqUrl = '/rankCatalog/save'
+                    } else if (self.ifCreatOrChangeInfo == '1') {
+                        var reqUrl = '/rankCatalog/update'
+                    }
+                    
                     console.log('新建的层级为:',data)
                     $.ajax({
                         type: "POST",
@@ -290,40 +406,7 @@ var vm = new Vue({
             this.ifCreatOrChangeInfo = '1'//0新建  1修改
             this.showAddOrChangeRankInfo = true
         },
-        //添加下一个层级
-        appendLevelOrRank (node,data) {
-            var parent = node.parent;
-            var children = parent.data.children || parent.data;
-            var index = children.findIndex(d => d.id == data.id);
-            console.log('node',node,'data',data,'parent',parent,'children',children,'index',index)
-            this.lsNode = node //临时存贮节点
-            this.lsData = data //临时存贮节点数据
-            this.ifCreatOrChangeInfo = '0' //0新建  1修改
-            this.ifFirstFloor = false //是否1级目录
-            this.rankInfoForm = {
-                id:'',//主键
-                parentId: data.id.toString(),//父节点,当前节点id作为下一级别的父节点id
-                rankId: this.rankId,//榜单id
-                name:'',//名称
-                weight:'-1',//权重排序
-                sortOrder:'1',//排序方式，1，显示排序，2，不显示排序
-                type:'',//榜单序列（类型）1：机构榜单；2：人物榜单；3：服务机构榜；4：案例榜单
-                orderType:'4',//榜单序列（类型）{1：PE主榜；2：VC主榜；3：LP主榜；4：其他}
-                level: parseFloat(data.level) + 1,//目录级别
-                end:'',//是否为最后1级，0不是，1是
-                description:'',//描述
-                remarks:'',//备注
-                createUserId:'',//
-                updateUserId:'',//
-                updateAt:'',//
-                createAt:'',//
-                delStatus:'1',//0已删除1未删除
-            }
-            console.log('子目录添加层级',this.rankInfoForm)
-
-            this.openRankInfoDialog()
-
-        },
+        
         //添加榜单数据
         editRankData(node,data) {
             var parent = node.parent;
@@ -339,14 +422,22 @@ var vm = new Vue({
                 this.searchInstituteForm.rankCatalogId = this.currentSearchCatalogId
                 this.searchCurrentInstitute()
             } else if (data.type == '2') {
-                console.log('人物榜')
+                console.log('人物榜','id=',data.id)
+                //设置当前榜单的查询rankCatalogId
+                this.currentSearchCatalogId = data.id.toString()
+                this.searchPeopleForm.rankCatalogId = this.currentSearchCatalogId
+                this.searchCurrentPeople()
             } else if (data.type == '3') {
                 console.log('服务机构榜')
             } else if (data.type == '4') {
-                console.log('案例榜单')
+                console.log('案例榜单','id=',data.id)
+                //设置当前榜单的查询rankCatalogId
+                this.currentSearchCatalogId = data.id.toString()
+                this.searchCaseForm.rankCatalogId = this.currentSearchCatalogId
+                this.searchCurrentCase()
             }
         },
-        //////////////////////////编辑机构榜单相关方法
+        ////////////////////////////////编辑机构榜单相关方法
         //搜索当前榜单下的机构--不分页
         searchCurrentInstitute () {
             var self = this
@@ -382,7 +473,7 @@ var vm = new Vue({
         startSearchInstituteLib (type) {
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchInstituteLibForm))
-            data.name = data.name.toString().trim()
+            data.cooperationName = data.cooperationName.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -397,16 +488,12 @@ var vm = new Vue({
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
-                url: "/rankInstitution/list",
+                url: "/cooperation/list",
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){
                         self.instituteLibData = res.page.list
-                        for (let i = 0; i < self.instituteLibData.length; i++){
-                            self.instituteLibData[i].createAt = self.transformTime(parseFloat(self.instituteLibData[i].createAt))
-                            self.instituteLibData[i].updateAt = self.transformTime(parseFloat(self.instituteLibData[i].updateAt))
-                        }
                         self.pagination1 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
@@ -432,10 +519,24 @@ var vm = new Vue({
         addThisInstituteToRank (item){
             console.log('要添加的条目',item)
             var self = this
-            var copyData = JSON.parse(JSON.stringify(item))
-            //将所属目录id由-1置成当前的榜单id,将该条数据id置空后调save接口来复制出一条原有数据
-            copyData.rankCatalogId = this.currentSearchCatalogId
-            copyData.id = ''
+            //将人物库的数据copy一份调save接口来复制出一条原有数据进入业务表
+            var copyData = {
+                id:'',//主键
+                cvId:'',//投In关联id
+                rankId:'',//榜单id
+                rankCatalogId: self.currentSearchCatalogId,//榜单目录Id
+                institutionId: item.cooperationId.toString(),//给搜索同步一个机构id
+                name: item.cooperationName,//名称
+                logoUrl:item.cooperationImg,//logo图片
+                weight:'-1',//排序
+                sortOrder:'',//1，显示排序，2，不显示排序
+                type:'',//1：机构；2：企业；3：人物；4：其他
+                createUserId:'',//
+                updateUserId:'',//
+                updateAt:'',//
+                createAt:'',//
+                delStatus:'1',//0已删除1未删除
+            }
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
@@ -466,9 +567,8 @@ var vm = new Vue({
             this.currentInstituteTableData=[]
             this.showInstituteLib = false
             this.searchInstituteLibForm = {
-                name:'',
-                delStatus:'1',
-                rankCatalogId:'-1'
+                cooperationName:'',
+                cooperationStatus:'0',
             },
             this.instituteLibData = []
             this.pagination1 = {
@@ -555,9 +655,8 @@ var vm = new Vue({
             this.currentInstituteTableData=[]
             this.showInstituteLib = false
             this.searchInstituteLibForm = {
-                name:'',
-                delStatus:'1',
-                rankCatalogId:'-1'
+                cooperationName:'',
+                cooperationStatus:'0',
             },
             this.instituteLibData = []
             this.pagination1 = {
@@ -567,7 +666,725 @@ var vm = new Vue({
                 pageSize:10
             }
             this.showChildPage = '0'
+        },
+        ////////////////////////////////编辑人物榜单相关方法
+        //搜索当前榜单下的机构--不分页
+        searchCurrentPeople () {
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchPeopleForm))
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: '/rankPerson/array',
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    console.log(res)
+                    if (res.code == 200) {
+                        self.currentPeopleTableData = res.list
+                        self.showChildPage = '2'
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        //向人物榜单添加机构数据
+        addPeopleToRank () {
+            this.startSearchPeopleLib(0)
+            this.showPeopleLib = true
+        },
+        //搜索人物库
+        startSearchPeopleLib (type) {
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchPeopleLibForm))
+            data.guestName = data.guestName.toString().trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination2.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination2.currPage.toString(),
+                    limit: self.pagination2.pageSize.toString()
+                })
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/guest/list",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.peopleLibData = res.page.list
+                        self.pagination2 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage:res.page.totalPage,
+                            pageSize:res.page.pageSize
+                        }
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        handleCurrentChange2 (val) {
+            this.pagination2.currPage = val
+            this.startSearchPeopleLib ()
+        },
+        //添加人物到榜单
+        addThisPeopleToRank (item){
+            console.log('要添加的条目',item)
+            var self = this
+            //将人物库的数据copy一份调save接口来复制出一条原有数据进入业务表
+            var copyData = {
+                id:'',//
+                cvId:'',//投In关联id
+                rankId:'',//榜单id
+                rankCatalogId: self.currentSearchCatalogId,//榜单目录Id
+                name: item.guestName,//名称
+                alive:'1',//是否已故，0已故，1在世
+                logoUrl:item.guestImg,//图片
+                institutionId:'',//机构管理ID
+                institutionName:item.guestCompany,//机构名称
+                weight:'-1',//排序
+                sortOrder:'',//排序方式，1，显示排序，2，不显示排序
+                type:'',//1：机构；2：企业；3：人物；4：其他
+                createUserId:'',//
+                updateUserId:'',//
+                updateAt:'',//
+                createAt:'',//
+                delStatus:'1',//0已删除1未删除
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: '/rankPerson/save',
+                data: JSON.stringify(copyData),
+                dataType: "json",
+                success: function(res){
+                    if (res.code == 200) {
+                        self.backToPeopleRank()
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });   
+        },
+        //返回机构榜单编辑页面
+        backToPeopleRank () {
+            this.searchPeopleForm = {
+                rankCatalogId: this.currentSearchCatalogId,
+                name:'',
+                delStatus:'1'
+            }
+            this.currentPeopleTableData=[]
+            this.showPeopleLib = false
+            this.searchPeopleLibForm = {
+                guestName:''
+            },
+            this.peopleLibData = []
+            this.pagination2 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
 
+            //请求人物榜单不分页列表回显
+            this.searchCurrentPeople()
+        },
+        //机构榜单顺序调整
+        peopleRankWeightChange(item){
+            console.log('修改榜单权重',item)
+            var self = this
+            var data = {
+                id: item.id.toString(),
+                weight: item.weight
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: '/rankPerson/update',
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if (res.code == 200) {
+                        //请求人物榜单不分页列表回显
+                        self.searchCurrentPeople()
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });   
+        },
+        //删除机构榜中的机构条目
+        delThisPeopleFromRank (item) {
+            var self = this
+            self.$confirm('确实要删除该人物吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = {
+                    id: item.id.toString(),
+                    delStatus:'0',//0已删除1未删除
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: '/rankPerson/update',
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res){
+                        if (res.code == 200) {
+                            //请求机构榜单不分页列表回显
+                            self.searchCurrentPeople()
+                            self.$message.success('删除成功')
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });   
+            })
+        },
+        //从人物榜返回到榜单目录
+        backToRankListFromPeople () {
+            this.currentSearchCatalogId = ''
+            this.searchPeopleForm = {
+                rankCatalogId: '',
+                name:'',
+                delStatus:'1'
+            }
+            this.currentPeopleTableData=[]
+            this.showPeopleLib = false
+            this.searchPeopleLibForm={
+                guestName:'',
+            }
+            this.peopleLibData = []
+            this.pagination2 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+            this.showChildPage = '0'
+        },
+        ////////////////////////////////编辑案例榜单相关方法
+        //搜索当前榜单下的案例--不分页
+        searchCurrentCase () {
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchCaseForm))
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: '/rankCase/array',
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    console.log(res)
+                    if (res.code == 200) {
+                        self.currentCaseTableData = res.list
+                        self.showChildPage = '3'
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        //新建或编辑
+        addOrEditCaseToRank(type){
+            var self = this
+            if (type == '0') {
+                this.ifCreatOrEditSingleCase = 'creat'
+                this.singleCaseForm.rankCatalogId = this.currentSearchCatalogId
+                this.showAddOrEditCase = true
+            } else {
+                this.ifCreatOrEditSingleCase = 'edit'
+                this.singleCaseForm.rankCatalogId = this.currentSearchCatalogId
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: '/rankCase/info/' + type.id,
+                    dataType: "json",
+                    success: function(res){
+                        if (res.code == 200) {
+                            console.log('编辑某一条案例',res.dict)
+                            self.singleCaseForm = res.dict
+                            self.showAddOrEditCase = true
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+            }
+            
+        },
+        //切换是否为表头
+        ifTitleChange (val) {
+            if (val == 1) {
+                this.singleCaseForm.weight = 1000000
+            } else {
+                this.singleCaseForm.weight = -1
+            }
+        },
+        //判断是否保存单条案例--如果该榜单有页头就不能保存成功
+        ifSaveSingleCaseForm (formName){
+            var self = this
+            self.$refs[formName].validate((valid) =>{
+                if (valid) {
+                    var data = {
+                        rankCatalogId: self.currentSearchCatalogId,
+                        title:'1', //1为表头
+                        delStatus:'1'
+                    }
+                    $.ajax({
+                        type: "POST",
+                        contentType: "application/json",
+                        url: '/rankCase/array',
+                        data: JSON.stringify(data),
+                        dataType: "json",
+                        success: function(res){
+                            if (res.code == 200) {
+                                console.log('判断之前是否有表头返回',res.list.length !== 0)
+                                if (res.list.length == 0) {
+                                    self.saveSingleCaseForm()
+                                } else if (res.list.length !== 0 && self.singleCaseForm.title == '1') {
+                                    self.$message.error('表头已经存在，设置新表头请删除原来表头')
+                                } else {
+                                    self.saveSingleCaseForm()
+                                }
+                            } else {
+                                mapErrorStatus(res)
+                                vm.error = true;
+                                vm.errorMsg = res.msg;
+                            }
+                        },
+                        error:function(res){
+                            mapErrorStatus(res)
+                        }
+                    });
+                }
+            })
+        },
+        //保存单条案例
+        saveSingleCaseForm () {
+            var self = this
+            //判断是新建还是修改
+            if (self.ifCreatOrEditSingleCase == 'creat') {
+                var reqUrl = '/rankCase/save'
+            } else if (self.ifCreatOrEditSingleCase == 'edit') {
+                var reqUrl = '/rankCase/update'
+            }
+            var data = JSON.parse(JSON.stringify(self.singleCaseForm))
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: reqUrl,
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if (res.code == 200) {
+                        self.$message.success('保存成功');
+                        self.closeSingleCaseForm('singleCaseForm')
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        //关闭新建或修改单条案例
+        closeSingleCaseForm(formName){
+            //还原数据
+            this.searchCaseForm = {
+                rankCatalogId:this.currentSearchCatalogId,
+                name:'',
+                delStatus:'1'
+            },
+            this.singleCaseForm = {
+                id:'',//主键
+                cvId:'',//投In关联id
+                rankId:'',//榜单id
+                rankCatalogId:this.currentSearchCatalogId,//榜单目录Id
+                name:'',//名称
+                title: '0',//是否为标题1 标题，0数据
+                logoUrl:'',//logo图片
+                weight:'-1',//排序
+                sortOrder:'',//排序方式，1，显示排序，2，不显示排序
+                type:'',//类型{1：机构；2：企业；3：人物；4：其他}
+                createUserId:'',//
+                updateUserId:'',//
+                updateAt:'',//
+                createAt:'',//
+                delStatus:'1',//已删除1未删除
+            }
+            this.$refs[formName].resetFields();
+            this.showAddOrEditCase = false
+            //反显列表
+            this.searchCurrentCase()
+        },
+        //案例榜单顺序权重改变
+        caseRankWeightChange (item) {
+            console.log('修改案例权重',item)
+            var self = this
+            var data = {
+                id: item.id.toString(),
+                weight: item.weight
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: '/rankCase/update',
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if (res.code == 200) {
+                        //请求人物榜单不分页列表回显
+                        self.searchCurrentCase()
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });   
+        },
+        //从当前榜单中删除案例
+        delThisCaseFromRank (item) {
+            var self = this
+            self.$confirm('确实要删除该案例吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = {
+                    id: item.id.toString(),
+                    delStatus:'0',//0已删除1未删除
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: '/rankCase/update',
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res){
+                        if (res.code == 200) {
+                            //请求机构榜单不分页列表回显
+                            self.searchCurrentCase()
+                            self.$message.success('删除成功')
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });   
+            })
+        },
+        //从案例榜返回到榜单目录
+        backToRankListFromCase () {
+            this.currentSearchCatalogId = ''
+            this.searchCaseForm={
+                rankCatalogId:'',
+                name:'',
+                delStatus:'1'
+            }
+            this.currentCaseTableData = []
+            this.ifCreatOrEditSingleCase = 'creat'//0新建 1编辑
+            this.showAddOrEditCase = false //新建编辑某条案例
+            this.singleCaseForm = {
+                id:'',//主键
+                cvId:'',//投In关联id
+                rankId:'',//榜单id
+                rankCatalogId:'',//榜单目录Id
+                name:'',//名称
+                title: '0',//是否为标题1 标题，0数据
+                logoUrl:'',//logo图片
+                weight:'-1',//排序
+                sortOrder:'',//排序方式，1，显示排序，2，不显示排序
+                type:'',//类型{1：机构；2：企业；3：人物；4：其他}
+                createUserId:'',//
+                updateUserId:'',//
+                updateAt:'',//
+                createAt:'',//
+                delStatus:'1',//已删除1未删除
+            }
+            this.showChildPage = '0'
+        },
+        //关联某一条案例下的关联机构
+        editInstituteToCaseItem (item) {
+            this.currentCaseId = item.id.toString()
+            this.caseInnerSearchForm.rankCaseId = this.currentCaseId
+            this.showCaseConnectPage = true
+            this.startSearchThisCaseIntitute()
+        },
+        //搜索该案例下的机构----不分页
+        startSearchThisCaseIntitute () {
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.caseInnerSearchForm))
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: ' /rankCaseInstitution/array',
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if (res.code == 200) {
+                       console.log('榜单关联机构不分页返回',res.list)
+                       self.caseInstitutionTableData = res.list
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });   
+        },
+        //给某一条案例添加关联机构
+        addInstituteToThisCase () {
+            this.showCaseInstitutionCaseLib = true
+            this.startSearchInstituteLib2(0)
+        },
+        //搜索机构库
+        startSearchInstituteLib2 (type) {
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchCaseInstitutionLibForm))
+            data.cooperationName = data.cooperationName.toString().trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination3.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination3.currPage.toString(),
+                    limit: self.pagination3.pageSize.toString()
+                })
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/cooperation/list",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+
+                        self.caseInstitutionLibData = res.page.list
+                        self.pagination3 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage:res.page.totalPage,
+                            pageSize:res.page.pageSize
+                        }
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        handleCurrentChange3 (val) {
+            this.pagination3.currPage = val
+            this.startSearchInstituteLib2()
+        },
+        //添加机构到案例
+        addThisInstituteToCase (item){
+            console.log('要添加的条目',item)
+            var self = this
+            //将机构库的数据copy一份调save接口来复制出一条原有数据进入业务表
+            var copyData = {
+                cvId:'',//
+                rankId:'',//
+                rankCatalogId:'',//
+                rankCaseId: self.currentCaseId,//
+                institutionId: item.cooperationId.toString(),//
+                name: item.cooperationName,//名称
+                logoUrl: item.cooperationImg,//logo图片
+                title:'',//
+                weight:'-1',//
+                sortOrder:'',//
+                type:'',//
+                delStatus:'1',//
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: '/rankCaseInstitution/save',
+                data: JSON.stringify(copyData),
+                dataType: "json",
+                success: function(res){
+                    if (res.code == 200) {
+                        self.backToInstituteCase()
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });   
+        },
+        //返回案例机构列表编辑页面
+        backToInstituteCase () {
+            this.showCaseInstitutionCaseLib = false,//案例机构库
+            this.searchCaseInstitutionLibForm = {
+                cooperationName:'',
+                cooperationStatus:'0',
+            }
+            this.caseInstitutionLibData = []
+            this.pagination3 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+            this.caseInnerSearchForm = {
+                name:'',//
+                rankCaseId: this.currentCaseId,//案例的id
+                delStatus:'1',
+                title:'',
+                institutionId:''
+            }
+            //请求案例下的机构不分页列表回显
+            this.startSearchThisCaseIntitute()
+        },
+        //案例榜单关联机构顺序调整
+        caseRankInstituteWeightChange(item){
+            console.log('修改榜单权重',item)
+            var self = this
+            var data = {
+                id: item.id.toString(),
+                weight: item.weight
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: '/rankCaseInstitution/update',
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if (res.code == 200) {
+                        //请求机构榜单不分页列表回显
+                        self.startSearchThisCaseIntitute()
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });   
+        },
+        //返回案例榜单编辑页面
+        backToInstituteToCaseList () {
+            this.showCaseConnectPage = false, //打开关联机构浮层
+            this.currentCaseId = ''//当前的案例id
+            this.caseInnerSearchForm =  {
+                name:'',//
+                rankCaseId:'',//案例的id
+                delStatus:'1',
+                title:'',
+                institutionId:''
+            },
+            this.caseInstitutionTableData =[ ]//案例关联机构列表
+            //反显案例下的案例列表
+            this.searchCurrentCase()
+        },
+        //从当前榜单中删除案例
+        delThisInstituteFromCase (item) {
+            var self = this
+            self.$confirm('确实要删除该机构吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = {
+                    id: item.id.toString(),
+                    delStatus:'0',//0已删除1未删除
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: '/rankCaseInstitution/update',
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res){
+                        if (res.code == 200) {
+                            //请求案例榜单关联机构不分页列表回显
+                            self.startSearchThisCaseIntitute
+                            self.$message.success('删除成功')
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });   
+            })
         },
 
 
@@ -575,15 +1392,6 @@ var vm = new Vue({
 
 
 
-
-
-
-        remove(node, data) {
-            const parent = node.parent;
-            const children = parent.data.children || parent.data;
-            const index = children.findIndex(d => d.id === data.id);
-            children.splice(index, 1);
-        },
         //返回榜单列表
         backToRankList(){
             setCookie ('createditrank', '', 1)
