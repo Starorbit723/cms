@@ -3,13 +3,13 @@
 <head>
 <link rel="stylesheet" href="${request.contextPath}/statics/css/icon.css">
 <link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
-<title>内容图库</title>
+<title>广告图库</title>
 </head>
 <body>
     <#include "/header.html">
-    <div class="cvpage_title_common">内容图库</div>
-    <div id="content_image" class="cv_page_content">
-        <!------------------内容图列表开始------------------>
+    <div class="cvpage_title_common">广告图库</div>
+    <div id="advertisement_image" class="cv_page_content">
+        <!------------------封面图列表开始------------------>
         <div v-show="!showChildPage">
             <!--列表搜索区-->
             <div class="cv_content_square">
@@ -81,7 +81,7 @@
             <div class="cv_page_zone">
                 <el-pagination
                     @current-change="handleCurrentChange"
-                    :current-page="pagination1.currPage"
+                    :current-page="pagination1.currentPage"
                     :page-size="pagination1.pageSize"
                     layout="total, prev, pager, next, jumper"
                     :total="pagination1.totalCount">
@@ -89,13 +89,13 @@
             </div>
 
         </div>
-        <!------------------内容图列表结束------------------>
+        <!------------------封面图列表结束------------------>
 
         <!------------------新增修改列表结束------------------>
         <div v-show="showChildPage">
             <!--表单信息-->
             <div class="cv_content_square">
-                <el-form :model="contentImgForm" :rules="contentImgFormRules"  ref="contentImgForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
+                <el-form :model="advImgForm" :rules="advImgFormRules"  ref="advImgForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
                     <el-row class="el-row-h70">
                         <el-col :span="12">
                             <el-form-item label="图片标题" prop="picTitle" style="margin:0;">
@@ -103,7 +103,7 @@
                                 maxlength="20"
                                 placeholder="限20字"
                                 type="text"
-                                v-model="contentImgForm.picTitle"
+                                v-model="advImgForm.picTitle"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
@@ -113,7 +113,7 @@
                                 maxlength="20"
                                 placeholder="限20字"
                                 type="text"
-                                v-model="contentImgForm.picDesc"
+                                v-model="advImgForm.picDesc"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
@@ -121,7 +121,7 @@
                     <el-row class="el-row-h70">
                         <el-col :span="12">
                             <el-form-item label="图片分类" prop="picType" style="margin:0;">
-                                <el-select v-model="contentImgForm.picType" style="width:100%;" disabled>
+                                <el-select v-model="advImgForm.picType" style="width:100%;" disabled>
                                     <el-option
                                       v-for="item in picTypeOptions"
                                       :key="item.value"
@@ -133,7 +133,7 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="图片状态" prop="picStatus" style="margin:0;">
-                                <el-select v-model="contentImgForm.picStatus" style="width:100%;" placeholder="" disabled>
+                                <el-select v-model="advImgForm.picStatus" style="width:100%;" placeholder="" disabled>
                                     <el-option
                                       v-for="item in picStatusOptions"
                                       :key="item.value"
@@ -145,14 +145,15 @@
                         </el-col>
                     </el-row>
                     <el-row>
-                        <el-form-item label="内容图片" prop="picUrl" label-width="15%" style="margin:0;">
+                        <el-form-item label="广告图片" prop="picUrl" label-width="15%" style="margin:0;">
                             <el-upload
                                 class="avatar-uploader"
                                 action="https://jsonplaceholder.typicode.com/posts/"
                                 :show-file-list="false"
                                 :auto-upload="false"
-                                :on-change="coverImgFileChange">
-                                <img v-if="contentImgForm.picUrl" :src="contentImgForm.picUrl" class="avatar">
+                                :on-change="coverImgFileChange"
+                                :before-upload="beforeAvatarUpload">
+                                <img v-if="advImgForm.picUrl" :src="advImgForm.picUrl" class="avatar">
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                             </el-upload>
                         </el-form-item>
@@ -162,10 +163,10 @@
             <!--新建保存修改-->
             <el-row class="el-row-h60" style="margin-top:20px;">
                 <el-col :span="3" :offset="8">
-                    <el-button type="primary" style="width:100%" @click="submitCreatEdit('contentImgForm')">保存</el-button>
+                    <el-button type="primary" style="width:100%" @click="submitCreatEdit('advImgForm')">保存</el-button>
                 </el-col>
                 <el-col :span="3" :offset="2">
-                    <el-button type="primary" style="width:100%" @click="closeEditCreatEdit('contentImgForm')">取消</el-button>
+                    <el-button type="primary" style="width:100%" @click="closeEditCreatEdit('advImgForm')">取消</el-button>
                 </el-col>
             </el-row>
         </div>
@@ -177,7 +178,7 @@
 
 
 <script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
-<script type="text/javascript" src="${request.contextPath}/statics/js/modules/content/content_image.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/resource/advertisement_image.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
 
 <style>

@@ -3,12 +3,12 @@
 <head>
 <link rel="stylesheet" href="${request.contextPath}/statics/css/icon.css">
 <link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
-<title>广告图库</title>
+<title>封面图库</title>
 </head>
 <body>
     <#include "/header.html">
-    <div class="cvpage_title_common">广告图库</div>
-    <div id="advertisement_image" class="cv_page_content">
+    <div class="cvpage_title_common">封面图库</div>
+    <div id="cover_image" class="cv_page_content">
         <!------------------封面图列表开始------------------>
         <div v-show="!showChildPage">
             <!--列表搜索区-->
@@ -81,7 +81,7 @@
             <div class="cv_page_zone">
                 <el-pagination
                     @current-change="handleCurrentChange"
-                    :current-page="pagination1.currentPage"
+                    :current-page="pagination1.currPage"
                     :page-size="pagination1.pageSize"
                     layout="total, prev, pager, next, jumper"
                     :total="pagination1.totalCount">
@@ -95,7 +95,7 @@
         <div v-show="showChildPage">
             <!--表单信息-->
             <div class="cv_content_square">
-                <el-form :model="advImgForm" :rules="advImgFormRules"  ref="advImgForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
+                <el-form :model="coverImgForm" :rules="coverImgFormRules" ref="coverImgForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
                     <el-row class="el-row-h70">
                         <el-col :span="12">
                             <el-form-item label="图片标题" prop="picTitle" style="margin:0;">
@@ -103,25 +103,28 @@
                                 maxlength="20"
                                 placeholder="限20字"
                                 type="text"
-                                v-model="advImgForm.picTitle"
-                                auto-complete="off"></el-input>
+                                v-model="coverImgForm.picTitle"
+                                auto-complete="off">
+                            </el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="图片描述" prop="picDesc" style="margin:0;">
                                 <el-input
+                                clearable
+                                type="text"
                                 maxlength="20"
                                 placeholder="限20字"
-                                type="text"
-                                v-model="advImgForm.picDesc"
-                                auto-complete="off"></el-input>
+                                v-model="coverImgForm.picDesc"
+                                auto-complete="off">
+                            </el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-row class="el-row-h70">
                         <el-col :span="12">
                             <el-form-item label="图片分类" prop="picType" style="margin:0;">
-                                <el-select v-model="advImgForm.picType" style="width:100%;" disabled>
+                                <el-select v-model="coverImgForm.picType" style="width:100%;" disabled>
                                     <el-option
                                       v-for="item in picTypeOptions"
                                       :key="item.value"
@@ -133,7 +136,7 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="图片状态" prop="picStatus" style="margin:0;">
-                                <el-select v-model="advImgForm.picStatus" style="width:100%;" placeholder="" disabled>
+                                <el-select v-model="coverImgForm.picStatus" style="width:100%;" placeholder="" disabled>
                                     <el-option
                                       v-for="item in picStatusOptions"
                                       :key="item.value"
@@ -145,15 +148,15 @@
                         </el-col>
                     </el-row>
                     <el-row>
-                        <el-form-item label="广告图片" prop="picUrl" label-width="15%" style="margin:0;">
+                        <el-form-item label="封面图片" prop="picUrl" label-width="15%" style="margin:0;">
                             <el-upload
                                 class="avatar-uploader"
                                 action="https://jsonplaceholder.typicode.com/posts/"
                                 :show-file-list="false"
                                 :auto-upload="false"
-                                :on-change="coverImgFileChange"
-                                :before-upload="beforeAvatarUpload">
-                                <img v-if="advImgForm.picUrl" :src="advImgForm.picUrl" class="avatar">
+                                :on-success="handleAvatarSuccess"
+                                :on-change="coverImgFileChange">
+                                <img v-if="coverImgForm.picUrl" :src="coverImgForm.picUrl" class="avatar">
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                             </el-upload>
                         </el-form-item>
@@ -163,10 +166,10 @@
             <!--新建保存修改-->
             <el-row class="el-row-h60" style="margin-top:20px;">
                 <el-col :span="3" :offset="8">
-                    <el-button type="primary" style="width:100%" @click="submitCreatEdit('advImgForm')">保存</el-button>
+                    <el-button type="primary" style="width:100%" @click="submitCreatEdit('coverImgForm')">保存</el-button>
                 </el-col>
                 <el-col :span="3" :offset="2">
-                    <el-button type="primary" style="width:100%" @click="closeEditCreatEdit('advImgForm')">取消</el-button>
+                    <el-button type="primary" style="width:100%" @click="closeEditCreatEdit('coverImgForm')">取消</el-button>
                 </el-col>
             </el-row>
         </div>
@@ -178,7 +181,7 @@
 
 
 <script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
-<script type="text/javascript" src="${request.contextPath}/statics/js/modules/advertisement/advertisement_image.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/resource/cover_image.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
 
 <style>

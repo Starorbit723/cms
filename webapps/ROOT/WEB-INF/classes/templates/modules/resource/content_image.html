@@ -3,13 +3,13 @@
 <head>
 <link rel="stylesheet" href="${request.contextPath}/statics/css/icon.css">
 <link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
-<title>自媒体图库</title>
+<title>内容图库</title>
 </head>
 <body>
     <#include "/header.html">
-    <div class="cvpage_title_common">自媒体图库</div>
-    <div id="selfmedia_image" class="cv_page_content">
-        <!------------------封面图列表开始------------------>
+    <div class="cvpage_title_common">内容图库</div>
+    <div id="content_image" class="cv_page_content">
+        <!------------------内容图列表开始------------------>
         <div v-show="!showChildPage">
             <!--列表搜索区-->
             <div class="cv_content_square">
@@ -30,9 +30,9 @@
                                     style="width:100%;"
                                     v-model="timeRange"
                                     type="datetimerange"
-                                    :picker-options="pickerOptions"
                                     start-placeholder="开始日期"
                                     end-placeholder="结束日期"
+                                    :picker-options="pickerOptions"
                                     value-format="yyyy-MM-dd HH:mm:ss"
                                     :default-time="['00:00:00', '00:00:00']">
                                 </el-date-picker>
@@ -60,14 +60,14 @@
                         type="selection"
                         width="55">
                     </el-table-column>
-                    <el-table-column prop="picUrl" label="封面图预览" width="180">
+                    <el-table-column prop="picUrl" label="图片预览" width="160">
                         <template v-if="scope.row.picUrl" slot-scope="scope">
                             <img style="width:100px;height:70px;" :src="scope.row.picUrl">
                         </template>
                     </el-table-column>
                     <el-table-column prop="picTitle" label="图片名称" width="250"></el-table-column>
                     <el-table-column prop="picEditorName" label="创建人" width="120"></el-table-column>
-                    <el-table-column prop="picModTime" label="最后更新时间"></el-table-column>
+                    <el-table-column prop="picCrtTime" label="创建时间"></el-table-column>
                     <el-table-column label="操作" width="150" fixed="right">
                         <template slot-scope="scope">
                             <el-button type="text" size="small" @click="downLoadThisPic(scope.row)">下载</el-button>
@@ -89,13 +89,13 @@
             </div>
 
         </div>
-        <!------------------封面图列表结束------------------>
+        <!------------------内容图列表结束------------------>
 
         <!------------------新增修改列表结束------------------>
         <div v-show="showChildPage">
             <!--表单信息-->
             <div class="cv_content_square">
-                <el-form :model="selfmediaImgForm" :rules="selfmediaImgFormRules"  ref="selfmediaImgForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
+                <el-form :model="contentImgForm" :rules="contentImgFormRules"  ref="contentImgForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
                     <el-row class="el-row-h70">
                         <el-col :span="12">
                             <el-form-item label="图片标题" prop="picTitle" style="margin:0;">
@@ -103,7 +103,7 @@
                                 maxlength="20"
                                 placeholder="限20字"
                                 type="text"
-                                v-model="selfmediaImgForm.picTitle"
+                                v-model="contentImgForm.picTitle"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
@@ -113,7 +113,7 @@
                                 maxlength="20"
                                 placeholder="限20字"
                                 type="text"
-                                v-model="selfmediaImgForm.picDesc"
+                                v-model="contentImgForm.picDesc"
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
@@ -121,7 +121,7 @@
                     <el-row class="el-row-h70">
                         <el-col :span="12">
                             <el-form-item label="图片分类" prop="picType" style="margin:0;">
-                                <el-select v-model="selfmediaImgForm.picType" style="width:100%;" disabled>
+                                <el-select v-model="contentImgForm.picType" style="width:100%;" disabled>
                                     <el-option
                                       v-for="item in picTypeOptions"
                                       :key="item.value"
@@ -133,7 +133,7 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="图片状态" prop="picStatus" style="margin:0;">
-                                <el-select v-model="selfmediaImgForm.picStatus" style="width:100%;" placeholder="" disabled>
+                                <el-select v-model="contentImgForm.picStatus" style="width:100%;" placeholder="" disabled>
                                     <el-option
                                       v-for="item in picStatusOptions"
                                       :key="item.value"
@@ -145,14 +145,14 @@
                         </el-col>
                     </el-row>
                     <el-row>
-                        <el-form-item label="封面图片" prop="picUrl" label-width="15%" style="margin:0;">
+                        <el-form-item label="内容图片" prop="picUrl" label-width="15%" style="margin:0;">
                             <el-upload
                                 class="avatar-uploader"
                                 action="https://jsonplaceholder.typicode.com/posts/"
                                 :show-file-list="false"
                                 :auto-upload="false"
                                 :on-change="coverImgFileChange">
-                                <img v-if="selfmediaImgForm.picUrl" :src="selfmediaImgForm.picUrl" class="avatar">
+                                <img v-if="contentImgForm.picUrl" :src="contentImgForm.picUrl" class="avatar">
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                             </el-upload>
                         </el-form-item>
@@ -162,10 +162,10 @@
             <!--新建保存修改-->
             <el-row class="el-row-h60" style="margin-top:20px;">
                 <el-col :span="3" :offset="8">
-                    <el-button type="primary" style="width:100%" @click="submitCreatEdit('selfmediaImgForm')">保存</el-button>
+                    <el-button type="primary" style="width:100%" @click="submitCreatEdit('contentImgForm')">保存</el-button>
                 </el-col>
                 <el-col :span="3" :offset="2">
-                    <el-button type="primary" style="width:100%" @click="closeEditCreatEdit('selfmediaImgForm')">取消</el-button>
+                    <el-button type="primary" style="width:100%" @click="closeEditCreatEdit('contentImgForm')">取消</el-button>
                 </el-col>
             </el-row>
         </div>
@@ -177,7 +177,7 @@
 
 
 <script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
-<script type="text/javascript" src="${request.contextPath}/statics/js/modules/content/selfmedia_image.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/resource/content_image.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
 
 <style>
@@ -195,9 +195,9 @@
 .avatar-uploader-icon {
     font-size: 28px;
     color: #8c939d;
-    width: 108px;
-    height: 108px;
-    line-height: 118px;
+    width: 148px;
+    height: 148px;
+    line-height: 148px;
     text-align: center;
 }
 .avatar {

@@ -21,7 +21,7 @@ var vm = new Vue({
         
         return{
             //页面显示维度
-            showChildPage:'0',//0 主页面  1机构榜编辑  2人物榜单编辑 3案例榜单编辑
+            showChildPage:'0',//0 主页面  1机构榜编辑  2人物榜单编辑 3案例榜单编辑  4服务机构榜单编辑 
             //总榜单id
             rankId:'', 
             rankDataTree:[],
@@ -36,7 +36,7 @@ var vm = new Vue({
                     label:'人物榜单',
                     value:'2'
                 },{
-                    label:'服务机构榜单',
+                    label:'其他',
                     value:'3'
                 },{
                     label:'案例榜单',
@@ -196,6 +196,45 @@ var vm = new Vue({
                 totalPage:0,
                 pageSize:10
             },
+            //////////////服务机构榜单
+            searchServingForm:{
+                rankCatalogId:'',
+                name:'',
+                delStatus:'1'
+            },
+            currentServingTableData:[],
+            showAddOrEditServing: false,
+            ifCreatOrEditSingleServing:'creat',
+            servingForm:{
+                id:'',//
+                cvId:'',//投In关联id
+                rankId:'',//榜单id
+                rankCatalogId:'',//榜单目录Id
+                institutionId:'',//机构管理ID
+                name:'',//名称
+                logoUrl:'',//logo图片
+                weight:'-1',//排序
+                sortOrder:'',//排序方式，1，显示排序，2，不显示排序
+                type:'',//类型{1：机构；2：企业；3：人物；4：其他}
+                createUserId:'',//
+                updateUserId:'',//
+                updateAt:'',//
+                createAt:'',//
+                delStatus:'1',//0已删除1未删除
+            },
+            servingFormRules:{
+                name:[
+                    { required: true, message: '请填写标题', trigger: 'change' }
+                ],
+                title:[
+                    { required: true, message: '请选择表头类型', trigger: 'change' }
+                ],
+                weight:[
+                    { required: true, validator: validateWeight, trigger: 'change' }
+                ],
+            },
+
+
         }
         
     },
@@ -316,6 +355,43 @@ var vm = new Vue({
             this.openRankInfoDialog()
 
         },
+        //删除此目录
+        removeThisCatalog(node,data) {
+            var self = this
+            console.log('node',node,'data',data)
+            var _data = data
+            self.$confirm('确实要删除此目录吗? 删除改目录层级会一并删除其所有子目录', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var reqdata = {
+                    id: _data.id.toString(),
+                    type: 1 //删除的类型 0榜单 1目录 2 案例榜单 3 案例榜单关系 4 机构榜单 5任务榜单 6 服务机构榜单
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: '/rank/updateStatus',
+                    data: JSON.stringify(reqdata),
+                    dataType: "json",
+                    success: function(res){
+                        console.log(res)
+                        if (res.code == 200) {
+                            self.getTreeByRankId()
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+
+            })       
+        },
         //保存榜单目录信息
         saveRankInfoForm (formName) {
             var self = this
@@ -415,24 +491,22 @@ var vm = new Vue({
             console.log('node',node,'data',data,'parent',parent,'children',children,'index',index)
             this.lsNode = node //临时存贮节点
             this.lsData = data //临时存贮节点数据
+            //设置当前榜单的查询rankCatalogId
+            this.currentSearchCatalogId = data.id.toString()
             if (data.type == '1') {//1：机构榜单；2：人物榜单；3：服务机构榜；4：案例榜单
                 console.log('机构榜','id=',data.id)
-                //设置当前榜单的查询rankCatalogId
-                this.currentSearchCatalogId = data.id.toString()
                 this.searchInstituteForm.rankCatalogId = this.currentSearchCatalogId
                 this.searchCurrentInstitute()
             } else if (data.type == '2') {
                 console.log('人物榜','id=',data.id)
-                //设置当前榜单的查询rankCatalogId
-                this.currentSearchCatalogId = data.id.toString()
                 this.searchPeopleForm.rankCatalogId = this.currentSearchCatalogId
                 this.searchCurrentPeople()
             } else if (data.type == '3') {
                 console.log('服务机构榜')
+                this.searchServingForm.rankCatalogId = this.currentSearchCatalogId
+                this.searchCurrentServing()
             } else if (data.type == '4') {
                 console.log('案例榜单','id=',data.id)
-                //设置当前榜单的查询rankCatalogId
-                this.currentSearchCatalogId = data.id.toString()
                 this.searchCaseForm.rankCatalogId = this.currentSearchCatalogId
                 this.searchCurrentCase()
             }
@@ -617,17 +691,18 @@ var vm = new Vue({
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                var data = {
+                var reqdata = {
                     id: item.id.toString(),
-                    delStatus:'0',//0已删除1未删除
+                    type: 4 //删除的类型 0榜单 1目录 2 案例榜单 3 案例榜单关系 4 机构榜单 5任务榜单 6 服务机构榜单
                 }
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: '/rankInstitution/update',
-                    data: JSON.stringify(data),
+                    url: '/rank/updateStatus',
+                    data: JSON.stringify(reqdata),
                     dataType: "json",
                     success: function(res){
+                        console.log(res)
                         if (res.code == 200) {
                             //请求机构榜单不分页列表回显
                             self.searchCurrentInstitute()
@@ -641,7 +716,8 @@ var vm = new Vue({
                     error:function(res){
                         mapErrorStatus(res)
                     }
-                });   
+                });
+                
             })
         },
         //从机构榜返回到榜单目录
@@ -849,17 +925,18 @@ var vm = new Vue({
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                var data = {
+                var reqdata = {
                     id: item.id.toString(),
-                    delStatus:'0',//0已删除1未删除
+                    type: 5 //删除的类型 0榜单 1目录 2 案例榜单 3 案例榜单关系 4 机构榜单 5任务榜单 6 服务机构榜单
                 }
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: '/rankPerson/update',
-                    data: JSON.stringify(data),
+                    url: '/rank/updateStatus',
+                    data: JSON.stringify(reqdata),
                     dataType: "json",
                     success: function(res){
+                        console.log(res)
                         if (res.code == 200) {
                             //请求机构榜单不分页列表回显
                             self.searchCurrentPeople()
@@ -873,7 +950,8 @@ var vm = new Vue({
                     error:function(res){
                         mapErrorStatus(res)
                     }
-                });   
+                });
+
             })
         },
         //从人物榜返回到榜单目录
@@ -1103,19 +1181,20 @@ var vm = new Vue({
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                var data = {
+                var reqdata = {
                     id: item.id.toString(),
-                    delStatus:'0',//0已删除1未删除
+                    type: 2 //删除的类型 0榜单 1目录 2 案例榜单 3 案例榜单关系 4 机构榜单 5任务榜单 6 服务机构榜单
                 }
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: '/rankCase/update',
-                    data: JSON.stringify(data),
+                    url: '/rank/updateStatus',
+                    data: JSON.stringify(reqdata),
                     dataType: "json",
                     success: function(res){
+                        console.log(res)
                         if (res.code == 200) {
-                            //请求机构榜单不分页列表回显
+                            //请求案例榜单不分页列表回显
                             self.searchCurrentCase()
                             self.$message.success('删除成功')
                         } else {
@@ -1127,7 +1206,8 @@ var vm = new Vue({
                     error:function(res){
                         mapErrorStatus(res)
                     }
-                });   
+                });
+ 
             })
         },
         //从案例榜返回到榜单目录
@@ -1347,7 +1427,7 @@ var vm = new Vue({
                 title:'',
                 institutionId:''
             },
-            this.caseInstitutionTableData =[ ]//案例关联机构列表
+            this.caseInstitutionTableData =[]//案例关联机构列表
             //反显案例下的案例列表
             this.searchCurrentCase()
         },
@@ -1359,20 +1439,21 @@ var vm = new Vue({
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                var data = {
+                var reqdata = {
                     id: item.id.toString(),
-                    delStatus:'0',//0已删除1未删除
+                    type: 3 //删除的类型 0榜单 1目录 2 案例榜单 3 案例榜单关系 4 机构榜单 5任务榜单 6 服务机构榜单
                 }
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: '/rankCaseInstitution/update',
-                    data: JSON.stringify(data),
+                    url: '/rank/updateStatus',
+                    data: JSON.stringify(reqdata),
                     dataType: "json",
                     success: function(res){
+                        console.log(res)
                         if (res.code == 200) {
                             //请求案例榜单关联机构不分页列表回显
-                            self.startSearchThisCaseIntitute
+                            self.startSearchThisCaseIntitute()
                             self.$message.success('删除成功')
                         } else {
                             mapErrorStatus(res)
@@ -1383,14 +1464,213 @@ var vm = new Vue({
                     error:function(res){
                         mapErrorStatus(res)
                     }
-                });   
+                });
+
             })
         },
+        ////////////////////////////////编辑服务机构榜单相关方法
+        //搜索当前榜单下的机构--不分页
+        searchCurrentServing () {
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchServingForm))
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: '/rankServing/array',
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    console.log(res)
+                    if (res.code == 200) {
+                        self.currentServingTableData = res.list
+                        self.showChildPage = '4'
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        //新建或编辑服务到榜单
+        addOrEditServingToRank (type) {
+            var self = this
+            if (type == '0') {
+                this.ifCreatOrEditSingleServing = 'creat'
+                this.servingForm.rankCatalogId = this.currentSearchCatalogId
+                this.showAddOrEditServing = true
+            } else {
+                this.ifCreatOrEditSingleServing = 'edit'
+                this.servingForm.rankCatalogId = this.currentSearchCatalogId
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: '/rankServing/info/' + type.id,
+                    dataType: "json",
+                    success: function(res){
+                        if (res.code == 200) {
+                            console.log('编辑某一条服务机构',res.dict)
+                            self.servingForm = res.dict
+                            self.showAddOrEditServing = true
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+            }
+        },
+        //保存单条服务
+        saveSingleServingForm(formName) {
+            var self = this
+            self.$refs[formName].validate((valid) =>{
+                if (valid) {
+                    var self = this
+                    //判断是新建还是修改
+                    if (self.ifCreatOrEditSingleServing == 'creat') {
+                        var reqUrl = '/rankServing/save'
+                    } else if (self.ifCreatOrEditSingleServing == 'edit') {
+                        var reqUrl = '/rankServing/update'
+                    }
+                    var data = JSON.parse(JSON.stringify(self.servingForm))
+                    $.ajax({
+                        type: "POST",
+                        contentType: "application/json",
+                        url: reqUrl,
+                        data: JSON.stringify(data),
+                        dataType: "json",
+                        success: function(res){
+                            if (res.code == 200) {
+                                self.$message.success('保存成功');
+                                self.closeSingleServingForm('servingForm')
+                            } else {
+                                mapErrorStatus(res)
+                                vm.error = true;
+                                vm.errorMsg = res.msg;
+                            }
+                        },
+                        error:function(res){
+                            mapErrorStatus(res)
+                        }
+                    });
+                }
+            })
+        },
+        //关闭新建或编辑服务机构弹框
+        closeSingleServingForm (formName) {
+            //还原数据
+            this.searchServingForm = {
+                rankCatalogId:this.currentSearchCatalogId,
+                name:'',
+                delStatus:'1'
+            },
+            this.servingForm = {
+                id:'',//
+                cvId:'',//投In关联id
+                rankId:'',//榜单id
+                rankCatalogId:this.currentSearchCatalogId,//榜单目录Id
+                institutionId:'',//机构管理ID
+                name:'',//名称
+                logoUrl:'',//logo图片
+                weight:'-1',//排序
+                sortOrder:'',//排序方式，1，显示排序，2，不显示排序
+                type:'',//类型{1：机构；2：企业；3：人物；4：其他}
+                createUserId:'',//
+                updateUserId:'',//
+                updateAt:'',//
+                createAt:'',//
+                delStatus:'1',//0已删除1未删除
+            }
+            this.ifCreatOrEditSingleServing = 'creat'
+            this.$refs[formName].resetFields();
+            this.showAddOrEditServing = false
+            //反显列表
+            this.searchCurrentServing()
+        },
+        //服务榜单顺序调整
+        servingRankWeightChange(item){
+            console.log('修改榜单权重',item)
+            var self = this
+            var data = {
+                id: item.id.toString(),
+                weight: item.weight
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: '/rankServing/update',
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if (res.code == 200) {
+                        //请求机构榜单不分页列表回显
+                        self.searchCurrentServing()
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });   
+        },
+        //删除这条数据从服务机构榜
+        delThisServingFromRank (item) {
+            var self = this
+            self.$confirm('确实要删除该条数据吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var reqdata = {
+                    id: item.id.toString(),
+                    type: 6 //删除的类型 0榜单 1目录 2 案例榜单 3 案例榜单关系 4 机构榜单 5任务榜单 6 服务机构榜单
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: '/rank/updateStatus',
+                    data: JSON.stringify(reqdata),
+                    dataType: "json",
+                    success: function(res){
+                        console.log(res)
+                        if (res.code == 200) {
+                            //请求服务机构榜单不分页列表回显
+                            self.searchCurrentServing()
+                            self.$message.success('删除成功')
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
 
-
-
-
-
+            })
+        },
+        //从机构榜返回到榜单目录
+        backToRankListFromServing () {
+            this.currentSearchCatalogId = ''
+            this.searchServingForm={
+                rankCatalogId:'',
+                name:'',
+                delStatus:'1'
+            }
+            this.currentServingTableData=[]
+            this.showChildPage = '0' 
+        },
 
         //返回榜单列表
         backToRankList(){

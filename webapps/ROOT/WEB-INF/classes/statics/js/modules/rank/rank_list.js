@@ -23,7 +23,8 @@ var vm = new Vue({
             searchForm:{
                 name:'',
                 startTime:'',
-                endTime:''
+                endTime:'',
+                delStatus:'1',
             },
             //表格结果
             tableData: [{
@@ -43,7 +44,7 @@ var vm = new Vue({
                 updateAt:'',//修改时间
                 createAt:'',//创建时间
                 publishStatus:'0',//发布状态 0未发布，1是待发布，2是已发布 3是发布失败 4是待删除 5 删除
-                delStatus:'',//已删除1未删除,后端控制前端不做操作
+                delStatus:'1',//已删除1未删除,后端控制前端不做操作
             }],
             //分页器相关
             pagination1: {
@@ -71,7 +72,7 @@ var vm = new Vue({
                 updateAt:'',//修改时间
                 createAt:'',//创建时间
                 publishStatus:'0',//发布状态 0未发布，1是待发布，2是已发布 3是发布失败 4是待删除 5 删除
-                delStatus:'',//已删除1未删除,后端控制前端不做操作
+                delStatus:'1',//已删除1未删除,后端控制前端不做操作
             },
             rankFormRules:{
                 name: [
@@ -330,7 +331,7 @@ var vm = new Vue({
                 updateAt:'',//修改时间
                 createAt:'',//创建时间
                 publishStatus:'0',//发布状态 0未发布，1是待发布，2是已发布 3是发布失败 4是待删除 5 删除
-                delStatus:'',//已删除1未删除,后端控制前端不做操作
+                delStatus:'1',//已删除1未删除,后端控制前端不做操作
             }
         },
         //编辑总榜单
@@ -439,12 +440,12 @@ var vm = new Vue({
             }).then(() => {
                 var data = {
                     id: item.id.toString(),
-                    publishStatus: '4' //待删除
+                    type: 0 //删除的类型 0榜单 1目录 2 案例榜单 3 案例榜单关系 4 机构榜单 5任务榜单 6 服务机构榜单
                 }
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: "/rank/update",
+                    url: "/rank/updateStatus",
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res){
