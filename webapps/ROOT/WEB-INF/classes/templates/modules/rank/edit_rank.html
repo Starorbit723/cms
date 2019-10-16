@@ -55,7 +55,7 @@
 
             <!--榜单新建修改弹出层开始   所属页面级 0-->
             <el-dialog title="新增/修改榜单信息" :visible.sync="showAddOrChangeRankInfo" width="80%" :close-on-click-modal="false" :close-on-press-escape="false" :fullscreen="false" :show-close="false" >
-                <el-form :model="rankInfoForm" :rules="rankInfoFormRules" ref="rankInfoForm" status-icon class="demo-ruleForm" label-width="15%" label-position="right" @submit.native.prevent style="margin-top:20px;">
+                <el-form :model="rankInfoForm" :rules="rankInfoFormRules" ref="rankInfoForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent style="margin-top:20px;">
                     <el-row class="el-row-h70">
                         <el-col :span="24">
                             <el-form-item prop="name" label="目录/榜单标题" style="margin:0;">
@@ -82,7 +82,7 @@
                     </el-row>
                     <el-row class="el-row-h70">
                         <el-col :span="12">
-                            <el-form-item prop="type" label-width="30%" label="类型" style="margin:0;">
+                            <el-form-item prop="type" label-width="40%" label="类型" style="margin:0;">
                                 <el-select v-model="rankInfoForm.type" style="width:100%;" :disabled="ifCreatOrChangeInfo == '1'">
                                     <el-option
                                         v-for="item in rankTypeOptions"
@@ -94,7 +94,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item prop="orderType" label-width="30%" label="榜单序列" style="margin:0;">
+                            <el-form-item prop="orderType" label-width="40%" label="榜单序列" style="margin:0;">
                                 <el-select v-model="rankInfoForm.orderType" style="width:100%;">
                                     <el-option
                                         v-for="item in rankOrderTypeOptions"

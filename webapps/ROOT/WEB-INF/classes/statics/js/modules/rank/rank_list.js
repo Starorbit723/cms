@@ -378,7 +378,7 @@ var vm = new Vue({
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: "/rank/update",
+                    url: "/rank/push",
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res){
@@ -407,12 +407,12 @@ var vm = new Vue({
             }).then(() => {
                 var data = {
                     id: item.id.toString(),
-                    publishStatus: '0' //未发布
+                    publishStatus: '4' //未发布
                 }
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: "/rank/update",
+                    url: "/rank/offline",
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res){
