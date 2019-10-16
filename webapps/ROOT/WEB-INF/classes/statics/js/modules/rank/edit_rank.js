@@ -213,6 +213,7 @@ var vm = new Vue({
                 institutionId:'',//机构管理ID
                 name:'',//名称
                 logoUrl:'',//logo图片
+                title: '0',//是否为标题1 标题，0数据
                 weight:'-1',//排序
                 sortOrder:'',//排序方式，1，显示排序，2，不显示排序
                 type:'',//类型{1：机构；2：企业；3：人物；4：其他}
@@ -1527,29 +1528,32 @@ var vm = new Vue({
                 });
             }
         },
-        //保存单条服务
-        saveSingleServingForm(formName) {
+        //判断是否保存单条案例--如果该榜单有页头就不能保存成功
+        ifsaveSingleServingForm (formName){
             var self = this
             self.$refs[formName].validate((valid) =>{
                 if (valid) {
-                    var self = this
-                    //判断是新建还是修改
-                    if (self.ifCreatOrEditSingleServing == 'creat') {
-                        var reqUrl = '/rankServing/save'
-                    } else if (self.ifCreatOrEditSingleServing == 'edit') {
-                        var reqUrl = '/rankServing/update'
+                    var data = {
+                        rankCatalogId: self.currentSearchCatalogId,
+                        title:'1', //1为表头
+                        delStatus:'1'
                     }
-                    var data = JSON.parse(JSON.stringify(self.servingForm))
                     $.ajax({
                         type: "POST",
                         contentType: "application/json",
-                        url: reqUrl,
+                        url: '/rankServing/array',
                         data: JSON.stringify(data),
                         dataType: "json",
                         success: function(res){
                             if (res.code == 200) {
-                                self.$message.success('保存成功');
-                                self.closeSingleServingForm('servingForm')
+                                console.log('判断之前是否有表头返回',res.list.length !== 0)
+                                if (res.list.length == 0) {
+                                    self.saveSingleServingForm()
+                                } else if (res.list.length !== 0 && self.servingForm.title == '1') {
+                                    self.$message.error('表头已经存在，设置新表头请删除原来表头')
+                                } else {
+                                    self.saveSingleServingForm()
+                                }
                             } else {
                                 mapErrorStatus(res)
                                 vm.error = true;
@@ -1562,6 +1566,37 @@ var vm = new Vue({
                     });
                 }
             })
+        },
+        //保存单条服务
+        saveSingleServingForm() {
+            var self = this
+            //判断是新建还是修改
+            if (self.ifCreatOrEditSingleServing == 'creat') {
+                var reqUrl = '/rankServing/save'
+            } else if (self.ifCreatOrEditSingleServing == 'edit') {
+                var reqUrl = '/rankServing/update'
+            }
+            var data = JSON.parse(JSON.stringify(self.servingForm))
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: reqUrl,
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if (res.code == 200) {
+                        self.$message.success('保存成功');
+                        self.closeSingleServingForm('servingForm')
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
         },
         //关闭新建或编辑服务机构弹框
         closeSingleServingForm (formName) {
@@ -1580,6 +1615,7 @@ var vm = new Vue({
                 name:'',//名称
                 logoUrl:'',//logo图片
                 weight:'-1',//排序
+                title: '0',//是否为标题1 标题，0数据
                 sortOrder:'',//排序方式，1，显示排序，2，不显示排序
                 type:'',//类型{1：机构；2：企业；3：人物；4：其他}
                 createUserId:'',//
@@ -1593,6 +1629,14 @@ var vm = new Vue({
             this.showAddOrEditServing = false
             //反显列表
             this.searchCurrentServing()
+        },
+        //切换是否为表头
+        ifTitleChange2 (val) {
+            if (val == 1) {
+                this.servingForm.weight = 1000000
+            } else {
+                this.servingForm.weight = -1
+            }
         },
         //服务榜单顺序调整
         servingRankWeightChange(item){

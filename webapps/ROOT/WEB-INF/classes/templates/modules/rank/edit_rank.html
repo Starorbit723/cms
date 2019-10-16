@@ -625,7 +625,13 @@
                         <el-table-column prop="name" label="名称" width=""></el-table-column>
                         <el-table-column prop="weight" label="排序" width="150">
                             <template slot-scope="scope">
-                                <el-input type="text" maxlength="6" style="width: 100px;" v-model="scope.row.weight" auto-complete="off" @change="servingRankWeightChange(scope.row)"></el-input>
+                                <el-input :disabled="scope.row.title == 1" type="text" maxlength="6" style="width: 100px;" v-model="scope.row.weight" auto-complete="off" @change="servingRankWeightChange(scope.row)"></el-input>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="title" label="是否为表头" width="140">
+                            <template v-if="scope.row.title" slot-scope="scope">
+                                <el-tag v-if="scope.row.title == 1" type="success">表格头部</el-tag>
+                                <el-tag v-if="scope.row.title == 0">数据</el-tag>
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" width="100" fixed="right">
@@ -664,10 +670,20 @@
                                 </el-form-item>
                             </el-col>
                         </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="24">
+                                <el-form-item label="是否为表头" prop="title" style="margin:0;">
+                                    <el-radio-group style="margin-top: 5px;" v-model="servingForm.title" @change="ifTitleChange2">
+                                        <el-radio label="0">数据</el-radio>
+                                        <el-radio label="1">表头</el-radio>
+                                    </el-radio-group>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
                         <el-row class="el-row-h70" style="margin-top: 10px;">
                             <el-row>
                                 <el-col class="el-row-h40" :span="3" :offset="8">
-                                    <el-button type="primary" style="width:100%" @click="saveSingleServingForm('servingForm')">保存</el-button>
+                                    <el-button type="primary" style="width:100%" @click="ifsaveSingleServingForm('servingForm')">保存</el-button>
                                 </el-col>
                                 <el-col class="el-row-h40" :span="3" :offset="2">
                                     <el-button type="primary" style="width:100%" @click="closeSingleServingForm('servingForm')">取消</el-button>
