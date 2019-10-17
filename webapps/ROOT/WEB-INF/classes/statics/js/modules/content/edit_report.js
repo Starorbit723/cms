@@ -396,8 +396,18 @@ var vm = new Vue({
                         } else {
                             var _alt = arr[i].match(altReg)[1]
                         }
+                        if(arr[i].match(srcReg)[1].indexOf('amp;') !== -1){
+                            var _src = arr[i].match(srcReg)[1].replace(/amp;/g, "W3School")
+                            console.log('替换前：',arr[i].match(srcReg)[1],'替换后：',_src)
+                        } else if (arr[i].match(srcReg)[1].indexOf('http://cms.chinaventure.com.cn') !== -1) { 
+                            var _src = arr[i].match(srcReg)[1].replace('http://cms.chinaventure.com.cn', "")
+                        }  else if (arr[i].match(srcReg)[1].indexOf('https://cms.chinaventure.com.cn') !== -1) { 
+                            var _src = arr[i].match(srcReg)[1].replace('https://cms.chinaventure.com.cn', "")
+                        } else {
+                            var _src = arr[i].match(srcReg)[1]
+                        }
                         self.reportForm.reportContentList.push({
-                            srcName: arr[i].match(srcReg)[1],
+                            srcName: _src,
                             title: _title,
                             alt: _alt
                         })
@@ -650,6 +660,11 @@ var vm = new Vue({
                     mapErrorStatus(res)
                 }
             });
+        },
+        //替换sention标签
+        replaceSectionTag () {
+            var html = UE.getEditor('editor').getContent()
+            ue.setContent(html.replace(/section/g, 'p'));
         }
     },
     beforeDestroy () {
