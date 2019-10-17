@@ -4,7 +4,7 @@ var vm = new Vue({
         var validateWeight = (rule, value, callback) => {
             var urlReg = /^[0-9]*[1-9][0-9]*$/;
             var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
-            if (value) {
+            if (value || value == 0) {
                 if (value == 0) {
                     callback();
                 } else if (value.toString() == '0') {
@@ -598,7 +598,7 @@ var vm = new Vue({
             var copyData = {
                 id:'',//主键
                 cvId:'',//投In关联id
-                rankId:'',//榜单id
+                rankId: self.rankId.toString(),//榜单id
                 rankCatalogId: self.currentSearchCatalogId,//榜单目录Id
                 institutionId: item.cooperationId.toString(),//给搜索同步一个机构id
                 name: item.cooperationName,//名称
@@ -830,7 +830,7 @@ var vm = new Vue({
             var copyData = {
                 id:'',//
                 cvId:'',//投In关联id
-                rankId:'',//榜单id
+                rankId: self.rankId.toString(),//榜单id
                 rankCatalogId: self.currentSearchCatalogId,//榜单目录Id
                 name: item.guestName,//名称
                 alive:'1',//是否已故，0已故，1在世
@@ -1010,6 +1010,7 @@ var vm = new Vue({
             if (type == '0') {
                 this.ifCreatOrEditSingleCase = 'creat'
                 this.singleCaseForm.rankCatalogId = this.currentSearchCatalogId
+                this.singleCaseForm.rankId = this.rankId
                 this.showAddOrEditCase = true
             } else {
                 this.ifCreatOrEditSingleCase = 'edit'
@@ -1126,7 +1127,7 @@ var vm = new Vue({
             this.singleCaseForm = {
                 id:'',//主键
                 cvId:'',//投In关联id
-                rankId:'',//榜单id
+                rankId:this.rankId.toString(),//榜单id
                 rankCatalogId:this.currentSearchCatalogId,//榜单目录Id
                 name:'',//名称
                 title: '0',//是否为标题1 标题，0数据
@@ -1225,7 +1226,7 @@ var vm = new Vue({
             this.singleCaseForm = {
                 id:'',//主键
                 cvId:'',//投In关联id
-                rankId:'',//榜单id
+                rankId:this.rankId.toString(),//榜单id
                 rankCatalogId:'',//榜单目录Id
                 name:'',//名称
                 title: '0',//是否为标题1 标题，0数据
@@ -1302,7 +1303,6 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){
-
                         self.caseInstitutionLibData = res.page.list
                         self.pagination3 = {
                             currPage: res.page.currPage,
@@ -1332,7 +1332,7 @@ var vm = new Vue({
             //将机构库的数据copy一份调save接口来复制出一条原有数据进入业务表
             var copyData = {
                 cvId:'',//
-                rankId:'',//
+                rankId:self.rankId.toString(),//
                 rankCatalogId:'',//
                 rankCaseId: self.currentCaseId,//
                 institutionId: item.cooperationId.toString(),//
@@ -1502,6 +1502,7 @@ var vm = new Vue({
             if (type == '0') {
                 this.ifCreatOrEditSingleServing = 'creat'
                 this.servingForm.rankCatalogId = this.currentSearchCatalogId
+                this.servingForm.rankId = this.rankId.toString()
                 this.showAddOrEditServing = true
             } else {
                 this.ifCreatOrEditSingleServing = 'edit'
@@ -1609,7 +1610,7 @@ var vm = new Vue({
             this.servingForm = {
                 id:'',//
                 cvId:'',//投In关联id
-                rankId:'',//榜单id
+                rankId:this.rankId.toString(),//榜单id
                 rankCatalogId:this.currentSearchCatalogId,//榜单目录Id
                 institutionId:'',//机构管理ID
                 name:'',//名称
