@@ -18,6 +18,8 @@ var vm = new Vue({
         return {
             //当前显示页面
             showChildPage:0,
+            //图片基础地址
+            picBaseUrl:'',
             //搜索文章列表提交
             timeRange:[], //时间需要特殊处理,并且同步到searchForm
             searchForm:{
@@ -121,6 +123,14 @@ var vm = new Vue({
         }
     },
     created () {
+        console.log('location',window.location.href)
+        if (window.location.href.indexOf('chinaventure.com.cn') !== -1 || window.location.href.indexOf('117.78.28.103') !== -1) {
+            console.log('正式环境')
+            this.picBaseUrl = 'https://chinaventure-static.obs.cn-north-1.myhuaweicloud.com'
+        } else {
+            console.log('开发测试环境')
+            this.picBaseUrl = 'https://cvinfo-test.obs.cn-north-1.myhuaweicloud.com'
+        }
         this.startSearch(0)
     },
     methods:{
@@ -256,6 +266,8 @@ var vm = new Vue({
                 if (valid) {
                     var data = self.rankForm
                     data.publishAt = data.publishAt.toString()
+                    data.year = new Date(parseInt(data.publishAt)).getFullYear()
+                    console.log('year',data)
                     //新建
                     if (self.creatOrEdit == 'creat') {
                         $.ajax({
@@ -346,6 +358,7 @@ var vm = new Vue({
 			    success: function(res){
 					if(res.code == 200){
                         self.rankForm = res.dict
+                        self.rankForm.coverImg = self.picBaseUrl + self.rankForm.coverImg
                         self.showChildPage = 1
 					}else{
 						mapErrorStatus(res)
