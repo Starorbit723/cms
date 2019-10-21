@@ -539,6 +539,10 @@ var vm = new Vue({
                             }).then(() => {
                             })
                             return;
+                        } else if (arr[i].match(srcReg)[1].indexOf('http://cms.chinaventure.com.cn') !== -1) { 
+                            var _src = arr[i].match(srcReg)[1].replace('http://cms.chinaventure.com.cn', "")
+                        }  else if (arr[i].match(srcReg)[1].indexOf('https://cms.chinaventure.com.cn') !== -1) { 
+                            var _src = arr[i].match(srcReg)[1].replace('https://cms.chinaventure.com.cn', "")
                         } else {
                             var _src = arr[i].match(srcReg)[1]
                         }

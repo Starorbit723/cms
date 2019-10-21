@@ -4,7 +4,7 @@ var vm = new Vue({
         var validateWeight = (rule, value, callback) => {
             var urlReg = /^[0-9]*[1-9][0-9]*$/;
             var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
-            if (value) {
+            if (value || value == 0) {
                 if (value == 0) {
                     callback();
                 } else if (value.toString() == '0') {
@@ -22,6 +22,8 @@ var vm = new Vue({
         return{
             //页面显示维度
             showChildPage:'0',//0 主页面  1机构榜编辑  2人物榜单编辑 3案例榜单编辑  4服务机构榜单编辑 
+            //图片基础地址
+            picBaseUrl:'',
             //总榜单id
             rankId:'', 
             rankDataTree:[],
@@ -128,6 +130,7 @@ var vm = new Vue({
             showPeopleLib: false,
             searchPeopleLibForm:{
                 guestName:'',
+                guestStatus:'0'
             },
             peopleLibData:[],
             pagination2: {
@@ -236,6 +239,17 @@ var vm = new Vue({
             },
 
 
+        }
+        
+    },
+    created(){
+        console.log('location',window.location.href)
+        if (window.location.href.indexOf('chinaventure.com.cn') !== -1 || window.location.href.indexOf('117.78.28.103') !== -1) {
+            console.log('正式环境')
+            this.picBaseUrl = 'https://chinaventure-static.obs.cn-north-1.myhuaweicloud.com'
+        } else {
+            console.log('开发测试环境')
+            this.picBaseUrl = 'https://cvinfo-test.obs.cn-north-1.myhuaweicloud.com'
         }
         
     },
@@ -527,6 +541,9 @@ var vm = new Vue({
                     console.log(res)
                     if (res.code == 200) {
                         self.currentInstituteTableData = res.list
+                        for (let i = 0; i < self.currentInstituteTableData.length; i++) {
+                            self.currentInstituteTableData[i].logoUrl =  self.picBaseUrl+ self.currentInstituteTableData[i].logoUrl
+                        }
                         self.showChildPage = '1'
                     } else {
                         mapErrorStatus(res)
@@ -598,7 +615,7 @@ var vm = new Vue({
             var copyData = {
                 id:'',//主键
                 cvId:'',//投In关联id
-                rankId:'',//榜单id
+                rankId: self.rankId.toString(),//榜单id
                 rankCatalogId: self.currentSearchCatalogId,//榜单目录Id
                 institutionId: item.cooperationId.toString(),//给搜索同步一个机构id
                 name: item.cooperationName,//名称
@@ -659,9 +676,33 @@ var vm = new Vue({
         instituteRankWeightChange(item){
             console.log('修改榜单权重',item)
             var self = this
+            var urlReg = /^[0-9]*[1-9][0-9]*$/;
+            var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
+            let _weight = item.weight.trim();
+            if ((_weight || _weight == 0) && _weight !=='') {
+                if (_weight == 0) {
+                    self.submitInstituteWeightChange(item.id,_weight)
+                } else if (_weight.toString() == '0') {
+                    self.submitInstituteWeightChange(item.id,_weight)
+                } else if (!urlReg.test(_weight) && !urlReg2.test(_weight) ) {
+                    self.$message.error('权重只能填整数或0')
+                    //请求机构榜单不分页列表回显
+                    self.searchCurrentInstitute()
+                } else {
+                    self.submitInstituteWeightChange(item.id,_weight)
+                }
+            } else {
+                self.$message.error('权重不能为空')
+                //请求机构榜单不分页列表回显
+                self.searchCurrentInstitute()
+            }
+        },
+        //提交权重修改
+        submitInstituteWeightChange (id,weight) {
+            var self = this
             var data = {
-                id: item.id.toString(),
-                weight: item.weight
+                id: id,
+                weight: weight
             }
             $.ajax({
                 type: "POST",
@@ -759,6 +800,9 @@ var vm = new Vue({
                     console.log(res)
                     if (res.code == 200) {
                         self.currentPeopleTableData = res.list
+                        for (let i = 0; i < self.currentPeopleTableData.length; i++) {
+                            self.currentPeopleTableData[i].logoUrl =  self.picBaseUrl+ self.currentPeopleTableData[i].logoUrl
+                        }
                         self.showChildPage = '2'
                     } else {
                         mapErrorStatus(res)
@@ -830,10 +874,10 @@ var vm = new Vue({
             var copyData = {
                 id:'',//
                 cvId:'',//投In关联id
-                rankId:'',//榜单id
+                rankId: self.rankId.toString(),//榜单id
                 rankCatalogId: self.currentSearchCatalogId,//榜单目录Id
                 name: item.guestName,//名称
-                alive:'1',//是否已故，0已故，1在世
+                alive: item.guestAlive,//是否已故，0已故，1在世
                 logoUrl:item.guestImg,//图片
                 institutionId:'',//机构管理ID
                 institutionName:item.guestCompany,//机构名称
@@ -876,7 +920,8 @@ var vm = new Vue({
             this.currentPeopleTableData=[]
             this.showPeopleLib = false
             this.searchPeopleLibForm = {
-                guestName:''
+                guestName:'',
+                guestStatus:'0'
             },
             this.peopleLibData = []
             this.pagination2 = {
@@ -893,9 +938,33 @@ var vm = new Vue({
         peopleRankWeightChange(item){
             console.log('修改榜单权重',item)
             var self = this
+            var urlReg = /^[0-9]*[1-9][0-9]*$/;
+            var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
+            let _weight = item.weight.trim();
+            if ((_weight || _weight == 0) && _weight !=='') {
+                if (_weight == 0) {
+                    self.submitPeopleWeightChange(item.id,_weight)
+                } else if (_weight.toString() == '0') {
+                    self.submitPeopleWeightChange(item.id,_weight)
+                } else if (!urlReg.test(_weight) && !urlReg2.test(_weight) ) {
+                    self.$message.error('权重只能填整数或0')
+                    //请求人物榜单不分页列表回显
+                    self.searchCurrentPeople()
+                } else {
+                    self.submitPeopleWeightChange(item.id,_weight)
+                }
+            } else {
+                self.$message.error('权重不能为空')
+                //请求人物榜单不分页列表回显
+                self.searchCurrentPeople()
+            } 
+        },
+        //提交权重修改
+        submitPeopleWeightChange (id,weight) {
+            var self = this
             var data = {
-                id: item.id.toString(),
-                weight: item.weight
+                id: id,
+                weight: weight
             }
             $.ajax({
                 type: "POST",
@@ -967,6 +1036,7 @@ var vm = new Vue({
             this.showPeopleLib = false
             this.searchPeopleLibForm={
                 guestName:'',
+                guestStatus:'0'
             }
             this.peopleLibData = []
             this.pagination2 = {
@@ -1010,6 +1080,7 @@ var vm = new Vue({
             if (type == '0') {
                 this.ifCreatOrEditSingleCase = 'creat'
                 this.singleCaseForm.rankCatalogId = this.currentSearchCatalogId
+                this.singleCaseForm.rankId = this.rankId
                 this.showAddOrEditCase = true
             } else {
                 this.ifCreatOrEditSingleCase = 'edit'
@@ -1126,7 +1197,7 @@ var vm = new Vue({
             this.singleCaseForm = {
                 id:'',//主键
                 cvId:'',//投In关联id
-                rankId:'',//榜单id
+                rankId:this.rankId.toString(),//榜单id
                 rankCatalogId:this.currentSearchCatalogId,//榜单目录Id
                 name:'',//名称
                 title: '0',//是否为标题1 标题，0数据
@@ -1149,9 +1220,33 @@ var vm = new Vue({
         caseRankWeightChange (item) {
             console.log('修改案例权重',item)
             var self = this
+            var urlReg = /^[0-9]*[1-9][0-9]*$/;
+            var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
+            let _weight = item.weight.trim();
+            if ((_weight || _weight == 0) && _weight !=='') {
+                if (_weight == 0) {
+                    self.submitCaseWeightChange(item.id,_weight)
+                } else if (_weight.toString() == '0') {
+                    self.submitCaseWeightChange(item.id,_weight)
+                } else if (!urlReg.test(_weight) && !urlReg2.test(_weight) ) {
+                    self.$message.error('权重只能填整数或0')
+                    //请求案例榜单不分页列表回显
+                    self.searchCurrentCase()
+                } else {
+                    self.submitCaseWeightChange(item.id,_weight)
+                }
+            } else {
+                self.$message.error('权重不能为空')
+                //请求案例榜单不分页列表回显
+                self.searchCurrentCase()
+            }  
+        },
+        //提交权重修改
+        submitCaseWeightChange (id,weight) {
+            var self = this
             var data = {
-                id: item.id.toString(),
-                weight: item.weight
+                id: id,
+                weight: weight
             }
             $.ajax({
                 type: "POST",
@@ -1172,7 +1267,7 @@ var vm = new Vue({
                 error:function(res){
                     mapErrorStatus(res)
                 }
-            });   
+            });
         },
         //从当前榜单中删除案例
         delThisCaseFromRank (item) {
@@ -1225,7 +1320,7 @@ var vm = new Vue({
             this.singleCaseForm = {
                 id:'',//主键
                 cvId:'',//投In关联id
-                rankId:'',//榜单id
+                rankId:this.rankId.toString(),//榜单id
                 rankCatalogId:'',//榜单目录Id
                 name:'',//名称
                 title: '0',//是否为标题1 标题，0数据
@@ -1260,8 +1355,12 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res){
                     if (res.code == 200) {
-                       console.log('榜单关联机构不分页返回',res.list)
-                       self.caseInstitutionTableData = res.list
+                        console.log('榜单关联机构不分页返回',res.list)
+                        self.caseInstitutionTableData = res.list
+                        for (let i = 0; i < self.caseInstitutionTableData.length; i++) {
+                            self.caseInstitutionTableData[i].logoUrl =  self.picBaseUrl + self.caseInstitutionTableData[i].logoUrl
+                        }
+                       
                     } else {
                         mapErrorStatus(res)
                         vm.error = true;
@@ -1302,7 +1401,6 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){
-
                         self.caseInstitutionLibData = res.page.list
                         self.pagination3 = {
                             currPage: res.page.currPage,
@@ -1332,7 +1430,7 @@ var vm = new Vue({
             //将机构库的数据copy一份调save接口来复制出一条原有数据进入业务表
             var copyData = {
                 cvId:'',//
-                rankId:'',//
+                rankId:self.rankId.toString(),//
                 rankCatalogId:'',//
                 rankCaseId: self.currentCaseId,//
                 institutionId: item.cooperationId.toString(),//
@@ -1390,11 +1488,35 @@ var vm = new Vue({
         },
         //案例榜单关联机构顺序调整
         caseRankInstituteWeightChange(item){
-            console.log('修改榜单权重',item)
+            var self = this
+            var urlReg = /^[0-9]*[1-9][0-9]*$/;
+            var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
+            let _weight = item.weight.trim();
+            if ((_weight || _weight == 0) && _weight !=='') {
+                if (_weight == 0) {
+                    self.submitCaseInstituteWeightChange(item.id,_weight)
+                } else if (_weight.toString() == '0') {
+                    self.submitCaseInstituteWeightChange(item.id,_weight)
+                } else if (!urlReg.test(_weight) && !urlReg2.test(_weight) ) {
+                    self.$message.error('权重只能填整数或0')
+                    //请求案例机构不分页列表回显
+                    self.startSearchThisCaseIntitute()
+                } else {
+                    self.submitCaseInstituteWeightChange(item.id,_weight)
+                }
+            } else {
+                self.$message.error('权重不能为空')
+                //请求案例机构不分页列表回显
+                self.startSearchThisCaseIntitute()
+            }  
+            
+        },
+        //提交权重修改
+        submitCaseInstituteWeightChange (id,weight) {
             var self = this
             var data = {
-                id: item.id.toString(),
-                weight: item.weight
+                id: id,
+                weight: weight
             }
             $.ajax({
                 type: "POST",
@@ -1502,6 +1624,7 @@ var vm = new Vue({
             if (type == '0') {
                 this.ifCreatOrEditSingleServing = 'creat'
                 this.servingForm.rankCatalogId = this.currentSearchCatalogId
+                this.servingForm.rankId = this.rankId.toString()
                 this.showAddOrEditServing = true
             } else {
                 this.ifCreatOrEditSingleServing = 'edit'
@@ -1609,7 +1732,7 @@ var vm = new Vue({
             this.servingForm = {
                 id:'',//
                 cvId:'',//投In关联id
-                rankId:'',//榜单id
+                rankId:this.rankId.toString(),//榜单id
                 rankCatalogId:this.currentSearchCatalogId,//榜单目录Id
                 institutionId:'',//机构管理ID
                 name:'',//名称
@@ -1640,11 +1763,34 @@ var vm = new Vue({
         },
         //服务榜单顺序调整
         servingRankWeightChange(item){
-            console.log('修改榜单权重',item)
+            var self = this
+            var urlReg = /^[0-9]*[1-9][0-9]*$/;
+            var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
+            let _weight = item.weight.trim();
+            if ((_weight || _weight == 0) && _weight !=='') {
+                if (_weight == 0) {
+                    self.submitServingWeightChange(item.id,_weight)
+                } else if (_weight.toString() == '0') {
+                    self.submitServingWeightChange(item.id,_weight)
+                } else if (!urlReg.test(_weight) && !urlReg2.test(_weight) ) {
+                    self.$message.error('权重只能填整数或0')
+                    //请求服务机构不分页列表回显
+                    self.searchCurrentServing()
+                } else {
+                    self.submitServingWeightChange(item.id,_weight)
+                }
+            } else {
+                self.$message.error('权重不能为空')
+                //请求服务机构不分页列表回显
+                self.searchCurrentServing()
+            }  
+        },
+        //提交权重修改
+        submitServingWeightChange (id,weight) {
             var self = this
             var data = {
-                id: item.id.toString(),
-                weight: item.weight
+                id: id,
+                weight: weight
             }
             $.ajax({
                 type: "POST",
@@ -1654,7 +1800,7 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res){
                     if (res.code == 200) {
-                        //请求机构榜单不分页列表回显
+                        //请求服务机构榜单不分页列表回显
                         self.searchCurrentServing()
                     } else {
                         mapErrorStatus(res)

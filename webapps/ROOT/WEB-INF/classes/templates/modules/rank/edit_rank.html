@@ -62,7 +62,7 @@
                                 <el-input
                                 clearable
                                 type="text"
-                                maxlength="50"
+                                maxlength="80"
                                 v-model="rankInfoForm.name"
                                 auto-complete="off"></el-input>
                             </el-form-item>
@@ -305,6 +305,7 @@
                             </template>
                         </el-table-column>
                         <el-table-column prop="name" label="人物名称" width=""></el-table-column>
+                        <el-table-column prop="institutionName" label="所在机构" width=""></el-table-column>
                         <el-table-column prop="weight" label="排序" width="150">
                             <template slot-scope="scope">
                                 <el-input type="text" maxlength="6" style="width: 100px;" v-model="scope.row.weight" auto-complete="off" @change="peopleRankWeightChange(scope.row)"></el-input>
@@ -429,9 +430,9 @@
                             <template slot-scope="scope">
                                 <el-button type="text" size="small" @click="addOrEditCaseToRank(scope.row)">编辑</el-button>
                                 <el-button type="text" size="small" @click="delThisCaseFromRank(scope.row)">删除</el-button>
-                                <span v-if="scope.row.title !== '1'" style="padding-left: 5px;">
+                                <!-- <span v-if="scope.row.title !== '1'" style="padding-left: 5px;"> -->
                                     <el-button type="text" size="small" @click="editInstituteToCaseItem(scope.row)">关联机构</el-button>
-                                </span>
+                                <!-- </span> -->
                             </template>
                         </el-table-column>
                     </el-table>
