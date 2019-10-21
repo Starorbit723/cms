@@ -877,7 +877,7 @@ var vm = new Vue({
                 rankId: self.rankId.toString(),//榜单id
                 rankCatalogId: self.currentSearchCatalogId,//榜单目录Id
                 name: item.guestName,//名称
-                alive:'1',//是否已故，0已故，1在世
+                alive: item.guestAlive,//是否已故，0已故，1在世
                 logoUrl:item.guestImg,//图片
                 institutionId:'',//机构管理ID
                 institutionName:item.guestCompany,//机构名称
@@ -1355,11 +1355,12 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res){
                     if (res.code == 200) {
-                       console.log('榜单关联机构不分页返回',res.list)
-                       for (let i = 0; i < self.caseInstitutionTableData.length; i++) {
-                        self.caseInstitutionTableData[i].logoUrl =  self.picBaseUrl+ self.caseInstitutionTableData[i].logoUrl
-                    }
-                       self.caseInstitutionTableData = res.list
+                        console.log('榜单关联机构不分页返回',res.list)
+                        self.caseInstitutionTableData = res.list
+                        for (let i = 0; i < self.caseInstitutionTableData.length; i++) {
+                            self.caseInstitutionTableData[i].logoUrl =  self.picBaseUrl + self.caseInstitutionTableData[i].logoUrl
+                        }
+                       
                     } else {
                         mapErrorStatus(res)
                         vm.error = true;

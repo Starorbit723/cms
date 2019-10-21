@@ -117,6 +117,16 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item label="是否已故" label-width="15%" prop="guestAlive" style="margin:0;">
+                                <el-radio-group style="margin-top: 5px;" v-model="guestForm.guestAlive">
+                                    <el-radio label="1">否</el-radio>
+                                    <el-radio label="0">是</el-radio>
+                                </el-radio-group>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
                     <el-row>
                         <el-col :span="8">
                             <el-form-item label="人物头像" prop="guestImg" label-width="45%" style="margin:0;">

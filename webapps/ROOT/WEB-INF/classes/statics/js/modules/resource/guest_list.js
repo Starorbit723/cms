@@ -23,6 +23,7 @@ var vm = new Vue({
             guestStatus:'',//嘉宾 状态 0正常 1删除
             guestCrtUserName:'',//创建人名称
             guestModUserName:'',//更新人名称
+            guestAlive:'',//是否已故，0已故，1在世
         }],
         //分页器相关
         pagination1: {
@@ -46,6 +47,7 @@ var vm = new Vue({
             guestStatus:'',//嘉宾 状态 0正常 1删除
             guestCrtUserName:'',//创建人名称
             guestModUserName:'',//更新人名称
+            guestAlive:'1',//是否已故，0已故，1在世
         },
         guestFormRules:{
             guestName: [
@@ -129,7 +131,7 @@ var vm = new Vue({
                 self.creatOrEdit = 1
                 self.guestForm = JSON.parse(JSON.stringify(item))
                 self.originUrl = self.guestForm.guestImg
-                console.log('修改嘉宾','原始',self.originUrl,'表单',self.guestForm.guestImg)
+                console.log('修改嘉宾','原始',self.guestAlive)
             }
         },
         //删除图片
@@ -309,6 +311,7 @@ var vm = new Vue({
                 guestStatus:'',//嘉宾 状态 0正常 1删除
                 guestCrtUserName:'',//创建人名称
                 guestModUserName:'',//更新人名称
+                guestAlive:'1',//是否已故，0已故，1在世
             }
             this.showChildPage = false
             this.creatOrEdit = 0
