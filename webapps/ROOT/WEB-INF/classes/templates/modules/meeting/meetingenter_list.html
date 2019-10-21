@@ -66,8 +66,8 @@
             <!--表格查询结果区-->
             <div class="cv_content_square">
                 <el-table :data="tableData" style="width: 100%; margin:10px auto;" ref="multipleTable" stripe>
-                    <el-table-column prop="meetingTitle" label="会议名称" width=""></el-table-column>
-                    <el-table-column prop="meetingType" label="会议类型" width="110">
+                    <el-table-column prop="meetingTitle" label="会议名称" width="220"></el-table-column>
+                    <el-table-column prop="meetingType" label="会议类型" width="120">
                         <template slot-scope="scope" v-if="scope.row.meetingType !== ''">
                             <el-tag v-if="scope.row.meetingType == 1" type="success">投中年会</el-tag>
                             <el-tag v-if="scope.row.meetingType == 2" >投中合作会议</el-tag>
@@ -83,18 +83,20 @@
                     <el-table-column prop="meetingStatus" label="发布状态" width="">
                         <template v-if="scope.row.meetingStatus !== ''" slot-scope="scope">
                             <!-- 发布状态：会议状态 0 上线 1 下线 2 删除 -->
-                            <el-tag v-if="scope.row.meetingStatus == 1" type="success">上线</el-tag>
-                            <el-tag v-if="scope.row.meetingStatus == 2" >未发布</el-tag>
+                            <el-tag v-if="scope.row.meetingStatus == 0" type="success">上线</el-tag>
+                            <el-tag v-if="scope.row.meetingStatus == 1" >未发布</el-tag>
                             <el-tag v-if="scope.row.meetingStatus == 2" type="danger">删除</el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="meetingModTime" label="更新时间" width="200"></el-table-column>
-                    <el-table-column prop="meetingStartTime" label="开始时间" width="200"></el-table-column>
-                    <el-table-column prop="meetingEndTime" label="结束时间" width="200"></el-table-column>
-                    <el-table-column label="操作" width="100" fixed="right">
+                    <el-table-column prop="meetingModTime" label="更新时间" width="170"></el-table-column>
+                    <el-table-column prop="meetingStartTime" label="开始时间" width="170"></el-table-column>
+                    <el-table-column prop="meetingEndTime" label="结束时间" width="170"></el-table-column>
+                    <el-table-column label="操作" width="130" fixed="right">
                         <template slot-scope="scope">
                             <el-button type="text" size="small" @click="addOrEditMeeting(1,scope.row)">修改</el-button>
-                            <el-button v-if="scope.row.meetingBaseInfoMeetingId == '-1' || scope.row.meetingBaseInfoMeetingId == ''"  type="text" size="small" @click="deleteThisBaseinfo(scope.row)">删除</el-button>
+                            <el-button v-if="scope.row.meetingStatus == 1" type="text" size="small" @click="onlineThisMeeting(scope.row)">发布</el-button>
+                            <el-button v-if="scope.row.meetingStatus == 0" type="text" size="small" @click="offlineThisMeeting(scope.row)">下线</el-button>
+                            <el-button v-if="scope.row.meetingStatus == '1'"  type="text" size="small" @click="deleteThisMeeting(scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -190,12 +192,12 @@
                     </el-row>
                     <el-row class="el-row-h70">
                         <el-col :span="24">
-                            <el-form-item prop="meetingBaseInfoAddress" label="详细地址" style="margin:0;">
+                            <el-form-item prop="meetingAddress" label="详细地址" style="margin:0;">
                                 <el-input
                                     :maxlength="100"
                                     clearable
                                     type="text"
-                                    v-model="meetingForm.meetingBaseInfoAddress"
+                                    v-model="meetingForm.meetingAddress"
                                     auto-complete="on">
                                 </el-input>
                             </el-form-item>
@@ -227,15 +229,16 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-row class="el-row-h70">
+                    <el-row class="el-row-h130">
                         <el-col :span="24">
                             <el-form-item prop="meetingDesc" label="简介" style="margin:0;">
                                 <el-input
-                                    :maxlength="200"
+                                    maxlength="200"
                                     clearable
-                                    type="text"
+                                    type="textarea"
+                                    :autosize="{ minRows: 4, maxRows: 4}"
                                     v-model="meetingForm.meetingDesc"
-                                    auto-complete="on">
+                                    auto-complete="off">
                                 </el-input>
                             </el-form-item>
                         </el-col>
@@ -243,26 +246,44 @@
                     <el-row class="el-row-h70">
                         <el-col :span="24">
                             <el-form-item prop="meetingGuestName" label="嘉宾" style="margin:0;">
-                                <el-input
-                                    :maxlength="200"
-                                    clearable
-                                    type="text"
-                                    v-model="meetingForm.meetingGuestName"
-                                    auto-complete="on">
-                                </el-input>
+                                <el-select
+                                    @change="meetingGuestChange"
+                                    style="width:100%;"
+                                    v-model="meetingGuestArray"
+                                    multiple
+                                    filterable
+                                    allow-create
+                                    default-first-option
+                                    placeholder="请编嘉宾标签，不超过10个，不可重复用词">
+                                    <el-option
+                                    v-for="item in labelOptions2"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                    </el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-row class="el-row-h70">
                         <el-col :span="24">
                             <el-form-item prop="meetingKeyword" label="关键词" style="margin:0;">
-                                <el-input
-                                    :maxlength="200"
-                                    clearable
-                                    type="text"
-                                    v-model="meetingForm.meetingKeyword"
-                                    auto-complete="on">
-                                </el-input>
+                                <el-select
+                                    @change="meetingTagChange"
+                                    style="width:100%;"
+                                    v-model="meetingTagArray"
+                                    multiple
+                                    filterable
+                                    allow-create
+                                    default-first-option
+                                    placeholder="请编关键词，不超过10个，不可重复用词">
+                                    <el-option
+                                    v-for="item in labelOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                    </el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
                     </el-row>

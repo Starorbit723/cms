@@ -16,8 +16,8 @@ var vm = new Vue({
             }
         }
         var validateMeetingTimes = (rule, value, callback) => {
-            console.log(value,value[0])
-            if (value[0]) {
+            console.log(value)
+            if (value) {
                 if (value[0] == value[1]) {
                     callback(new Error('会议开始时间不能与会议结束时间相同'));
                 } else {
@@ -46,6 +46,8 @@ var vm = new Vue({
         return {
             showChildPage: false,
             creatOrEdit:0,//0新建  1修改
+            //图片基础地址
+            picBaseUrl:'',
             //省市区选项
             RegionOptions: [],
             //会议类型
@@ -93,6 +95,11 @@ var vm = new Vue({
                 totalPage:0,
                 pageSize:10
             },
+            //关键词下拉
+            meetingTagArray:[],
+            meetingGuestArray:[],
+            labelOptions:[],
+            labelOptions2:[],
             //会议合作机构表单
             meetingForm:{
                 meetingId:'',//主键
@@ -138,10 +145,16 @@ var vm = new Vue({
                     { type: 'array', required: true, message: '所在区域不能为空', trigger: 'change' }
                 ],
                 meetingUrl:[
-
+                    { required: true, validator: validateUrl, trigger: 'change' }
                 ],
                 meetingImg:[
                     {required: true, message: '会议封面图为必选', trigger: 'change' },
+                ],
+                meetingType:[
+                    {required: true, message: '会议类型为必选', trigger: 'change' },
+                ],
+                meetingDesc:[
+                    {required: true, message: '会议描述为必填项', trigger: 'change' },
                 ]
                 
             },
@@ -174,6 +187,14 @@ var vm = new Vue({
         }
     },
     created () {
+        console.log('location',window.location.href)
+        if (window.location.href.indexOf('chinaventure.com.cn') !== -1 || window.location.href.indexOf('117.78.28.103') !== -1) {
+            console.log('正式环境')
+            this.picBaseUrl = 'https://chinaventure-static.obs.cn-north-1.myhuaweicloud.com'
+        } else {
+            console.log('开发测试环境')
+            this.picBaseUrl = 'https://cvinfo-test.obs.cn-north-1.myhuaweicloud.com'
+        }
         this.startSearch(0)
         this.RegionOptions = regionJSON
         this.getMeetingType()
@@ -208,6 +229,12 @@ var vm = new Vue({
                 success: function(res){
                     if(res.code == 200){
                         self.tableData = res.page.list
+                        for (let i = 0; i < self.tableData.length; i++) {
+                            self.tableData[i].meetingStartTime = self.transformTime(parseFloat(self.tableData[i].meetingStartTime))
+                            self.tableData[i].meetingEndTime = self.transformTime(parseFloat(self.tableData[i].meetingEndTime))
+                            self.tableData[i].meetingModTime = self.transformTime(parseFloat(self.tableData[i].meetingModTime))
+                            self.tableData[i].meetingImg =  self.picBaseUrl+ self.tableData[i].meetingImg
+                        }
                         self.pagination1 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
@@ -260,99 +287,47 @@ var vm = new Vue({
             //省市区反显
             tempObj.meetingRegion = []
             for (let i = 0; i < this.RegionOptions.length; i++) {
-                if (this.RegionOptions[i].label == tempObj.meetingBaseInfoProvince) {
+                if (this.RegionOptions[i].label == tempObj.meetingProvince) {
                     tempObj.meetingRegion[0] = this.RegionOptions[i].value
                     for (let j = 0; j <this.RegionOptions[i].children.length; j ++) {
-                        if (this.RegionOptions[i].children[j].label == tempObj.meetingBaseInfoCity) {
+                        if (this.RegionOptions[i].children[j].label == tempObj.meetingCity) {
                             tempObj.meetingRegion[1] = this.RegionOptions[i].children[j].value
-                            for (let k = 0; k < this.RegionOptions[i].children[j].children.length; k++) {
-                                if (this.RegionOptions[i].children[j].children[k].label == tempObj.meetingBaseInfoArea) {
-                                    tempObj.meetingRegion[2] = this.RegionOptions[i].children[j].children[k].value
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            //会议时间反显
-            tempObj.meetingTimes = [parseInt(tempObj.meetingBaseInfoStartTime),parseInt(tempObj.meetingBaseInfoEndTime)]
-            tempObj.meetingBaomingTimes = [parseInt(tempObj.meetingBaseInfoSignUpStartTime),parseInt(tempObj.meetingBaseInfoSignUpEndTime)]
-            this.meetingForm = tempObj
-            this.$refs['meetingForm'].resetFields()
-            this.showChildPage = true
-        },
-        //删除
-        deleteThisBaseinfo (item){
-            var self = this
-            self.$confirm('确实要删除该会议数据吗?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                var data = JSON.parse(JSON.stringify(item))
-                data.meetingBaseInfoStatus = 1  //0 正常  1 删除
-                $.ajax({
-                    type: "POST",
-                    contentType: "application/json",
-                    url: "/meetingBaseInfo/update",
-                    data: JSON.stringify(data),
-                    dataType: "json",
-                    success: function(res) {
-                        if (res.code == 200) {
-                            self.startSearch()
-                            self.$message.success('删除成功')
-                        } else {
-                            mapErrorStatus(res)
-                            vm.error = true;
-                            vm.errorMsg = res.msg;
-                        }
-                    },
-                    error:function(res){
-                        mapErrorStatus(res)
-                    }
-                });
-            })
-        },
-        //省市区发生变化时
-        handleRegionChange(val){
-            for (let i = 0; i < this.RegionOptions.length; i++) {
-                if (this.RegionOptions[i].value == val[0]) {
-                    this.meetingForm.meetingBaseInfoProvince = this.RegionOptions[i].label
-                    for (let j = 0; j <this.RegionOptions[i].children.length; j ++) {
-                        if (this.RegionOptions[i].children[j].value == val[1]) {
-                            this.meetingForm.meetingBaseInfoCity = this.RegionOptions[i].children[j].label
                             // for (let k = 0; k < this.RegionOptions[i].children[j].children.length; k++) {
-                            //     if (this.RegionOptions[i].children[j].children[k].value == val[2]) {
-                            //         this.meetingForm.meetingBaseInfoArea = this.RegionOptions[i].children[j].children[k].label
+                            //     if (this.RegionOptions[i].children[j].children[k].label == tempObj.meetingBaseInfoArea) {
+                            //         tempObj.meetingRegion[2] = this.RegionOptions[i].children[j].children[k].value
                             //     }
                             // }
                         }
                     }
                 }
             }
-            console.log('省市区发生变化',this.meetingForm.meetingBaseInfoProvince,this.meetingForm.meetingBaseInfoCity,this.meetingForm.meetingBaseInfoArea)
-        },
-        //会议起止时间变化
-        handleMeetingTimesChange(val){
-            if (val !== null) {
-                this.meetingForm.meetingStartTime = val[0]
-                this.meetingForm.meetingEndTime = val[1]
+            //会议时间反显
+            tempObj.meetingTimes = [parseInt(tempObj.meetingStartTime),parseInt(tempObj.meetingEndTime)]
+            //会议报名时间反显，如果是'-1',说明为空
+            if (tempObj.meetingEnrollStartTime == '-1') {
+                tempObj.meetingBaomingTimes = []
             } else {
-                this.meetingForm.meetingStartTime = '-1'
-                this.meetingForm.meetingEndTime = '-1'
+                tempObj.meetingBaomingTimes = [parseInt(tempObj.meetingEnrollStartTime),parseInt(tempObj.meetingEnrollEndTime)]
             }
-            console.log('会议时间变化',val,this.meetingForm.meetingStartTime,this.meetingForm.meetingEndTime)
-        },
-        //会议报名时间变化
-        handleMeetingBaomingTimesChange(val){
-            if (val !== null) {
-                this.meetingForm.meetingEnrollStartTime = val[0]
-                this.meetingForm.meetingEnrollEndTime = val[1]
-            } else {
-                this.meetingForm.meetingEnrollStartTime = '-1'
-                this.meetingForm.meetingEnrollEndTime = '-1'
+            //会议类型反显
+                tempObj.meetingType = tempObj.meetingType.toString()
+            //关键词和嘉宾反显----数组
+            if (tempObj.meetingKeyword !== '#') {
+                this.meetingTagArray = tempObj.meetingKeyword.split(',')
             }
-            console.log('报名时间变化',val,this.meetingForm.meetingEnrollStartTime,this.meetingForm.meetingEnrollEndTime)
+            if (tempObj.meetingGuestName !== '#') {
+                this.meetingGuestArray = tempObj.meetingGuestName.split(',')
+            }
+            //非必填字段反显
+            if (tempObj.meetingAddress == '#') {
+                tempObj.meetingAddress = ''
+            }
+            if (tempObj.meetingOrganizers == '#') {
+                tempObj.meetingOrganizers = ''
+            }
+            this.meetingForm = tempObj
+            this.$refs['meetingForm'].resetFields()
+            this.showChildPage = true
         },
         //新建或编辑保存
         testSubmit(formName) {
@@ -364,6 +339,19 @@ var vm = new Vue({
                         self.$message.error('会议报名截至时间不能大于会议开始时间')
                         return
                     }
+                    //非必填字段处理
+                    if (self.meetingForm.meetingAddress.trim() == '') {
+                        self.meetingForm.meetingAddress = '#'
+                    }
+                    if (self.meetingForm.meetingOrganizers.trim() == '') {
+                        self.meetingForm.meetingOrganizers = '#'
+                    }
+                    if (self.meetingForm.meetingGuestName.trim() == '') {
+                        self.meetingForm.meetingGuestName = '#'
+                    }
+                    if (self.meetingForm.meetingKeyword.trim() == '') {
+                        self.meetingForm.meetingKeyword = '#'
+                    }
                     self.submitCreatEdit()
                 }
             })
@@ -372,9 +360,9 @@ var vm = new Vue({
         submitCreatEdit(){
             var self = this
             if (self.creatOrEdit == 0) {
-                var reqUrl = '/meetingBaseInfo/save'
+                var reqUrl = '/meeting/save'
             } else if (self.creatOrEdit == 1) {
-                var reqUrl = '/meetingBaseInfo/update'
+                var reqUrl = '/meeting/update'
             }
             var data = JSON.parse(JSON.stringify(self.meetingForm))
             $.ajax({
@@ -398,6 +386,185 @@ var vm = new Vue({
                     mapErrorStatus(res)
                 }
             });
+        },
+        onlineThisMeeting(item){
+            var self = this
+            self.$confirm('确实要上线该会议吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = JSON.parse(JSON.stringify(item))
+                data.meetingStatus = '0'  //发布状态：会议状态 0 上线 1 下线 2 删除
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/meeting/update",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res) {
+                        if (res.code == 200) {
+                            self.startSearch()
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+            })
+        },
+        offlineThisMeeting(item){
+            var self = this
+            self.$confirm('确实要下线该会议吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = JSON.parse(JSON.stringify(item))
+                data.meetingStatus = '1'  //发布状态：会议状态 0 上线 1 下线 2 删除
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/meeting/update",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res) {
+                        if (res.code == 200) {
+                            self.startSearch()
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+            })
+        },
+        //删除
+        deleteThisMeeting (item){
+            var self = this
+            self.$confirm('确实要删除该会议数据吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = JSON.parse(JSON.stringify(item))
+                data.meetingStatus = 2  //发布状态：会议状态 0 上线 1 下线 2 删除
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/meeting/update",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res) {
+                        if (res.code == 200) {
+                            self.startSearch()
+                            self.$message.success('删除成功')
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+            })
+        },
+        //省市区发生变化时
+        handleRegionChange(val){
+            for (let i = 0; i < this.RegionOptions.length; i++) {
+                if (this.RegionOptions[i].value == val[0]) {
+                    this.meetingForm.meetingProvince = this.RegionOptions[i].label
+                    for (let j = 0; j <this.RegionOptions[i].children.length; j ++) {
+                        if (this.RegionOptions[i].children[j].value == val[1]) {
+                            this.meetingForm.meetingCity = this.RegionOptions[i].children[j].label
+                            // for (let k = 0; k < this.RegionOptions[i].children[j].children.length; k++) {
+                            //     if (this.RegionOptions[i].children[j].children[k].value == val[2]) {
+                            //         this.meetingForm.meetingBaseInfoArea = this.RegionOptions[i].children[j].children[k].label
+                            //     }
+                            // }
+                        }
+                    }
+                }
+            }
+            console.log('省市区发生变化',this.meetingForm.meetingProvince,this.meetingForm.meetingCity,this.meetingForm.meetingBaseInfoArea)
+        },
+        //会议起止时间变化
+        handleMeetingTimesChange(val){
+            if (val !== null) {
+                this.meetingForm.meetingStartTime = val[0]
+                this.meetingForm.meetingEndTime = val[1]
+            } else {
+                this.meetingForm.meetingStartTime = '-1'
+                this.meetingForm.meetingEndTime = '-1'
+            }
+            console.log('会议时间变化',val,this.meetingForm.meetingStartTime,this.meetingForm.meetingEndTime)
+        },
+        //会议报名时间变化
+        handleMeetingBaomingTimesChange(val){
+            if (val !== null) {
+                this.meetingForm.meetingEnrollStartTime = val[0]
+                this.meetingForm.meetingEnrollEndTime = val[1]
+            } else {
+                this.meetingForm.meetingEnrollStartTime = '-1'
+                this.meetingForm.meetingEnrollEndTime = '-1'
+            }
+            console.log('报名时间变化',val,this.meetingForm.meetingEnrollStartTime,this.meetingForm.meetingEnrollEndTime)
+        },
+        //新闻标签改变
+        meetingTagChange (val) {
+            console.log('关键词',val)
+            for (let i = 0; i < this.meetingTagArray.length; i++) {
+                if (this.meetingTagArray[i].length > 20) {
+                    let tempArr = JSON.parse(JSON.stringify(this.meetingTagArray))
+                    tempArr.splice(i,1) 
+                    this.meetingTagArray = tempArr
+                    this.$message.warning('单一标签最多20字')
+                }
+            }
+            if (this.meetingTagArray.length > 10) {
+                this.$message.warning('标签做多可设置为10个')
+                this.meetingTagArray = this.meetingTagArray.splice(0,10)
+            }
+            var tempStr = ''
+            tempStr = this.meetingTagArray.join(',')
+            if (tempStr == '') {
+                tempStr = '#'
+            }
+            this.meetingForm.meetingKeyword = tempStr
+            console.log('当前关键词',this.meetingForm.meetingKeyword)
+        },
+        //会议嘉宾改变
+        meetingGuestChange (val) {
+            console.log('嘉宾数组',val)
+            for (let i = 0; i < this.meetingGuestArray.length; i++) {
+                if (this.meetingGuestArray[i].length > 20) {
+                    let tempArr = JSON.parse(JSON.stringify(this.meetingGuestArray))
+                    tempArr.splice(i,1) 
+                    this.meetingGuestArray = tempArr
+                    this.$message.warning('单一标签最多20字')
+                }
+            }
+            if (this.meetingGuestArray.length > 10) {
+                this.$message.warning('标签做多可设置为10个')
+                this.meetingGuestArray = this.meetingGuestArray.splice(0,10)
+            }
+            var tempStr = ''
+            tempStr = this.meetingGuestArray.join(',');
+            if (tempStr == '') {
+                tempStr = '#'
+            }
+            this.meetingForm.meetingGuestName = tempStr
+            console.log('当前嘉宾',this.meetingForm.meetingGuestName)
         },
         //取消编辑返回列表页
         closeCreatOrEdit (formName) {

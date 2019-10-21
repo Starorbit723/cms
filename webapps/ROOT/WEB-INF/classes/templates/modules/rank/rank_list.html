@@ -56,8 +56,8 @@
                         <template slot-scope="scope">
                             <el-button type="text" size="small" v-if="scope.row.publishStatus == 0 || scope.row.publishStatus == 3" @click="onlineThisRank(scope.row)">发布</el-button>
                             <el-button type="text" size="small" v-if="scope.row.publishStatus == 2" @click="offlineThisRank(scope.row)">下线</el-button>
-                            <el-button type="text" size="small" v-if="scope.row.publishStatus == 0" @click="editThisRank(scope.row)">编辑</el-button>
-                            <el-button type="text" size="small" @click="linkToEditPage(scope.row)">榜单管理</el-button>
+                            <el-button type="text" size="small" v-if="scope.row.publishStatus == 0 || scope.row.publishStatus == 2|| scope.row.publishStatus == 3 || scope.row.publishStatus == 5" @click="editThisRank(scope.row)">编辑</el-button>
+                            <el-button type="text" size="small" v-if="scope.row.publishStatus == 0 || scope.row.publishStatus == 2|| scope.row.publishStatus == 3 || scope.row.publishStatus == 5" @click="linkToEditPage(scope.row)">榜单管理</el-button>
                             <el-button type="text" size="small" v-if="scope.row.publishStatus == 0 ||scope.row.publishStatus == 3" @click="deleteThisRank(scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
