@@ -88,6 +88,7 @@ talkUrl: /cms/api/updateVtalkList
 updateSignUpUrl: /cms/api/updateCmsSignUp
 updateSignUpInfoUrl: /cms/api/updateCmsSignUpInfo
 updateUserSignInListUrl: /cms/api/updateUserSignInList
+updateMeetingList: /cms/api/updateMeetingList
 endPoint: https://obs.cn-north-1.myhuaweicloud.com
 ak: 2FBSHRRFZ5YLE3VPBMDK
 sk: vqYIdh3xmKfjlhcM0qEwCeuY8QfRKHYnGYHWoDBx

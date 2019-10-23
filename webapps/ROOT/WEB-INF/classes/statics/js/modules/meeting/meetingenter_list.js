@@ -233,7 +233,7 @@ var vm = new Vue({
                             self.tableData[i].meetingStartTime = self.transformTime(parseFloat(self.tableData[i].meetingStartTime))
                             self.tableData[i].meetingEndTime = self.transformTime(parseFloat(self.tableData[i].meetingEndTime))
                             self.tableData[i].meetingModTime = self.transformTime(parseFloat(self.tableData[i].meetingModTime))
-                            self.tableData[i].meetingImg =  self.picBaseUrl+ self.tableData[i].meetingImg
+                            //self.tableData[i].meetingImg =  self.picBaseUrl+ self.tableData[i].meetingImg
                         }
                         self.pagination1 = {
                             currPage: res.page.currPage,
@@ -394,12 +394,14 @@ var vm = new Vue({
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                var data = JSON.parse(JSON.stringify(item))
-                data.meetingStatus = '0'  //发布状态：会议状态 0 上线 1 下线 2 删除
+                var data = {
+                    meetingId:item.meetingId.toString(),
+                    meetingStatus:'0'   //发布状态：会议状态 0 上线 1 下线 2 删除
+                }
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: "/meeting/update",
+                    url: "/meeting/push",
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res) {
@@ -424,12 +426,14 @@ var vm = new Vue({
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                var data = JSON.parse(JSON.stringify(item))
-                data.meetingStatus = '1'  //发布状态：会议状态 0 上线 1 下线 2 删除
+                var data = {
+                    meetingId:item.meetingId.toString(),
+                    meetingStatus:'1'   //发布状态：会议状态 0 上线 1 下线 2 删除
+                }
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: "/meeting/update",
+                    url: "/meeting/offline",
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res) {
