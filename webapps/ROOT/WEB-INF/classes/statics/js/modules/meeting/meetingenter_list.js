@@ -396,6 +396,7 @@ var vm = new Vue({
             }).then(() => {
                 var data = {
                     meetingId:item.meetingId.toString(),
+                    meetingType:item.meetingType.toString(),
                     meetingStatus:'0'   //发布状态：会议状态 0 上线 1 下线 2 删除
                 }
                 $.ajax({
@@ -428,6 +429,7 @@ var vm = new Vue({
             }).then(() => {
                 var data = {
                     meetingId:item.meetingId.toString(),
+                    meetingType:item.meetingType.toString(),
                     meetingStatus:'1'   //发布状态：会议状态 0 上线 1 下线 2 删除
                 }
                 $.ajax({
