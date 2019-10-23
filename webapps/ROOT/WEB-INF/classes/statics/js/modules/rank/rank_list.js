@@ -386,7 +386,9 @@ var vm = new Vue({
             }).then(() => {
                 var data = {
                     id: item.id.toString(),
-                    publishStatus: '1' //待发布
+                    publishStatus: '1', //待发布
+                    publishAt:item.publishAt,
+                    year:item.year
                 }
                 $.ajax({
                     type: "POST",
