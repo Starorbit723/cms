@@ -365,6 +365,7 @@ var vm = new Vue({
                 var reqUrl = '/meeting/update'
             }
             var data = JSON.parse(JSON.stringify(self.meetingForm))
+            data = 
             $.ajax({
                 type: "POST",
                 url: reqUrl,
@@ -461,8 +462,10 @@ var vm = new Vue({
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                var data = JSON.parse(JSON.stringify(item))
-                data.meetingStatus = 2  //发布状态：会议状态 0 上线 1 下线 2 删除
+                var data = {
+                    meetingId: item.meetingId.toString(),
+                    meetingStatus: 2, //发布状态：会议状态 0 上线 1 下线 2 删除
+                }
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
@@ -605,6 +608,8 @@ var vm = new Vue({
                 meetingTimes:[],//会议时间数组-----前端自用字段
                 meetingBaomingTimes:[], //会议报名时间-----前端自用字段
             }
+            this.meetingTagArray=[]
+            this.meetingGuestArray=[]
             this.showChildPage = false
             this.creatOrEdit = 0
         },
