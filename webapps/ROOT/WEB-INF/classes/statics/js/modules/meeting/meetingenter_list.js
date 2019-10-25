@@ -59,6 +59,7 @@ var vm = new Vue({
                 meetingType:'',//会议类型
                 meetingStartTime:'',//开始时间
                 meetingEndTime:'',//结束时间
+                meetingStatus:['0','1']
             },
             //列表查询结果
             tableData: [{
@@ -177,8 +178,8 @@ var vm = new Vue({
         timeRange (val) {
             console.log(val)
             if (val) {
-                this.searchForm.meetingStartTime = val[0]
-                this.searchForm.meetingEndTime = val[1]
+                this.searchForm.meetingStartTime = val[0].toString()
+                this.searchForm.meetingEndTime = val[1].toString()
             } else {
                 this.searchForm.meetingStartTime = ''
                 this.searchForm.meetingEndTime = ''
