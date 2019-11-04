@@ -582,7 +582,7 @@
             <div class="cv_content_square">
                 <el-form :model="searchInfoForm" status-icon class="demo-ruleForm" @submit.native.prevent>
                     <el-row class="el-row-h60">
-                        <el-col :span="5">
+                        <el-col :span="6">
                             <el-form-item  label-width="30%" label="姓名" style="margin:0;">
                                 <el-input
                                 clearable
@@ -592,8 +592,28 @@
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="5" :offset="1">
-                            <el-form-item  label-width="30%" label="手机号" style="margin:0;">
+                        
+                        <el-col :span="6" :offset="1">
+                            <el-form-item label="审核状态" label-width="30%" style="margin:0;">
+                                <el-select
+                                    clearable
+                                    style="width:100%;"
+                                    v-model="searchInfoForm.signUpInfoStatus"
+                                    placeholder="请选择审核状态">
+                                    <el-option
+                                        v-for="item in signUpInfoStatusOptions"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                    </el-option>
+                                
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="13">
+                            <el-form-item  label-width="14%" label="手机号" style="margin:0;">
                                 <el-input
                                 clearable
                                 placeholder="请输入手机号"
@@ -602,13 +622,13 @@
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-col :span="2" :offset="2" class="el-row-h40">
                             <el-button type="primary" icon="el-icon-search" style="width:100%"  @click="startSearchInfo(0)">搜索</el-button>
                         </el-col>
                         <el-col :span="3" :offset="1" class="el-row-h40">
                             <el-button type="primary" style="width:100%"  @click="downloadInfo()">下载参会信息</el-button>
                         </el-col>
-                        <el-col class="el-row-h40" :span="3" :offset="1">
+                        <el-col class="el-row-h40" :span="2" :offset="1">
                             <el-button type="primary" style="width: 100%" @click="closeSingupInfoPage('searchInfoForm')">返回</el-button>
                         </el-col>
                     </el-row>

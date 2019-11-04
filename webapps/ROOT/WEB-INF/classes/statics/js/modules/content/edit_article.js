@@ -531,6 +531,18 @@ var vm = new Vue({
                         if(arr[i].match(srcReg)[1].indexOf('amp;') !== -1){
                             var _src = arr[i].match(srcReg)[1].replace(/amp;/g, "W3School")
                             console.log('替换前：',arr[i].match(srcReg)[1],'替换后：',_src)
+                        } else if (self.typeOfPage == 'edit' && self.articleForm.newsStatus == '2' && type == '0' && arr[i].match(srcReg)[1].indexOf('ueditor') !== -1) {
+                            //在线的文章如果改了图片，必须要保存并发布，否则现在图片显示不出来,如果点了保存，要拦截并提示
+                            self.$confirm('该文章为在线文章，修改后请点击保存并发布', '提示', {
+                                confirmButtonText: '我知道了',
+                                type: 'warning'
+                            }).then(() => {
+                            })
+                            return;
+                        } else if (arr[i].match(srcReg)[1].indexOf('http://cms.chinaventure.com.cn') !== -1) { 
+                            var _src = arr[i].match(srcReg)[1].replace('http://cms.chinaventure.com.cn', "")
+                        }  else if (arr[i].match(srcReg)[1].indexOf('https://cms.chinaventure.com.cn') !== -1) { 
+                            var _src = arr[i].match(srcReg)[1].replace('https://cms.chinaventure.com.cn', "")
                         } else {
                             var _src = arr[i].match(srcReg)[1]
                         }

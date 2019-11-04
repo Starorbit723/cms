@@ -185,7 +185,7 @@ var vm = new Vue({
             meetingFormRules:{
                 meetingTitle: [
                     { required: true, message: '会议标题不能为空', trigger: 'change' },
-                    { max: 50, message: '您输入的字数超过50个字', trigger: 'change' }
+                    { max: 70, message: '您输入的字数超过70个字', trigger: 'change' }
                 ],
                 meetingDesc:[
                     { required: true, message: '请填写会议简介', trigger: 'change' }

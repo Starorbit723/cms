@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/icon.css">
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>会议首页列表</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">会议首页列表</div>
+    <div id="meetingenter_list" class="cv_page_content">
+        <!------------------列表开始------------------>
+        <div v-show="!showChildPage">
+            <!--列表搜索区-->
+            <div class="cv_content_square">
+                <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="25%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="8">
+                            <el-form-item label="会议标题" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchForm.meetingTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="16">
+                            <el-form-item label="会议时间" style="margin:0;">
+                                <el-date-picker
+                                    style="width:100%;"
+                                    v-model="timeRange"
+                                    type="datetimerange"
+                                    start-placeholder="开始时间"
+                                    end-placeholder="结束时间"
+                                    value-format="timestamp"
+                                    :default-time="['00:00:00', '00:00:00']">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h60">
+                        <el-col :span="8">
+                            <el-form-item label="会议类型" style="margin:0;">
+                                <el-select style="width:100%;" v-model="searchForm.meetingType" clearable>
+                                    <el-option
+                                        v-for="item in meetingOptions"
+                                        :key="item.code"
+                                        :label="item.value"
+                                        :value="item.code">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4" :offset="12" class="el-row-h40">
+                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="startSearch(0)">搜索</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--功能按钮区-->
+            <el-row class="el-row-h50">
+                <el-col :span="4">
+                    <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addOrEditMeeting(0)">新增会议</el-button>
+                </el-col>
+            </el-row>
+            <!--表格查询结果区-->
+            <div class="cv_content_square">
+                <el-table :data="tableData" style="width: 100%; margin:10px auto;" ref="multipleTable" stripe>
+                    <el-table-column prop="meetingTitle" label="会议名称" width="220"></el-table-column>
+                    <el-table-column prop="meetingType" label="会议类型" width="120">
+                        <template slot-scope="scope" v-if="scope.row.meetingType !== ''">
+                            <el-tag v-if="scope.row.meetingType == 1" type="success">投中年会</el-tag>
+                            <el-tag v-if="scope.row.meetingType == 2" >投中合作会议</el-tag>
+                            <el-tag v-if="scope.row.meetingType == 3" type="danger">行业会议</el-tag>
+                            <el-tag v-if="scope.row.meetingType == 4" type="warning">创新经济峰会</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="meetingImg" label="封面图"  width="180">
+                        <template v-if="scope.row.meetingImg !== ''" slot-scope="scope">
+                            <img style="width:160px;height:100px;" :src="scope.row.meetingImg">
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="meetingStatus" label="发布状态" width="">
+                        <template v-if="scope.row.meetingStatus !== ''" slot-scope="scope">
+                            <!-- 发布状态：会议状态 0 上线 1 下线 2 删除 -->
+                            <el-tag v-if="scope.row.meetingStatus == 0" type="success">上线</el-tag>
+                            <el-tag v-if="scope.row.meetingStatus == 1" >未发布</el-tag>
+                            <el-tag v-if="scope.row.meetingStatus == 2" type="danger">删除</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="meetingModTime" label="更新时间" width="170"></el-table-column>
+                    <el-table-column prop="meetingStartTime" label="开始时间" width="170"></el-table-column>
+                    <el-table-column prop="meetingEndTime" label="结束时间" width="170"></el-table-column>
+                    <el-table-column label="操作" width="130" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button v-if="scope.row.meetingStatus == 1" type="text" size="small" @click="addOrEditMeeting(1,scope.row)">修改</el-button>
+                            <el-button v-if="scope.row.meetingStatus == 1" type="text" size="small" @click="onlineThisMeeting(scope.row)">发布</el-button>
+                            <el-button v-if="scope.row.meetingStatus == 0" type="text" size="small" @click="offlineThisMeeting(scope.row)">下线</el-button>
+                            <el-button v-if="scope.row.meetingStatus == '1'"  type="text" size="small" @click="deleteThisMeeting(scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page="pagination1.currPage"
+                    :page-size="pagination1.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination1.totalCount">
+                </el-pagination>
+            </div>
+
+        </div>
+        <!------------------列表结束------------------>
+
+        <!------------------新增修改开始------------------>
+        <div v-show="showChildPage">
+            <!--表单信息-->
+            <div class="cv_content_square">
+                <el-form :model="meetingForm" :rules="meetingFormRules"  ref="meetingForm" status-icon class="demo-ruleForm" label-width="15%" label-position="right">
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item prop="meetingTitle" label="会议标题" style="margin:0;">
+                                <el-input
+                                clearable
+                                :maxlength="70"
+                                type="text"
+                                v-model="meetingForm.meetingTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item prop="meetingTimes" label="会议起止时间" style="margin:0;">
+                                <el-date-picker
+                                    style="width:100%;"
+                                    v-model="meetingForm.meetingTimes"
+                                    type="datetimerange"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    value-format="timestamp"
+                                    :default-time="['00:00:00', '00:00:00']"
+                                    @change="handleMeetingTimesChange">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item prop="meetingBaomingTimes" label="会议报名时间" style="margin:0;">
+                                <el-date-picker
+                                    style="width:100%;"
+                                    v-model="meetingForm.meetingBaomingTimes"
+                                    type="datetimerange"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    value-format="timestamp"
+                                    :default-time="['00:00:00', '00:00:00']"
+                                    clearable
+                                    @change="handleMeetingBaomingTimesChange">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="12">
+                            <el-form-item prop="meetingRegion" label-width="30%" label="所在区域" style="margin:0;">
+                                <el-cascader
+                                style="width: 100%;"
+                                v-model="meetingForm.meetingRegion"
+                                :options="RegionOptions"
+                                :props="{ expandTrigger: 'hover' }"
+                                @change="handleRegionChange">
+                                </el-cascader>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item prop="meetingType" label-width="30%" label="会议类型" style="margin:0;">
+                                <el-select style="width:100%;" v-model="meetingForm.meetingType">
+                                    <el-option
+                                        v-for="item in meetingOptions"
+                                        :key="item.code"
+                                        :label="item.value"
+                                        :value="item.code">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item prop="meetingAddress" label="详细地址" style="margin:0;">
+                                <el-input
+                                    :maxlength="100"
+                                    clearable
+                                    type="text"
+                                    v-model="meetingForm.meetingAddress"
+                                    auto-complete="on">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item prop="meetingUrl" label="页面地址" style="margin:0;">
+                                <el-input
+                                    :maxlength="500"
+                                    clearable
+                                    type="text"
+                                    v-model="meetingForm.meetingUrl"
+                                    auto-complete="on">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item prop="meetingOrganizers" label="举办方" style="margin:0;">
+                                <el-input
+                                    :maxlength="50"
+                                    clearable
+                                    type="text"
+                                    v-model="meetingForm.meetingOrganizers"
+                                    auto-complete="on">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h130">
+                        <el-col :span="24">
+                            <el-form-item prop="meetingDesc" label="简介" style="margin:0;">
+                                <el-input
+                                    maxlength="200"
+                                    clearable
+                                    type="textarea"
+                                    :autosize="{ minRows: 4, maxRows: 4}"
+                                    v-model="meetingForm.meetingDesc"
+                                    auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item prop="meetingGuestName" label="嘉宾" style="margin:0;">
+                                <el-select
+                                    @change="meetingGuestChange"
+                                    style="width:100%;"
+                                    v-model="meetingGuestArray"
+                                    multiple
+                                    filterable
+                                    allow-create
+                                    default-first-option
+                                    placeholder="请编嘉宾标签，不超过10个，不可重复用词">
+                                    <el-option
+                                    v-for="item in labelOptions2"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item prop="meetingKeyword" label="关键词" style="margin:0;">
+                                <el-select
+                                    @change="meetingTagChange"
+                                    style="width:100%;"
+                                    v-model="meetingTagArray"
+                                    multiple
+                                    filterable
+                                    allow-create
+                                    default-first-option
+                                    placeholder="请编关键词，不超过10个，不可重复用词">
+                                    <el-option
+                                    v-for="item in labelOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h180">
+                        <el-col :span="12">
+                            <el-form-item label="封面图片" prop="meetingImg" label-width="30%" style="margin:0;">
+                                <div class="fengmian_show" @click="openAddCoverImg">
+                                    <img v-if="meetingForm.meetingImg" :src="meetingForm.meetingImg" class="avatar">
+                                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                </div>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+
+                </el-form>
+            </div>
+            <!--新建保存修改-->
+            <el-row class="el-row-h60" style="margin-top:20px;">
+                <el-col :span="3" :offset="8">
+                    <el-button type="primary" style="width:100%" @click="testSubmit('meetingForm')">保存</el-button>
+                </el-col>
+                <el-col :span="3" :offset="2">
+                    <el-button type="primary" style="width:100%" @click="closeCreatOrEdit('meetingForm')">取消</el-button>
+                </el-col>
+            </el-row>
+
+            <!--封面图库弹出层开始-->
+            <el-dialog title="封面图库" :visible.sync="showCoverimgLib" width="100%" :fullscreen="true" :show-close="false" >
+                <el-form :model="searchCoverimgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="16">
+                            <el-form-item label="图片名称" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchCoverimgForm.picTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchCoverImg(0)">搜索</el-button>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" @click="backToEdit()">返回</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <el-table :data="coverimgTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="coverimgTableData" stripe>
+                    <el-table-column prop="picUrl" label="封面图预览" width="180">
+                        <template v-if="scope.row.picUrl" slot-scope="scope">
+                            <img style="width:80px;height:60px;" :src="scope.row.picUrl">
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="picTitle" label="图片名称" width="250"></el-table-column>
+                    <el-table-column prop="picEditorName" label="修改人" width="120"></el-table-column>
+                    <el-table-column prop="picModTime" label="最后更新时间"></el-table-column>
+                    <el-table-column label="操作" width="100" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="addThisCoverImg(scope.row)">添加</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <!--分页器-->
+                <div class="cv_page_zone">
+                    <el-pagination
+                        @current-change="handleCurrentChange2"
+                        :current-page="pagination2.currPage"
+                        :page-size="pagination2.pageSize"
+                        layout="total, prev, pager, next, jumper"
+                        :total="pagination2.totalCount">
+                    </el-pagination>
+                </div>
+            </el-dialog>
+            <!--封面图库弹出层结束-->
+
+
+
+
+        </div>
+        <!------------------新增修改结束------------------>
+
+
+    </div>
+</body>
+<script type="text/javascript" src="${request.contextPath}/statics/js/region2.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/meeting/meetingenter_list.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+<style>
+    .fengmian_show{
+        width: 240px;
+        height: 150px;
+        border-radius: 5px;
+        border: 1px dashed #d9d9d9;
+        text-align: center;
+        cursor: pointer;
+    }
+    .avatar-uploader .el-upload {
+        width:240px;
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    .avatar-uploader .el-upload:hover {
+        border-color: #175CE9;
+    }
+    .avatar-uploader-icon {
+        display: inline-block;
+        font-size: 28px;
+        color: #8c939d;
+        width: 110px;
+        height: 110px;
+        line-height: 150px;
+        text-align: center;
+    }
+    .fengmian_show:hover{
+        border-color: #175CE9;
+    }
+    .fengmian_show:hover .avatar-uploader-icon{
+        color: #175CE9;
+    }
+    .avatar {
+        width: 240px;
+        height: 150px;
+        display: block;
+    }
+    </style>
+</html>
