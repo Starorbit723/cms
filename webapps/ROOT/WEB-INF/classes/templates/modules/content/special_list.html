@@ -41,7 +41,7 @@
                 <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
                     <el-table-column prop="" label="专题名称">
                         <template slot-scope="scope">
-                            <div class="subject_title" v-text="scope.row.subjectTitle" @click="openThisPage(scope.row.subjectId)"></div>
+                            <div class="subject_title" v-text="scope.row.subjectTitle" @click="openThisPage(scope.row)"></div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="subjectAppPic" label="专题封面图" width="180">
@@ -269,10 +269,13 @@
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
 <style>
 .subject_title{
+    color: #606266;
     cursor: pointer;
 }
 .subject_title:hover{
     color: #175CE9;
+    cursor: pointer;
+    text-decoration: underline;
 }
 .avatar-uploader{
     width:720px;

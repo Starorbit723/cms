@@ -52,14 +52,14 @@
         <!--表格查询结果区-->
         <div class="cv_content_square">
             <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
-                <el-table-column prop="meetingId" label="会议编号" width="90"></el-table-column>
+                <el-table-column prop="meetingId" label="会议编号" width="110"></el-table-column>
                 <el-table-column prop="meetingTitle" label="会议标题">
                     <template v-if="scope.row.meetingTitle" slot-scope="scope">
-                        <div v-text="scope.row.meetingTitle" @click="openUrlPage(scope.row.meetingUrl)"></div>
+                        <div v-text="scope.row.meetingTitle" @click="openUrlMeetingDetailPage(scope.row)" class="meetingDeatilStyle"></div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="meetingUrl" label="会议页面地址" width="300"></el-table-column>
-                <el-table-column prop="meetingStatus" label="发布状态"  width="110">
+                <!-- <el-table-column prop="meetingUrl" label="会议页面地址" width="300"></el-table-column> -->
+                <el-table-column prop="meetingStatus" label="发布状态"  width="150">
                     <template slot-scope="scope">
                         <el-tag v-if="scope.row.meetingStatus == 0">未发布</el-tag>
                         <el-tag v-if="scope.row.meetingStatus == 1" type="warning">待发布</el-tag>
@@ -69,8 +69,8 @@
                         <el-tag v-if="scope.row.meetingStatus == 5" type="danger">已删除</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="meetingCrtTime" label="创建时间" width="100"></el-table-column>
-                <el-table-column prop="meetingCrtUserName" label="创建人" width="90"></el-table-column>
+                <el-table-column prop="meetingCrtTime" label="创建时间" width="180"></el-table-column>
+                <el-table-column prop="meetingCrtUserName" label="创建人" width="110"></el-table-column>
                 <el-table-column label="操作" width="140" fixed="right">
                     <template slot-scope="scope">
                         <el-button type="text" size="small" @click="editThisMeeting(scope.row)">编辑</el-button>
@@ -99,5 +99,14 @@
 <script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/modules/meeting/meeting_list.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
-
+<style>
+    .meetingDeatilStyle {
+        color: #606266
+    }
+    .meetingDeatilStyle:hover {
+        color: #175CE9;
+        cursor: pointer;
+        text-decoration: underline;
+    }
+</style>
 </html>

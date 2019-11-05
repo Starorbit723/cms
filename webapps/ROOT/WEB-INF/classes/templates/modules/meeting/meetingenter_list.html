@@ -51,7 +51,19 @@
                                 </el-select>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="4" :offset="12" class="el-row-h40">
+                        <el-col :span="8"  :offset="2">
+                            <el-form-item label="发布状态" style="margin:0;">
+                                <el-select style="width:100%;" v-model="chooseMeetingStatus" clearable>
+                                    <el-option
+                                        v-for="item in meetingStatusOptions"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4"  :offset="2" class="el-row-h40">
                             <el-button type="primary" icon="el-icon-search" style="width:100%" @click="startSearch(0)">搜索</el-button>
                         </el-col>
                     </el-row>
@@ -66,7 +78,11 @@
             <!--表格查询结果区-->
             <div class="cv_content_square">
                 <el-table :data="tableData" style="width: 100%; margin:10px auto;" ref="multipleTable" stripe>
-                    <el-table-column prop="meetingTitle" label="会议名称" width="220"></el-table-column>
+                    <el-table-column prop="meetingTitle" label="会议名称" width="220">
+                        <template v-if="scope.row.meetingTitle" slot-scope="scope">
+                            <div v-text="scope.row.meetingTitle" @click="openUrlMeetingList(scope.row)" class="meetingListStyle"></a>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="meetingType" label="会议类型" width="120">
                         <template slot-scope="scope" v-if="scope.row.meetingType !== ''">
                             <el-tag v-if="scope.row.meetingType == 1" type="success">投中年会</el-tag>
@@ -88,12 +104,14 @@
                             <el-tag v-if="scope.row.meetingStatus == 2" type="danger">删除</el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="meetingModTime" label="更新时间" width="170"></el-table-column>
-                    <el-table-column prop="meetingStartTime" label="开始时间" width="170"></el-table-column>
-                    <el-table-column prop="meetingEndTime" label="结束时间" width="170"></el-table-column>
+                    <el-table-column prop="meetingCrtTime" label="创建时间" width="100"></el-table-column>
+                    <el-table-column prop="meetingModTime" label="更新时间" width="100"></el-table-column>
+                    <el-table-column prop="meetingStartTime" label="开始时间" width="100"></el-table-column>
+                    <el-table-column prop="meetingEndTime" label="结束时间" width="100"></el-table-column>
+                    <el-table-column prop="meetingModUserName" label="更新人" width="90"></el-table-column>
                     <el-table-column label="操作" width="130" fixed="right">
                         <template slot-scope="scope">
-                            <el-button v-if="scope.row.meetingStatus == 1" type="text" size="small" @click="addOrEditMeeting(1,scope.row)">修改</el-button>
+                            <el-button v-if="scope.row.meetingStatus == 1 || scope.row.meetingStatus == 0" type="text" size="small" @click="addOrEditMeeting(1,scope.row)">修改</el-button>
                             <el-button v-if="scope.row.meetingStatus == 1" type="text" size="small" @click="onlineThisMeeting(scope.row)">发布</el-button>
                             <el-button v-if="scope.row.meetingStatus == 0" type="text" size="small" @click="offlineThisMeeting(scope.row)">下线</el-button>
                             <el-button v-if="scope.row.meetingStatus == '1'"  type="text" size="small" @click="deleteThisMeeting(scope.row)">删除</el-button>
@@ -412,6 +430,14 @@
         width: 240px;
         height: 150px;
         display: block;
+    }
+    .meetingListStyle {
+        color: #606266
+    }
+    .meetingListStyle:hover {
+        color: #175CE9;
+        cursor: pointer;
+        text-decoration: underline;
     }
     </style>
 </html>

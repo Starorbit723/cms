@@ -70,6 +70,11 @@ var vm = new Vue({
         this.startSearch(0)
     },
     methods:{
+        openUrlMeetingDetailPage(item) {
+            if(item.meetingStatus == 2) {
+                window.open('https://www.chinaventure.com.cn'+item.meetingUrl, "newwindow")
+            }
+        },
         handleCurrentChange (val) {
             this.pagination1.currPage = val
             this.startSearch() 

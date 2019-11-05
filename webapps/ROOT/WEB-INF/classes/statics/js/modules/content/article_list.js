@@ -148,7 +148,6 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
 			    dataType: "json",
 			    success: function(res){
-                    console.log(res)
 					if(res.code == 200){
                         self.tableData = res.page.list
                         for (let i = 0; i < self.tableData.length; i++){
@@ -434,9 +433,11 @@ var vm = new Vue({
             
         },
         //跳转至新闻详情
-        openUrlArticlePage(url){
-            console.log('url',url)
-            window.open('https://www.chinaventure.com.cn' + url) 
+        openUrlArticlePage(item){
+            // console.log('url',url)
+            if(item.newsStatus == 2) {
+                window.open('https://www.chinaventure.com.cn'+item.newsUrl, "newwindow") 
+            }
         },
         //获取所有编辑字典表
         getEditorOptionList () {

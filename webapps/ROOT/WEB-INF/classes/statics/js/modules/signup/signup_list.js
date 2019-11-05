@@ -291,6 +291,10 @@ var vm = new Vue({
     },
     methods:{
 
+        openUrlSignUpPage(url) {
+            window.open(url, "newwindow")
+        },
+
         // ----------------------------------------报名列表首页---------------------------------
         handleCurrentChange(val){
             this.pagination1.currPage = val

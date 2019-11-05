@@ -122,6 +122,11 @@ var vm = new Vue({
         this.getEditorOptionList()
     },
     methods:{
+        openUrlReportPage(item) {
+            if(item.reportStatus == 2) {
+                window.open('https://www.chinaventure.com.cn'+item.reportUrl, "newwindow")
+            }
+        },
         handleCurrentChange (val) {
             this.pagination1.currPage = val
             this.startSearch() 

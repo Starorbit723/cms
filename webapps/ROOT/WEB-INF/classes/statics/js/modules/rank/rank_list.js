@@ -134,6 +134,11 @@ var vm = new Vue({
         this.startSearch(0)
     },
     methods:{
+        openUrlRankPage(item) {
+            if(item.publishStatus == 2) {
+                window.open('https://www.chinaventure.com.cn' + item.rankUrl, "newwindow")
+            }
+        },
         handleCurrentChange (val) {
             this.pagination1.currPage = val
             this.startSearch() 

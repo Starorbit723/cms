@@ -52,6 +52,17 @@ var vm = new Vue({
             RegionOptions: [],
             //会议类型
             meetingOptions:[],
+            //发布状态
+            meetingStatusOptions: [
+                {
+                    value: '0',
+                    label: '上线'
+                },
+                {
+                    value: '1',
+                    label: '未发布'
+                }
+            ],
             //搜索提交
             timeRange:[],
             searchForm:{
@@ -59,8 +70,9 @@ var vm = new Vue({
                 meetingType:'',//会议类型
                 meetingStartTime:'',//开始时间
                 meetingEndTime:'',//结束时间
-                meetingStatus:['0','1']
+                meetingStatus: []
             },
+            chooseMeetingStatus: '', // 所选择的会议状态
             //列表查询结果
             tableData: [{
                 meetingId:'',//主键
@@ -201,6 +213,11 @@ var vm = new Vue({
         this.getMeetingType()
     },
     methods:{
+        openUrlMeetingList(item) {
+            if(item.meetingStatus == 0) {
+                window.open(item.meetingUrl, "newwindow")
+            }
+        },
         handleCurrentChange (val) {
             this.pagination1.currPage = val
             this.startSearch()
@@ -208,6 +225,7 @@ var vm = new Vue({
         //开始搜索会议列表
         startSearch (type) {
             var self = this
+            self.searchForm.meetingStatus[0] = self.chooseMeetingStatus 
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.meetingTitle = data.meetingTitle.toString().trim()
             if (type == 0) {
@@ -228,12 +246,14 @@ var vm = new Vue({
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res){
+                    console.log(res)
                     if(res.code == 200){
                         self.tableData = res.page.list
                         for (let i = 0; i < self.tableData.length; i++) {
                             self.tableData[i].meetingStartTime = self.transformTime(parseFloat(self.tableData[i].meetingStartTime))
                             self.tableData[i].meetingEndTime = self.transformTime(parseFloat(self.tableData[i].meetingEndTime))
                             self.tableData[i].meetingModTime = self.transformTime(parseFloat(self.tableData[i].meetingModTime))
+                            self.tableData[i].meetingCrtTime = self.transformTime(parseFloat(self.tableData[i].meetingCrtTime))
                             //self.tableData[i].meetingImg =  self.picBaseUrl+ self.tableData[i].meetingImg
                         }
                         self.pagination1 = {
