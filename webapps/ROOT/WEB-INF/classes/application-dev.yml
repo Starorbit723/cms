@@ -89,6 +89,13 @@ updateSignUpUrl: /cms/api/updateCmsSignUp
 updateSignUpInfoUrl: /cms/api/updateCmsSignUpInfo
 updateUserSignInListUrl: /cms/api/updateUserSignInList
 updateMeetingList: /cms/api/updateMeetingList
+nginxIp: 119.254.13.83
+nginxCommand: /usr/local/expect/expect_scp
+nginxName: root
+nginxPassword: chinacv2019
+nginxDir: /mnt/sdc/olddata/tpic/newsContent/
+nginxReportDir: /mnt/sdc/olddata/tpic/reportContent/
+nginxUrl: http://119.254.13.83:8083/
 endPoint: https://obs.cn-north-1.myhuaweicloud.com
 ak: 2FBSHRRFZ5YLE3VPBMDK
 sk: vqYIdh3xmKfjlhcM0qEwCeuY8QfRKHYnGYHWoDBx

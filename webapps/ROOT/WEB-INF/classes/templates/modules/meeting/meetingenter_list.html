@@ -96,6 +96,16 @@
                             <img style="width:160px;height:100px;" :src="scope.row.meetingImg">
                         </template>
                     </el-table-column>
+                    <el-table-column prop="meetingWeight" label="权重" width="100">
+                        <template slot-scope="scope">
+                            <el-input
+                            v-model="scope.row.meetingWeight"
+                            class="scaleText"
+                            type="text"
+                            auto-complete="off"
+                            @change="scaleChange(scope.row)"></el-input>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="meetingStatus" label="发布状态" width="">
                         <template v-if="scope.row.meetingStatus !== ''" slot-scope="scope">
                             <!-- 发布状态：会议状态 0 上线 1 下线 2 删除 -->
@@ -315,7 +325,18 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item prop="meetingWeight" label="权重" style="margin:0;">
+                                <el-input
+                                maxlength="500"
+                                type="text"
+                                v-model="meetingForm.meetingWeight"
+                                auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
                 </el-form>
             </div>
             <!--新建保存修改-->

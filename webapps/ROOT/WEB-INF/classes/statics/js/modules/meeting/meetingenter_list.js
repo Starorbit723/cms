@@ -100,6 +100,7 @@ var vm = new Vue({
                 meetingTagContent:'',//APP标签内容
                 meetingKeyword:'',//关键词
                 meetingGuestName:'',//嘉宾名称(搜索)
+                meetingWeight: '-1', // 会议权重
             }],
             //分页器相关
             pagination1: {
@@ -143,6 +144,7 @@ var vm = new Vue({
                 meetingRegion:[],//会议所在区域-----前端自用字段
                 meetingTimes:[],//会议时间数组-----前端自用字段
                 meetingBaomingTimes:[], //会议报名时间-----前端自用字段
+                meetingWeight: '-1', // 会议权重
             },
             meetingFormRules:{
                 meetingTitle: [
@@ -196,7 +198,6 @@ var vm = new Vue({
                 this.searchForm.meetingStartTime = ''
                 this.searchForm.meetingEndTime = ''
             }
-            console.log(this.searchForm)
         }
     },
     created () {
@@ -246,7 +247,6 @@ var vm = new Vue({
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res){
-                    console.log(res)
                     if(res.code == 200){
                         self.tableData = res.page.list
                         for (let i = 0; i < self.tableData.length; i++) {
@@ -350,6 +350,52 @@ var vm = new Vue({
             this.$refs['meetingForm'].resetFields()
             this.showChildPage = true
         },
+        scaleChange(item) {
+            var self = this
+            if(item.meetingWeight.trim() == '') {
+                item.meetingWeight = '-1'
+            } else {
+                var urlReg = /^[0-9]*[1-9][0-9]*$/;
+                var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
+                if(item.meetingWeight == 0 || item.meetingWeight.toString() == '0') {
+                    item.meetingWeight == 0
+                } else {
+                    if(!urlReg.test(item.meetingWeight) && !urlReg2.test(item.meetingWeight)) {
+                        self.$message('权重只能填写整数或0')
+                        return
+                    }
+                }
+                
+            }
+            var modData = {
+                meetingId: item.meetingId,
+                meetingWeight: item.meetingWeight
+            }
+            var data = JSON.parse(JSON.stringify(modData))
+
+            $.ajax({
+                type: "POST",
+                url: '/meeting/update',
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.$message.success('保存成功')
+                        self.startSearch()
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+
+
+        },
         //新建或编辑保存
         testSubmit(formName) {
             var self = this
@@ -373,6 +419,20 @@ var vm = new Vue({
                     if (self.meetingForm.meetingKeyword.trim() == '') {
                         self.meetingForm.meetingKeyword = '#'
                     }
+                    if(self.meetingForm.meetingWeight.trim() == '') {
+                        self.meetingForm.meetingWeight = '-1'
+                    } else {
+                        var urlReg = /^[0-9]*[1-9][0-9]*$/;
+                        var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
+                        if(self.meetingForm.meetingWeight == 0 || self.meetingForm.meetingWeight.toString() == '0') {
+                            self.meetingForm.meetingWeight == 0
+                        } else {
+                            if(!urlReg.test(self.meetingForm.meetingWeight) && !urlReg2.test(self.meetingForm.meetingWeight)) {
+                                self.$message('权重只能填写整数或0')
+                                return
+                            }
+                        }
+                    }
                     self.submitCreatEdit()
                 }
             })
@@ -386,7 +446,6 @@ var vm = new Vue({
                 var reqUrl = '/meeting/update'
             }
             var data = JSON.parse(JSON.stringify(self.meetingForm))
-            data = 
             $.ajax({
                 type: "POST",
                 url: reqUrl,

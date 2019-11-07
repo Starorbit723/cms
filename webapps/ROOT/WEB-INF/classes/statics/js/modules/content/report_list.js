@@ -85,6 +85,7 @@ var vm = new Vue({
             updatePvAt:'',//更新点击量时间
             channelTitle:'',//渠道名称
             userName:'',//发布人名称
+            modUserName: '', //更新人名称
             reportReleaseTime:'',//发布时间
             channelParentId:''//当前研报的一级频道ID
         }],
@@ -157,6 +158,7 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
 			    dataType: "json",
 			    success: function(res){
+                    console.log(res)
 					if(res.code == 200){
                         self.doSomethingForReqData(res)
                         self.pagination1 = {
@@ -314,7 +316,7 @@ var vm = new Vue({
         //报告发布上线--改状态为待发布
         onlineThisReport (item) {
             var self = this
-            self.$confirm('确实要批量发布此新闻吗?', '提示', {
+            self.$confirm('确实要发布此报告吗?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
