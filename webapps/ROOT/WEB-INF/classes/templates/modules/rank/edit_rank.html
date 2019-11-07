@@ -299,7 +299,7 @@
                     <el-table :data="currentPeopleTableData" style="width: 100%; margin:10px auto;" stripe>
                         <el-table-column prop="logoUrl" label="人物头像" width="140">
                             <template v-if="scope.row.logoUrl" slot-scope="scope">
-                                <div class="imgcontainer">
+                                <div class="imgcontainer_person">
                                     <img :src="scope.row.logoUrl">
                                 </div>
                             </template>
@@ -348,7 +348,7 @@
                         <el-table :data="peopleLibData" style="width: 100%; margin:10px auto;" ref="multipleTable" stripe>
                             <el-table-column prop="guestImg" label="人物头像" width="150">
                                 <template v-if="scope.row.guestImg" slot-scope="scope">
-                                    <div class="imgcontainer">
+                                    <div class="imgcontainer_person">
                                         <img :src="scope.row.guestImg">
                                     </div>
                                 </template>
@@ -709,7 +709,7 @@
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
 <style>
 .imgcontainer{
-    width:50px;
+    width:100px;
     height:50px;
     display:flex;
     align-items:center;
@@ -717,6 +717,19 @@
 	border:1px solid #bebebe;
 }
 .imgcontainer img{
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+}
+.imgcontainer_person {
+    width:50px;
+    height:50px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+	border:1px solid #bebebe;
+}
+.imgcontainer_person img{
     max-width: 100%;
     max-height: 100%;
     height: auto;
