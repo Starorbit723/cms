@@ -196,6 +196,7 @@
                         </el-table-column>
                         <el-table-column label="操作" width="100" fixed="right">
                             <template slot-scope="scope">
+                                <el-button type="text" size="small" @click="editThisInstituteFromRank(scope.row)">修改</el-button>
                                 <el-button type="text" size="small" @click="delThisInstituteFromRank(scope.row)">删除</el-button>
                             </template>
                         </el-table-column>
@@ -313,6 +314,7 @@
                         </el-table-column>
                         <el-table-column label="操作" width="100" fixed="right">
                             <template slot-scope="scope">
+                                <el-button type="text" size="small" @click="editThisPeopleFromRank(scope.row)">修改</el-button>
                                 <el-button type="text" size="small" @click="delThisPeopleFromRank(scope.row)">删除</el-button>
                             </template>
                         </el-table-column>
@@ -519,6 +521,7 @@
                             </el-table-column>
                             <el-table-column label="操作" width="100" fixed="right">
                                 <template slot-scope="scope">
+                                    <el-button type="text" size="small" @click="editThisInstituteFromCase(scope.row)">修改</el-button>
                                     <el-button type="text" size="small" @click="delThisInstituteFromCase(scope.row)">删除</el-button>
                                 </template>
                             </el-table-column>
