@@ -270,13 +270,11 @@ var vm = new Vue({
                 contentType: "application/json",
                 dataType: "json",
                 success: function(res){
-                    // console.log(res)
                     if(res.code == 200){
                         //json64反解
                         let data = res.dict
                         let map = $.base64.atob(data.meetingJson, true)
                         data.meetingJson = JSON.parse(map)
-                        console.log(data)
                         self.meetingForm = data
                     }else{
                         mapErrorStatus(res)
@@ -320,7 +318,6 @@ var vm = new Vue({
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res){
-                    console.log(res)
                     if(res.code == 200){
                         self.coverimgTableData = res.page.list
                         self.pagination1 = {
