@@ -29,8 +29,8 @@ var vm = new Vue({
             rankDataTree:[],
             //榜单类型选项 服务机构是--其他榜单
             rankTypeOptions:[{
-                label:'目录',
-                value:'0'
+                    label:'目录',
+                    value:'0'
                 },{
                     label:'机构榜单',
                     value:'1'
