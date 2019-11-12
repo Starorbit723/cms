@@ -120,8 +120,34 @@ var mapErrorStatus = function(res){
                 confirmButtonText:'我知道了',
                 type: 'warning'
             }).then(() => {
-                setCookie ('createdit', '', 1)
-                window.parent.location.href = '/index.html#modules/content/article_list.html'
+                var _data = {
+                    newsEntity:{
+                        newsId: res.newsId.toString(),
+                        newsCompDelay: '0',
+                        newsReleaseTime: '0',
+                        newsCompTime: '0'
+                    }
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: '/news/update',
+                    data: JSON.stringify(_data),
+                    dataType: "json",
+                    success: function(res){
+                        if(res.code == 200){
+                            setCookie ('createdit', '', 1)
+                            window.parent.location.href = '/index.html#modules/content/article_list.html'
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+					    }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
             })
             break;
         case 7367:
@@ -148,6 +174,16 @@ var mapErrorStatus = function(res){
             }).then(() => {
             })
             break;
+        case 7388:
+            vm.$confirm('抱歉，图片服务器传输失败' , '提示', {
+                dangerouslyUseHTMLString: true,
+                closeOnClickModal: false,
+                showCancelButton:false,
+                showClose:false,
+                confirmButtonText:'我知道了',
+                type: 'warning'
+            }).then(() => {
+            })
         default:
             vm.$message.error(res.msg);
     }
