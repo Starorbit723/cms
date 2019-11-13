@@ -721,7 +721,8 @@ var vm = new Vue({
                 picStatus:'',//图片状态
                 picEditor:'',//图片编辑
                 picTypeId:'',//图位图片编号 type=3 传入
-                picSourceUrl:''//图片来源地址
+                picSourceUrl:'',//图片来源地址
+                picWeight: '-1'
             }
         },
         //打开添加图位图弹出层

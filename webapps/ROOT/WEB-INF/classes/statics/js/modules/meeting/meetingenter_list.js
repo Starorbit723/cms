@@ -226,7 +226,13 @@ var vm = new Vue({
         //开始搜索会议列表
         startSearch (type) {
             var self = this
-            self.searchForm.meetingStatus[0] = self.chooseMeetingStatus 
+            var arr = []
+            if(self.chooseMeetingStatus == '') {
+                arr = []
+            } else {
+                arr.push(self.chooseMeetingStatus)
+            }
+            self.searchForm.meetingStatus = JSON.parse(JSON.stringify(arr))
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.meetingTitle = data.meetingTitle.toString().trim()
             if (type == 0) {
@@ -687,6 +693,7 @@ var vm = new Vue({
                 meetingRegion:[],//会议所在区域-----前端自用字段
                 meetingTimes:[],//会议时间数组-----前端自用字段
                 meetingBaomingTimes:[], //会议报名时间-----前端自用字段
+                meetingWeight: '-1'
             }
             this.meetingTagArray=[]
             this.meetingGuestArray=[]
