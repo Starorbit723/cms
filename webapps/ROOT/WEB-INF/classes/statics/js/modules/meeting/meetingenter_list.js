@@ -228,7 +228,7 @@ var vm = new Vue({
             var self = this
             var arr = []
             if(self.chooseMeetingStatus == '') {
-                arr = []
+                arr = ['0', '1']
             } else {
                 arr.push(self.chooseMeetingStatus)
             }
