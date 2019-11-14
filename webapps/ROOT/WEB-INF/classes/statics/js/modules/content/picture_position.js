@@ -722,6 +722,7 @@ var vm = new Vue({
                 picEditor:'',//图片编辑
                 picTypeId:'',//图位图片编号 type=3 传入
                 picSourceUrl:'',//图片来源地址
+                picColor: "#232323", // 颜色
                 picWeight: '-1'
             }
         },
