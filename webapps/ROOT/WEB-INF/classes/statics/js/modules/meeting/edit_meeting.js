@@ -92,7 +92,7 @@ var vm = new Vue({
                     },
                     basicInformation:{
                         isShowFloor:false,
-                        isShowDefaultModel: false,
+                        isShowDefaultModel: true,
                         isShowSelfConfig: false,
                         selfConfigZone:[]
                     },
