@@ -102,6 +102,7 @@
                             v-model="scope.row.meetingWeight"
                             class="scaleText"
                             type="text"
+                            maxlength="4"
                             auto-complete="off"
                             @change="scaleChange(scope.row)"></el-input>
                         </template>
@@ -329,7 +330,7 @@
                         <el-col :span="24">
                             <el-form-item prop="meetingWeight" label="权重" style="margin:0;">
                                 <el-input
-                                maxlength="500"
+                                maxlength="4"
                                 type="text"
                                 v-model="meetingForm.meetingWeight"
                                 auto-complete="off">

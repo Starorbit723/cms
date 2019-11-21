@@ -133,9 +133,10 @@
                                     <el-input
                                     v-model="scope.row.diagramInfoPriority"
                                     class="scaleText"
+                                    maxlength="3"
                                     type="text"
                                     auto-complete="off"
-                                    @input="scaleChange(scope.row.diagramInfoPriority)"></el-input>
+                                    @change="scaleChange(scope.row.diagramInfoPriority)"></el-input>
                                 </template>
                             </el-table-column>
                             <el-table-column prop="diagramInfoImg" label="图片" width="200">

@@ -605,19 +605,15 @@ var vm = new Vue({
         // 修改条目的权重值
         scaleChange(item) {
             var self = this
+            console.log(item)
             if(item.picWeight.trim() == '') {
                 item.picWeight = '-1'
             } else {
-                var urlReg = /^[0-9]*[1-9][0-9]*$/;
-                var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
-                if(item.picWeight == 0 || item.picWeight.toString() == '0') {
-                    item.picWeight == 0
-                } else {
-                    if(!urlReg.test(item.picWeight) && !urlReg2.test(item.picWeight)) {
-                        self.$message('权重只能填写整数或0')
-                        return
-                    }
-                }
+                var reg = new RegExp("^(?:[0-9]{1,4}|9999)$")
+                if(!reg.test(item.picWeight) && item.picWeight !== "-1") {
+                    this.$message.error('权重值为-1到9999之间的整数')
+                    return
+                } 
                 
             }
             var modData = {
@@ -662,15 +658,10 @@ var vm = new Vue({
                     if(self.posItemForm.picWeight.trim() == '') {
                         self.posItemForm.picWeight = '-1'
                     } else {
-                        var urlReg = /^[0-9]*[1-9][0-9]*$/;
-                        var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
-                        if(self.posItemForm.picWeight == 0 || self.posItemForm.picWeight.toString() == '0') {
-                            self.posItemForm.picWeight == 0
-                        } else {
-                            if(!urlReg.test(self.posItemForm.picWeight) && !urlReg2.test(self.posItemForm.picWeight)) {
-                                self.$message('权重只能填写整数或0')
-                                return
-                            }
+                        var reg = new RegExp("^(?:[0-9]{1,4}|9999)$")
+                        if(!reg.test(self.posItemForm.picWeight) && self.posItemForm.picWeight !== "-1") {
+                            this.$message.error('权重值为-1到9999之间的整数')
+                            return
                         }
                     }
                     var data = JSON.parse(JSON.stringify(self.posItemForm))

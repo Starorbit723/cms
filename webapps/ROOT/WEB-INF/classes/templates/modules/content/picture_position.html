@@ -312,6 +312,7 @@
                             <el-input
                             v-model="scope.row.picWeight"
                             class="scaleText"
+                            maxlength="4"
                             type="text"
                             auto-complete="off"
                             @change="scaleChange(scope.row)"></el-input>
@@ -399,7 +400,7 @@
                         <el-col :span="24">
                             <el-form-item prop="picWeight" label="权重" label-width="10%" style="margin:0;">
                                 <el-input
-                                maxlength="500"
+                                maxlength="4"
                                 type="text"
                                 v-model="posItemForm.picWeight"
                                 auto-complete="off">

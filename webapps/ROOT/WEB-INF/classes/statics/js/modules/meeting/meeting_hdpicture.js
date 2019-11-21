@@ -499,21 +499,21 @@ var vm = new Vue({
         },
         // 权重发生改变时调整顺序
         scaleChange (item) {
-            var reg = new RegExp("^(?:[0-9]{1,3}|1000)$")
-            if(!reg.test(item) && item !== -1) {
-                this.$message.error('权重值为-1到1000之间的整数')
+            var reg = new RegExp("^(?:[0-9]{1,3}|999)$")
+            if(!reg.test(item) && item !== "-1") {
+                this.$message.error('权重值为-1到999之间的整数')
             }
         },
         // 保存图片
         submitForm(){
             var self = this
             var data = JSON.parse(JSON.stringify(self.diagramTableData))
-            var reg = new RegExp("^(?:[0-9]{1,3}|1000)$")
+            var reg = new RegExp("^(?:[0-9]{1,3}|999)$")
             for(var i = 0; i < self.diagramTableData.length; i++) {
                 self.diagramTableData[i].diagramInfoId = self.diagramTableData[i].diagramInfoId.toString()
                 var Pro = Number(self.diagramTableData[i].diagramInfoPriority)
                 if(!reg.test(Pro) && Pro !== -1) {
-                    this.$message.error('权重值为-1到1000之间的整数')
+                    this.$message.error('权重值为-1到999之间的整数')
                     return
                 }
             }

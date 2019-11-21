@@ -359,18 +359,13 @@ var vm = new Vue({
         scaleChange(item) {
             var self = this
             if(item.meetingWeight.trim() == '') {
-                item.meetingWeight = '-1'
+                item.meetingWeight = "-1"
             } else {
-                var urlReg = /^[0-9]*[1-9][0-9]*$/;
-                var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
-                if(item.meetingWeight == 0 || item.meetingWeight.toString() == '0') {
-                    item.meetingWeight == 0
-                } else {
-                    if(!urlReg.test(item.meetingWeight) && !urlReg2.test(item.meetingWeight)) {
-                        self.$message('权重只能填写整数或0')
-                        return
-                    }
-                }
+                var reg = new RegExp("^(?:[0-9]{1,34}|9999)$")
+                if(!reg.test(item.meetingWeight) && item.meetingWeight !== "-1") {
+                    this.$message.error('权重值为-1到9999之间的整数')
+                    return
+                } 
                 
             }
             var modData = {
@@ -426,17 +421,12 @@ var vm = new Vue({
                         self.meetingForm.meetingKeyword = '#'
                     }
                     if(self.meetingForm.meetingWeight.trim() == '') {
-                        self.meetingForm.meetingWeight = '-1'
+                        self.meetingForm.meetingWeight = -1
                     } else {
-                        var urlReg = /^[0-9]*[1-9][0-9]*$/;
-                        var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
-                        if(self.meetingForm.meetingWeight == 0 || self.meetingForm.meetingWeight.toString() == '0') {
-                            self.meetingForm.meetingWeight == 0
-                        } else {
-                            if(!urlReg.test(self.meetingForm.meetingWeight) && !urlReg2.test(self.meetingForm.meetingWeight)) {
-                                self.$message('权重只能填写整数或0')
-                                return
-                            }
+                        var reg = new RegExp("^(?:[0-9]{1,4}|9999)$")
+                        if(!reg.test(self.meetingForm.meetingWeight) && self.meetingForm.meetingWeight !== "-1") {
+                            this.$message.error('权重值为-1到9999之间的整数')
+                            return
                         }
                     }
                     self.submitCreatEdit()
