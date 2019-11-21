@@ -124,7 +124,9 @@ var vm = new Vue({
                 picType: '',
                 picTypeId: "",
                 picTypeName: '',
-                picUrl: ""
+                picUrl: "",
+                picColor: "", // 颜色
+                picWeight: '' //图片权重
             }],
             //新建修改某一个广告条目相关
             posItemForm:{
@@ -136,7 +138,9 @@ var vm = new Vue({
                 picStatus:'',//图片状态
                 picEditor:'',//图片编辑
                 picTypeId:'',//图位图片编号 type=3 传入
-                picSourceUrl:''//图片来源地址
+                picSourceUrl:'',//图片来源地址
+                picColor: "#232323", // 颜色
+                picWeight: '-1' //图片权重
             },
             posItemFormRules:{
                 picTitle: [
@@ -598,11 +602,68 @@ var vm = new Vue({
 
             })
         },
+        // 修改条目的权重值
+        scaleChange(item) {
+            var self = this
+            console.log(item)
+            if(item.picWeight.trim() == '') {
+                item.picWeight = '-1'
+            } else {
+                var reg = new RegExp("^(?:[0-9]{1,4}|9999)$")
+                if(!reg.test(item.picWeight) && item.picWeight !== "-1") {
+                    this.$message.error('权重值为-1到9999之间的整数')
+                    return
+                } 
+                
+            }
+            var modData = {
+                picId: item.picId,
+                picWeight: item.picWeight
+            }
+            var data = JSON.parse(JSON.stringify(modData))
+
+            self.saveNowPosId == data.picTypeId
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: '/picture/update',
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.$message.success('保存成功')
+                        // self.closeToContentList('posItemForm')
+                        
+                        self.startSearchPoslist(self.saveNowPosId)
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+
+        },
         //新建或更新条目
         creatOrSaveItem (formName) {
             var self = this
             self.$refs[formName].validate((valid) =>{
                 if (valid) {
+                    if(self.posItemForm.picColor == null) {
+                        self.posItemForm.picColor = "#232323"
+                    }
+                    if(self.posItemForm.picWeight.trim() == '') {
+                        self.posItemForm.picWeight = '-1'
+                    } else {
+                        var reg = new RegExp("^(?:[0-9]{1,4}|9999)$")
+                        if(!reg.test(self.posItemForm.picWeight) && self.posItemForm.picWeight !== "-1") {
+                            this.$message.error('权重值为-1到9999之间的整数')
+                            return
+                        }
+                    }
                     var data = JSON.parse(JSON.stringify(self.posItemForm))
                     data.picDesc = self.replaceDqm(data.picDesc)
                     if (self.posItemForm.picId !== ''){
@@ -610,7 +671,6 @@ var vm = new Vue({
                     } else {
                         var reqUrl = '/picture/save'
                         //把这条信息保存至所属图位ID下
-                        console.log(self.saveNowPosId)
                         data.picTypeId = self.saveNowPosId
                         console.log('准备提交data',data)
                     }
@@ -652,7 +712,9 @@ var vm = new Vue({
                 picStatus:'',//图片状态
                 picEditor:'',//图片编辑
                 picTypeId:'',//图位图片编号 type=3 传入
-                picSourceUrl:''//图片来源地址
+                picSourceUrl:'',//图片来源地址
+                picColor: "#232323", // 颜色
+                picWeight: '-1'
             }
         },
         //打开添加图位图弹出层

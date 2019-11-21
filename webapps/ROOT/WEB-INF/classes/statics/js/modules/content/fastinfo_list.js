@@ -36,7 +36,8 @@ var vm = new Vue({
             flashImg:'',//快讯图片
             userName:'',//创建人名称
             flashSourceLink:'',//来源机构地址
-            flashReleaseTime:''//发布时间
+            flashReleaseTime:'',//发布时间
+            flashUrl: '', // 快讯地址
         }],
         //分页器相关
         pagination1: {
@@ -64,6 +65,11 @@ var vm = new Vue({
         this.startSearch(0)
     },
     methods:{
+        openUrlFlashDetail(item) {
+            if(item.flashStatus == 2) {
+                window.open('https://www.chinaventure.com.cn'+item.flashUrl, "newwindow")
+            }
+        },
         handleCurrentChange (val) {
             this.pagination1.currPage = val
             this.startSearch() 

@@ -54,7 +54,7 @@
             <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
                 <el-table-column prop="talkTitle" label="Vtalk标题" width="">
                     <template v-if="scope.row.talkTitle" slot-scope="scope">
-                        <div v-text="scope.row.talkTitle" @click="openUrlPage(scope.row.talkLink)"></div>
+                        <div v-text="scope.row.talkTitle" @click="openUrlvTalkPage(scope.row)" class="vtalkTitleStyle"></div>
                     </template>
                 </el-table-column>
                 <el-table-column prop="talkImg" label="封面图"  width="180">
@@ -304,5 +304,15 @@
     height: 150px;
     display: block;
 }
+
+.vtalkTitleStyle {
+    color: #606266
+}
+.vtalkTitleStyle:hover {
+    color: #175CE9;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 </style>
 </html>

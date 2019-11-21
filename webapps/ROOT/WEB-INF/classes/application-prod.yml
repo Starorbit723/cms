@@ -89,6 +89,13 @@ updateSignUpUrl: /cms/api/updateCmsSignUp
 updateSignUpInfoUrl: /cms/api/updateCmsSignUpInfo
 updateUserSignInListUrl: /cms/api/updateUserSignInList
 updateMeetingList: /cms/api/updateMeetingList
+nginxIp: 192.168.0.228,192.168.0.98,192.168.0.82
+nginxCommand: /mnt/sdc/expect/expect_scp
+nginxName: root
+nginxPassword: chinaventure$790807Dy
+nginxDir: /mnt/sdc/olddata/tpic/newsContent/
+nginxReportDir: /mnt/sdc/olddata/tpic/reportContent/
+nginxUrl: https://tpic.chinaventure.com.cn/
 endPoint: https://obs.cn-north-1.myhuaweicloud.com
 ak: 2FBSHRRFZ5YLE3VPBMDK
 sk: vqYIdh3xmKfjlhcM0qEwCeuY8QfRKHYnGYHWoDBx

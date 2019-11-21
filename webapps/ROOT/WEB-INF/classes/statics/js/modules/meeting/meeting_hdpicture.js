@@ -343,19 +343,15 @@ var vm = new Vue({
             self.showDetailPage = true
             self.diaId = item.diagramId
             self.startSearch2(self.diaId, 0)
-            // console.log(self.diaId)
         },
         //某项列表所包含的图片数量
         handleCurrentChange3 (val) {
-            // console.log(val)
-            // console.log(this.diaId)
             this.pagination3.currPage = val
             this.startSearch2(this.diaId)
         },
         //修改某一张内容图片
         chooseContentImg () {
             this.showContentImgLib = true
-            // console.log(this.showContentImgLib)
             this.searchContentImg(0)
         },
         //搜索内容图库
@@ -451,7 +447,6 @@ var vm = new Vue({
                     diagramInfoCrtTime: item.picCrtTime,
                     diagramInfoStatus: "0"
                 }]
-                // console.log(data)
                 self.saveTable(data)
             }
             
@@ -476,16 +471,12 @@ var vm = new Vue({
         //多选批量
         handleSelectionChange (val) {
             this.multipleSelection = val;
-            // console.log(val)
-            
         },
         // 批量添加图片至列表
         batchAddDia() {
             var self = this
             var len = self.multipleSelection.length
-            // console.log(len)
             var proTotal = len + self.picCount
-            // console.log(proTotal)
             if(proTotal > 20) {
                 self.$message.error('每个组图最多只能添加20张图片')
             } else {
@@ -508,21 +499,21 @@ var vm = new Vue({
         },
         // 权重发生改变时调整顺序
         scaleChange (item) {
-            var reg = new RegExp("^(?:[0-9]{1,3}|1000)$")
-            if(!reg.test(item) && item !== -1) {
-                this.$message.error('权重值为-1到1000之间的整数')
+            var reg = new RegExp("^(?:[0-9]{1,3}|999)$")
+            if(!reg.test(item) && item !== "-1") {
+                this.$message.error('权重值为-1到999之间的整数')
             }
         },
         // 保存图片
         submitForm(){
             var self = this
             var data = JSON.parse(JSON.stringify(self.diagramTableData))
-            var reg = new RegExp("^(?:[0-9]{1,3}|1000)$")
+            var reg = new RegExp("^(?:[0-9]{1,3}|999)$")
             for(var i = 0; i < self.diagramTableData.length; i++) {
                 self.diagramTableData[i].diagramInfoId = self.diagramTableData[i].diagramInfoId.toString()
                 var Pro = Number(self.diagramTableData[i].diagramInfoPriority)
                 if(!reg.test(Pro) && Pro !== -1) {
-                    this.$message.error('权重值为-1到1000之间的整数')
+                    this.$message.error('权重值为-1到999之间的整数')
                     return
                 }
             }

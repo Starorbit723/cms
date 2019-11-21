@@ -307,6 +307,17 @@
                             <img style="width:100px;height:70px;" :src="scope.row.picUrl">
                         </template>
                     </el-table-column>
+                    <el-table-column prop="picWeight" label="权重" width="100">
+                        <template slot-scope="scope">
+                            <el-input
+                            v-model="scope.row.picWeight"
+                            class="scaleText"
+                            maxlength="4"
+                            type="text"
+                            auto-complete="off"
+                            @change="scaleChange(scope.row)"></el-input>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="picTitle" label="标题"></el-table-column>
                     <el-table-column prop="picEditorName" label="修改人"  width="90"></el-table-column>
                     <el-table-column prop="picModTime" label="最后修改时间" width="200"></el-table-column>
@@ -376,6 +387,28 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item prop="picColor" label="颜色" style="margin:0;">
+                                <el-color-picker
+                                v-model="posItemForm.picColor">
+                                </el-color-picker>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item prop="picWeight" label="权重" label-width="10%" style="margin:0;">
+                                <el-input
+                                maxlength="4"
+                                type="text"
+                                v-model="posItemForm.picWeight"
+                                auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+
                 </el-form>
             </div>
             <!--按钮区-->

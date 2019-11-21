@@ -534,8 +534,11 @@ var vm = new Vue({
             this.searchArticleTableData = []
         },
         //打开此专题
-        openThisPage(subjectId) {
-            window.open('https://www.chinaventure.com.cn/subject/'+ subjectId +'.html')
+        openThisPage(item) {
+            if(item.subjectStatus == 1) {
+                window.open('https://www.chinaventure.com.cn/subject/'+ item.subjectId +'.html', "newwindow")
+
+            }
         }
     }
 })

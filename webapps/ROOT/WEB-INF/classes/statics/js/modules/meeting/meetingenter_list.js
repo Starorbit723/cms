@@ -52,6 +52,17 @@ var vm = new Vue({
             RegionOptions: [],
             //会议类型
             meetingOptions:[],
+            //发布状态
+            meetingStatusOptions: [
+                {
+                    value: '0',
+                    label: '上线'
+                },
+                {
+                    value: '1',
+                    label: '未发布'
+                }
+            ],
             //搜索提交
             timeRange:[],
             searchForm:{
@@ -59,8 +70,9 @@ var vm = new Vue({
                 meetingType:'',//会议类型
                 meetingStartTime:'',//开始时间
                 meetingEndTime:'',//结束时间
-                meetingStatus:['0','1']
+                meetingStatus: []
             },
+            chooseMeetingStatus: '', // 所选择的会议状态
             //列表查询结果
             tableData: [{
                 meetingId:'',//主键
@@ -88,6 +100,7 @@ var vm = new Vue({
                 meetingTagContent:'',//APP标签内容
                 meetingKeyword:'',//关键词
                 meetingGuestName:'',//嘉宾名称(搜索)
+                meetingWeight: '-1', // 会议权重
             }],
             //分页器相关
             pagination1: {
@@ -131,6 +144,7 @@ var vm = new Vue({
                 meetingRegion:[],//会议所在区域-----前端自用字段
                 meetingTimes:[],//会议时间数组-----前端自用字段
                 meetingBaomingTimes:[], //会议报名时间-----前端自用字段
+                meetingWeight: '-1', // 会议权重
             },
             meetingFormRules:{
                 meetingTitle: [
@@ -184,7 +198,6 @@ var vm = new Vue({
                 this.searchForm.meetingStartTime = ''
                 this.searchForm.meetingEndTime = ''
             }
-            console.log(this.searchForm)
         }
     },
     created () {
@@ -201,6 +214,11 @@ var vm = new Vue({
         this.getMeetingType()
     },
     methods:{
+        openUrlMeetingList(item) {
+            if(item.meetingStatus == 0) {
+                window.open(item.meetingUrl, "newwindow")
+            }
+        },
         handleCurrentChange (val) {
             this.pagination1.currPage = val
             this.startSearch()
@@ -208,6 +226,13 @@ var vm = new Vue({
         //开始搜索会议列表
         startSearch (type) {
             var self = this
+            var arr = []
+            if(self.chooseMeetingStatus == '') {
+                arr = ['0', '1']
+            } else {
+                arr.push(self.chooseMeetingStatus)
+            }
+            self.searchForm.meetingStatus = JSON.parse(JSON.stringify(arr))
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.meetingTitle = data.meetingTitle.toString().trim()
             if (type == 0) {
@@ -234,6 +259,7 @@ var vm = new Vue({
                             self.tableData[i].meetingStartTime = self.transformTime(parseFloat(self.tableData[i].meetingStartTime))
                             self.tableData[i].meetingEndTime = self.transformTime(parseFloat(self.tableData[i].meetingEndTime))
                             self.tableData[i].meetingModTime = self.transformTime(parseFloat(self.tableData[i].meetingModTime))
+                            self.tableData[i].meetingCrtTime = self.transformTime(parseFloat(self.tableData[i].meetingCrtTime))
                             //self.tableData[i].meetingImg =  self.picBaseUrl+ self.tableData[i].meetingImg
                         }
                         self.pagination1 = {
@@ -330,6 +356,47 @@ var vm = new Vue({
             this.$refs['meetingForm'].resetFields()
             this.showChildPage = true
         },
+        scaleChange(item) {
+            var self = this
+            if(item.meetingWeight.trim() == '') {
+                item.meetingWeight = "-1"
+            } else {
+                var reg = new RegExp("^(?:[0-9]{1,34}|9999)$")
+                if(!reg.test(item.meetingWeight) && item.meetingWeight !== "-1") {
+                    this.$message.error('权重值为-1到9999之间的整数')
+                    return
+                } 
+                
+            }
+            var modData = {
+                meetingId: item.meetingId,
+                meetingWeight: item.meetingWeight
+            }
+            var data = JSON.parse(JSON.stringify(modData))
+
+            $.ajax({
+                type: "POST",
+                url: '/meeting/update',
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.$message.success('保存成功')
+                        self.startSearch()
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+
+
+        },
         //新建或编辑保存
         testSubmit(formName) {
             var self = this
@@ -353,6 +420,15 @@ var vm = new Vue({
                     if (self.meetingForm.meetingKeyword.trim() == '') {
                         self.meetingForm.meetingKeyword = '#'
                     }
+                    if(self.meetingForm.meetingWeight.trim() == '') {
+                        self.meetingForm.meetingWeight = -1
+                    } else {
+                        var reg = new RegExp("^(?:[0-9]{1,4}|9999)$")
+                        if(!reg.test(self.meetingForm.meetingWeight) && self.meetingForm.meetingWeight !== "-1") {
+                            this.$message.error('权重值为-1到9999之间的整数')
+                            return
+                        }
+                    }
                     self.submitCreatEdit()
                 }
             })
@@ -366,7 +442,6 @@ var vm = new Vue({
                 var reqUrl = '/meeting/update'
             }
             var data = JSON.parse(JSON.stringify(self.meetingForm))
-            data = 
             $.ajax({
                 type: "POST",
                 url: reqUrl,
@@ -608,6 +683,7 @@ var vm = new Vue({
                 meetingRegion:[],//会议所在区域-----前端自用字段
                 meetingTimes:[],//会议时间数组-----前端自用字段
                 meetingBaomingTimes:[], //会议报名时间-----前端自用字段
+                meetingWeight: '-1'
             }
             this.meetingTagArray=[]
             this.meetingGuestArray=[]

@@ -58,17 +58,21 @@
             <!--表格查询结果区-->
             <div class="cv_content_square">
                 <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
-                    <el-table-column prop="signUpId" label="ID" width="90"></el-table-column>
-                    <el-table-column prop="signUpTitle" label="报名页面名称" width="120"></el-table-column>
-                    <el-table-column prop="signUpLink" label="报名链接" ></el-table-column>
+                    <el-table-column prop="signUpId" label="ID" width="110"></el-table-column>
+                    <el-table-column prop="signUpTitle" label="报名页面名称">
+                        <template v-if="scope.row.signUpTitle" slot-scope="scope">
+                            <div v-text="scope.row.signUpTitle" @click="openUrlSignUpPage(scope.row.signUpLink)" class="signUpTitleStyle"></div>
+                        </template>
+                    </el-table-column>
+                    <!-- <el-table-column prop="signUpLink" label="报名链接" ></el-table-column> -->
                     <el-table-column prop="signUpExamine" width="120" label="是否需要审核" >
                         <template slot-scope="scope">
                             <el-tag v-if="scope.row.signUpExamine == '0'">需要审核</el-tag>
                             <el-tag v-if="scope.row.signUpExamine == '1'">报名即通过</el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="signUpModTime" label="更新时间"width="100" ></el-table-column>
-                    <el-table-column prop="modUserName" label="更新人" width="100"></el-table-column>
+                    <el-table-column prop="signUpModTime" label="更新时间"width="180" ></el-table-column>
+                    <el-table-column prop="modUserName" label="更新人" width="110"></el-table-column>
                     <el-table-column label="操作" width="220" fixed="right">
                         <template slot-scope="scope">
                             <el-button type="text" size="small" @click="addOrEditSignup(1,scope.row)">编辑</el-button>
@@ -1040,6 +1044,16 @@ background:rgb(248, 248, 248)!important;
 .warning_color {
     color: red;
 }
+
+.signUpTitleStyle {
+    color: #606266
+}
+.signUpTitleStyle:hover {
+    color: #175CE9;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 
 
 

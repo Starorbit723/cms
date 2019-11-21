@@ -154,7 +154,9 @@
                             <!--三级机构列表开始-->
                             <div class="logo_list clearfix">
                                 <div class="logo_list_item" v-for="(item3,index3) in item2.children">
-                                    <img :src="item3.picUrl">
+                                    <div class="imgcontainer">
+                                        <img :src="item3.picUrl">
+                                    </div>
                                     <div class="delbtn el-icon-circle-close" @click="delThisLogo(index,index2,index3)"></div>
                                     <el-input
                                         class="scaleText"
@@ -220,7 +222,9 @@
                     <el-table-column prop="cooperationName" label="机构名称" width=""></el-table-column>
                     <el-table-column prop="cooperationImg" label="机构Logo" width="170">
                         <template v-if="scope.row.cooperationImg" slot-scope="scope">
-                            <img style="width:150px;height:45px;" :src="scope.row.cooperationImg">
+                            <div class="imgcontainer">
+                                <img :src="scope.row.cooperationImg">
+                            </div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="cooperationCrtUserName" label="创建人" width="90"></el-table-column>
@@ -276,12 +280,21 @@
     height: 100px;
     margin: 0 20px 20px 0;
 }
-.logo_list_item img{
-    display: block;
-    width: 148px;
-    height: 58px;
-    border:1px solid #dadada;
+
+.imgcontainer{
+    width:148px;
+    height:58px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+	border:1px solid #dadada;
 }
+.imgcontainer img{
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+}
+
 .logo_list_item .delbtn{
     display: block;
     position: absolute;

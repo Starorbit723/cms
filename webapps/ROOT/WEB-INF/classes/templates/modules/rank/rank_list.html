@@ -38,7 +38,11 @@
             <!--表格查询结果区-->
             <div class="cv_content_square">
                 <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
-                    <el-table-column prop="name" label="榜单名称"></el-table-column>
+                    <el-table-column prop="name" label="榜单名称">
+                        <template v-if="scope.row.name" slot-scope="scope">
+                            <div v-text="scope.row.name" @click="openUrlRankPage(scope.row)" class="rankTitleStyle"></div>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="publishStatus" label="发布状态" width="100">
                         <!--0未发布，1是待发布，2是已发布 3是发布失败 4是待删除 5 删除-->
                         <template slot-scope="scope">
@@ -251,5 +255,15 @@
 <script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/modules/rank/rank_list.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+<style>
+    .rankTitleStyle {
+        color: #606266
+    }
+    .rankTitleStyle:hover {
+        color: #175CE9;
+        cursor: pointer;
+        text-decoration: underline;
+    }
 
+</style>
 </html>

@@ -105,7 +105,11 @@
                         <img style="width:100px;height:70px;" :src="scope.row.reportHeadPic">
                     </template>
                 </el-table-column>
-                <el-table-column prop="reportTitle" label="标题" width="220"></el-table-column>
+                <el-table-column prop="reportTitle" label="标题" width="220">
+                    <template v-if="scope.row.reportTitle" slot-scope="scope">
+                        <div v-text="scope.row.reportTitle" @click="openUrlReportPage(scope.row)" class="reportTitleStyle"></div>
+                    </template>
+                </el-table-column>
                 <!--chineseType  类型是前端遍历写入的自定义属性-->
                 <el-table-column prop="chineseType" label="类型" width="90"></el-table-column>
                 <el-table-column prop="reportStatus" label="发布状态">
@@ -121,7 +125,7 @@
                 </el-table-column>
                 <el-table-column prop="reportReleaseTime" label="发布时间" width="95"></el-table-column>
                 <el-table-column prop="reportAuthor" label="作者"></el-table-column>
-                <el-table-column prop="userName" label="操作人/发布人"></el-table-column>
+                <el-table-column prop="modUserName" label="创建人/更新人"></el-table-column>
                 <el-table-column prop="reportCount" label="阅读量"></el-table-column>
                 <el-table-column label="操作" width="200" fixed="right">
                     <template slot-scope="scope" v-if="scope.row.reportStatus !== 1 && scope.row.reportStatus !== 4">
@@ -152,5 +156,15 @@
 <script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/modules/content/report_list.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+<style>
+    .reportTitleStyle {
+        color: #606266
+    }
+    .reportTitleStyle:hover {
+        color: #175CE9;
+        cursor: pointer;
+        text-decoration: underline;
+    }
 
+</style>
 </html>

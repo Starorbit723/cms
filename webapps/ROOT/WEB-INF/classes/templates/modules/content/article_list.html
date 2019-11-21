@@ -127,7 +127,7 @@
                 </el-table-column>
                 <el-table-column prop="newsTitle" label="标题" width="280">
                     <template v-if="scope.row.newsTitle" slot-scope="scope">
-                        <div v-text="scope.row.newsTitle" @click="openUrlArticlePage(scope.row.newsUrl)"></div>
+                        <div v-text="scope.row.newsTitle" @click="openUrlArticlePage(scope.row)" class="newsTitleStyle"></div>
                     </template>
                 </el-table-column>
                 <el-table-column prop="channelTitle" label="频道" width="90"></el-table-column>
@@ -189,5 +189,15 @@
 <script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/modules/content/article_list.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+<style>
+    .newsTitleStyle {
+        color: #606266
+    }
+    .newsTitleStyle:hover {
+        color: #175CE9;
+        cursor: pointer;
+        text-decoration: underline;
+    }
 
+</style>
 </html>

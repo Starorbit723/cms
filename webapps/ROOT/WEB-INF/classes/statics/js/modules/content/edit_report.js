@@ -413,6 +413,15 @@ var vm = new Vue({
                         })
                     }
                 }
+                //去掉html里的http://cms.chinaventure.com.cn和https://cms.chinaventure.com.cn
+                if (html.indexOf('http://cms.chinaventure.com.cn') !== -1) {
+                    var needReplaceUrl = "http://cms.chinaventure.com.cn";
+                    html = html.replace(new RegExp(needReplaceUrl,'g'),'');
+                }
+                if (html.indexOf('https://cms.chinaventure.com.cn') !== -1) {
+                    var needReplaceUrl2 = "https://cms.chinaventure.com.cn";
+                    html = html.replace(new RegExp(needReplaceUrl2,'g'),'');
+                }
                 $.base64.utf8encode = true;
                 var html64 = $.base64.btoa(html)
                 //var html = $.base64.atob(html64, true)

@@ -69,8 +69,8 @@ var vm = new Vue({
                 meetingSignUpUrl:'',//报名链接
                 meetingJsonData:{ //前端渲染大数据
                     headPicBanner:{
-                        isShowFloor:true,
-                        isShowDefaultModel: true,
+                        isShowFloor:false,
+                        isShowDefaultModel: false,
                         isShowSelfConfig: false,
                         picUrlPc: '',
                         picUrlMobile: '',
@@ -91,7 +91,7 @@ var vm = new Vue({
                         ]
                     },
                     basicInformation:{
-                        isShowFloor:true,
+                        isShowFloor:false,
                         isShowDefaultModel: true,
                         isShowSelfConfig: false,
                         selfConfigZone:[]
@@ -99,8 +99,8 @@ var vm = new Vue({
                     meetingIntroduce:{
                         floorTitleCn:'活动介绍',
                         floorTitleEn:'ACTIVITY DESCRIPTION',
-                        isShowFloor:true,
-                        isShowDefaultModel: true,
+                        isShowFloor:false,
+                        isShowDefaultModel: false,
                         isShowSelfConfig: false,
                         paragraph:[{
                             innerText:''
@@ -110,7 +110,7 @@ var vm = new Vue({
                     calendar:{
                         floorTitleCn:'会议议程',
                         floorTitleEn:'MEETING AGENDA',
-                        isShowFloor:true,
+                        isShowFloor:false,
                         isShowDefaultModel: false,
                         isShowSelfConfig: false,
                         selfConfigZone:[]
@@ -118,7 +118,7 @@ var vm = new Vue({
                     guest:{
                         floorTitleCn:'嘉宾介绍',
                         floorTitleEn:'GUEST INTRODUCTION',
-                        isShowFloor:true,
+                        isShowFloor:false,
                         isShowDefaultModel: false,
                         isShowSelfConfig: false,
                         selfConfigZone:[]
@@ -126,8 +126,8 @@ var vm = new Vue({
                     guestOpinion:{
                         floorTitleCn:'嘉宾观点',
                         floorTitleEn:'GUEST VIEWS',
-                        isShowFloor:true,
-                        isShowDefaultModel: true,
+                        isShowFloor:false,
+                        isShowDefaultModel: false,
                         isShowSelfConfig: false,
                         opinionList:[{
                             guestName:'',
@@ -141,7 +141,7 @@ var vm = new Vue({
                     vote:{
                         floorTitleCn:'投票',
                         floorTitleEn:'VOTE',
-                        isShowFloor:true,
+                        isShowFloor:false,
                         isShowDefaultModel: false,
                         isShowSelfConfig: false,
                         voteType:'',
@@ -150,7 +150,7 @@ var vm = new Vue({
                     articleQuestion:{
                         floorTitleCn:'相关报道',
                         floorTitleEn:'RELEVANT REPORTS',
-                        isShowFloor:true,
+                        isShowFloor:false,
                         isShowDefaultModel: false,
                         isShowSelfConfig: false,
                         selfConfigZone:[]
@@ -158,7 +158,7 @@ var vm = new Vue({
                     pictureGroup:{
                         floorTitleCn:'图片直播',
                         floorTitleEn:'PICTURE',
-                        isShowFloor:true,
+                        isShowFloor:false,
                         isShowDefaultModel: false,
                         isShowSelfConfig: false,
                         selfConfigZone:[]
@@ -166,8 +166,8 @@ var vm = new Vue({
                     location:{
                         floorTitleCn:'会议地点',
                         floorTitleEn:'WHERE',
-                        isShowFloor:true,
-                        isShowDefaultModel: true,
+                        isShowFloor:false,
+                        isShowDefaultModel: false,
                         isShowSelfConfig: false,
                         locationImgUrl:'',
                         selfConfigZone:[]
@@ -175,7 +175,7 @@ var vm = new Vue({
                     coperation:{
                         floorTitleCn:'合作伙伴',
                         floorTitleEn:'PARTNER',
-                        isShowFloor:true,
+                        isShowFloor:false,
                         isShowDefaultModel: false,
                         isShowSelfConfig: false,
                         selfConfigZone:[]
