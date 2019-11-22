@@ -817,6 +817,7 @@ var vm = new Vue({
             this.meetingForm.meetingAgendaId = item.meetingAgendaId
             this.backToEditFromCalendar()
         },
+       
         //--------------------搜索嘉宾表相关--------------------
         guestDefaultChange(val){
             if (val && this.meetingForm.meetingGuestId == '') {
