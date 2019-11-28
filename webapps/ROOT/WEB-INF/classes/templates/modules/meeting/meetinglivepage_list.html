@@ -18,7 +18,7 @@
                             clearable
                             type="text"
                             maxlength="50"
-                            v-model="searchForm.meetingTitle"
+                            v-model="searchForm.name"
                             auto-complete="off"></el-input>
                         </el-form-item>
                     </el-col>
@@ -53,31 +53,31 @@
         <!--表格查询结果区-->
         <div class="cv_content_square">
             <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
-                <el-table-column prop="meetingId" label="报道专题编号" width="110"></el-table-column>
-                <el-table-column prop="meetingTitle" label="报道专题名称">
-                    <template v-if="scope.row.meetingTitle" slot-scope="scope">
-                        <div v-text="scope.row.meetingTitle" @click="openUrlMeetingDetailPage(scope.row)" class="meetingDeatilStyle"></div>
+                <el-table-column prop="id" label="报道专题编号" width="110"></el-table-column>
+                <el-table-column prop="name" label="报道专题名称">
+                    <template v-if="scope.row.name" slot-scope="scope">
+                        <div v-text="scope.row.name" @click="openUrlMeetingDetailPage(scope.row)" class="meetingDeatilStyle"></div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="meetingCrtTime" label="更新时间" width="180"></el-table-column>
-                <el-table-column prop="meetingCrtUserName" label="更新人" width="110"></el-table-column>
+                <el-table-column prop="updateAt" label="更新时间" width="180"></el-table-column>
+                <el-table-column prop="modUserName" label="更新人" width="110"></el-table-column>
                 <!-- <el-table-column prop="meetingUrl" label="会议页面地址" width="300"></el-table-column> -->
-                <el-table-column prop="meetingStatus" label="状态"  width="150">
+                <el-table-column prop="publishStatus" label="状态"  width="150">
                     <template slot-scope="scope">
-                        <el-tag v-if="scope.row.meetingStatus == 0">未发布</el-tag>
-                        <el-tag v-if="scope.row.meetingStatus == 1" type="warning">待发布</el-tag>
-                        <el-tag v-if="scope.row.meetingStatus == 2" type="success">已发布</el-tag>
-                        <el-tag v-if="scope.row.meetingStatus == 3" type="danger">发布失败 </el-tag>
-                        <el-tag v-if="scope.row.meetingStatus == 4" type="warning">待下线</el-tag>
-                        <el-tag v-if="scope.row.meetingStatus == 5" type="danger">已删除</el-tag>
+                        <el-tag v-if="scope.row.publishStatus == 0">未发布</el-tag>
+                        <el-tag v-if="scope.row.publishStatus == 1" type="warning">待发布</el-tag>
+                        <el-tag v-if="scope.row.publishStatus == 2" type="success">已发布</el-tag>
+                        <el-tag v-if="scope.row.publishStatus == 3" type="danger">发布失败 </el-tag>
+                        <el-tag v-if="scope.row.publishStatus == 4" type="warning">待删除</el-tag>
+                        <el-tag v-if="scope.row.publishStatus == 5" type="danger">已删除</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" width="140" fixed="right">
                     <template slot-scope="scope">
                         <el-button type="text" size="small" @click="editThisMeeting(scope.row)">编辑</el-button>
-                        <el-button type="text" size="small" v-if="scope.row.meetingStatus == 0" @click="deleteThisMeeting(scope.row)">删除</el-button>
-                        <el-button type="text" v-if="scope.row.meetingStatus == '0' || scope.row.meetingStatus == 3" size="small" @click="onlineThisMeeting(scope.row)">发布</el-button>
-                        <el-button type="text" size="small" v-if="scope.row.meetingStatus == 2" @click="offlineThisMeeting(scope.row)">下线</el-button>
+                        <el-button type="text" size="small" v-if="scope.row.publishStatus == 0" @click="deleteThisMeeting(scope.row)">删除</el-button>
+                        <el-button type="text" v-if="scope.row.publishStatus == '0' || scope.row.publishStatus == 3" size="small" @click="onlineThisMeeting(scope.row)">发布</el-button>
+                        <el-button type="text" size="small" v-if="scope.row.publishStatus == 2" @click="offlineThisMeeting(scope.row)">下线</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -98,7 +98,7 @@
 </body>
 
 <script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
-<script type="text/javascript" src="${request.contextPath}/statics/js/modules/meeting/meeting_list.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/meeting/meetinglivepage_list.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
 <style>
     .meetingDeatilStyle {

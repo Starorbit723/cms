@@ -4,45 +4,36 @@ var vm = new Vue({
         //搜索文章列表提交
         timeRange:[], //时间需要特殊处理,并且同步到searchForm
         searchForm:{
-            meetingTitle:'',//标题
+            name:'',//标题
             startTime:'',//开始时间
             endTime:'',//结束时间
-            meetingStatus: ['0','1','2','3','4']
+            publishStatus: ['0','1','2','3','4']
         },
         //表格结果
         tableData: [{
-            meetingId:'',//主键
-            meetingTitle:'',//标题
-            meetingStarTime:'',//开始时间
-            meetingEndTime:'',//结束时间
-            meetingType:'',//类型
-            meetingUrl:'',//会议链接
-            meetingDesc:'',//简介
-            meetingStatus:'',//会议状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
-            meetingKeywords:'', //会议关键词
-            meetingTheme:'',//会议主题
-            meetingOrganizer:'',//主办单位
-            meetingCoOrganizer:'',//协办单位
-            meetingScaleNumer:'',//规模人数
-            meetingHoldTime:'',//举办时间字符串
-            meetingAddress:'',//会议举办地址
+            id:'',//主键
+            name:'',//标题
+            desc:'',//简介
+            publishStatus:'',//会议状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
+            keywords:'', //会议关键词
+            pcImg: '', //pc头图
+            pcLink: '', //pc链接
+            mImg: '',//m头图
+            mLink: '',//m链接
+            meetingReportListId: '',//会议报道id
             meetingAgendaId:'',//日程ID
-            meetingGuestId:'',//嘉宾ID
-            meetingVoteId:'',//投票ID
-            meetingInteractionId:'',//文章问答互动ID
-            meetingDiagramId:'',//高清组图ID
             meetingCooperationId:'',//合作机构ID
-            meetingCrtUserId:'',//创建人编号
-            meetingCrtTime:'',//创建时间
-            meetingModUserId:'',//更新人编号
-            meetingModTime:'',//更新时间
-            meetingCrtUserName:'',//创建人姓名
-            meetingTemplateId:'',
-            meetingTemplateMid:'',
-            meetingTemplateAddress:'',
-            meetingTemplateMaddress:'',
-            meetingSignUpUrl:'',//报名链接
-            meetingJsonData:[]
+            createUserId: '',
+            updateUserId: '',
+            updateAt: '',
+            createAt: '',
+            templateId: '',
+            templateMid: '',
+            templateAddress: '',
+            templateMaddress: '',
+            reportTopicUrl: '', //专题报道链接
+            modUserName: '', // 更新人
+            jsonData:[]
         }],
         //分页器相关
         pagination1: {
@@ -71,7 +62,7 @@ var vm = new Vue({
     },
     methods:{
         openUrlMeetingDetailPage(item) {
-            if(item.meetingStatus == 2) {
+            if(item.publishStatus == 2) {
                 window.open('https://www.chinaventure.com.cn'+item.meetingUrl, "newwindow")
             }
         },
@@ -83,7 +74,7 @@ var vm = new Vue({
         startSearch (type) {
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
-            data.meetingTitle = data.meetingTitle.toString().trim()
+            data.name = data.name.toString().trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -97,7 +88,7 @@ var vm = new Vue({
             }
             $.ajax({
 				type: "POST",
-                url: "/meetingInfo/list",
+                url: "/reportTopic/list",
                 contentType: "application/json",
 			    data: JSON.stringify(data),
 			    dataType: "json",
@@ -138,7 +129,7 @@ var vm = new Vue({
         },
         //编辑会议
         editThisMeeting(item) {
-            setCookie ('createditmeetinglive', item.meetingId, 1)
+            setCookie ('createditmeetinglive', item.id, 1)
             window.parent.location.href = '/index.html#modules/meeting/edit_meetinglive.html'
         },
         //删除会议
@@ -150,12 +141,12 @@ var vm = new Vue({
                 type: 'warning'
             }).then(() => {
                 var data = {
-                    meetingId: item.meetingId.toString(),
-                    meetingStatus: '5'
+                    id: item.id.toString(),
+                    publishStatus: '5'
                 }
                 $.ajax({
                     type: "POST",
-                    url: "/meetingInfo/update",
+                    url: "/reportTopic/update",
                     contentType: "application/json",
                     data: JSON.stringify(data),
                     dataType: "json",
@@ -184,8 +175,8 @@ var vm = new Vue({
                 type: 'warning'
             }).then(() => {
                 var data = {
-                    meetingId: item.meetingId.toString(),
-                    meetingStatus: '1'
+                    id: item.id.toString(),
+                    publishStatus: '1'
                 }
                 $.ajax({
                     type: "POST",
@@ -218,8 +209,8 @@ var vm = new Vue({
                 type: 'warning'
             }).then(() => {
                 var data = {
-                    meetingId: item.meetingId.toString(),
-                    meetingStatus: '4'
+                    id: item.id.toString(),
+                    publishStatus: '4'
                 }
                 $.ajax({
                     type: "POST",
