@@ -18,13 +18,13 @@
                 <el-collapse-item title="属性设置" name="1">
                     <el-row class="el-row-h70">
                         <el-col :span="24">
-                            <el-form-item prop="meetingTitle" label="名称" style="margin:0;">
+                            <el-form-item prop="name" label="名称" style="margin:0;">
                                 <el-input
                                 :maxlength="36"
                                 placeholder="请输入报道专题名称"
                                 clearable
                                 type="text"
-                                v-model="meetingliveForm.meetingTitle"
+                                v-model="meetingliveForm.name"
                                 auto-complete="on">
                                 <template slot="append">最多36字</template>
                             </el-input>
@@ -33,13 +33,13 @@
                     </el-row>
                     <el-row class="el-row-h110">
                         <el-col :span="24">
-                            <el-form-item prop="meetingDesc" label="描述" style="margin:0;">
+                            <el-form-item prop="desc" label="描述" style="margin:0;">
                                 <el-input
                                     clearable
                                     type="textarea"
                                     :autosize="{ minRows: 3, maxRows: 3}"
                                     placeholder="请输入报道专题描述"
-                                    v-model="meetingliveForm.meetingDesc"
+                                    v-model="meetingliveForm.desc"
                                     :maxlength="200"
                                     auto-complete="on">
                                 </el-input>
@@ -48,9 +48,9 @@
                     </el-row>
                     <el-row class="el-row-h70">
                         <el-col :span="24">
-                            <el-form-item label="关键词" prop="meetingKeywords" style="margin:0;">
+                            <el-form-item label="关键词" prop="keywords" style="margin:0;">
                                 <el-select
-                                    @change=""
+                                    @change="meetingTagChange"
                                     style="width:100%;"
                                     v-model="meetingTagArray"
                                     multiple
@@ -71,9 +71,9 @@
                     </el-row>
                     <el-row class="el-row-h120">
                         <el-col :span="8" >
-                            <el-form-item label="PC专题头图" prop="meetingPCpic" label-width="45%" style="margin:0;">
+                            <el-form-item label="PC专题头图" prop="pcImg" label-width="45%" style="margin:0;">
                                 <div class="fengmian_show" @click="chooseContentImg('',0)">
-                                    <img v-if="meetingliveForm.meetingPCpic" :src="meetingliveForm.meetingPCpic" class="avatar">
+                                    <img v-if="meetingliveForm.pcImg" :src="meetingliveForm.pcImg" class="avatar">
                                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                                 </div>
                             </el-form-item>
@@ -84,7 +84,7 @@
                                     maxlength="300"
                                     clearable
                                     type="text"
-                                    v-model="meetingliveForm.meetingPCpicUrl"
+                                    v-model="meetingliveForm.pcLink"
                                     placeholder="请输入以Http://开头的链接"
                                     auto-complete="on"
                                     @change="validateUrl">
@@ -94,9 +94,9 @@
                     </el-row>
                     <el-row class="el-row-h120" >
                         <el-col :span="8" >
-                            <el-form-item label="H5专题头图"  prop="meetingMobilepic" label-width="45%" style="margin:0;">
+                            <el-form-item label="H5专题头图"  prop="mImg" label-width="45%" style="margin:0;">
                                 <div class="fengmian_show" @click="chooseContentImg('',1)">
-                                    <img v-if="meetingliveForm.meetingMobilepic" :src="meetingliveForm.meetingMobilepic" class="avatar">
+                                    <img v-if="meetingliveForm.mImg" :src="meetingliveForm.mImg" class="avatar">
                                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                                 </div>
                             </el-form-item>
@@ -108,7 +108,7 @@
                                     clearable
                                     type="text"
                                     placeholder="请输入以Http://开头的链接"
-                                    v-model="meetingliveForm.meetingMobilepicUrl"
+                                    v-model="meetingliveForm.mLink"
                                     auto-complete="on"
                                     @change="validateUrl">
                                 </el-input>
@@ -120,18 +120,18 @@
                 <el-collapse-item title="楼层01——头条区" name="2">
                     <el-row class="el-row-h60">
                         <el-col :span="24">
-                            <el-form-item label="是否显示" prop="meetingliveJsonData.headPicBanner.isShowFloor" label-width="15%" style="margin:0;">
+                            <el-form-item label="是否显示" prop="jsonData.headPicBanner.isShowFloor" label-width="15%" style="margin:0;">
                                 <el-switch
-                                    v-model="meetingliveForm.meetingliveJsonData.headPicBanner.isShowFloor"
+                                    v-model="meetingliveForm.jsonData.headPicBanner.isShowFloor"
                                     active-text="显示"
                                     inactive-text="隐藏">
                                 </el-switch>
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <div v-if="meetingliveForm.meetingliveJsonData.headPicBanner.isShowFloor">
+                    <div v-if="meetingliveForm.jsonData.headPicBanner.isShowFloor">
                         <div class="swiper_pic">轮播图；仅在PC端显示</div>
-                        <div v-for="(item,index) in meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList">
+                        <div v-for="(item,index) in meetingliveForm.jsonData.headPicBanner.headSwiperPicList">
                            
                             <el-row style="margin-top: 20px;">
                                 <el-col :span="8">
@@ -166,9 +166,9 @@
                         
                     </div>
 
-                    <div v-if="meetingliveForm.meetingliveJsonData.headPicBanner.isShowFloor">
+                    <div v-if="meetingliveForm.jsonData.headPicBanner.isShowFloor">
                         <div class="swiper_pic" style="margin-top: 40px">头条文字区；PC端不显示图片，H5端显示图片</div>
-                        <div v-for="(item,index) in meetingliveForm.meetingliveJsonData.headPicBanner.headArticleList" style="margin-bottom:50px;">
+                        <div v-for="(item,index) in meetingliveForm.jsonData.headPicBanner.headArticleList" style="margin-bottom:50px;">
                             <el-row class="el-row-h100" style="margin-top: 20px;">
                                 <el-col :span="8">
                                     <el-form-item label="上传图片" label-width="45%" style="margin:0;">
@@ -236,31 +236,31 @@
                 <el-collapse-item title="楼层02——场会报道楼层" name="3">
                     <el-row class="el-row-h60">
                         <el-col :span="24">
-                            <el-form-item label="是否显示" prop="meetingliveJsonData.venueReport.isShowFloor" label-width="15%" style="margin:0;">
+                            <el-form-item label="是否显示" prop="jsonData.venueReport.isShowFloor" label-width="15%" style="margin:0;">
                                 <el-switch
-                                    v-model="meetingliveForm.meetingliveJsonData.venueReport.isShowFloor"
+                                    v-model="meetingliveForm.jsonData.venueReport.isShowFloor"
                                     active-text="显示"
                                     inactive-text="隐藏">
                                 </el-switch>
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <div v-if="meetingliveForm.meetingliveJsonData.venueReport.isShowFloor">
+                    <div v-if="meetingliveForm.jsonData.venueReport.isShowFloor">
                         <el-row class="el-row-h60">
                             <el-col :span="7">
-                                <el-form-item label="会场报道ID" prop="meetingliveId" label-width="50%" style="margin:0;">
+                                <el-form-item label="会场报道ID" prop="meetingReportListId" label-width="50%" style="margin:0;">
                                     <el-input
                                         :disabled="true"
-                                        v-model="meetingliveForm.meetingliveId"
+                                        v-model="meetingliveForm.meetingReportListId"
                                         auto-complete="off">
                                     </el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12" :offset="1">
-                                <el-form-item label="标题" prop="meetingliveJsonData.venueReport.reportTitle" label-width="13%" style="margin:0;">
+                                <el-form-item label="标题" prop="jsonData.venueReport.reportTitle" label-width="13%" style="margin:0;">
                                     <el-input
                                         :disabled="true"
-                                        v-model="meetingliveForm.meetingliveJsonData.venueReport.reportTitle"
+                                        v-model="meetingliveForm.jsonData.venueReport.reportTitle"
                                         auto-complete="off">
                                     </el-input>
                                 </el-form-item>
@@ -276,9 +276,9 @@
                 <el-collapse-item title="楼层03——会议议程" name="4">
                     <el-row class="el-row-h60">
                         <el-col :span="24">
-                            <el-form-item label="是否显示" prop="meetingliveJsonData.calendar.isShowFloor" label-width="15%" style="margin:0;">
+                            <el-form-item label="是否显示" prop="jsonData.calendar.isShowFloor" label-width="15%" style="margin:0;">
                                 <el-switch
-                                    v-model="meetingliveForm.meetingliveJsonData.calendar.isShowFloor"
+                                    v-model="meetingliveForm.jsonData.calendar.isShowFloor"
                                     active-text="显示"
                                     inactive-text="隐藏"
                                     @change="calendarDefaultChange">
@@ -286,14 +286,14 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <div v-if="meetingliveForm.meetingliveJsonData.calendar.isShowFloor">
+                    <div v-if="meetingliveForm.jsonData.calendar.isShowFloor">
                         <el-row :span="24" class="el-row-h60">
                             <el-col :span="14">
                                 <el-form-item label="标题" label-width="25%" style="margin:0;">
                                     <el-input
                                         maxlength="30"
                                         clearable
-                                        v-model="meetingliveForm.meetingliveJsonData.calendar.floorTitle"
+                                        v-model="meetingliveForm.jsonData.calendar.floorTitle"
                                         auto-complete="off">
                                     </el-input>
                                 </el-form-item>
@@ -303,7 +303,7 @@
                                     <el-input
                                         maxlength="10"
                                         clearable
-                                        v-model="meetingliveForm.meetingliveJsonData.calendar.navTitle"
+                                        v-model="meetingliveForm.jsonData.calendar.navTitle"
                                         auto-complete="off">
                                     </el-input>
                                 </el-form-item>
@@ -321,10 +321,10 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12" :offset="1">
-                                <el-form-item label="标题" prop="meetingliveJsonData.calendar.calendarTitle" label-width="13%" style="margin:0;">
+                                <el-form-item label="标题" prop="jsonData.calendar.calendarTitle" label-width="13%" style="margin:0;">
                                     <el-input
                                         :disabled="true"
-                                        v-model="meetingliveForm.meetingliveJsonData.calendar.calendarTitle"
+                                        v-model="meetingliveForm.jsonData.calendar.calendarTitle"
                                         auto-complete="off">
                                     </el-input>
                                 </el-form-item>
@@ -340,9 +340,9 @@
                 <el-collapse-item title="楼层04——合作机构" name="5">
                     <el-row class="el-row-h60">
                         <el-col :span="24">
-                            <el-form-item label="是否显示" prop="meetingliveJsonData.cooperation.isShowFloor" label-width="15%" style="margin:0;">
+                            <el-form-item label="是否显示" prop="jsonData.cooperation.isShowFloor" label-width="15%" style="margin:0;">
                                 <el-switch
-                                    v-model="meetingliveForm.meetingliveJsonData.cooperation.isShowFloor"
+                                    v-model="meetingliveForm.jsonData.cooperation.isShowFloor"
                                     active-text="显示"
                                     inactive-text="隐藏"
                                     @change="coperationDefaultChange">
@@ -350,14 +350,14 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <div v-if="meetingliveForm.meetingliveJsonData.cooperation.isShowFloor">
+                    <div v-if="meetingliveForm.jsonData.cooperation.isShowFloor">
                         <el-row :span="24" class="el-row-h60">
                             <el-col :span="14">
                                 <el-form-item label="标题" label-width="25%" style="margin:0;">
                                     <el-input
                                         maxlength="30"
                                         clearable
-                                        v-model="meetingliveForm.meetingliveJsonData.cooperation.floorTitle"
+                                        v-model="meetingliveForm.jsonData.cooperation.floorTitle"
                                         auto-complete="off">
                                     </el-input>
                                 </el-form-item>
@@ -367,7 +367,7 @@
                                     <el-input
                                         maxlength="10"
                                         clearable
-                                        v-model="meetingliveForm.meetingliveJsonData.cooperation.navTitle"
+                                        v-model="meetingliveForm.jsonData.cooperation.navTitle"
                                         auto-complete="off">
                                     </el-input>
                                 </el-form-item>
@@ -385,10 +385,10 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12" :offset="1">
-                                <el-form-item label="标题" prop="meetingliveJsonData.cooperation.cooperationTitle" label-width="13%" style="margin:0;">
+                                <el-form-item label="标题" prop="jsonData.cooperation.cooperationTitle" label-width="13%" style="margin:0;">
                                     <el-input
                                         :disabled="true"
-                                        v-model="meetingliveForm.meetingliveJsonData.cooperation.cooperationTitle"
+                                        v-model="meetingliveForm.jsonData.cooperation.cooperationTitle"
                                         auto-complete="off">
                                     </el-input>
                                 </el-form-item>

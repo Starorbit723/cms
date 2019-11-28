@@ -13,25 +13,29 @@ var vm = new Vue({
             labelOptions:[],
             //专题报道基本信息
             meetingliveForm: {
-                meetingId:'',//主键
-                meetingTitle:'',//标题
-                meetingStarTime:'',//开始时间
-                meetingEndTime:'',//结束时间
-                meetingEnrollStartTime:'',//报名开始时间
-                meetingEnrollEndTime:'',//报名结束时间
-                meetingType:'',//类型
-                meetingUrl:'',//会议链接
-                meetingDesc:'',//简介
-                meetingStatus:'',//会议状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
-                meetingKeywords:'', //会议关键词
-                meetingPCpic: '', // PC头图
-                meetingPCpicUrl: '', //PC头图链接
-                meetingMobilepic: '', //H5头图
-                meetingMobilepicUrl: '', //H5头图链接
-                meetingliveId: '', //场会报道ID
+                id:'',//主键
+                name:'',//标题
+                desc:'',//简介
+                publishStatus:'',//会议状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
+                keywords:'', //会议关键词
+                pcImg: '', //pc头图
+                pcLink: '', //pc链接
+                mImg: '',//m头图
+                mLink: '',//m链接
+                meetingReportListId: '',//会议报道id
                 meetingAgendaId:'',//日程ID
                 meetingCooperationId:'',//合作机构ID
-                meetingliveJsonData:{ //前端渲染大数据
+                createUserId: '',
+                updateUserId: '',
+                updateAt: '',
+                createAt: '',
+                templateId: '',
+                templateMid: '',
+                templateAddress: '',
+                templateMaddress: '',
+                reportTopicUrl: '', //专题报道链接
+                modUserName: '', // 更新人
+                jsonData: { //前端渲染大数据
                     headPicBanner: {
                         isShowFloor: true,
                         headSwiperPicList: [
@@ -84,20 +88,20 @@ var vm = new Vue({
                 }
             },
             meetingliveFormRules: {
-                meetingTitle: [
+                name: [
                     { required: true, message: '报道专题名称不能为空', trigger: 'change' },
                     { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
                 ],
-                meetingDesc:[
+                desc:[
                     { required: true, message: '请填写报道专题简介', trigger: 'change' }
                 ],
-                meetingKeywords:[
+                keywords:[
                     { required: true, message: '请填写报道专题关键词', trigger: 'change' }
                 ],
-                meetingPCpic:[
+                pcImg:[
                     { required: true, message: '请选择PC头图', trigger: 'change' }
                 ],
-                meetingMobilepic:[
+                mImg:[
                     { required: true, message: '请选择H5头图', trigger: 'change' }
                 ],
 
@@ -176,6 +180,26 @@ var vm = new Vue({
                 }
             }
         },
+         //会议标签改变
+         meetingTagChange (val) {
+            console.log('meetingTagChange',val)
+            for (let i = 0; i < this.meetingTagArray.length; i++) {
+                if (this.meetingTagArray[i].length > 20) {
+                    let tempArr = JSON.parse(JSON.stringify(this.meetingTagArray))
+                    tempArr.splice(i,1) 
+                    this.meetingTagArray = tempArr
+                    this.$message.warning('单一标签最多20字')
+                }
+            }
+            if (this.meetingTagArray.length > 5) {
+                this.$message.warning('标签做多可设置为5个')
+                this.meetingTagArray = this.meetingTagArray.splice(0,5)
+            }
+            var tempStr = ''
+            tempStr = this.meetingTagArray.join(',')
+            this.meetingliveForm.keywords = tempStr
+            console.log('当前newsKeywords',this.meetingliveForm.keywords)
+        },
 
 
         //折叠面板改变
@@ -184,29 +208,29 @@ var vm = new Vue({
         // 添加banner数据
         addBanner (index) {
             var self = this
-            if(self.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList.length <= 5) {
-                for(let i = 0; i < self.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList.length; i++) {
+            if(self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList.length <= 5) {
+                for(let i = 0; i < self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList.length; i++) {
                     
-                    if (self.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList[i].headSwiperPic.trim() == '') {
+                    if (self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].headSwiperPic.trim() == '') {
                         this.$message.error('楼层01轮播图：您还有未完成的banner图位');
                         return 
                     }
-                    if (self.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim() == ''){
+                    if (self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim() == ''){
                         this.$message.error('楼层01轮播图：PC链接不能为空,若无链接可填写"#"');
                         return
-                    } else if (self.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim() !== ''){
-                        if(self.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim() == '#'){
-                            self.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList[i].picUrlPc == '#'
+                    } else if (self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim() !== ''){
+                        if(self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim() == '#'){
+                            self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].picUrlPc == '#'
                         } else {
                             var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
-                            if(!urlReg.test(self.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim())){
+                            if(!urlReg.test(self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim())){
                                 this.$message.error('楼层01轮播图：PC链接格式不正确');
                                 return
                             }
                         }
                     }
                 }
-                self.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList.splice((index+1), 0, {
+                self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList.splice((index+1), 0, {
                     headSwiperPic: '',
                     picUrlPc: '',
                     picUrlMobile: '',
@@ -219,7 +243,7 @@ var vm = new Vue({
 
         //删除banner数据
         delBanner(index) {
-            var headArr = this.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList
+            var headArr = this.meetingliveForm.jsonData.headPicBanner.headSwiperPicList
             console.log(index, headArr)
             if(headArr.length >=2) {
                 headArr.splice(index,1)
@@ -291,15 +315,15 @@ var vm = new Vue({
             self.$refs['meetingliveForm'].clearValidate();
             if (self.chooseImgObjName == '') {
                 if(self.chooseImgObjIndex == 0) {
-                    self.meetingliveForm.meetingPCpic= item.picUrl
+                    self.meetingliveForm.pcImg= item.picUrl
                 } else if (self.chooseImgObjIndex == 1) {
-                    self.meetingliveForm.meetingMobilepic = item.picUrl
+                    self.meetingliveForm.mImg = item.picUrl
                 }
             } else if (self.chooseImgObjName == 'headSwiperPicList') {
                 console.log(123)
-                self.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList[self.chooseImgObjIndex].headSwiperPic = item.picUrl
+                self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[self.chooseImgObjIndex].headSwiperPic = item.picUrl
             } else if (self.chooseImgObjName == 'headArticleList') {
-                self.meetingliveForm.meetingliveJsonData.headPicBanner.headArticleList[self.chooseImgObjIndex].headArticlePic = item.picUrl
+                self.meetingliveForm.jsonData.headPicBanner.headArticleList[self.chooseImgObjIndex].headArticlePic = item.picUrl
             } 
             
             this.backToEdit()
@@ -379,7 +403,7 @@ var vm = new Vue({
         },
         backToEditFromCalendar () {
             if (this.meetingliveForm.meetingAgendaId == '') {
-                this.meetingliveForm.meetingliveJsonData.calendar.isShowFloor = false
+                this.meetingliveForm.jsonData.calendar.isShowFloor = false
             }
             this.showCalendarLib = false
             this.searchCalendarForm = {
@@ -398,7 +422,7 @@ var vm = new Vue({
         addThisCalendar (item) {
             console.log(item)
             this.meetingliveForm.meetingAgendaId = item.meetingAgendaId
-            this.meetingliveForm.meetingliveJsonData.calendar.calendarTitle = item.meetingAgendaTitle
+            this.meetingliveForm.jsonData.calendar.calendarTitle = item.meetingAgendaTitle
             this.backToEditFromCalendar()
         },
 
@@ -460,12 +484,12 @@ var vm = new Vue({
         addThisCoperation (item) {
             console.log(item)
             this.meetingliveForm.meetingCooperationId = item.meetingCooperationId
-            this.meetingliveForm.meetingliveJsonData.cooperation.cooperationTitle = item.meetingCooperationTitle
+            this.meetingliveForm.jsonData.cooperation.cooperationTitle = item.meetingCooperationTitle
             this.backToEditFromCoperation()
         },
         backToEditFromCoperation(){
             if (this.meetingliveForm.meetingCooperationId == '') {
-                this.meetingliveForm.meetingliveJsonData.cooperation.isShowFloor = false
+                this.meetingliveForm.jsonData.cooperation.isShowFloor = false
             }
             this.showCoperationLib=false
             this.searchCoperationForm={
@@ -483,6 +507,7 @@ var vm = new Vue({
         },
         // 保存报道专题
         testMeetingLiveInfo (type, formName) {
+            console.log(type)
             var self = this 
             console.log('数据', self.meetingliveForm)
             self.$refs[formName].validate((valid) => {
@@ -495,83 +520,83 @@ var vm = new Vue({
         //新建或修改保存报名专题
         saveMeetingLive(type) {
             var self = this
-            // if(self.ajaxController) {
-            //     self.ajaxController = false
-            //     if (self.typeOfPage == 'creat') {
-            //         var reqUrl = '/meetingInfo/save'
-            //         self.meetingliveForm.meetingStatus = '0'
-            //     } else if (self.typeOfPage == 'edit') {
-            //         var reqUrl = '/meetingInfo/update'
-            //     }
-            // }
+            if(self.ajaxController) {
+                self.ajaxController = false
+                if (self.typeOfPage == 'creat') {
+                    var reqUrl = '/reportTopic/save'
+                    self.meetingliveForm.publishStatus = '0'
+                } else if (self.typeOfPage == 'edit') {
+                    var reqUrl = '/reportTopic/update'
+                }
+            }
             //大数据JSON处理
-            if(self.meetingliveForm.meetingliveJsonData.headPicBanner.isShowFloor) {
-                for(let i = 0; i < self.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList.length; i++) {
-                    if (self.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList[i].headSwiperPic.trim() == '') {
+            if(self.meetingliveForm.jsonData.headPicBanner.isShowFloor) {
+                for(let i = 0; i < self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList.length; i++) {
+                    if (self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].headSwiperPic.trim() == '') {
                         self.$message.error('楼层01轮播图：您还有未完成的banner图位');
                         return 
                     }
-                    if (self.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim() == ''){
+                    if (self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim() == ''){
                         this.$message.error('楼层01轮播图：PC链接不能为空,若无链接可填写"#"');
                         return
-                    } else if (self.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim() !== ''){
-                        if(self.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim() == '#'){
-                            self.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList[i].picUrlPc == '#'
+                    } else if (self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim() !== ''){
+                        if(self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim() == '#'){
+                            self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].picUrlPc == '#'
                         } else {
                             var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
-                            if(!urlReg.test(self.meetingliveForm.meetingliveJsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim())){
+                            if(!urlReg.test(self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim())){
                                 this.$message.error('楼层01轮播图：PC链接格式不正确');
                                 return
                             }
                         }
                     }
                 }
-                for(let k = 0; k < self.meetingliveForm.meetingliveJsonData.headPicBanner.headArticleList.length; k++) {
-                    if(self.meetingliveForm.meetingliveJsonData.headPicBanner.headArticleList[k].headArticlePic.trim() == ''){
+                for(let k = 0; k < self.meetingliveForm.jsonData.headPicBanner.headArticleList.length; k++) {
+                    if(self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].headArticlePic.trim() == ''){
                         self.$message.error('楼层01头条文字区：你还有图片未上传');
                         return 
                     }
-                    if (self.meetingliveForm.meetingliveJsonData.headPicBanner.headArticleList[k].picUrlPc.trim() == ''){
+                    if (self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlPc.trim() == ''){
                         this.$message.error('楼层01头条文字区：PC链接不能为空,若无链接可填写"#"');
                         return
-                    } else if (self.meetingliveForm.meetingliveJsonData.headPicBanner.headArticleList[k].picUrlPc.trim() !== ''){
-                        if(self.meetingliveForm.meetingliveJsonData.headPicBanner.headArticleList[k].picUrlPc.trim() == '#'){
-                            self.meetingliveForm.meetingliveJsonData.headPicBanner.headArticleList[k].picUrlPc == '#'
+                    } else if (self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlPc.trim() !== ''){
+                        if(self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlPc.trim() == '#'){
+                            self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlPc == '#'
                         } else {
                             var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
-                            if(!urlReg.test(self.meetingliveForm.meetingliveJsonData.headPicBanner.headArticleList[k].picUrlPc.trim())){
+                            if(!urlReg.test(self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlPc.trim())){
                                 this.$message.error('楼层01头条文字区：PC链接格式不正确');
                                 return
                             }
                         }
                     }
-                    if (self.meetingliveForm.meetingliveJsonData.headPicBanner.headArticleList[k].picUrlPc.trim() == ''){
+                    if (self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlPc.trim() == ''){
                         this.$message.error('楼层01头条文字区：H5链接不能为空,若无链接可填写"#"');
                         return
-                    } else if (self.meetingliveForm.meetingliveJsonData.headPicBanner.headArticleList[k].picUrlMobile.trim() !== ''){
-                        if(self.meetingliveForm.meetingliveJsonData.headPicBanner.headArticleList[k].picUrlMobile.trim() == '#'){
-                            self.meetingliveForm.meetingliveJsonData.headPicBanner.headArticleList[k].picUrlMobile == '#'
+                    } else if (self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlMobile.trim() !== ''){
+                        if(self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlMobile.trim() == '#'){
+                            self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlMobile == '#'
                         } else {
                             var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
-                            if(!urlReg.test(self.meetingliveForm.meetingliveJsonData.headPicBanner.headArticleList[k].picUrlMobile.trim())){
+                            if(!urlReg.test(self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlMobile.trim())){
                                 self.$message.error('楼层01头条文字区：H5链接格式不正确');
                                 return
                             }
                         }
                     }
-                    if(self.meetingliveForm.meetingliveJsonData.headPicBanner.headArticleList[k].articleTitle == '') {
+                    if(self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].articleTitle == '') {
                         self.$message.error('楼层01头条文字区：标题不能为空');
                         return
                     }
-                    if(self.meetingliveForm.meetingliveJsonData.headPicBanner.headArticleList[k].articleDesc == '') {
+                    if(self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].articleDesc == '') {
                         self.$message.error('楼层01头条文字区：摘要不能为空');
                         return
                     }
 
                 }
             }
-            if(self.meetingliveForm.meetingliveJsonData.calendar.isShowFloor) {
-                var calendar = self.meetingliveForm.meetingliveJsonData.calendar
+            if(self.meetingliveForm.jsonData.calendar.isShowFloor) {
+                var calendar = self.meetingliveForm.jsonData.calendar
                 if (calendar.floorTitle.trim() == '' && calendar.navTitle.trim() !== '') {
                     self.$message.error('楼层03：标题不能为空');
                     return
@@ -580,8 +605,8 @@ var vm = new Vue({
                     return
                 }
             }
-            if(self.meetingliveForm.meetingliveJsonData.cooperation.isShowFloor) {
-                var cooperation = self.meetingliveForm.meetingliveJsonData.cooperation
+            if(self.meetingliveForm.jsonData.cooperation.isShowFloor) {
+                var cooperation = self.meetingliveForm.jsonData.cooperation
                 if (cooperation.floorTitle.trim() == '' && cooperation.navTitle.trim() !== '') {
                     self.$message.error('楼层04：标题不能为空');
                     return
@@ -592,54 +617,129 @@ var vm = new Vue({
             }
 
             var submitData = JSON.parse(JSON.stringify(self.meetingliveForm))
+            console.log(submitData)
             $.base64.utf8encode = true;
-            var jsonString = JSON.stringify(submitData.meetingliveJsonData);
+            var jsonString = JSON.stringify(submitData.jsonData);
             var json64 = $.base64.btoa(jsonString);
-            submitData.meetingliveJsonData = json64
-
-            // $.ajax({
-            //     type: "POST",
-            //     url: reqUrl,
-            //     contentType: "application/json",
-            //     data: JSON.stringify(submitData),
-            //     dataType: "json",
-            //     success: function(res){
-            //         if(res.code == 200){
-            //             self.$message.success('保存成功')
-            //             console.log('保存报道专题返回',res)
-            //             if (self.typeOfPage == 'creat') {
-            //                 if (type == 0) { // 0保存不发布
-            //                     setCookie ('createditmeetinglive', '', 1) 
-            //                     window.parent.location.href = '/index.html#modules/meeting/meetinglivepage_list.html'
-            //                 } else if (type == 1) { // 1保存并发布
-            //                     //回传id
-            //                     // self.meetingliveForm.meetingId = res.meetingId
-            //                     self.submitMeeting()
-            //                 }
-            //             } else if (self.typeOfPage == 'edit') {
-            //                 if (type == 0) { // 0保存不发布
-            //                     setCookie ('createditmeetinglive', '', 1) 
-            //                     window.parent.location.href = '/index.html#modules/meeting/meetinglivepage_list.html'
-            //                 } else if (type == 1) { // 1保存并发布
-            //                     self.submitMeeting()
-            //                 }
-            //             }  
-            //         }else{
-            //             self.ajaxController = true
-            //             mapErrorStatus(res)
-            //             vm.error = true;
-            //             vm.errorMsg = res.msg;
-            //         }
-            //     },
-            //     error:function(res){
-            //         mapErrorStatus(res)
-            //     }
-            // });
-
-
-
-
+            submitData.jsonData = json64
+            console.log('是不是走到了这里')
+            console.log(type)
+            $.ajax({
+                type: "POST",
+                url: reqUrl,
+                contentType: "application/json",
+                data: JSON.stringify(submitData),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.$message.success('保存成功')
+                        console.log('保存报道专题返回',res)
+                        if (self.typeOfPage == 'creat') {
+                            if (type == 0) { // 0保存不发布
+                                setCookie ('createditmeetinglive', '', 1) 
+                                window.parent.location.href = '/index.html#modules/meeting/meetinglivepage_list.html'
+                            } else if (type == 1) { // 1保存并发布
+                                //回传id
+                                // self.meetingliveForm.id = res.id
+                                // self.submitMeeting()
+                            }
+                        } else if (self.typeOfPage == 'edit') {
+                            if (type == 0) { // 0保存不发布
+                                setCookie ('createditmeetinglive', '', 1) 
+                                window.parent.location.href = '/index.html#modules/meeting/meetinglivepage_list.html'
+                            } else if (type == 1) { // 1保存并发布
+                                // self.submitMeeting()
+                            }
+                        }  
+                    }else{
+                        self.ajaxController = true
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    console.log(url)
+                    mapErrorStatus(res)
+                }
+            });
            
+        },
+         //提交会议--更新发布状态即可
+        //  submitMeeting () {
+        //     var self = this
+        //     //meetingStatus=1 待发布
+        //     var _data = {
+        //         id: self.meetingliveForm.id.toString(),
+        //         publishStatus: '1'
+        //     }
+        //     $.ajax({
+        //         type: "POST",
+        //         url: "",
+        //         contentType: "application/json",
+        //         data: JSON.stringify(_data),
+        //         dataType: "json",
+        //         success: function(res){
+        //             if(res.code == 200){
+        //                 self.$message.success('发布成功')
+        //                 setCookie ('createditmeetinglive', '', 1) 
+        //                 window.parent.location.href = '/index.html#modules/meeting/meetinglivepage_list.html'
+        //             }else{
+        //                 self.ajaxController = true
+        //                 mapErrorStatus(res)
+        //                 vm.error = true;
+        //                 vm.errorMsg = res.msg;
+        //             }
+        //         },
+        //         error:function(res){
+        //             mapErrorStatus(res)
+        //         }
+        //     });
+        // },
+
+        //编辑会议---数据反显
+        getEditMeetingOrign(type) {
+            var self = this
+            $.ajax({
+                type: "POST",
+                url: "/reportTopic/info/"+ type.toString(),
+                contentType: "application/json",
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        console.log('请求修改的会议返回结果：',res.dict)
+                        self.editMeetingFilter(res.dict)
+                    }else{
+                        mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        //编辑反显前数据过滤
+        editMeetingFilter (tempObj) {
+            console.log('tempObj',tempObj)
+            let data = tempObj
+            if(data.mLink == null) {
+                data.mLink = ''
+            }
+            if(data.pcLink == null) {
+                data.pcLink = ''
+            }
+            //json64反解
+            let map = $.base64.atob(tempObj.jsonData, true)
+            data.jsonData = JSON.parse(map)
+            //关键词数组还原
+            if (tempObj.newsKeywords !== '') {
+                this.meetingTagArray = data.keywords.split(',')
+            }
+            this.meetingliveForm = data
+            console.log(this.meetingliveForm)
+            this.$refs['meetingliveForm'].resetFields()
         },
 
 
@@ -650,10 +750,6 @@ var vm = new Vue({
             setCookie ('createditmeetinglive', '', 1) 
             window.parent.location.href = '/index.html#modules/meeting/meetinglivepage_list.html'
         }
-
-
-
-
 
     }
 

@@ -14,8 +14,8 @@ var vm = new Vue({
             id:'',//主键
             name:'',//标题
             desc:'',//简介
-            publishStatus:'',//会议状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
-            keywords:'', //会议关键词
+            publishStatus:'',//报道专题状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
+            keywords:'', //关键词
             pcImg: '', //pc头图
             pcLink: '', //pc链接
             mImg: '',//m头图
@@ -75,6 +75,7 @@ var vm = new Vue({
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.name = data.name.toString().trim()
+            console.log(JSON.stringify(data))
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -118,7 +119,7 @@ var vm = new Vue({
                 }
 			});
         },
-        //新建会议--跳转至详情页
+        //新建报道专题--跳转至详情页
         creatMeeting () {
             setCookie ('createditmeetinglive', '', 1)
             if (window.parent.location.hash == '#modules/meeting/edit_meetinglive.html') {
@@ -127,15 +128,15 @@ var vm = new Vue({
                 window.parent.location.href = '/index.html#modules/meeting/edit_meetinglive.html'
             }
         },
-        //编辑会议
+        //编辑报道专题
         editThisMeeting(item) {
             setCookie ('createditmeetinglive', item.id, 1)
             window.parent.location.href = '/index.html#modules/meeting/edit_meetinglive.html'
         },
-        //删除会议
+        //删除报道专题
         deleteThisMeeting (item) {
             var self = this
-            self.$confirm('确实要删除此会议页面吗?', '提示', {
+            self.$confirm('确实要删除此报道专题吗?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
@@ -166,95 +167,75 @@ var vm = new Vue({
                 });
             })
         },
-        //发布会议
-        onlineThisMeeting (item) {
-            var self = this
-            self.$confirm('确实要发布此会议吗?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                var data = {
-                    id: item.id.toString(),
-                    publishStatus: '1'
-                }
-                $.ajax({
-                    type: "POST",
-                    url: "/meetingInfo/push",
-                    contentType: "application/json",
-                    data: JSON.stringify(data),
-                    dataType: "json",
-                    success: function(res){
-                        if(res.code == 200){
-                            self.$message.success('发布成功')
-                            self.startSearch()
-                        }else{
-                            mapErrorStatus(res)
-                            vm.error = true;
-                            vm.errorMsg = res.msg;
-                        }
-                    },
-                    error:function(res){
-                        mapErrorStatus(res)
-                    }
-                });
-            })
-        },
-        //下线会议
-        offlineThisMeeting (item) {
-            var self = this
-            self.$confirm('确实要下线此会议吗?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                var data = {
-                    id: item.id.toString(),
-                    publishStatus: '4'
-                }
-                $.ajax({
-                    type: "POST",
-                    url: "/meetingInfo/push",
-                    contentType: "application/json",
-                    data: JSON.stringify(data),
-                    dataType: "json",
-                    success: function(res){
-                        if(res.code == 200){
-                            self.$message.success('下线成功')
-                            self.startSearch()
-                        }else{
-                            mapErrorStatus(res)
-                            vm.error = true;
-                            vm.errorMsg = res.msg;
-                        }
-                    },
-                    error:function(res){
-                        mapErrorStatus(res)
-                    }
-                });
-            })
-        },
-        //获取会议类型
-        // getMeetingType () {
+        //发布报道专题
+        // onlineThisMeeting (item) {
         //     var self = this
-        //     $.ajax({
-		// 		type: "POST",
-        //         url: "/sys/dict/list?type=meetingType" ,
-		// 	    dataType: "json",
-		// 	    success: function(res){
-		// 			if(res.code == 200){
-        //                 self.meetingTypeOptions = res.page.list
-		// 			} else {
-		// 				mapErrorStatus(res)
-        //                 vm.error = true;
-        //                 vm.errorMsg = res.msg;
-        //             }
-        //         },
-        //         error:function(res){
-        //             mapErrorStatus(res)
+        //     self.$confirm('确实要发布此报道专题吗?', '提示', {
+        //         confirmButtonText: '确定',
+        //         cancelButtonText: '取消',
+        //         type: 'warning'
+        //     }).then(() => {
+        //         var data = {
+        //             id: item.id.toString(),
+        //             publishStatus: '1'
         //         }
-		// 	});
+        //         $.ajax({
+        //             type: "POST",
+        //             url: "/meetingInfo/push",
+        //             contentType: "application/json",
+        //             data: JSON.stringify(data),
+        //             dataType: "json",
+        //             success: function(res){
+        //                 if(res.code == 200){
+        //                     self.$message.success('发布成功')
+        //                     self.startSearch()
+        //                 }else{
+        //                     mapErrorStatus(res)
+        //                     vm.error = true;
+        //                     vm.errorMsg = res.msg;
+        //                 }
+        //             },
+        //             error:function(res){
+        //                 mapErrorStatus(res)
+        //             }
+        //         });
+        //     })
         // },
+        //下线报道专题
+        // offlineThisMeeting (item) {
+        //     var self = this
+        //     self.$confirm('确实要下线此报道专题吗?', '提示', {
+        //         confirmButtonText: '确定',
+        //         cancelButtonText: '取消',
+        //         type: 'warning'
+        //     }).then(() => {
+        //         var data = {
+        //             id: item.id.toString(),
+        //             publishStatus: '4'
+        //         }
+        //         $.ajax({
+        //             type: "POST",
+        //             url: "/meetingInfo/push",
+        //             contentType: "application/json",
+        //             data: JSON.stringify(data),
+        //             dataType: "json",
+        //             success: function(res){
+        //                 if(res.code == 200){
+        //                     self.$message.success('下线成功')
+        //                     self.startSearch()
+        //                 }else{
+        //                     mapErrorStatus(res)
+        //                     vm.error = true;
+        //                     vm.errorMsg = res.msg;
+        //                 }
+        //             },
+        //             error:function(res){
+        //                 mapErrorStatus(res)
+        //             }
+        //         });
+        //     })
+        // },
+        
         //时间格式转换工具
         transformTime (timestamp = +new Date()) {
             if (timestamp) {
