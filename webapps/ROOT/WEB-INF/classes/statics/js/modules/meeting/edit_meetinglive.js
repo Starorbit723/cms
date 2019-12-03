@@ -40,7 +40,7 @@ var vm = new Vue({
                         isShowFloor: true,
                         headSwiperPicList: [
                             {
-                                headSwiperPic: '',
+                                headSwiperPic: '', 
                                 picUrlPc: '',
                                 picUrlMobile: '',
                             }

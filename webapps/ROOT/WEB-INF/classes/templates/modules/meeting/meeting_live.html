@@ -11,7 +11,7 @@
     <div id="meeting_live" class="cv_page_content">
         <div class="cv_content_square">
             <!------------------列表开始------------------>
-            <div v-show="showListPage">
+            <div v-show="showChildPage == 0">
                 <div class="cv_content_square">
                     <el-form :model="searchForm" status-icon class="demo-ruleForm" style="width: 100%"  @submit.native.prevent>
                         <el-row class="el-row-h60">
@@ -44,12 +44,14 @@
                 <!--功能按钮区-->
                 <el-row class="el-row-h50">
                     <el-col :span="4">
-                        <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addOrEditPic(0)">新建会场报道</el-button>
+                        <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addOrEditMeetinglive(0)">新建会场报道</el-button>
                     </el-col>
                 </el-row>
                 <!--表格查询结果区-->
                 <div class="cv_content_square">
                     <el-table :data="tableData" style="width: 100%; margin: 10px auto;" stripe>
+                        <el-table-column prop="id"  label="id"></el-table-column>
+                        <el-table-column prop="delStatus"  label="状态"></el-table-column>
                         <el-table-column prop="name"  label="名称"></el-table-column>
                         <el-table-column prop="reportTopicId" width="160" label="所属报道专题编号">
                             <template slot-scope="scope">
@@ -62,9 +64,9 @@
                         <el-table-column prop="userName" label="更新人" width="180"></el-table-column>
                         <el-table-column label="操作" width="180" fixed="right">
                             <template slot-scope="scope">
-                                <el-button type="text" size="small" @click="addOrEditPic(1,scope.row)">属性</el-button>
-                                <el-button type="text" size="small" @click="EditDetailList(scope.row)">编辑</el-button>
-                                <el-button v-if="scope.row.reportTopicId == '-1' || scope.row.reportTopicId == ''" type="text" size="small" @click="deleteThisDiagram(scope.row)">删除</el-button>
+                                <el-button type="text" size="small" @click="addOrEditMeetinglive(1,scope.row)">属性</el-button>
+                                <el-button type="text" size="small" @click="editMeetingliveDetail(scope.row)">编辑</el-button>
+                                <el-button v-if="scope.row.reportTopicId == '-1' || scope.row.reportTopicId == ''" type="text" size="small" @click="deleteThisMeetinglive(scope.row)">删除</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -83,8 +85,8 @@
             <!------------------列表结束------------------>
 
             
-            <!------------------新建高清组图开始------------------>
-            <div v-show="showCreatListPage">
+            <!------------------新建会场报道开始------------------>
+            <div v-show="showChildPage == 1">
                 <div class="cv_content_square">
                     <el-form :model="meetingLiveListForm" :rules="meetingLiveListFormRules" ref="meetingLiveListForm" label-position="left" status-icon class="demo-ruleForm" label-width="13%" label-position="right">
                         <el-row class="el-row-h70">
@@ -127,15 +129,199 @@
                     </el-row>
                 </div>
             </div>
-            <!------------------新建高清组图结束------------------>
+            <!------------------新建会场报道结束------------------>
+
+
+            <!-----------------编辑会场报道列表开始 --------------->
+            <div v-show="showChildPage == 2">
+                <!--功能按钮区-->
+                <el-row class="el-row-h70">
+                    <el-col :span="4">
+                        <el-button type="primary" style="width:100%" icon="el-icon-plus" @click="addOrEditNewPlace(0)">创建会场</el-button>
+                    </el-col>
+                    <el-col :span="4" :offset="16">
+                        <el-button style="width:100%" @click="backToMeetingliveList">返回会场列表</el-button>
+                    </el-col>
+                </el-row>
+                <div class="meetinglive_tree_container">
+                    <div class="meetingPlace" v-for="(item, index) in meetingliveDataTemp">
+                        <div>
+                            <span class="custom-tree-node">
+                                <span v-if="item.meetingPlaceTitle" style="max-width:700px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 0, 0);font-weight: 700;" v-text="item.meetingPlaceTitle"></span>
+                                <div>
+                                    <el-button type="text" size="mini" @click="addOrEditMeetingModel(0,item)">添加</el-button>
+                                    <el-button type="text" size="mini" @click="addOrEditNewPlace(item)">属性</el-button>
+                                    <el-button type="text" size="mini" @click="delThisMeetingPlace()">删除</el-button>
+                                </div>
+                            </span>
+                            <div v-if="item.children" v-for="(subItem, subIndex) in item.children">
+                                <span class="custom-tree-node2" v-if="subItem.themTitle">
+                                    <span style="max-width:700px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;">{{subItem.modelTitle}}&nbsp;&nbsp;&nbsp;&nbsp;{{subItem.themTitle}}</span>
+                                    <div>
+                                        <el-button type="text" size="mini" @click="addOrEditMeetingModel(0,item)">编辑</el-button>
+                                        <el-button type="text" size="mini" @click="addOrEditNewPlace(item)">属性</el-button>
+                                        <el-button type="text" size="mini" @click="delThisMeetingPlace()">删除</el-button>
+                                    </div>
+                                </span>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-----------------编辑会场报道列表结束 --------------->
             
-            
+
+            <!---------------- 创建会场开始 ---------------------->
+            <div v-show="showChildPage == 3">
+                <div class="cv_content_square">
+                    <el-form :model="meetinglivePlaceForm" :rules="meetinglivePlaceFormRules" ref="meetinglivePlaceForm" label-position="left" status-icon class="demo-ruleForm" label-width="13%" label-position="right">
+                        <el-row class="el-row-h70">
+                            <el-col :span="18">
+                                <el-form-item label="会场标题" label-width="10%" prop="meetingPlaceTitle" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="36"
+                                        placeholder="会场标题"
+                                        v-model="meetinglivePlaceForm.meetingPlaceTitle"
+                                        auto-complete="off"
+                                        >
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="9">
+                                <el-form-item label="导航标题" label-width="20%" prop="meetingNavTitle" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="5"
+                                        placeholder="导航标题"
+                                        v-model="meetinglivePlaceForm.meetingNavTitle"
+                                        auto-complete="off"
+                                        >
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="9">
+                                <el-form-item label="权重" label-width="20%" prop="weight" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="5"
+                                        placeholder="权重"
+                                        v-model="meetinglivePlaceForm.weight"
+                                        auto-complete="off"
+                                        >
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                    
+                    <el-row style="margin-top: 30px">
+                        <el-col class="el-row-h40" :span="2">
+                            <el-button type="primary" style="width: 100%" @click="testSubmit2('meetinglivePlaceForm')">保存</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="2" :offset="1">
+                            <el-button type="primary" style="width: 100%" @click="closeCreatOrEditMeetinglivePlace('meetinglivePlaceForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </div>
+
+            </div>
+            <!---------------- 创建会场结束 ---------------------->
+
+
+            <!---------------- 创建主题和模块开始 ---------------------->
+            <div v-show="showChildPage == 4">
+                <div class="cv_content_square">
+                    <el-form :model="meetinglivePlaceForm" :rules="meetinglivePlaceFormRules" ref="meetinglivePlaceForm" label-position="left" status-icon class="demo-ruleForm" label-width="13%" label-position="right">
+                        <el-row class="el-row-h70">
+                            <el-col :span="18">
+                                <el-form-item label="主题标题" label-width="10%" prop="themTitle" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="36"
+                                        placeholder="主题标题"
+                                        v-model="meetinglivePlaceForm.themTitle"
+                                        auto-complete="off"
+                                        >
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="18">
+                                <el-form-item label="模块标题" label-width="10%" prop="modelTitle" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="36"
+                                        placeholder="模块标题"
+                                        v-model="meetinglivePlaceForm.modelTitle"
+                                        auto-complete="off"
+                                        >
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="9">
+                                <el-form-item label="类型" prop="type" label-width="20%" style="margin:0;">
+                                    <el-select v-model="meetinglivePlaceForm.type" style="width:100%;">
+                                        <el-option
+                                        v-for="item in options"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="9">
+                                <el-form-item label="权重" label-width="20%" prop="priority" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="5"
+                                        placeholder="权重"
+                                        v-model="meetinglivePlaceForm.priority"
+                                        auto-complete="off"
+                                        >
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                    
+                    <el-row style="margin-top: 30px">
+                        <el-col class="el-row-h40" :span="2">
+                            <el-button type="primary" style="width: 100%" @click="testSubmit3('meetinglivePlaceForm')">保存</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="2" :offset="1">
+                            <el-button type="primary" style="width: 100%" @click="closeCreatOrEditMeetingliveModel('meetinglivePlaceForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </div>
+
+            </div>
+            <!---------------- 创建主题和模块结束 ---------------------->
+
+
+
+
+
+
         </div>
-
-
-   
-        
-
     </div>
 
 </body>
@@ -144,4 +330,38 @@
 <script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/modules/meeting/meeting_live.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+<style>
+.custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    height: 30px;
+    line-height: 30px;
+    cursor: pointer;
+}
+.custom-tree-node2 {
+    flex: 1;
+    display: flex;
+    padding-left: 20px;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    height: 30px;
+    line-height: 30px;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+.custom-tree-node:hover {
+    background: rgb(245, 247, 250);
+}
+.custom-tree-node2:hover {
+    background: rgb(245, 247, 250);
+}
+
+
+
+
+</style>
 </html>
