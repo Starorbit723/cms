@@ -3,10 +3,10 @@
 var vm = new Vue({
     el: '#meeting_live',
     data () {
-        var validateWeight = (rule, value, callback) => {
+        var validatePriority = (rule, value, callback) => {
             var urlReg = /^[0-9]*[1-9][0-9]*$/;
             var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
-            if (value || value == 0) {
+            if (value || value === 0) {
                 if (value == 0) {
                     callback();
                 } else if (value.toString() == '0') {
@@ -48,7 +48,7 @@ var vm = new Vue({
                 currPage: 1,
                 totalCount:0,
                 totalPage:0,
-                pageSize:10
+                pageSize:10000
             },
             // 新建会场报道
             meetingLiveListForm: {
@@ -67,28 +67,7 @@ var vm = new Vue({
                     {required: true, message: '名称必填', trigger: 'change'}
                 ]
             },
-            meetingliveDataTemp: [
-                // {
-                //     id: '',
-                //     meetingPlaceTitle: '', //会议标题
-                //     meetingNavTitle: '', //导航标题
-                //     weight: '', //会议权重
-                //     delStatus: '1', //删除状态 0已删除1未删除
-                //     createUserId: '',
-                //     updateUserId: '',
-                //     updateAt: '',
-                //     createAt: '',
-                //     meetingReportListId: '', // 所属报道id
-                //     children: {
-                //         themTitle: '', //主题标题
-                //         children: {
-                //             modelTitle: '', //模块标题
-                //             type: '', //类型
-                //             priority: '', //权重
-                //         }
-                //     }
-                // }
-            ],
+            meetingliveDataTemp: [],
             meetingliveData: {
                 id: '',
                 meetingPlaceTitle: '', //会议标题
@@ -106,19 +85,20 @@ var vm = new Vue({
                 meetingReportListId: '', // 所属报道id
             },
 
-            // 创建会场
-
+            // ---------------------创建会场--------------------
+            ifEdit: false,
             ifCreatOrEditPlace: 'creat',
             ifCreatOrEditModel: 'creat',
+            maxWeight: '',
             meetinglivePlaceForm: {
                 id: '',
                 meetingPlaceTitle: '', //会议标题
                 meetingNavTitle: '', //导航标题
-                weight: '-1', //会议权重
+                weight: '', //会议权重
                 themTitle: '', //主题标题
                 modelTitle: '', //模块标题
                 type: '0', //类型
-                priority: '-1', //权重
+                priority: '', //权重
                 delStatus: '1', //删除状态 0已删除1未删除
                 createUserId: '',
                 updateUserId: '',
@@ -127,11 +107,11 @@ var vm = new Vue({
                 meetingReportListId: '', // 所属报道id
             },
             meetinglivePlaceFormRules: {
-                weight:[
-                    { required: true, validator: validateWeight, trigger: 'change' }
-                ],
+                // weight:[
+                //     { required: true, validator: validateWeight, trigger: 'change' }
+                // ],
                 priority:[
-                    { required: true, validator: validateWeight, trigger: 'change' }
+                    { required: true, validator: validatePriority, trigger: 'change' }
                 ],
             },
             //初始化数据
@@ -142,9 +122,137 @@ var vm = new Vue({
                 value: '1',
                 label: '圆桌论坛'
             }],
-            tempObj: {},
+            tempObj: {}, //临时存放模块信息
 
 
+
+            // ------------------------------------嘉宾演讲模块----------------------------------------
+           
+            ifCreatOrEditGuest: 'creat', 
+            guestOrPanel: 'guest',
+            meetingGuestForm: {
+                id: '',
+                img: '',//嘉宾头像
+                name: '', //姓名
+                company: '', //公司
+                position: '', //职位
+                title: '', // 标题
+                desc: '', //描述
+                pcLink: '', //pc链接
+                mlink: '', //m链接
+                meetingReportId: '', //所属模块id
+                createUserId: '',
+                updateUserId: '',
+                updateAt: '',
+                createAt: '',
+                delStatus: '1'
+            },
+            meetingGuestFormRules: {
+                img: [
+                    { required: true, message: '人物头像不能为空', trigger: 'change' }
+                ],
+                name:[
+                    { required: true, message: '名称不能为空', trigger: 'change' }
+                ],
+                position:[
+                    { required: true, message: '职位不能为空', trigger: 'change' }
+                ],
+                company:[
+                    { required: true, message: '公司不能为空', trigger: 'change' }
+                ],
+                title:[
+                    { required: true, message: '标题不能为空', trigger: 'change' }
+                ],
+                desc:[
+                    { required: true, message: '摘要不能为空', trigger: 'change' }
+                ]
+            },
+            //内容图库相关
+            showContentImgLib:false,
+            tempMeetingReportId: '',
+            searchContentImgForm:{
+                picTitle:'',
+                picType:'1'//0封面图库 1内容图库 2图为图库
+            },
+            contentImgTableData:[],
+            pagination3: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+
+            // 圆桌论坛模块
+            pagination4: {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            },
+            singPanelId: '',
+            panelContentList:[{
+                id: '',
+                img: '',
+                name: '',
+                position: '',
+                company: '',
+                weight: '',
+                isBigImg: '0', //是否为大图
+                title: '', //标题
+                desc: '', //描述
+                pcLink: '', //pc链接
+                mlink:'', //H5链接
+                meetingReportId: '',
+                createUserId: '',
+                updateUserId: '',
+                updateAt: '',
+                createAt: '',
+                delStatus: '1'
+            }],
+            ifCreatOrEditPanel: 'creat', 
+            meetingPanelForm: {
+                id: '',
+                img: '',//嘉宾头像
+                name: '', //姓名
+                weight: '-1',
+                isBigImg: '0',
+                company: '', //公司
+                position: '', //职位
+                title: '', // 标题
+                desc: '', //描述
+                pcLink: '', //pc链接
+                mlink: '', //m链接
+                meetingReportId: '', //所属模块id
+                createUserId: '',
+                updateUserId: '',
+                updateAt: '',
+                createAt: '',
+                delStatus: '1'
+            },
+            meetingPanelFormRules: {
+                img: [
+                    { required: true, message: '人物头像不能为空', trigger: 'change' }
+                ],
+                name:[
+                    { required: true, message: '名称不能为空', trigger: 'change' }
+                ],
+                position:[
+                    { required: true, message: '职位不能为空', trigger: 'change' }
+                ],
+                company:[
+                    { required: true, message: '公司不能为空', trigger: 'change' }
+                ],
+                title:[
+                    { required: true, message: '标题不能为空', trigger: 'change' }
+                ],
+                desc:[
+                    { required: true, message: '摘要不能为空', trigger: 'change' }
+                ],
+                weight:[
+                    { required: true, validator: validatePriority, trigger: 'change' }
+                ],
+            },
+            checkOption: false,
 
 
         }
@@ -165,7 +273,6 @@ var vm = new Vue({
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.reportTopicId = data.reportTopicId.toString().trim()
             data.name = data.name.toString().trim()
-            // console.log(JSON.stringify(data))
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -193,7 +300,6 @@ var vm = new Vue({
                             totalPage: res.page.totalPage,
                             pageSize: res.page.pageSize
                         }
-                        // self.searchForm.reportTopicId = ''
                     } else {
                         mapErrorStatus(res)
 						vm.error = true;
@@ -344,7 +450,6 @@ var vm = new Vue({
                 }
             })
         },
-        
         // 关闭页面
         closeCreatOrEdit(formName) {
             this.creatOrEdit = 0
@@ -357,7 +462,7 @@ var vm = new Vue({
                 updateUserId:'',
                 createAt:'',
                 updateAt:'',
-                delStatus:'0',
+                delStatus:'1',
             },
             this.showChildPage = '0'
         },
@@ -380,6 +485,17 @@ var vm = new Vue({
             }
             var data = JSON.parse(JSON.stringify(data1))
             console.log(JSON.stringify(data))
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination2.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination2.currPage.toString(),
+                    limit: self.pagination2.pageSize.toString()
+                })
+            }
             $.ajax({
                 type: "POST",
                 url: "/meetingReport/list",
@@ -388,106 +504,62 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res) {
                     if(res.code == 200) {
-                        console.log(res)
+                        console.log(res.page.list)
+                        self.pagination2 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage: res.page.totalPage,
+                            pageSize: res.page.pageSize
+                        }
                         self.meetingliveData = res.page.list
                         var arr = res.page.list
-                        for(let i = 0; i < arr.length; i++) {
-                            for(let k = i+1; k < arr.length; k++) {
-                                let element_i = arr[i]
-                                let element_k = arr[k]
-                                if(element_i.weight == element_k.weight) {
-                                    if(element_i.priority < element_k.priority) {
+                        if(arr.length == 0) {
+                            self.maxWeight = 0
+                            self.meetingliveDataTemp = []
+                        } else {
+                            for(let i = 0; i < arr.length; i++) {
+                                for(let k = i+1; k < arr.length; k++) {
+                                    let element_i = arr[i]
+                                    let element_k = arr[k]
+                                    if(Number(element_i.weight) == Number(element_k.weight)) {
+                                        if(Number(element_i.priority) < Number(element_k.priority)) {
+                                            arr[i] = element_k
+                                            arr[k] = element_i
+                                        }
+                                    } else if(Number(element_i.weight) < Number(element_k.weight)) {
                                         arr[i] = element_k
                                         arr[k] = element_i
                                     }
-                                } else if(element_i.weight < element_k.weight) {
-                                    arr[i] = element_k
-                                    arr[k] = element_i
                                 }
                             }
+                            self.maxWeight = Number(arr[0].weight)
+                            var result = [],
+                            obj = {},
+                            index = 0;
+                            arr.forEach(item => {
+                                if(obj.hasOwnProperty(item.weight)) {
+                                    result[obj[item.weight]].children.push(item)
+                                } else {
+                                    obj[item.weight] = index++;
+                                    var list = {
+                                        weight: '',
+                                        meetingPlaceTitle: '',
+                                        meetingNavTitle: '',
+                                        type: '',
+                                        children: []
+                                    }
+                                    list.meetingPlaceTitle = item.meetingPlaceTitle
+                                    list.meetingNavTitle = item.meetingNavTitle
+                                    list.type = item.type
+                                    list.weight = item.weight
+                                    list.children.push(item)
+                                    result.push(list)
+                                }
+                            })
+                            self.meetingliveDataTemp = result
+                            console.log(self.meetingliveDataTemp)
+
                         }
-                        var result = [],
-                        obj = {},
-                        index = 0;
-                        arr.forEach(item => {
-                            var list = {
-                                weight: '',
-                                meetingPlaceTitle: '',
-                                meetingNavTitle: '',
-                                weight: '',
-                                children: []
-                            }
-                            if(obj.hasOwnProperty(item.weight)) {
-
-                            } else {
-                                obj[item.weight] = index++;
-                                
-                                list.weight = item.weight
-                                list.meetingPlaceTitle = item.meetingPlaceTitle
-                                list.meetingNavTitle = item.meetingNavTitle
-                                list.weight = item.weight
-                                list.children.push(item)
-                                result.push(list)
-
-                            }
-                            if(obj.hasOwnProperty(item.meetingPlaceTitle)) {
-                                result[obj[item.meetingPlaceTitle]].children.push(item)
-                            } else {
-                                obj[item.meetingPlaceTitle] = index++;
-                                var list = {
-                                    meetingPlaceTitle: '',
-                                    meetingNavTitle: '',
-                                    weight: '',
-                                    children: []
-                                }
-                                list.meetingPlaceTitle = item.meetingPlaceTitle
-                                list.meetingNavTitle = item.meetingNavTitle
-                                list.weight = item.weight
-                                list.children.push(item)
-                                result.push(list)
-                            }
-                        })
-
-                        // console.log(result)
-                        // self.meetingliveDataTemp = result
-                        // console.log(arr)
-                        // var result = []
-                        // if(arr.length == 0) {
-                        //     self.meetingliveDataTemp = []
-                        // } else {
-                            
-                        //     arr.forEach(item => {
-                        //         var list = {
-                        //             id: '',
-                        //             meetingPlaceTitle: '',
-                        //             meetingNavTitle: '',
-                        //             weight: '',
-                        //             children: []
-                        //         }
-                        //         list.id = item.id
-                        //         list.meetingPlaceTitle = item.meetingPlaceTitle
-                        //         list.meetingNavTitle = item.meetingNavTitle
-                        //         list.weight = item.weight
-                        //         list.children.push(item)
-                        //         result.push(list)
-                        //     })
-                            
-                        // }
-                        self.meetingliveDataTemp = result
-                        console.log(self.meetingliveDataTemp)
-                        
-
-                        
-                        
-
-                        // self.diagramTableData = res.page.list
-                        // self.picCount = res.page.totalCount
-                        // self.pagination3 = {
-                        //     currPage: res.page.currPage,
-                        //     totalCount: res.page.totalCount,
-                        //     totalPage: res.page.totalPage,
-                        //     pageSize: res.page.pageSize
-                        // }
                     } else {
                         mapErrorStatus(res)
 						vm.error = true;
@@ -506,70 +578,60 @@ var vm = new Vue({
             var self = this
             if (type == '0') {
                 this.ifCreatOrEditPlace = 'creat'
+                this.meetinglivePlaceForm.weight = (this.maxWeight+1).toString()
                 this.showChildPage = '3'
             } else {
                 console.log(type)
-                this.ifCreatOrEditPlace = 'edit'
+                self.tempObj = type
+                self.ifCreatOrEditPlace = 'edit'
+                self.ifEdit = true
                 self. meetinglivePlaceForm.meetingPlaceTitle = type.meetingPlaceTitle
                 self. meetinglivePlaceForm.meetingNavTitle = type.meetingNavTitle
+                self. meetinglivePlaceForm.type = type.type
                 self. meetinglivePlaceForm.weight = type.weight
-                this.showChildPage = '3'
-
-                
-
-
-
-
-
-                // this.meetinglivePlaceForm.id = this.currentSearchMeetingliveId
-                // $.ajax({
-                //     type: "POST",
-                //     contentType: "application/json",
-                //     url: '/meetingReport/info/' + type.id,
-                //     dataType: "json",
-                //     success: function(res){
-                //         console.log(res)
-                //         if (res.code == 200) {
-                            
-                //             // console.log('编辑某一条案例',res.dict)
-                //             // self.singleCaseForm = res.dict
-                //             // self.showAddOrEditCase = true
-                //         } else {
-                //             mapErrorStatus(res)
-                //             vm.error = true;
-                //             vm.errorMsg = res.msg;
-                //         }
-                //     },
-                //     error:function(res){
-                //         mapErrorStatus(res)
-                //     }
-                // });
+                self.showChildPage = '3'
             }
-
         },
         backToMeetingliveList() {
             this.showChildPage = '0'
+            this.meetingliveDataTemp = []
         },
         testSubmit2 (formName) {
-            var self = this
-            self.$refs[formName].validate((valid) => {
-                if(valid) {
-                  self.submitCreatEdit2()
-                }
-            })
-
+            // var self = this
+            // self.$refs[formName].validate((valid) => {
+            //     if(valid) {
+                  this.submitCreatEdit2()
+            //     }
+            // })
         },
         // 提交
         submitCreatEdit2 () {
             var self = this
-            var data = JSON.parse(JSON.stringify(self.meetinglivePlaceForm))
-            data.meetingReportListId = self.currentSearchMeetingliveId
-            console.log('准备提交保存的FORM', data)
-            console.log(self.ifCreatOrEditPlace)
+            console.log(self.meetinglivePlaceForm)
+            if((self.meetinglivePlaceForm.meetingPlaceTitle.trim() == '' && self.meetinglivePlaceForm.meetingNavTitle.trim() !== '') || (self.meetinglivePlaceForm.meetingPlaceTitle.trim() !== '' && self.meetinglivePlaceForm.meetingNavTitle.trim() == '') || (self.meetinglivePlaceForm.meetingPlaceTitle.trim() !== '' && self.meetinglivePlaceForm.meetingPlaceTitle.trim() !== '#' && self.meetinglivePlaceForm.meetingNavTitle.trim() == '#') || (self.meetinglivePlaceForm.meetingPlaceTitle.trim() == '#' && self.meetinglivePlaceForm.meetingNavTitle.trim() !== ''&& self.meetinglivePlaceForm.meetingNavTitle.trim() !== '#')) {
+                self.$message.error('会场标题和导航标题不能为空，且必须同时存在，若都无请填写"#"')
+                return
+            } else if (self.meetinglivePlaceForm.meetingPlaceTitle.trim() == '' && self.meetinglivePlaceForm.meetingNavTitle.trim() == '') {
+                self.$message.error('会场标题和导航标题不能为空，且必须同时存在，若都无请填写"#"')
+                return
+            }
+            var data1 = JSON.parse(JSON.stringify(self.meetinglivePlaceForm))
+            data1.meetingReportListId = self.currentSearchMeetingliveId
+            
+            console.log('准备提交保存的FORM', data1)
             if (self.ifCreatOrEditPlace == 'creat') {
+                var data = data1
                 var reqUrl = '/meetingReport/save'
             } else if (self.ifCreatOrEditPlace == 'edit') {
-                var reqUrl = '/meetingReport/update'
+                console.log(self.tempObj)
+                var arr = self.tempObj.children
+                for(var i = 0; i < arr.length; i++) {
+                    arr[i].meetingPlaceTitle = self.meetinglivePlaceForm.meetingPlaceTitle
+                    arr[i].meetingNavTitle = self.meetinglivePlaceForm.meetingNavTitle
+                }
+                console.log(arr)
+                var data = arr
+                var reqUrl = '/meetingReport/updateByList'
             }
             $.ajax({
                 type: "POST",
@@ -600,10 +662,10 @@ var vm = new Vue({
                 id: '',
                 meetingPlaceTitle: '', //会议标题
                 meetingNavTitle: '', //导航标题
-                weight: '-1', //会议权重
+                weight: '', //会议权重
                 themTitle: '', //主题标题
                 modelTitle: '', //模块标题
-                type: '', //类型
+                type: '0', //类型
                 priority: '-1', //权重
                 delStatus: '1', //删除状态 0已删除1未删除
                 createUserId: '',
@@ -612,22 +674,119 @@ var vm = new Vue({
                 createAt: '',
                 meetingReportListId: '', // 所属报道id
             },
+            this.ifEdit = false
             this.showChildPage = '2'
+        },
+        delThisMeetingPlace(item) {
+            console.log(item)
+            this.$confirm('确定要删除该项数据吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                    var data = item.children
+                for(var i = 0; i < data.length; i++) {
+                    data[i].delStatus = '0'
+                }
+                console.log(data)
+                this.batchDelPlace(data)
+            })
+            
+        },
+        batchDelPlace(data) {
+            var self = this
+            var data = JSON.parse(JSON.stringify(data))
+            $.ajax({
+                type: "POST",
+                url: "/meetingReport/updateByList",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res) {
+                    if(res.code == 200) {
+                        self.$message.success('保存成功')
+                        self.startSearch2(self.currentSearchMeetingliveId, 0)
+                        
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            })
+        },
+        MeetingPlaceMoveUp(index, item){
+            console.log(index)
+            console.log(item)
+            console.log(this.meetingliveDataTemp)
 
+            var moveArr = JSON.parse(JSON.stringify(this.meetingliveDataTemp))
+            let temp1 = moveArr[index - 1]
+            let temp2 = moveArr[index]
+            let tempWeight1 = temp1.weight
+            let tempWeight2 = temp2.weight
+            console.log(temp1)
+            console.log(temp2)
+            for(let i = 0; i < temp1.children.length; i++) {
+                temp1.children[i].weight = tempWeight2
+            }
+            for(let k = 0; k < temp2.children.length; k++) {
+                temp2.children[k].weight = tempWeight1
+            }
+            console.log(temp1.children)
+            console.log(temp2.children)
+            var data = (temp1.children).concat(temp2.children)
+            console.log(data)
+            this.batchDelPlace(data)
+
+            
         },
 
 
-        // -------------------------------新建模块------------------------------------
 
-        addOrEditMeetingModel(type, item) {
+        // -------------------------------新建模块------------------------------------
+        addOrEditMeetingModel(type, item, index) {
             var self = this
             console.log(item)
             self.tempObj = JSON.parse(JSON.stringify(item))
-            if(type == '0') {
+            console.log(self.tempObj)
+            console.log(self.currentSearchMeetingliveId)
+            console.log(type)
+            if(type == 0) {
                 self.ifCreatOrEditModel = 'creat'
+                self.meetinglivePlaceForm.meetingPlaceTitle = self.tempObj.meetingPlaceTitle
+                self.meetinglivePlaceForm.meetingNavTitle = self.tempObj.meetingNavTitle
+                self.meetinglivePlaceForm.weight = self.tempObj.weight
+                self.meetinglivePlaceForm.meetingReportListId = self.currentSearchMeetingliveId
                 self.showChildPage = '4'
             } else {
-                console.log(123)
+                self.ifCreatOrEditModel = 'edit'
+                var id = self.tempObj.children[index].id
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: '/meetingReport/info/' + id,
+                    dataType: "json",
+                    success: function(res){
+                        console.log(res)
+                        if (res.code == 200) {
+                            console.log(res.dict)
+                            self.meetinglivePlaceForm = res.dict
+                            self.ifEdit = true
+                            self.showChildPage = '4'
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
             }
             
         },
@@ -635,6 +794,7 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if(valid) {
+                    console.log(123555555)
                   self.submitCreatEdit3()
                 }
             })
@@ -642,16 +802,16 @@ var vm = new Vue({
         },
         submitCreatEdit3 () {
             var self = this
-            console.log(self.tempObj)
             var data = JSON.parse(JSON.stringify(self.meetinglivePlaceForm))
-            data.meetingReportListId = self.currentSearchMeetingliveId
-            data.meetingPlaceTitle = self.tempObj.meetingPlaceTitle
-            data.meetingNavTitle = self.tempObj.meetingNavTitle
-            data.weight = self.tempObj.weight
             console.log('准备提交保存的FORM', data)
-            if (self.ifCreatOrEditPlace == 'creat') {
+            console.log(self.ifCreatOrEditModel)
+            if (self.ifCreatOrEditModel == 'creat') {
                 var reqUrl = '/meetingReport/save'
-            } else if (self.ifCreatOrEditPlace == 'edit') {
+            } else if (self.ifCreatOrEditModel == 'edit') {
+                if(data.themTitle.trim() === '' || data.modelTitle == '') {
+                    self.$message.error('主题标题和模块标题不能为空，若无请填写"#"')
+                    return
+                } 
                 var reqUrl = '/meetingReport/update'
             }
             $.ajax({
@@ -675,7 +835,6 @@ var vm = new Vue({
                     mapErrorStatus(res)
                 }
             })
-
         },
         closeCreatOrEditMeetingliveModel (formName) {
             this.ifCreatOrEditModel = 'creat'
@@ -684,10 +843,10 @@ var vm = new Vue({
                 id: '',
                 meetingPlaceTitle: '', //会议标题
                 meetingNavTitle: '', //导航标题
-                weight: '-1', //会议权重
+                weight: '', //会议权重
                 themTitle: '', //主题标题
                 modelTitle: '', //模块标题
-                type: '', //类型
+                type: '0', //类型
                 priority: '-1', //权重
                 delStatus: '1', //删除状态 0已删除1未删除
                 createUserId: '',
@@ -696,11 +855,625 @@ var vm = new Vue({
                 createAt: '',
                 meetingReportListId: '', // 所属报道id
             },
+            this.ifEdit = false
             this.showChildPage = '2'
-
+        },
+        //删除某项主题
+        delMeetingModel(item, index) {
+            console.log(item)
+            console.log(index)
+            var self = this
+            self.$confirm('确定要删除该项数据吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var delData = {}
+                var id = item.children[index].id
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: '/meetingReport/info/' + id,
+                    dataType: "json",
+                    success: function(res){
+                        console.log(res)
+                        if (res.code == 200) {
+                            console.log(res.dict)
+                            var data = JSON.parse(JSON.stringify(res.dict))  
+                            data.delStatus = '0'
+                            self.delModel(data)
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+            })
+        },
+        delModel(data) {
+            var self = this
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/meetingReport/update",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res) {
+                    if(res.code == 200) {
+                        self.startSearch2(self.currentSearchMeetingliveId, 0)
+                        self.$message.success('删除成功')
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true
+                        vm.errorMsg = res.msg
+                    }
+                },
+                error: function(res) {
+                    mapErrorStatus(res)
+                }
+            })
         },
         
+
+        // ---------------------------嘉宾演讲模块------------------------------
+        //链接校验
+        validateUrl(value) {
+            console.log(value)
+            var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
+            if(value.trim() !== '#') {
+                if (value.trim() == '') {
+                    this.$message.error('链接不能为空，暂无链接可填写"#"')
+                } else if(!urlReg.test(value.trim())) {
+                    this.$message.error('链接格式不正确')
+                }
+            }
+        },
+        addOrEditMeetingDetail(item) {
+            console.log(item)
+            if(item.type == '0') {
+                this.tempMeetingReportId = item.id
+                this.getEditMeetingGuest(item.id)
+                this.showChildPage = '5'
+            } else if(item.type == '1') {
+                console.log('圆桌论坛')
+                this.tempMeetingReportId = item.id
+                this.getEditMeetingPanel(item.id, 0)
+                this.showChildPage = '6'
+            }
+            
+        },
+        //编辑嘉宾演讲模块---数据反显
+        getEditMeetingGuest(id) {
+            var self = this
+            let data = {
+                meetingReportId: id.toString(),
+                delStatus: '1'
+            }
+            console.log(JSON.stringify(data))
+            $.ajax({
+                type: "POST",
+                url: '/speech/list',
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        if(res.page.list.length == 0) {
+                            self.ifCreatOrEditGuest = 'creat'
+                        } else {
+                            self.meetingGuestForm = res.page.list[0]
+                            self.ifCreatOrEditGuest = 'edit'
+                        }
+
+                    }else{
+                        mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        testSubmit4(formName) {
+            var self = this
+            self.$refs[formName].validate((valid) => {
+                if(valid) {
+                    console.log(123555555)
+                  self.submitCreatEdit4()
+                }
+            })
+
+        },
+        submitCreatEdit4 () {
+            var self = this
+            var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
+            if(self.meetingGuestForm.pcLink.trim() !== '#') {
+                if (self.meetingGuestForm.pcLink.trim() == '') {
+                    self.$message.error('链接不能为空，暂无链接可填写"#"')
+                    return
+                } else if(!urlReg.test(self.meetingGuestForm.pcLink.trim())) {
+                    self.$message.error('链接格式不正确')
+                    return
+                }
+            }
+            if(self.meetingGuestForm.mlink.trim() !== '#') {
+                if (self.meetingGuestForm.mlink.trim() == '') {
+                    self.$message.error('链接不能为空，暂无链接可填写"#"')
+                    return
+                } else if(!urlReg.test(self.meetingGuestForm.mlink.trim())) {
+                    self.$message.error('链接格式不正确')
+                    return
+                }
+            }
+            self.meetingGuestForm.meetingReportId = self.tempMeetingReportId
+            var data = JSON.parse(JSON.stringify(self.meetingGuestForm))
+            if (self.ifCreatOrEditGuest == 'creat') {
+                var reqUrl = '/speech/save'
+            } else if (self.ifCreatOrEditGuest == 'edit') {
+                var reqUrl = '/speech/update'
+            }
+            console.log(JSON.stringify(data))
+            $.ajax({
+                type: "POST",
+                url: reqUrl,
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res) {
+                    if(res.code == 200) {
+                        self.$message.success('保存成功')
+                        self.startSearch2(self.currentSearchMeetingliveId, 0)
+                        self.closeCreatOrEditMeetingGuest('meetingGuestForm')
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            })
+        },
+        closeCreatOrEditMeetingGuest (formName) {
+            this.ifCreatOrEditGuest = 'creat'
+            this.$refs[formName].resetFields();
+            this. meetingGuestForm = {
+                img: '',//嘉宾头像
+                name: '', //姓名
+                company: '', //公司
+                position: '', //职位
+                title: '', // 标题
+                desc: '', //描述
+                pcLink: '', //pc链接
+                mlink: '', //m链接
+                meetingReportId: '', //所属模块id
+                createUserId: '',
+                updateUserId: '',
+                updateAt: '',
+                createAt: '',
+                delStatus: '1'
+            },
+            this.showChildPage = '2'
+        },
+         // ----------------------内容图库相关---------------------
+        handleCurrentChange3 (val) {
+            this.pagination3.currPage = val
+            this.searchContentImg()
+        },
+        //修改某一张内容图片
+        chooseContentImg(type){
+            if(type == '0') {
+                this.guestOrPanel = 'guest'
+            } else if (type == '1') {
+                this.guestOrPanel = 'panel'
+            }
+            this.showContentImgLib = true
+            this.searchContentImg(0)
+        },
+        //搜索内容图库
+        searchContentImg(type){
+            var self = this
+            var data = JSON.parse(JSON.stringify(self.searchContentImgForm))
+            data.picTitle = data.picTitle.trim()
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination3.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination3.currPage.toString(),
+                    limit: self.pagination3.pageSize.toString()
+                })
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/picture/list",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.contentImgTableData = res.page.list
+                        self.pagination3 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage:res.page.totalPage,
+                            pageSize:res.page.pageSize
+                        }
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        //选择了某一张内容图片
+        addThisContentImg (item) {
+            if(this.guestOrPanel == 'guest') {
+                this.meetingGuestForm.img = item.picUrl
+            } else if (this.guestOrPanel == 'panel') {
+                this.meetingPanelForm.img = item.picUrl
+            }
+            
+            this.backToEdit()
+        },
+        //返回编辑页
+        backToEdit (){
+            this.showContentImgLib = false
+            this.searchContentImgForm = {
+                picTitle:'',
+                picType:'1'//0封面图库 1内容图库 2图为图库
+            }
+            this.contentImgTableData = [],
+            this.pagination3 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+        },   
         
         
+        //--------------------编辑圆桌论坛模块---------------
+        //切换页码
+        handleCurrentChange4 (val) {
+            this.pagination4.currPage = val
+            console.log(this.tempMeetingReportId)
+            this.getEditMeetingPanel(this.tempMeetingReportId, 1) 
+        },
+        ifBigImgChange(val) {
+            if (val == 1) {
+                this.meetingPanelForm.weight = 1000
+                this.meetingPanelForm.name = '#'
+                this.meetingPanelForm.position = '#'
+                this.meetingPanelForm.company = '#'
+                this.meetingPanelForm.desc = '#'
+            } else {
+                this.meetingPanelForm.weight = '-1'
+                this.meetingPanelForm.name = ''
+                this.meetingPanelForm.position = ''
+                this.meetingPanelForm.company = ''
+                this.meetingPanelForm.desc = ''
+                
+            }
+        },
+        backToMainPage() {
+            this.startSearch2(this.currentSearchMeetingliveId, 0)
+            this.showChildPage = '2';
+        },
+        getEditMeetingPanel(id, type) {
+            var self = this
+            let data = {
+                meetingReportId: id.toString(),
+                delStatus: '1'
+            }
+            console.log(JSON.stringify(data))
+            console.log(type == 0)
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination4.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination4.currPage.toString(),
+                    limit: self.pagination4.pageSize.toString()
+                })
+            }
+            $.ajax({
+                type: "POST",
+                url: '/forum/list',
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        console.log(res.page)
+                        self.panelContentList = res.page.list
+                        self.pagination4 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage:res.page.totalPage,
+                            pageSize:res.page.pageSize
+                        }
+                        console.log(self.pagination4)
+                    }else{
+                        mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        addNewPanelItem (type) {
+            if(type == '0') {
+                this.ifCreatOrEditPanel = 'creat'
+                this.showChildPage = '7'
+            } else {
+                this.ifCreatOrEditPanel = 'edit'
+                console.log(type)
+                this.singPanelId = type.id
+                this.getSinglePanelInfo(type.id)
+                console.log(type)
+            }
+            
+        },
+        getSinglePanelInfo(id) {
+            var self = this
+            $.ajax({
+                type: "POST",
+                url: "/forum/info/" + id,
+                contentType: "application/json",
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        console.log(res.dict)
+                        self.meetingPanelForm = res.dict
+                        self.showChildPage = '7'
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+
+        },
+        testSubmit5(formName) {
+            var self = this
+            self.$refs[formName].validate((valid) => {
+                if(valid) {
+                    console.log(123555555)
+                    //   self.submitCreatEdit5()
+                    let data = {
+                        meetingReportId: self.tempMeetingReportId.toString(),
+                        delStatus: '1'
+                    }
+                    console.log(JSON.stringify(data))
+                    $.ajax({
+                        type: "POST",
+                        url: '/forum/list',
+                        contentType: "application/json",
+                        data: JSON.stringify(data),
+                        dataType: "json",
+                        success: function(res){
+                            if(res.code == 200){
+                                console.log(res)
+                                var arr = res.page.list
+                                console.log(self.ifCreatOrEditPanel)
+                                if(self.ifCreatOrEditPanel == 'creat') {
+                                    if (res.page.list.length == 0) {
+                                        self.submitCreatEdit5()
+                                    } else if (res.page.list.length !== 0 ) {
+                                        var ifHaveBigImg = false
+                                        for(var i = 0; i < arr.length; i++){
+                                            if(arr[i].isBigImg == '1' && self.meetingPanelForm.isBigImg == '1') {
+                                                ifHaveBigImg = true  
+                                            }  
+                                        }  
+
+                                        if(ifHaveBigImg) {
+                                            self.$message.error('场景大图已经存在，设置新场景大图请删除原来场景大图')
+                                            return
+                                        } else {
+                                            self.submitCreatEdit5()
+                                        }
+                                    } 
+                                } else if (self.ifCreatOrEditPanel == 'edit') {
+                                    var bigImgId = ''
+                                    for(var i = 0; i < arr.length; i++){
+                                        if(arr[i].isBigImg == '1') {
+                                            bigImgId = arr[i].id
+                                        }
+                                    }
+                                    if(bigImgId !== '' && (bigImgId !== self.meetingPanelForm.id) && self.meetingPanelForm.isBigImg == '1') {
+                                        self.$message.error('场景大图已经存在，设置新场景大图请删除原来场景大图')
+                                        return
+                                    } else {
+                                        self.submitCreatEdit5()
+                                    }
+                                    
+                                }
+
+
+
+                                
+                            }else{
+                                mapErrorStatus(res)
+                                vm.error = true;
+                                vm.errorMsg = res.msg;
+                            }
+                        },
+                        error:function(res){
+                            mapErrorStatus(res)
+                        }
+                    });
+                }
+            })
+        },
+        submitCreatEdit5 () {
+            var self = this
+            var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
+            if(self.meetingPanelForm.pcLink.trim() !== '#') {
+                if (self.meetingPanelForm.pcLink.trim() == '') {
+                    self.$message.error('链接不能为空，暂无链接可填写"#"')
+                    return
+                } else if(!urlReg.test(self.meetingPanelForm.pcLink.trim())) {
+                    self.$message.error('链接格式不正确')
+                    return
+                }
+            }
+            if(self.meetingPanelForm.mlink.trim() !== '#') {
+                if (self.meetingPanelForm.mlink.trim() == '') {
+                    self.$message.error('链接不能为空，暂无链接可填写"#"')
+                    return
+                } else if(!urlReg.test(self.meetingPanelForm.mlink.trim())) {
+                    self.$message.error('链接格式不正确')
+                    return
+                }
+            }
+            self.meetingPanelForm.meetingReportId = self.tempMeetingReportId
+            var data = JSON.parse(JSON.stringify(self.meetingPanelForm))
+            if (self.ifCreatOrEditPanel == 'creat') {
+                var reqUrl = '/forum/save'
+            } else if (self.ifCreatOrEditPanel == 'edit') {
+                var reqUrl = '/forum/update'
+            }
+            console.log(JSON.stringify(data))
+            $.ajax({
+                type: "POST",
+                url: reqUrl,
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res) {
+                    if(res.code == 200) {
+                        self.$message.success('保存成功')
+                        self.getEditMeetingPanel(self.tempMeetingReportId, 0)
+                        self.closeCreatOrEditMeetingPanel('meetingPanelForm')
+                    } else {
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            })
+        },
+        closeCreatOrEditMeetingPanel (formName) {
+            this.ifCreatOrEditPanel = 'creat'
+            this.$refs[formName].resetFields();
+            this. meetingPanelForm = {
+                id: '',
+                img: '',//嘉宾头像
+                name: '', //姓名
+                weight: '-1',
+                isBigImg: '0',
+                company: '', //公司
+                position: '', //职位
+                title: '', // 标题
+                desc: '', //描述
+                pcLink: '', //pc链接
+                mlink: '', //m链接
+                meetingReportId: '', //所属模块id
+                createUserId: '',
+                updateUserId: '',
+                updateAt: '',
+                createAt: '',
+                delStatus: '1'
+            },
+            this.showChildPage = '6'
+        },
+        deleteThisPanelItem(item) {
+            var self = this
+            self.$confirm('确实要删除该圆桌论坛数据吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = JSON.parse(JSON.stringify(item))
+                data.delStatus = '0'
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/forum/update",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res) {
+                        if(res.code == 200) {
+                            self.$message.success('删除成功')
+                            self.getEditMeetingPanel(self.tempMeetingReportId, 0)
+                            self.showChildPage = '6'
+                        } else {
+                            mapErrorStatus(res)
+                            vm.error = true
+                            vm.errorMsg = res.msg
+                        }
+                    },
+                    error: function(res) {
+                        mapErrorStatus(res)
+                    }
+                })
+            })
+        },
+        scaleChange(item) {
+            var self = this
+            console.log(item)
+            if(item.weight.trim() == '') {
+                item.weight = '-1'
+            } else {
+                var urlReg = /^[0-9]*[1-9][0-9]*$/;
+                var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
+                if(!urlReg.test(item.weight) && !urlReg2.test(item.weight) && item.weight !== '0') {
+                    this.$message.error('权重只能填写整数或0')
+                    return
+                }
+                
+            }
+            var data = JSON.parse(JSON.stringify(item))
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: '/forum/update',
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.getEditMeetingPanel(self.tempMeetingReportId, 0)
+                        self.showChildPage = '6'
+                        self.$message.success('保存成功')
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+
+        },
+
     }
 })

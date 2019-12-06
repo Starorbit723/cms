@@ -126,6 +126,7 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){
+                        console.log(res)
                         self.tableData = res.page.list
                         self.pagination1 = {
                             currPage: res.page.currPage,
