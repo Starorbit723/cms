@@ -45,7 +45,6 @@ var vm = new Vue({
     },
     watch: {
         timeRange (val) {
-            console.log(val)
             if (val) {
                 this.searchForm.startTime = val[0]
                 this.searchForm.endTime = val[1]
@@ -53,7 +52,6 @@ var vm = new Vue({
                 this.searchForm.startTime = ''
                 this.searchForm.endTime = ''
             }
-            console.log(this.searchForm)
         }
     },
     created () {
@@ -75,7 +73,6 @@ var vm = new Vue({
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.name = data.name.toString().trim()
-            console.log(JSON.stringify(data))
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -94,7 +91,6 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
 			    dataType: "json",
 			    success: function(res){
-                    console.log(res)
 					if(res.code == 200){
                         self.tableData = res.page.list
                         for (let i = 0; i < self.tableData.length; i++){
@@ -136,16 +132,11 @@ var vm = new Vue({
         //删除报道专题
         deleteThisMeetingLive (item) {
             var self = this
-            console.log(item)
             self.$confirm('确实要删除此报道专题吗?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                // var data = {
-                //     id: item.id.toString(),
-                //     publishStatus: '5'
-                // }
                 var data = JSON.parse(JSON.stringify(item))
                 data. meetingReportListId = '-1'
                 data. meetingAgendaId = '-1'

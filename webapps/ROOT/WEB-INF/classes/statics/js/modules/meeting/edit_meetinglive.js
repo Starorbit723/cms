@@ -182,7 +182,7 @@ var vm = new Vue({
     methods: {
         //链接校验
         validateUrl(value) {
-            console.log(value)
+            // console.log(value)
             var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
             if(value.trim() !== '#') {
                 if (value.trim() == '') {
@@ -194,7 +194,7 @@ var vm = new Vue({
         },
          //会议标签改变
         meetingTagChange (val) {
-            console.log('meetingTagChange',val)
+            // console.log('meetingTagChange',val)
             for (let i = 0; i < this.meetingTagArray.length; i++) {
                 if (this.meetingTagArray[i].length > 20) {
                     let tempArr = JSON.parse(JSON.stringify(this.meetingTagArray))
@@ -255,7 +255,7 @@ var vm = new Vue({
         //删除banner数据
         delBanner(index) {
             var headArr = this.meetingliveForm.jsonData.headPicBanner.headSwiperPicList
-            console.log(index, headArr)
+            // console.log(index, headArr)
             if(headArr.length >=2) {
                 headArr.splice(index,1)
             } else {
@@ -271,7 +271,7 @@ var vm = new Vue({
         },
         //修改某一张内容图片
         chooseContentImg(objName,index){
-            console.log(objName,index)
+            // console.log(objName,index)
             this.chooseImgObjName = objName
             this.chooseImgObjIndex = index
             this.showContentImgLib = true
@@ -331,7 +331,6 @@ var vm = new Vue({
                     self.meetingliveForm.mImg = item.picUrl
                 }
             } else if (self.chooseImgObjName == 'headSwiperPicList') {
-                console.log(123)
                 self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[self.chooseImgObjIndex].headSwiperPic = item.picUrl
             } else if (self.chooseImgObjName == 'headArticleList') {
                 self.meetingliveForm.jsonData.headPicBanner.headArticleList[self.chooseImgObjIndex].headArticlePic = item.picUrl
@@ -390,7 +389,6 @@ var vm = new Vue({
 			    dataType: "json",
 			    success: function(res){
 					if(res.code == 200){
-                        console.log(res)
                         self.meetingLiveTableData = res.page.list
                         self.pagination2 = {
                             currPage: res.page.currPage,
@@ -432,7 +430,7 @@ var vm = new Vue({
             }
         },
         addThisMeetingLive (item) {
-            console.log(item)
+            // console.log(item)
             this.meetingliveForm.meetingReportListId = item.id
             this.meetingliveForm.jsonData.venueReport.reportTitle = item.name
             this.backToEditFromMeetingLive()
@@ -513,7 +511,7 @@ var vm = new Vue({
             }
         },
         addThisCalendar (item) {
-            console.log(item)
+            // console.log(item)
             this.meetingliveForm.meetingAgendaId = item.meetingAgendaId
             this.meetingliveForm.jsonData.calendar.calendarTitle = item.meetingAgendaTitle
             this.backToEditFromCalendar()
@@ -546,7 +544,6 @@ var vm = new Vue({
                     limit: self.pagination4.pageSize.toString()
                 })
             }
-            console.log(JSON.stringify(data))
             $.ajax({
 				type: "POST",
                 url: "/meeting/cooperation/list",
@@ -578,7 +575,7 @@ var vm = new Vue({
             this.searchCoperation()
         },
         addThisCoperation (item) {
-            console.log(item)
+            // console.log(item)
             this.meetingliveForm.meetingCooperationId = item.meetingCooperationId
             this.meetingliveForm.jsonData.cooperation.cooperationTitle = item.meetingCooperationTitle
             this.backToEditFromCoperation()
@@ -603,9 +600,9 @@ var vm = new Vue({
         },
         // 保存报道专题
         testMeetingLiveInfo (type, formName) {
-            console.log(type)
+            // console.log(type)
             var self = this 
-            console.log('数据', self.meetingliveForm)
+            // console.log('数据', self.meetingliveForm)
             self.$refs[formName].validate((valid) => {
                 if(valid) {
                     self.saveMeetingLive(type)
@@ -615,7 +612,7 @@ var vm = new Vue({
         //新建或修改保存报名专题
         saveMeetingLive(item) {
             var self = this
-            console.log(self.ajaxController)
+            // console.log(self.ajaxController)
             var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
             if(self.ajaxController) {
                 self.ajaxController = false
@@ -775,7 +772,6 @@ var vm = new Vue({
             var jsonString = JSON.stringify(submitData.jsonData);
             var json64 = $.base64.btoa(jsonString);
             submitData.jsonData = json64
-            console.log(JSON.stringify(submitData))
             $.ajax({
                 type: "POST",
                 url: reqUrl,
@@ -811,7 +807,6 @@ var vm = new Vue({
                     }
                 },
                 error:function(res){
-                    console.log(url)
                     mapErrorStatus(res)
                 }
             });
@@ -889,7 +884,6 @@ var vm = new Vue({
                 this.meetingTagArray = data.keywords.split(',')
             }
             this.meetingliveForm = data
-            console.log(this.meetingliveForm)
             this.$refs['meetingliveForm'].resetFields()
         },
 

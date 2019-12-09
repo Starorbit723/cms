@@ -291,7 +291,6 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
-                    console.log(res)
                     if(res.code == 200) {
                         self.tableData = res.page.list
                         self.pagination1 = {
@@ -324,14 +323,13 @@ var vm = new Vue({
             if(type == 0) {
                 self.showChildPage = '1'
             } else if(type == 1) {
-                // console.log(item)
                 $.ajax({
                     type: "POST",
                     url: "/meetingReportList/info/" + item.id,
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res){
-                        console.log(res)
+                        // console.log(res)
                         if(res.code == 200){
                             let data = res.dict
                             self.meetingLiveListForm = data
@@ -472,7 +470,7 @@ var vm = new Vue({
 
         //------------------------------------------编辑页面------------------------------------------------
         editMeetingliveDetail (item) {
-            console.log(item)
+            // console.log(item)
             this.currentSearchMeetingliveId = item.id.toString().trim()
             this.startSearch2(this.currentSearchMeetingliveId, 0)
             this.showChildPage = '2'
@@ -484,7 +482,6 @@ var vm = new Vue({
                 delStatus: '1'
             }
             var data = JSON.parse(JSON.stringify(data1))
-            console.log(JSON.stringify(data))
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -504,7 +501,6 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res) {
                     if(res.code == 200) {
-                        console.log(res.page.list)
                         self.pagination2 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
@@ -557,7 +553,7 @@ var vm = new Vue({
                                 }
                             })
                             self.meetingliveDataTemp = result
-                            console.log(self.meetingliveDataTemp)
+                            // console.log(self.meetingliveDataTemp)
 
                         }
                     } else {
@@ -581,7 +577,6 @@ var vm = new Vue({
                 this.meetinglivePlaceForm.weight = (this.maxWeight+1).toString()
                 this.showChildPage = '3'
             } else {
-                console.log(type)
                 self.tempObj = type
                 self.ifCreatOrEditPlace = 'edit'
                 self.ifEdit = true
@@ -607,7 +602,7 @@ var vm = new Vue({
         // 提交
         submitCreatEdit2 () {
             var self = this
-            console.log(self.meetinglivePlaceForm)
+            // console.log(self.meetinglivePlaceForm)
             if((self.meetinglivePlaceForm.meetingPlaceTitle.trim() == '' && self.meetinglivePlaceForm.meetingNavTitle.trim() !== '') || (self.meetinglivePlaceForm.meetingPlaceTitle.trim() !== '' && self.meetinglivePlaceForm.meetingNavTitle.trim() == '') || (self.meetinglivePlaceForm.meetingPlaceTitle.trim() !== '' && self.meetinglivePlaceForm.meetingPlaceTitle.trim() !== '#' && self.meetinglivePlaceForm.meetingNavTitle.trim() == '#') || (self.meetinglivePlaceForm.meetingPlaceTitle.trim() == '#' && self.meetinglivePlaceForm.meetingNavTitle.trim() !== ''&& self.meetinglivePlaceForm.meetingNavTitle.trim() !== '#')) {
                 self.$message.error('会场标题和导航标题不能为空，且必须同时存在，若都无请填写"#"')
                 return
@@ -623,13 +618,12 @@ var vm = new Vue({
                 var data = data1
                 var reqUrl = '/meetingReport/save'
             } else if (self.ifCreatOrEditPlace == 'edit') {
-                console.log(self.tempObj)
+                // console.log(self.tempObj)
                 var arr = self.tempObj.children
                 for(var i = 0; i < arr.length; i++) {
                     arr[i].meetingPlaceTitle = self.meetinglivePlaceForm.meetingPlaceTitle
                     arr[i].meetingNavTitle = self.meetinglivePlaceForm.meetingNavTitle
                 }
-                console.log(arr)
                 var data = arr
                 var reqUrl = '/meetingReport/updateByList'
             }
@@ -678,7 +672,7 @@ var vm = new Vue({
             this.showChildPage = '2'
         },
         delThisMeetingPlace(item) {
-            console.log(item)
+            // console.log(item)
             this.$confirm('确定要删除该项数据吗？', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -688,7 +682,6 @@ var vm = new Vue({
                 for(var i = 0; i < data.length; i++) {
                     data[i].delStatus = '0'
                 }
-                console.log(data)
                 this.batchDelPlace(data)
             })
             
@@ -719,30 +712,19 @@ var vm = new Vue({
             })
         },
         MeetingPlaceMoveUp(index, item){
-            console.log(index)
-            console.log(item)
-            console.log(this.meetingliveDataTemp)
-
             var moveArr = JSON.parse(JSON.stringify(this.meetingliveDataTemp))
             let temp1 = moveArr[index - 1]
             let temp2 = moveArr[index]
             let tempWeight1 = temp1.weight
             let tempWeight2 = temp2.weight
-            console.log(temp1)
-            console.log(temp2)
             for(let i = 0; i < temp1.children.length; i++) {
                 temp1.children[i].weight = tempWeight2
             }
             for(let k = 0; k < temp2.children.length; k++) {
                 temp2.children[k].weight = tempWeight1
             }
-            console.log(temp1.children)
-            console.log(temp2.children)
             var data = (temp1.children).concat(temp2.children)
-            console.log(data)
             this.batchDelPlace(data)
-
-            
         },
 
 
@@ -750,11 +732,8 @@ var vm = new Vue({
         // -------------------------------新建模块------------------------------------
         addOrEditMeetingModel(type, item, index) {
             var self = this
-            console.log(item)
+            // console.log(item)
             self.tempObj = JSON.parse(JSON.stringify(item))
-            console.log(self.tempObj)
-            console.log(self.currentSearchMeetingliveId)
-            console.log(type)
             if(type == 0) {
                 self.ifCreatOrEditModel = 'creat'
                 self.meetinglivePlaceForm.meetingPlaceTitle = self.tempObj.meetingPlaceTitle
@@ -771,9 +750,7 @@ var vm = new Vue({
                     url: '/meetingReport/info/' + id,
                     dataType: "json",
                     success: function(res){
-                        console.log(res)
                         if (res.code == 200) {
-                            console.log(res.dict)
                             self.meetinglivePlaceForm = res.dict
                             self.ifEdit = true
                             self.showChildPage = '4'
@@ -794,7 +771,6 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if(valid) {
-                    console.log(123555555)
                   self.submitCreatEdit3()
                 }
             })
@@ -804,7 +780,6 @@ var vm = new Vue({
             var self = this
             var data = JSON.parse(JSON.stringify(self.meetinglivePlaceForm))
             console.log('准备提交保存的FORM', data)
-            console.log(self.ifCreatOrEditModel)
             if (self.ifCreatOrEditModel == 'creat') {
                 var reqUrl = '/meetingReport/save'
             } else if (self.ifCreatOrEditModel == 'edit') {
@@ -860,8 +835,6 @@ var vm = new Vue({
         },
         //删除某项主题
         delMeetingModel(item, index) {
-            console.log(item)
-            console.log(index)
             var self = this
             self.$confirm('确定要删除该项数据吗？', '提示', {
                 confirmButtonText: '确定',
@@ -876,9 +849,7 @@ var vm = new Vue({
                     url: '/meetingReport/info/' + id,
                     dataType: "json",
                     success: function(res){
-                        console.log(res)
                         if (res.code == 200) {
-                            console.log(res.dict)
                             var data = JSON.parse(JSON.stringify(res.dict))  
                             data.delStatus = '0'
                             self.delModel(data)
@@ -922,7 +893,6 @@ var vm = new Vue({
         // ---------------------------嘉宾演讲模块------------------------------
         //链接校验
         validateUrl(value) {
-            console.log(value)
             var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
             if(value.trim() !== '#') {
                 if (value.trim() == '') {
@@ -933,13 +903,11 @@ var vm = new Vue({
             }
         },
         addOrEditMeetingDetail(item) {
-            console.log(item)
             if(item.type == '0') {
                 this.tempMeetingReportId = item.id
                 this.getEditMeetingGuest(item.id)
                 this.showChildPage = '5'
             } else if(item.type == '1') {
-                console.log('圆桌论坛')
                 this.tempMeetingReportId = item.id
                 this.getEditMeetingPanel(item.id, 0)
                 this.showChildPage = '6'
@@ -953,7 +921,6 @@ var vm = new Vue({
                 meetingReportId: id.toString(),
                 delStatus: '1'
             }
-            console.log(JSON.stringify(data))
             $.ajax({
                 type: "POST",
                 url: '/speech/list',
@@ -984,7 +951,6 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if(valid) {
-                    console.log(123555555)
                   self.submitCreatEdit4()
                 }
             })
@@ -1018,7 +984,6 @@ var vm = new Vue({
             } else if (self.ifCreatOrEditGuest == 'edit') {
                 var reqUrl = '/speech/update'
             }
-            console.log(JSON.stringify(data))
             $.ajax({
                 type: "POST",
                 url: reqUrl,
@@ -1150,7 +1115,6 @@ var vm = new Vue({
         //切换页码
         handleCurrentChange4 (val) {
             this.pagination4.currPage = val
-            console.log(this.tempMeetingReportId)
             this.getEditMeetingPanel(this.tempMeetingReportId, 1) 
         },
         ifBigImgChange(val) {
@@ -1179,8 +1143,6 @@ var vm = new Vue({
                 meetingReportId: id.toString(),
                 delStatus: '1'
             }
-            console.log(JSON.stringify(data))
-            console.log(type == 0)
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -1200,7 +1162,7 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){
-                        console.log(res.page)
+                        // console.log(res.page)
                         self.panelContentList = res.page.list
                         self.pagination4 = {
                             currPage: res.page.currPage,
@@ -1208,7 +1170,7 @@ var vm = new Vue({
                             totalPage:res.page.totalPage,
                             pageSize:res.page.pageSize
                         }
-                        console.log(self.pagination4)
+                        // console.log(self.pagination4)
                     }else{
                         mapErrorStatus(res)
 						vm.error = true;
@@ -1226,10 +1188,10 @@ var vm = new Vue({
                 this.showChildPage = '7'
             } else {
                 this.ifCreatOrEditPanel = 'edit'
-                console.log(type)
+                // console.log(type)
                 this.singPanelId = type.id
                 this.getSinglePanelInfo(type.id)
-                console.log(type)
+                // console.log(type)
             }
             
         },
@@ -1261,13 +1223,10 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if(valid) {
-                    console.log(123555555)
-                    //   self.submitCreatEdit5()
                     let data = {
                         meetingReportId: self.tempMeetingReportId.toString(),
                         delStatus: '1'
                     }
-                    console.log(JSON.stringify(data))
                     $.ajax({
                         type: "POST",
                         url: '/forum/list',
@@ -1276,9 +1235,7 @@ var vm = new Vue({
                         dataType: "json",
                         success: function(res){
                             if(res.code == 200){
-                                console.log(res)
                                 var arr = res.page.list
-                                console.log(self.ifCreatOrEditPanel)
                                 if(self.ifCreatOrEditPanel == 'creat') {
                                     if (res.page.list.length == 0) {
                                         self.submitCreatEdit5()
@@ -1357,7 +1314,6 @@ var vm = new Vue({
             } else if (self.ifCreatOrEditPanel == 'edit') {
                 var reqUrl = '/forum/update'
             }
-            console.log(JSON.stringify(data))
             $.ajax({
                 type: "POST",
                 url: reqUrl,
@@ -1438,7 +1394,6 @@ var vm = new Vue({
         },
         scaleChange(item) {
             var self = this
-            console.log(item)
             if(item.weight.trim() == '') {
                 item.weight = '-1'
             } else {
