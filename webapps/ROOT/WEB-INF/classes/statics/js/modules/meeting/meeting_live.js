@@ -354,12 +354,13 @@ var vm = new Vue({
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
+                // console.log(item)
                 var data = JSON.parse(JSON.stringify(item))
                 data.delStatus = '0'
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: "/meetingReportList/update",
+                    url: "/meetingReportList/delete",
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res) {
@@ -528,7 +529,7 @@ var vm = new Vue({
                                     }
                                 }
                             }
-                            self.maxWeight = Number(arr[0].weight)
+                            self.maxWeight = Number(arr[arr.length-1].weight)
                             var result = [],
                             obj = {},
                             index = 0;
@@ -571,9 +572,9 @@ var vm = new Vue({
         addOrEditNewPlace (type) {
             var self = this
             if (type == '0') {
-                this.ifCreatOrEditPlace = 'creat'
-                this.meetinglivePlaceForm.weight = (this.maxWeight+1).toString()
-                this.showChildPage = '3'
+                self.ifCreatOrEditPlace = 'creat'
+                self.meetinglivePlaceForm.weight = (self.maxWeight+1).toString()
+                self.showChildPage = '3'
             } else {
                 self.tempObj = type
                 self.ifCreatOrEditPlace = 'edit'
@@ -610,8 +611,9 @@ var vm = new Vue({
             }
             var data1 = JSON.parse(JSON.stringify(self.meetinglivePlaceForm))
             data1.meetingReportListId = self.currentSearchMeetingliveId
-            
-            console.log('准备提交保存的FORM', data1)
+            data1.themTitle = '#'
+            data1.modelTitle = '#'
+            // console.log('准备提交保存的FORM', data1)
             if (self.ifCreatOrEditPlace == 'creat') {
                 var data = data1
                 var reqUrl = '/meetingReport/save'
@@ -670,7 +672,6 @@ var vm = new Vue({
             this.showChildPage = '2'
         },
         delThisMeetingPlace(item) {
-            // console.log(item)
             this.$confirm('确定要删除该项数据吗？', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -730,7 +731,6 @@ var vm = new Vue({
         // -------------------------------新建模块------------------------------------
         addOrEditMeetingModel(type, item, index) {
             var self = this
-            // console.log(item)
             self.tempObj = JSON.parse(JSON.stringify(item))
             if(type == 0) {
                 self.ifCreatOrEditModel = 'creat'
@@ -863,12 +863,14 @@ var vm = new Vue({
                 });
             })
         },
+        // 删除模块
         delModel(data) {
             var self = this
+            // console.log(data)
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
-                url: "/meetingReport/update",
+                url: "/meetingReport/delete",
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res) {
@@ -1128,7 +1130,6 @@ var vm = new Vue({
                 this.meetingPanelForm.position = ''
                 this.meetingPanelForm.company = ''
                 this.meetingPanelForm.desc = ''
-                
             }
         },
         backToMainPage() {
@@ -1186,10 +1187,8 @@ var vm = new Vue({
                 this.showChildPage = '7'
             } else {
                 this.ifCreatOrEditPanel = 'edit'
-                // console.log(type)
                 this.singPanelId = type.id
                 this.getSinglePanelInfo(type.id)
-                // console.log(type)
             }
             
         },
@@ -1202,7 +1201,6 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){
-                        console.log(res.dict)
                         self.meetingPanelForm = res.dict
                         self.showChildPage = '7'
                     }else{

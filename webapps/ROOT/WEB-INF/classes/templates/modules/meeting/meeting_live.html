@@ -404,13 +404,14 @@
                                 </el-form-item>
                             </el-col>
                         </el-row>
-                        <el-row class="el-row-h70">
+                        <el-row class="el-row-h110">
                             <el-col :span="24">
                                 <el-form-item label="摘要" label-width="7%" prop="desc" style="margin:0;">
                                     <el-input
                                         clearable
-                                        type="text"
-                                        maxlength="50"
+                                        type="textarea"
+                                        :autosize="{ minRows: 3, maxRows: 3}"
+                                        maxlength="100"
                                         v-model="meetingGuestForm.desc"
                                         auto-complete="off">
                                     </el-input>
@@ -620,13 +621,14 @@
                                 </el-form-item>
                             </el-col>
                         </el-row>
-                        <el-row class="el-row-h70">
+                        <el-row class="el-row-h110">
                             <el-col :span="24">
                                 <el-form-item label="摘要" label-width="7%" prop="desc" style="margin:0;">
                                     <el-input
                                         clearable
-                                        type="text"
-                                        maxlength="50"
+                                        type="textarea"
+                                        :autosize="{ minRows: 3, maxRows: 3}"
+                                        maxlength="100"
                                         :disabled="meetingPanelForm.isBigImg == 1"
                                         v-model="meetingPanelForm.desc"
                                         auto-complete="off">
