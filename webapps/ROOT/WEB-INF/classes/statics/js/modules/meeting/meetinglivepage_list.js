@@ -59,11 +59,11 @@ var vm = new Vue({
         this.startSearch(0)
     },
     methods:{
-        openUrlMeetingDetailPage(item) {
-            if(item.publishStatus == '2') {
-                window.open('https://www.chinaventure.com.cn'+item.meetingUrl, "newwindow")
-            }
-        },
+        // openUrlMeetingDetailPage(item) {
+        //     if(item.publishStatus == '2') {
+        //         window.open('https://www.chinaventure.com.cn'+item.meetingUrl, "newwindow")
+        //     }
+        // },
         handleCurrentChange (val) {
             this.pagination1.currPage = val
             this.startSearch() 
@@ -92,8 +92,12 @@ var vm = new Vue({
 			    dataType: "json",
 			    success: function(res){
 					if(res.code == 200){
+                        console.log(res)
                         self.tableData = res.page.list
                         for (let i = 0; i < self.tableData.length; i++){
+
+                            self.tableData[i].pcUrl = 'https://www.chinaventure.com.cn'+self.tableData[i].reportTopicUrl
+                            self.tableData[i].mobileUrl = 'https://m.chinaventure.com.cn'+self.tableData[i].reportTopicUrl
                             self.tableData[i].meetingStarTime = self.transformTime(parseInt(self.tableData[i].meetingStarTime))
                             self.tableData[i].meetingEndTime = self.transformTime(parseInt(self.tableData[i].meetingEndTime))
                             self.tableData[i].meetingModTime = self.transformTime(parseInt(self.tableData[i].meetingModTime))
@@ -176,7 +180,7 @@ var vm = new Vue({
             }).then(() => {
                 var data = {
                     id: item.id.toString(),
-                    publishStatus: '1'
+                    publishStatus: '2'
                 }
                 $.ajax({
                     type: "POST",
@@ -210,11 +214,11 @@ var vm = new Vue({
             }).then(() => {
                 var data = {
                     id: item.id.toString(),
-                    publishStatus: '4'
+                    publishStatus: '0'
                 }
                 $.ajax({
                     type: "POST",
-                    url: "/reportTopic/push",
+                    url: "/reportTopic/offline",
                     contentType: "application/json",
                     data: JSON.stringify(data),
                     dataType: "json",

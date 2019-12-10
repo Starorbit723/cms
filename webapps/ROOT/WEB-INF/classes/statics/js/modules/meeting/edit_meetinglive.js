@@ -4,6 +4,8 @@ var vm = new Vue({
         return {
             //新建或修改
             typeOfPage:'creat',
+            //图片基础地址
+            picBaseUrl:'',
              //按钮请求开关
             ajaxController:true,
              //折叠面板组件实例
@@ -42,7 +44,6 @@ var vm = new Vue({
                             {
                                 headSwiperPic: '', 
                                 picUrlPc: '',
-                                picUrlMobile: '',
                             }
                         ],
                         headArticleList: [
@@ -168,7 +169,14 @@ var vm = new Vue({
 
     },
     created () {
-
+        console.log('location',window.location.href)
+        if (window.location.href.indexOf('chinaventure.com.cn') !== -1 || window.location.href.indexOf('117.78.28.103') !== -1) {
+            console.log('正式环境')
+            this.picBaseUrl = 'https://chinaventure-static.obs.cn-north-1.myhuaweicloud.com'
+        } else {
+            console.log('开发测试环境')
+            this.picBaseUrl = 'https://cvinfo-test.obs.cn-north-1.myhuaweicloud.com'
+        }
     },
     mounted () {
         var type = getCookie('createditmeetinglive')
@@ -245,7 +253,6 @@ var vm = new Vue({
                 self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList.splice((index+1), 0, {
                     headSwiperPic: '',
                     picUrlPc: '',
-                    picUrlMobile: '',
                 })
             } else {
                 self.$message.error('最多添加6组banner');
@@ -575,7 +582,6 @@ var vm = new Vue({
             this.searchCoperation()
         },
         addThisCoperation (item) {
-            // console.log(item)
             this.meetingliveForm.meetingCooperationId = item.meetingCooperationId
             this.meetingliveForm.jsonData.cooperation.cooperationTitle = item.meetingCooperationTitle
             this.backToEditFromCoperation()
@@ -598,6 +604,8 @@ var vm = new Vue({
                 pageSize:10
             }
         },
+
+        
         // 保存报道专题
         testMeetingLiveInfo (type, formName) {
             // console.log(type)
@@ -634,7 +642,6 @@ var vm = new Vue({
                     return
                 }
             }
-
             if(self.meetingliveForm.mLink.trim() !== '#') {
                 if (self.meetingliveForm.mLink.trim() == '') {
                     self.$message.error('H5链接不能为空，暂无链接可填写"#"')
@@ -653,7 +660,7 @@ var vm = new Vue({
                         self.$message.error('楼层01轮播图：您还有未完成的banner图位');
                         self.ajaxController = true
                         return
-                    }
+                    } 
                     if (self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim() == ''){
                         this.$message.error('楼层01轮播图：PC链接不能为空,若无链接可填写"#"');
                         self.ajaxController = true
@@ -767,11 +774,27 @@ var vm = new Vue({
                     return
                 }
             }
+
             var submitData = JSON.parse(JSON.stringify(self.meetingliveForm))
+            // submitData.pcImg = '/' + submitData.pcImg.split('/').slice(3).join('/');
+            // submitData.mImg = '/' + submitData.mImg.split('/').slice(3).join('/');
+            if(submitData.jsonData.headPicBanner.isShowFloor) {
+                for(let i = 0; i < submitData.jsonData.headPicBanner.headSwiperPicList.length; i++) {
+                    var url1 = submitData.jsonData.headPicBanner.headSwiperPicList[i].headSwiperPic.trim()
+                    url1 = '/' + url1.split('/').slice(3).join('/');
+                    submitData.jsonData.headPicBanner.headSwiperPicList[i].headSwiperPic = url1
+                }
+                for(let k = 0; k < submitData.jsonData.headPicBanner.headArticleList.length; k++) {
+                    var url2 = submitData.jsonData.headPicBanner.headArticleList[k].headArticlePic.trim()
+                    url2 = '/' + url2.split('/').slice(3).join('/');
+                    submitData.jsonData.headPicBanner.headArticleList[k].headArticlePic = url2
+                }
+            }
             $.base64.utf8encode = true;
             var jsonString = JSON.stringify(submitData.jsonData);
             var json64 = $.base64.btoa(jsonString);
             submitData.jsonData = json64
+            // console.log(JSON.stringify(submitData))
             $.ajax({
                 type: "POST",
                 url: reqUrl,
@@ -817,8 +840,9 @@ var vm = new Vue({
             //meetingStatus=1 待发布
             var _data = {
                 id: self.meetingliveForm.id.toString(),
-                publishStatus: '1'
+                publishStatus: '2'
             }
+            // console.log(JSON.stringify(_data))
             $.ajax({
                 type: "POST",
                 url: "/reportTopic/push",
@@ -869,16 +893,28 @@ var vm = new Vue({
         //编辑反显前数据过滤
         editMeetingFilter (tempObj) {
             console.log('tempObj',tempObj)
-            let data = tempObj
+            var self = this
+            let data = JSON.parse(JSON.stringify(tempObj))
             if(data.mLink == null) {
                 data.mLink = ''
             }
             if(data.pcLink == null) {
                 data.pcLink = ''
             }
-            //json64反解
+            data.mImg = self.picBaseUrl + data.mImg
+            data.pcImg = self.picBaseUrl + data.pcImg
+            // //json64反解
             let map = $.base64.atob(tempObj.jsonData, true)
             data.jsonData = JSON.parse(map)
+            if(data.jsonData.headPicBanner.isShowFloor) {
+                for(let i = 0; i < data.jsonData.headPicBanner.headSwiperPicList.length; i++) {
+                    data.jsonData.headPicBanner.headSwiperPicList[i].headSwiperPic = self.picBaseUrl + data.jsonData.headPicBanner.headSwiperPicList[i].headSwiperPic
+                }
+                for(let k = 0; k < data.jsonData.headPicBanner.headArticleList.length; k++) {
+                    data.jsonData.headPicBanner.headArticleList[k].headArticlePic = self.picBaseUrl + data.jsonData.headPicBanner.headArticleList[k].headArticlePic
+                }
+            }
+
             //关键词数组还原
             if (tempObj.newsKeywords !== '') {
                 this.meetingTagArray = data.keywords.split(',')
@@ -886,10 +922,6 @@ var vm = new Vue({
             this.meetingliveForm = data
             this.$refs['meetingliveForm'].resetFields()
         },
-
-
-
-
 
         closeAndBack () {
             setCookie ('createditmeetinglive', '', 1) 

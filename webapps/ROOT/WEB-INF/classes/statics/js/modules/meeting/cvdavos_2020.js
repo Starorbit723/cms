@@ -114,7 +114,7 @@ var vm = new Vue({
             console.log('正式环境')
             this.meetingBaseInfoId = '54'//基础信息ID,写死
             this.meetingAgendaId = '42'//日程ID,写死
-            this.meetingGuestId = ''//嘉宾ID,写死
+            this.meetingGuestId = '31'//嘉宾ID,写死
         } else {
             console.log('测试环境')
             this.meetingBaseInfoId = '39'//基础信息ID,写死

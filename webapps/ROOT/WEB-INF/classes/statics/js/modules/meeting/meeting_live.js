@@ -22,6 +22,8 @@ var vm = new Vue({
         }
 
         return {
+            //图片基础地址
+            picBaseUrl:'',
             //是否显示子页面
             showChildPage: '0',
             currentSearchMeetingliveId: '',
@@ -261,7 +263,15 @@ var vm = new Vue({
        
     },
     created() {
-      this.startSearch(0)
+        this.startSearch(0)
+        console.log('location',window.location.href)
+        if (window.location.href.indexOf('chinaventure.com.cn') !== -1 || window.location.href.indexOf('117.78.28.103') !== -1) {
+            console.log('正式环境')
+            this.picBaseUrl = 'https://chinaventure-static.obs.cn-north-1.myhuaweicloud.com'
+        } else {
+            console.log('开发测试环境')
+            this.picBaseUrl = 'https://cvinfo-test.obs.cn-north-1.myhuaweicloud.com'
+        }
     },
     mounted() {
 
@@ -701,7 +711,7 @@ var vm = new Vue({
         batchDelPlace(data) {
             var self = this
             var data = JSON.parse(JSON.stringify(data))
-            console.log(data)
+            // console.log(data)
             $.ajax({
                 type: "POST",
                 url: "/meetingReport/deleteByList",
@@ -942,11 +952,13 @@ var vm = new Vue({
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res){
+                    // console.log(res)
                     if(res.code == 200){
                         if(res.page.list.length == 0) {
                             self.ifCreatOrEditGuest = 'creat'
                         } else {
                             self.meetingGuestForm = res.page.list[0]
+                            self.meetingGuestForm.img = self.picBaseUrl+self.meetingGuestForm.img
                             self.ifCreatOrEditGuest = 'edit'
                         }
 
@@ -1177,6 +1189,10 @@ var vm = new Vue({
                     if(res.code == 200){
                         // console.log(res.page)
                         self.panelContentList = res.page.list
+                        for(var i = 0; i < self.panelContentList.length; i++) {
+
+                            self.panelContentList[i].img = self.picBaseUrl+self.panelContentList[i].img
+                        }
                         self.pagination4 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
@@ -1216,6 +1232,7 @@ var vm = new Vue({
                 success: function(res){
                     if(res.code == 200){
                         self.meetingPanelForm = res.dict
+                        self.meetingPanelForm.img = self.picBaseUrl+self.meetingPanelForm.img
                         self.showChildPage = '7'
                     }else{
                         mapErrorStatus(res)
