@@ -98,7 +98,7 @@ var vm = new Vue({
                 themTitle: '', //主题标题
                 modelTitle: '', //模块标题
                 type: '0', //类型
-                priority: '', //权重
+                priority: '-1', //权重
                 delStatus: '1', //删除状态 0已删除1未删除
                 createUserId: '',
                 updateUserId: '',
@@ -518,11 +518,11 @@ var vm = new Vue({
                                     let element_i = arr[i]
                                     let element_k = arr[k]
                                     if(Number(element_i.weight) == Number(element_k.weight)) {
-                                        if(Number(element_i.priority) < Number(element_k.priority)) {
+                                        if(Number(element_i.priority) > Number(element_k.priority)) {
                                             arr[i] = element_k
                                             arr[k] = element_i
                                         }
-                                    } else if(Number(element_i.weight) < Number(element_k.weight)) {
+                                    } else if(Number(element_i.weight) > Number(element_k.weight)) {
                                         arr[i] = element_k
                                         arr[k] = element_i
                                     }
@@ -553,8 +553,6 @@ var vm = new Vue({
                                 }
                             })
                             self.meetingliveDataTemp = result
-                            // console.log(self.meetingliveDataTemp)
-
                         }
                     } else {
                         mapErrorStatus(res)
@@ -780,13 +778,13 @@ var vm = new Vue({
             var self = this
             var data = JSON.parse(JSON.stringify(self.meetinglivePlaceForm))
             console.log('准备提交保存的FORM', data)
+            if(data.themTitle.trim() == '' || data.modelTitle == '') {
+                self.$message.error('主题标题和模块标题不能为空，若无请填写"#"')
+                return
+            } 
             if (self.ifCreatOrEditModel == 'creat') {
                 var reqUrl = '/meetingReport/save'
             } else if (self.ifCreatOrEditModel == 'edit') {
-                if(data.themTitle.trim() === '' || data.modelTitle == '') {
-                    self.$message.error('主题标题和模块标题不能为空，若无请填写"#"')
-                    return
-                } 
                 var reqUrl = '/meetingReport/update'
             }
             $.ajax({
