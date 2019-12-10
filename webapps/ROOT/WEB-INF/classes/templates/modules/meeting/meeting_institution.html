@@ -48,11 +48,17 @@
             <!--表格查询结果区-->
             <div class="cv_content_square">
                 <el-table :data="tableData" style="width: 100%; margin:10px auto;" ref="multipleTable" stripe>
-                    <el-table-column prop="meetingCooperationId" label="会议机构编号" width="110"></el-table-column>
+                    <el-table-column prop="meetingCooperationId" label="会议机构编号" width="90"></el-table-column>
                     <el-table-column prop="meetingCooperationMeetingId" label="所属会议编号" width="110">
                         <template slot-scope="scope">
                             <div v-if="scope.row.meetingCooperationMeetingId == '-1'"></div>
                             <div v-else v-text="scope.row.meetingCooperationMeetingId"></div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="meetingCooperationReportTopicId" label="所属报道专题编号" width="110">
+                        <template slot-scope="scope">
+                            <div v-if="scope.row.meetingCooperationReportTopicId == '-1'"></div>
+                            <div v-else v-text="scope.row.meetingCooperationReportTopicId"></div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="meetingCooperationTitle" label="会议机构标题" width=""></el-table-column>

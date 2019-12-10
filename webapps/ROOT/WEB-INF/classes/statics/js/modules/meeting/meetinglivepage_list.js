@@ -45,7 +45,6 @@ var vm = new Vue({
     },
     watch: {
         timeRange (val) {
-            console.log(val)
             if (val) {
                 this.searchForm.startTime = val[0]
                 this.searchForm.endTime = val[1]
@@ -53,7 +52,6 @@ var vm = new Vue({
                 this.searchForm.startTime = ''
                 this.searchForm.endTime = ''
             }
-            console.log(this.searchForm)
         }
     },
     created () {
@@ -62,7 +60,7 @@ var vm = new Vue({
     },
     methods:{
         openUrlMeetingDetailPage(item) {
-            if(item.publishStatus == 2) {
+            if(item.publishStatus == '2') {
                 window.open('https://www.chinaventure.com.cn'+item.meetingUrl, "newwindow")
             }
         },
@@ -75,7 +73,6 @@ var vm = new Vue({
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.name = data.name.toString().trim()
-            console.log(JSON.stringify(data))
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -94,7 +91,6 @@ var vm = new Vue({
 			    data: JSON.stringify(data),
 			    dataType: "json",
 			    success: function(res){
-                    console.log(res)
 					if(res.code == 200){
                         self.tableData = res.page.list
                         for (let i = 0; i < self.tableData.length; i++){
@@ -134,17 +130,19 @@ var vm = new Vue({
             window.parent.location.href = '/index.html#modules/meeting/edit_meetinglive.html'
         },
         //删除报道专题
-        deleteThisMeeting (item) {
+        deleteThisMeetingLive (item) {
             var self = this
             self.$confirm('确实要删除此报道专题吗?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                var data = {
-                    id: item.id.toString(),
-                    publishStatus: '5'
-                }
+                var data = JSON.parse(JSON.stringify(item))
+                data. meetingReportListId = '-1'
+                data. meetingAgendaId = '-1'
+                data. meetingCooperationId = '-1'
+                data.publishStatus= '5'
+                
                 $.ajax({
                     type: "POST",
                     url: "/reportTopic/update",
@@ -167,74 +165,75 @@ var vm = new Vue({
                 });
             })
         },
+        
         //发布报道专题
-        // onlineThisMeeting (item) {
-        //     var self = this
-        //     self.$confirm('确实要发布此报道专题吗?', '提示', {
-        //         confirmButtonText: '确定',
-        //         cancelButtonText: '取消',
-        //         type: 'warning'
-        //     }).then(() => {
-        //         var data = {
-        //             id: item.id.toString(),
-        //             publishStatus: '1'
-        //         }
-        //         $.ajax({
-        //             type: "POST",
-        //             url: "/meetingInfo/push",
-        //             contentType: "application/json",
-        //             data: JSON.stringify(data),
-        //             dataType: "json",
-        //             success: function(res){
-        //                 if(res.code == 200){
-        //                     self.$message.success('发布成功')
-        //                     self.startSearch()
-        //                 }else{
-        //                     mapErrorStatus(res)
-        //                     vm.error = true;
-        //                     vm.errorMsg = res.msg;
-        //                 }
-        //             },
-        //             error:function(res){
-        //                 mapErrorStatus(res)
-        //             }
-        //         });
-        //     })
-        // },
+        onlineThisMeetingLive (item) {
+            var self = this
+            self.$confirm('确实要发布此报道专题吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = {
+                    id: item.id.toString(),
+                    publishStatus: '1'
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/reportTopic/push",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res){
+                        if(res.code == 200){
+                            self.$message.success('发布成功')
+                            self.startSearch()
+                        }else{
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+            })
+        },
         //下线报道专题
-        // offlineThisMeeting (item) {
-        //     var self = this
-        //     self.$confirm('确实要下线此报道专题吗?', '提示', {
-        //         confirmButtonText: '确定',
-        //         cancelButtonText: '取消',
-        //         type: 'warning'
-        //     }).then(() => {
-        //         var data = {
-        //             id: item.id.toString(),
-        //             publishStatus: '4'
-        //         }
-        //         $.ajax({
-        //             type: "POST",
-        //             url: "/meetingInfo/push",
-        //             contentType: "application/json",
-        //             data: JSON.stringify(data),
-        //             dataType: "json",
-        //             success: function(res){
-        //                 if(res.code == 200){
-        //                     self.$message.success('下线成功')
-        //                     self.startSearch()
-        //                 }else{
-        //                     mapErrorStatus(res)
-        //                     vm.error = true;
-        //                     vm.errorMsg = res.msg;
-        //                 }
-        //             },
-        //             error:function(res){
-        //                 mapErrorStatus(res)
-        //             }
-        //         });
-        //     })
-        // },
+        offlineThisMeetingLive (item) {
+            var self = this
+            self.$confirm('确实要下线此报道专题吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = {
+                    id: item.id.toString(),
+                    publishStatus: '4'
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/reportTopic/push",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res){
+                        if(res.code == 200){
+                            self.$message.success('下线成功')
+                            self.startSearch()
+                        }else{
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+            })
+        },
         
         //时间格式转换工具
         transformTime (timestamp = +new Date()) {

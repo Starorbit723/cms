@@ -1248,6 +1248,7 @@ var vm = new Vue({
                 var reqUrl = '/rankCase/update'
             }
             var data = JSON.parse(JSON.stringify(self.singleCaseForm))
+            console.log(self.singleCaseForm)
             $.ajax({
                 type: "POST",
                 contentType: "application/json",

@@ -428,9 +428,6 @@ var vm = new Vue({
                     mapErrorStatus(res)
                 }
             })
-
-            
-            
         },
         
         //选择了某一张封面图片
