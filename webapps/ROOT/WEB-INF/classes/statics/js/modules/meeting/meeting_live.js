@@ -529,6 +529,19 @@ var vm = new Vue({
                                     }
                                 }
                             }
+                            for (let m = 0; m < arr.length; m++) {
+                                for (let n = m+1; n <arr.length; n++) {
+                                    let element_m = arr[m]
+                                    let element_n = arr[n]
+                                    if((element_m.weight == element_n.weight) && (element_m.priority == element_n.priority)) {
+                                        if(element_m.id > element_n.id) {
+                                            arr[m] = element_n
+                                            arr[n] = element_m
+                                        }
+                                    }
+                                }
+                            }
+                            // console.log(arr)
                             self.maxWeight = Number(arr[arr.length-1].weight)
                             var result = [],
                             obj = {},
