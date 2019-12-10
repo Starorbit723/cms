@@ -701,9 +701,10 @@ var vm = new Vue({
         batchDelPlace(data) {
             var self = this
             var data = JSON.parse(JSON.stringify(data))
+            console.log(data)
             $.ajax({
                 type: "POST",
-                url: "/meetingReport/updateByList",
+                url: "/meetingReport/deleteByList",
                 contentType: "application/json",
                 data: JSON.stringify(data),
                 dataType: "json",
