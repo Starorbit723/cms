@@ -13,7 +13,7 @@ var vm = new Vue({
         tableData: [{
             id:'',//主键
             name:'',//标题
-            desc:'',//简介
+            description:'',//简介
             publishStatus:'',//报道专题状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
             keywords:'', //关键词
             pcImg: '', //pc头图
@@ -59,11 +59,12 @@ var vm = new Vue({
         this.startSearch(0)
     },
     methods:{
-        // openUrlMeetingDetailPage(item) {
-        //     if(item.publishStatus == '2') {
-        //         window.open('https://www.chinaventure.com.cn'+item.meetingUrl, "newwindow")
-        //     }
-        // },
+        openUrlMeetingDetailPage(item) {
+            console.log(item)
+            if(item.publishStatus == '2') {
+                window.open('https://www.chinaventure.com.cn'+item.reportTopicUrl, "newwindow")
+            }
+        },
         handleCurrentChange (val) {
             this.pagination1.currPage = val
             this.startSearch() 
@@ -96,8 +97,8 @@ var vm = new Vue({
                         self.tableData = res.page.list
                         for (let i = 0; i < self.tableData.length; i++){
 
-                            self.tableData[i].pcUrl = 'https://www.chinaventure.com.cn'+self.tableData[i].reportTopicUrl
-                            self.tableData[i].mobileUrl = 'https://m.chinaventure.com.cn'+self.tableData[i].reportTopicUrl
+                            // self.tableData[i].pcUrl = 'https://www.chinaventure.com.cn'+self.tableData[i].reportTopicUrl
+                            // self.tableData[i].mobileUrl = 'https://m.chinaventure.com.cn'+self.tableData[i].reportTopicUrl
                             self.tableData[i].meetingStarTime = self.transformTime(parseInt(self.tableData[i].meetingStarTime))
                             self.tableData[i].meetingEndTime = self.transformTime(parseInt(self.tableData[i].meetingEndTime))
                             self.tableData[i].meetingModTime = self.transformTime(parseInt(self.tableData[i].meetingModTime))

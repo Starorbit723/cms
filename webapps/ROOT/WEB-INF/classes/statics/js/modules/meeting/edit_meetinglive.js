@@ -17,7 +17,7 @@ var vm = new Vue({
             meetingliveForm: {
                 id:'',//主键
                 name:'',//标题
-                desc:'',//简介
+                description:'',//简介
                 publishStatus:'',//会议状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
                 keywords:'', //会议关键词
                 pcImg: '', //pc头图
@@ -93,7 +93,7 @@ var vm = new Vue({
                     { required: true, message: '报道专题名称不能为空', trigger: 'change' },
                     { max: 36, message: '您输入的字数超过36个字', trigger: 'change' }
                 ],
-                desc:[
+                description:[
                     { required: true, message: '请填写报道专题简介', trigger: 'change' }
                 ],
                 keywords:[
@@ -912,7 +912,7 @@ var vm = new Vue({
             //         data.jsonData.headPicBanner.headArticleList[k].headArticlePic = self.picBaseUrl + data.jsonData.headPicBanner.headArticleList[k].headArticlePic
             //     }
             // }
-
+            console.log(data)
             //关键词数组还原
             if (tempObj.newsKeywords !== '') {
                 this.meetingTagArray = data.keywords.split(',')

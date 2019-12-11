@@ -139,7 +139,7 @@ var vm = new Vue({
                 company: '', //公司
                 position: '', //职位
                 title: '', // 标题
-                desc: '', //描述
+                description: '', //描述
                 pcLink: '', //pc链接
                 mlink: '', //m链接
                 meetingReportId: '', //所属模块id
@@ -165,7 +165,7 @@ var vm = new Vue({
                 title:[
                     { required: true, message: '标题不能为空', trigger: 'change' }
                 ],
-                desc:[
+                description:[
                     { required: true, message: '摘要不能为空', trigger: 'change' }
                 ]
             },
@@ -201,7 +201,7 @@ var vm = new Vue({
                 weight: '',
                 isBigImg: '0', //是否为大图
                 title: '', //标题
-                desc: '', //描述
+                description: '', //描述
                 pcLink: '', //pc链接
                 mlink:'', //H5链接
                 meetingReportId: '',
@@ -221,7 +221,7 @@ var vm = new Vue({
                 company: '', //公司
                 position: '', //职位
                 title: '', // 标题
-                desc: '', //描述
+                description: '', //描述
                 pcLink: '', //pc链接
                 mlink: '', //m链接
                 meetingReportId: '', //所属模块id
@@ -247,7 +247,7 @@ var vm = new Vue({
                 title:[
                     { required: true, message: '标题不能为空', trigger: 'change' }
                 ],
-                desc:[
+                description:[
                     { required: true, message: '摘要不能为空', trigger: 'change' }
                 ],
                 weight:[
@@ -1041,7 +1041,7 @@ var vm = new Vue({
                 company: '', //公司
                 position: '', //职位
                 title: '', // 标题
-                desc: '', //描述
+                description: '', //描述
                 pcLink: '', //pc链接
                 mlink: '', //m链接
                 meetingReportId: '', //所属模块id
@@ -1149,13 +1149,13 @@ var vm = new Vue({
                 this.meetingPanelForm.name = '#'
                 this.meetingPanelForm.position = '#'
                 this.meetingPanelForm.company = '#'
-                this.meetingPanelForm.desc = '#'
+                this.meetingPanelForm.description = '#'
             } else {
                 this.meetingPanelForm.weight = '-1'
                 this.meetingPanelForm.name = ''
                 this.meetingPanelForm.position = ''
                 this.meetingPanelForm.company = ''
-                this.meetingPanelForm.desc = ''
+                this.meetingPanelForm.description = ''
             }
         },
         backToMainPage() {
@@ -1375,7 +1375,7 @@ var vm = new Vue({
                 company: '', //公司
                 position: '', //职位
                 title: '', // 标题
-                desc: '', //描述
+                description: '', //描述
                 pcLink: '', //pc链接
                 mlink: '', //m链接
                 meetingReportId: '', //所属模块id
