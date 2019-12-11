@@ -180,7 +180,7 @@ var vm = new Vue({
             }).then(() => {
                 var data = {
                     id: item.id.toString(),
-                    publishStatus: '2'
+                    publishStatus: '1'
                 }
                 $.ajax({
                     type: "POST",
@@ -214,7 +214,7 @@ var vm = new Vue({
             }).then(() => {
                 var data = {
                     id: item.id.toString(),
-                    publishStatus: '0'
+                    publishStatus: '4'
                 }
                 $.ajax({
                     type: "POST",

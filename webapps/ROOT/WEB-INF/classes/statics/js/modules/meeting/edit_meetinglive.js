@@ -838,7 +838,7 @@ var vm = new Vue({
             //meetingStatus=1 待发布
             var _data = {
                 id: self.meetingliveForm.id.toString(),
-                publishStatus: '2'
+                publishStatus: '1'
             }
             // console.log(JSON.stringify(_data))
             $.ajax({
