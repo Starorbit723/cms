@@ -711,7 +711,7 @@ var vm = new Vue({
         batchDelPlace(data) {
             var self = this
             var data = JSON.parse(JSON.stringify(data))
-            // console.log(data)
+            console.log(data)
             $.ajax({
                 type: "POST",
                 url: "/meetingReport/deleteByList",
@@ -746,10 +746,26 @@ var vm = new Vue({
             for(let k = 0; k < temp2.children.length; k++) {
                 temp2.children[k].weight = tempWeight1
             }
-            var data = (temp1.children).concat(temp2.children)
+            var dataArr = (temp1.children).concat(temp2.children)
+            var data = []
+            var singleData = {
+                id: '',
+                weight: ''
+            }
+            for(var i = 0; i < dataArr.length; i++) {
+                console.log(dataArr[i])
+                singleData.id = dataArr[i].id
+                singleData.weight = dataArr[i].weight
+                console.log(singleData)
+                data.push(singleData)
+                singleData = {
+                    id: '',
+                    weight: ''
+                }
+            }
+
             this.batchDelPlace(data)
         },
-
 
 
         // -------------------------------新建模块------------------------------------

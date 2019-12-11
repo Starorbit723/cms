@@ -220,9 +220,10 @@
                                 <el-col :span="24">
                                     <el-form-item label="摘要" style="margin: 0px;">
                                         <el-input
-                                        :maxlength="50"
                                         clearable
-                                        type="text"
+                                        type="textarea"
+                                        :autosize="{ minRows: 3, maxRows: 3}"
+                                        maxlength="100"
                                         v-model="item.articleDesc"
                                         auto-complete="on">
                                     </el-input>
