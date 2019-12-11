@@ -776,20 +776,18 @@ var vm = new Vue({
             }
 
             var submitData = JSON.parse(JSON.stringify(self.meetingliveForm))
-            // submitData.pcImg = '/' + submitData.pcImg.split('/').slice(3).join('/');
-            // submitData.mImg = '/' + submitData.mImg.split('/').slice(3).join('/');
-            if(submitData.jsonData.headPicBanner.isShowFloor) {
-                for(let i = 0; i < submitData.jsonData.headPicBanner.headSwiperPicList.length; i++) {
-                    var url1 = submitData.jsonData.headPicBanner.headSwiperPicList[i].headSwiperPic.trim()
-                    url1 = '/' + url1.split('/').slice(3).join('/');
-                    submitData.jsonData.headPicBanner.headSwiperPicList[i].headSwiperPic = url1
-                }
-                for(let k = 0; k < submitData.jsonData.headPicBanner.headArticleList.length; k++) {
-                    var url2 = submitData.jsonData.headPicBanner.headArticleList[k].headArticlePic.trim()
-                    url2 = '/' + url2.split('/').slice(3).join('/');
-                    submitData.jsonData.headPicBanner.headArticleList[k].headArticlePic = url2
-                }
-            }
+            // if(submitData.jsonData.headPicBanner.isShowFloor) {
+            //     for(let i = 0; i < submitData.jsonData.headPicBanner.headSwiperPicList.length; i++) {
+            //         var url1 = submitData.jsonData.headPicBanner.headSwiperPicList[i].headSwiperPic.trim()
+            //         url1 = '/' + url1.split('/').slice(3).join('/');
+            //         submitData.jsonData.headPicBanner.headSwiperPicList[i].headSwiperPic = url1
+            //     }
+            //     for(let k = 0; k < submitData.jsonData.headPicBanner.headArticleList.length; k++) {
+            //         var url2 = submitData.jsonData.headPicBanner.headArticleList[k].headArticlePic.trim()
+            //         url2 = '/' + url2.split('/').slice(3).join('/');
+            //         submitData.jsonData.headPicBanner.headArticleList[k].headArticlePic = url2
+            //     }
+            // }
             $.base64.utf8encode = true;
             var jsonString = JSON.stringify(submitData.jsonData);
             var json64 = $.base64.btoa(jsonString);
@@ -906,14 +904,14 @@ var vm = new Vue({
             // //json64反解
             let map = $.base64.atob(tempObj.jsonData, true)
             data.jsonData = JSON.parse(map)
-            if(data.jsonData.headPicBanner.isShowFloor) {
-                for(let i = 0; i < data.jsonData.headPicBanner.headSwiperPicList.length; i++) {
-                    data.jsonData.headPicBanner.headSwiperPicList[i].headSwiperPic = self.picBaseUrl + data.jsonData.headPicBanner.headSwiperPicList[i].headSwiperPic
-                }
-                for(let k = 0; k < data.jsonData.headPicBanner.headArticleList.length; k++) {
-                    data.jsonData.headPicBanner.headArticleList[k].headArticlePic = self.picBaseUrl + data.jsonData.headPicBanner.headArticleList[k].headArticlePic
-                }
-            }
+            // if(data.jsonData.headPicBanner.isShowFloor) {
+            //     for(let i = 0; i < data.jsonData.headPicBanner.headSwiperPicList.length; i++) {
+            //         data.jsonData.headPicBanner.headSwiperPicList[i].headSwiperPic = self.picBaseUrl + data.jsonData.headPicBanner.headSwiperPicList[i].headSwiperPic
+            //     }
+            //     for(let k = 0; k < data.jsonData.headPicBanner.headArticleList.length; k++) {
+            //         data.jsonData.headPicBanner.headArticleList[k].headArticlePic = self.picBaseUrl + data.jsonData.headPicBanner.headArticleList[k].headArticlePic
+            //     }
+            // }
 
             //关键词数组还原
             if (tempObj.newsKeywords !== '') {
