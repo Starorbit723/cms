@@ -242,6 +242,7 @@ var vm = new Vue({
                         dataType: "json",
                         success: function(res){
                             if(res.code == 200){
+                                console.log(res)
                                 if (self.showCreatEditDialogTitle == '新建内容') {
                                     if (type == 0 ) {
                                         self.$message.success('保存成功')
@@ -278,7 +279,9 @@ var vm = new Vue({
         },
         //连续提交发布
         submitVtalk () {
+            
             var self = this
+            console.log(self.creatEditForm.talkId)
             var data = {
                 talkId: self.creatEditForm.talkId.toString(),
                 talkReleaseTime: new Date().getTime(),

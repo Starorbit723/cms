@@ -190,7 +190,6 @@ var vm = new Vue({
     methods: {
         //链接校验
         validateUrl(value) {
-            // console.log(value)
             var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
             if(value.trim() !== '#') {
                 if (value.trim() == '') {
@@ -621,7 +620,6 @@ var vm = new Vue({
         
         // 保存报道专题
         testMeetingLiveInfo (type, formName) {
-            // console.log(type)
             var self = this 
             // console.log('数据', self.meetingliveForm)
             self.$refs[formName].validate((valid) => {
@@ -858,7 +856,7 @@ var vm = new Vue({
                                 window.parent.location.href = '/index.html#modules/meeting/meetinglivepage_list.html'
                             } else if (item == 1) { // 1保存并发布
                                 //回传id
-                                self.meetingliveForm.id = res.id
+                                self.meetingliveForm.id = res.reportTopicId
                                 self.submitMeetingLive()
                             }
                         } else if (self.typeOfPage == 'edit') {
@@ -884,12 +882,11 @@ var vm = new Vue({
          //提交会议--更新发布状态即可
         submitMeetingLive () {
             var self = this
-            //meetingStatus=1 待发布
+            //publishStatus=1 发布
             var _data = {
                 id: self.meetingliveForm.id.toString(),
                 publishStatus: '1'
             }
-            // console.log(JSON.stringify(_data))
             $.ajax({
                 type: "POST",
                 url: "/reportTopic/push",
@@ -961,7 +958,6 @@ var vm = new Vue({
             //         data.jsonData.headPicBanner.headArticleList[k].headArticlePic = self.picBaseUrl + data.jsonData.headPicBanner.headArticleList[k].headArticlePic
             //     }
             // }
-            console.log(data)
             //关键词数组还原
             if (tempObj.newsKeywords !== '') {
                 this.meetingTagArray = data.keywords.split(',')
