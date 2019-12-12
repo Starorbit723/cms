@@ -158,6 +158,8 @@
                                     <span style="width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;">主题标题：{{subItem.themTitle}}</span>
                                     <span style="width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;">模块标题：{{subItem.modelTitle}}</span>
                                     <span style="width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;">id:{{subItem.id}}&nbsp;&nbsp;&nbsp;&nbsp;weight: {{subItem.weight}}&nbsp;&nbsp;&nbsp;&nbsp;priority：{{subItem.priority}}</span>
+                                    <!-- <span style="width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;" v-if="subItem.type == 0">类型： 嘉宾演讲</span> -->
+                                    <!-- <span style="width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;" v-if="subItem.type == 1">类型： 圆桌论坛</span> -->
                                     <div>
                                         <el-button type="text" size="mini" @click="addOrEditMeetingDetail(subItem)">编辑</el-button>
                                         <el-button type="text" size="mini" @click="addOrEditMeetingModel(1,item,subIndex)">属性</el-button>

@@ -748,20 +748,14 @@ var vm = new Vue({
             }
             var dataArr = (temp1.children).concat(temp2.children)
             var data = []
-            var singleData = {
-                id: '',
-                weight: ''
-            }
-            for(var i = 0; i < dataArr.length; i++) {
+            
+            for(var i = 0; i < dataArr.length; i++) { 
+                let singleData = {}
                 console.log(dataArr[i])
                 singleData.id = dataArr[i].id
                 singleData.weight = dataArr[i].weight
                 console.log(singleData)
                 data.push(singleData)
-                singleData = {
-                    id: '',
-                    weight: ''
-                }
             }
 
             this.batchDelPlace(data)
@@ -1177,6 +1171,7 @@ var vm = new Vue({
         backToMainPage() {
             this.startSearch2(this.currentSearchMeetingliveId, 0)
             this.showChildPage = '2';
+            this.panelContentList = []
         },
         getEditMeetingPanel(id, type) {
             var self = this
