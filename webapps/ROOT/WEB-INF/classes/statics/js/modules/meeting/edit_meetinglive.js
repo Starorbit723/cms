@@ -189,7 +189,6 @@ var vm = new Vue({
         // 提交时出现蒙版
         load() {
         var bgLayer=$("#edit_meetinglive");
-        console.log(bgLayer.height())
         $("<div class=\"bg-mask\"></div>").css({
                 position: "absolute",
                 top: "0",
@@ -229,7 +228,6 @@ var vm = new Vue({
 
          //会议标签改变
         meetingTagChange (val) {
-            // console.log('meetingTagChange',val)
             for (let i = 0; i < this.meetingTagArray.length; i++) {
                 if (this.meetingTagArray[i].length > 20) {
                     let tempArr = JSON.parse(JSON.stringify(this.meetingTagArray))
@@ -757,8 +755,6 @@ var vm = new Vue({
             var jsonString = JSON.stringify(submitData.jsonData);
             var json64 = $.base64.btoa(jsonString);
             submitData.jsonData = json64
-            // console.log(JSON.stringify(submitData))
-            console.log(1234)
             $.ajax({
                 type: "POST",
                 url: reqUrl,

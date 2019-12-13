@@ -60,7 +60,6 @@ var vm = new Vue({
     },
     methods:{
         openUrlMeetingDetailPage(item) {
-            console.log(item)
             if(item.publishStatus == '2') {
                 window.open('https://www.chinaventure.com.cn'+item.reportTopicUrl, "newwindow")
             }
@@ -93,7 +92,6 @@ var vm = new Vue({
 			    dataType: "json",
 			    success: function(res){
 					if(res.code == 200){
-                        console.log(res)
                         self.tableData = res.page.list
                         for (let i = 0; i < self.tableData.length; i++){
 

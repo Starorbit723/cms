@@ -280,7 +280,6 @@ var vm = new Vue({
         // 提交时出现蒙版
         load() {
         var bgLayer=$("#meeting_live");
-        console.log(bgLayer.height())
         $("<div class=\"bg-mask\"></div>").css({
                 position: "absolute",
                 top: "0",
@@ -361,7 +360,6 @@ var vm = new Vue({
                     contentType: "application/json",
                     dataType: "json",
                     success: function(res){
-                        // console.log(res)
                         if(res.code == 200){
                             let data = res.dict
                             self.meetingLiveListForm = data
@@ -386,7 +384,6 @@ var vm = new Vue({
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                // console.log(item)
                 var data = JSON.parse(JSON.stringify(item))
                 data.delStatus = '0'
                 $.ajax({
@@ -509,7 +506,6 @@ var vm = new Vue({
 
         //------------------------------------------编辑页面------------------------------------------------
         editMeetingliveDetail (item) {
-            // console.log(item)
             this.currentSearchMeetingliveId = item.id.toString().trim()
             this.startSearch2(this.currentSearchMeetingliveId, 0)
             this.showChildPage = '2'
@@ -579,7 +575,6 @@ var vm = new Vue({
                                     }
                                 }
                             }
-                            // console.log(arr)
                             self.maxWeight = Number(arr[arr.length-1].weight)
                             var result = [],
                             obj = {},
@@ -642,17 +637,11 @@ var vm = new Vue({
             this.meetingliveDataTemp = []
         },
         testSubmit2 (formName) {
-            // var self = this
-            // self.$refs[formName].validate((valid) => {
-            //     if(valid) {
-                  this.submitCreatEdit2()
-            //     }
-            // })
+            this.submitCreatEdit2()
         },
         // 提交
         submitCreatEdit2 () {
             var self = this
-            // console.log(self.meetinglivePlaceForm)
             if((self.meetinglivePlaceForm.meetingPlaceTitle.trim() == '' && self.meetinglivePlaceForm.meetingNavTitle.trim() !== '') || (self.meetinglivePlaceForm.meetingPlaceTitle.trim() !== '' && self.meetinglivePlaceForm.meetingNavTitle.trim() == '') || (self.meetinglivePlaceForm.meetingPlaceTitle.trim() !== '' && self.meetinglivePlaceForm.meetingPlaceTitle.trim() !== '#' && self.meetinglivePlaceForm.meetingNavTitle.trim() == '#') || (self.meetinglivePlaceForm.meetingPlaceTitle.trim() == '#' && self.meetinglivePlaceForm.meetingNavTitle.trim() !== ''&& self.meetinglivePlaceForm.meetingNavTitle.trim() !== '#')) {
                 self.$message.error('会场标题和导航标题不能为空，且必须同时存在，若都无请填写"#"')
                 return
@@ -669,7 +658,6 @@ var vm = new Vue({
                 var data = data1
                 var reqUrl = '/meetingReport/save'
             } else if (self.ifCreatOrEditPlace == 'edit') {
-                // console.log(self.tempObj)
                 var arr = self.tempObj.children
                 for(var i = 0; i < arr.length; i++) {
                     arr[i].meetingPlaceTitle = self.meetinglivePlaceForm.meetingPlaceTitle
@@ -745,7 +733,6 @@ var vm = new Vue({
         batchDelPlace(data) {
             var self = this
             var data = JSON.parse(JSON.stringify(data))
-            console.log(data)
             $.ajax({
                 type: "POST",
                 url: "/meetingReport/deleteByList",
@@ -785,10 +772,8 @@ var vm = new Vue({
             
             for(var i = 0; i < dataArr.length; i++) { 
                 let singleData = {}
-                console.log(dataArr[i])
                 singleData.id = dataArr[i].id
                 singleData.weight = dataArr[i].weight
-                console.log(singleData)
                 data.push(singleData)
             }
 
@@ -940,7 +925,6 @@ var vm = new Vue({
         // 删除模块
         delModel(data) {
             var self = this
-            // console.log(data)
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
@@ -1002,7 +986,6 @@ var vm = new Vue({
                 data: JSON.stringify(data),
                 dataType: "json",
                 success: function(res){
-                    // console.log(res)
                     if(res.code == 200){
                         if(res.page.list.length == 0) {
                             self.ifCreatOrEditGuest = 'creat'
