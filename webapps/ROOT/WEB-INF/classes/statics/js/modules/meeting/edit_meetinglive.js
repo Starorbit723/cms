@@ -6,8 +6,6 @@ var vm = new Vue({
             typeOfPage:'creat',
             //图片基础地址
             picBaseUrl:'',
-             //按钮请求开关
-            ajaxController:true,
              //折叠面板组件实例
             activeNames: ['1','2','3','4','5','6','7','8','9','10','11','12'],
             //会议关键词数组
@@ -188,6 +186,24 @@ var vm = new Vue({
         }
     },
     methods: {
+        // 提交时出现蒙版
+        load() {
+        var bgLayer=$("#edit_meetinglive");
+        console.log(bgLayer.height())
+        $("<div class=\"bg-mask\"></div>").css({
+                position: "absolute",
+                top: "0",
+                left: '0',
+                display: "block",
+                width: "100%",
+                height: "100%",
+                background: "rgba(0,0,0,0.2)",
+            }).appendTo(bgLayer);
+        },
+        //取消加载层
+        disLoad() {
+            $(".bg-mask").remove();
+        },
         //链接校验
         validateUrl(value) {
             var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
@@ -616,7 +632,6 @@ var vm = new Vue({
                 pageSize:10
             }
         },
-
         
         // 保存报道专题
         testMeetingLiveInfo (type, formName) {
@@ -631,57 +646,28 @@ var vm = new Vue({
         //新建或修改保存报名专题
         saveMeetingLive(item) {
             var self = this
-            // console.log(self.ajaxController)
             var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
-            if(self.ajaxController) {
-                self.ajaxController = false
-                if (self.typeOfPage == 'creat') {
-                    var reqUrl = '/reportTopic/save'
-                    self.meetingliveForm.publishStatus = '0'
-                } else if (self.typeOfPage == 'edit') {
-                    var reqUrl = '/reportTopic/update'
-                }
+            if (self.typeOfPage == 'creat') {
+                var reqUrl = '/reportTopic/save'
+                self.meetingliveForm.publishStatus = '0'
+            } else if (self.typeOfPage == 'edit') {
+                var reqUrl = '/reportTopic/update'
             }
-
-            // if(self.meetingliveForm.pcLink.trim() !== '') {
-            //     if (self.meetingliveForm.pcLink.trim() == '#') {
-            //         self.meetingliveForm.pcLink = '#'
-            //     } else if(!urlReg.test(self.meetingliveForm.pcLink.trim())) {
-            //         self.$message.error('PC链接格式不正确')
-            //         self.ajaxController = true
-            //         return
-            //     }
-            // } 
-
-            // if(self.meetingliveForm.mLink.trim() !== '') {
-            //     if (self.meetingliveForm.mLink.trim() == '#') {
-            //         self.meetingliveForm.mLink = '#'
-            //     } else if(!urlReg.test(self.meetingliveForm.mLink.trim())) {
-            //         self.$message.error('H5链接格式不正确')
-            //         self.ajaxController = true
-            //         return
-            //     }
-            // } 
-
             if(self.meetingliveForm.pcLink.trim() !== '#') {
                 if (self.meetingliveForm.pcLink.trim() == '') {
                     self.$message.error('PC链接不能为空，暂无链接可填写"#"')
-                    self.ajaxController = true
                     return
                 } else if(!urlReg.test(self.meetingliveForm.pcLink.trim())) {
                     self.$message.error('PC链接格式不正确')
-                    self.ajaxController = true
                     return
                 }
             }
             if(self.meetingliveForm.mLink.trim() !== '#') {
                 if (self.meetingliveForm.mLink.trim() == '') {
                     self.$message.error('H5链接不能为空，暂无链接可填写"#"')
-                    self.ajaxController = true
                     return
                 } else if(!urlReg.test(self.meetingliveForm.mLink.trim())) {
                     self.$message.error('H5链接格式不正确')
-                    self.ajaxController = true
                     return
                 }
             }
@@ -690,21 +676,14 @@ var vm = new Vue({
                 for(let i = 0; i < self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList.length; i++) {
                     if (self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].headSwiperPic.trim() == '') {
                         self.$message.error('楼层01轮播图：您还有未完成的banner图位');
-                        self.ajaxController = true
                         return
                     } 
-                    // if (self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim() == ''){
-                    //     this.$message.error('楼层01轮播图：PC链接不能为空,若无链接可填写"#"');
-                    //     self.ajaxController = true
-                    //     return
-                    // } else 
                     if (self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim() !== ''){
                         if(self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim() == '#'){
                             self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].picUrlPc == '#'
                         } else {
                             if(!urlReg.test(self.meetingliveForm.jsonData.headPicBanner.headSwiperPicList[i].picUrlPc.trim())){
                                 this.$message.error('楼层01轮播图：PC链接格式不正确');
-                                self.ajaxController = true
                                 return
                             }
                         }
@@ -713,49 +692,34 @@ var vm = new Vue({
                 for(let k = 0; k < self.meetingliveForm.jsonData.headPicBanner.headArticleList.length; k++) {
                     if(self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].headArticlePic.trim() == ''){
                         self.$message.error('楼层01头条文字区：你还有图片未上传');
-                        self.ajaxController = true
                         return 
                     }
-                    // if (self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlPc.trim() == ''){
-                    //     this.$message.error('楼层01头条文字区：PC链接不能为空,若无链接可填写"#"');
-                    //     self.ajaxController = true
-                    //     return
-                    // } else 
                     if (self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlPc.trim() !== ''){
                         if(self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlPc.trim() == '#'){
                             self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlPc == '#'
                         } else {
                             if(!urlReg.test(self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlPc.trim())){
                                 this.$message.error('楼层01头条文字区：PC链接格式不正确');
-                                self.ajaxController = true
                                 return
                             }
                         }
                     }
-                    // if (self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlPc.trim() == ''){
-                    //     this.$message.error('楼层01头条文字区：H5链接不能为空,若无链接可填写"#"');
-                    //     self.ajaxController = true
-                    //     return
-                    // } else 
                     if (self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlMobile.trim() !== ''){
                         if(self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlMobile.trim() == '#'){
                             self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlMobile == '#'
                         } else {
                             if(!urlReg.test(self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].picUrlMobile.trim())){
                                 self.$message.error('楼层01头条文字区：H5链接格式不正确');
-                                self.ajaxController = true
                                 return
                             }
                         }
                     }
                     if(self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].articleTitle.trim() == '') {
                         self.$message.error('楼层01头条文字区：标题不能为空');
-                        self.ajaxController = true
                         return
                     }
                     if(self.meetingliveForm.jsonData.headPicBanner.headArticleList[k].articleDesc.trim() == '') {
                         self.$message.error('楼层01头条文字区：摘要不能为空');
-                        self.ajaxController = true
                         return
                     }
 
@@ -765,61 +729,15 @@ var vm = new Vue({
                 var calendar = self.meetingliveForm.jsonData.calendar
                 if (calendar.floorTitle.trim() == '' || calendar.navTitle.trim() == '') {
                     self.$message.error('楼层03：标题和导航标题均不能为空');
-                    self.ajaxController = true
                     return
                 }
-
-                // if (calendar.floorTitle.trim() == '' && calendar.navTitle.trim() !== '') {
-                //     self.$message.error('楼层03：标题和导航标题均不能为空，若无请填写"#"');
-                //     self.ajaxController = true
-                //     return
-                // } else if (calendar.floorTitle.trim() !== '' && calendar.navTitle.trim() == '') {
-                //     self.$message.error('楼层03：标题和导航标题均不能为空，若无请填写"#"');
-                //     self.ajaxController = true
-                //     return
-                // } else if (calendar.floorTitle.trim() == '' && calendar.navTitle.trim() == '') {
-                //     self.$message.error('楼层03：标题和导航标题均不能为空，若无请填写"#"');
-                //     self.ajaxController = true
-                //     return
-                // } else if (calendar.floorTitle.trim() == '#' && calendar.navTitle.trim() !== '#') {
-                //     self.$message.error('楼层03：标题和导航标题均不能为空，若无请填写"#"');
-                //     self.ajaxController = true
-                //     return
-                // } else if (calendar.floorTitle.trim() !== '#' && calendar.navTitle.trim() == '#') {
-                //     self.$message.error('楼层03：标题和导航标题均不能为空，若无请填写"#"');
-                //     self.ajaxController = true
-                //     return
-                // }
             }
             if(self.meetingliveForm.jsonData.cooperation.isShowFloor) {
                 var cooperation = self.meetingliveForm.jsonData.cooperation
                 if(cooperation.floorTitle.trim() == '' || cooperation.navTitle.trim() == '') {
                     self.$message.error('楼层04：标题和导航标题均不能为空');
-                    self.ajaxController = true
                     return
                 }
-
-                // if (cooperation.floorTitle.trim() == '' && cooperation.navTitle.trim() !== '') {
-                //     self.$message.error('楼层04：标题和导航标题均不能为空，若无请填写"#"');
-                //     self.ajaxController = true
-                //     return
-                // } else if (cooperation.floorTitle.trim() !== '' && cooperation.navTitle.trim() == '') {
-                //     self.$message.error('楼层04：标题和导航标题均不能为空，若无请填写"#"');
-                //     self.ajaxController = true
-                //     return
-                // } else if (cooperation.floorTitle.trim() == '' && cooperation.navTitle.trim() == '') {
-                //     self.$message.error('楼层04：标题和导航标题均不能为空，若无请填写"#"');
-                //     self.ajaxController = true
-                //     return
-                // } else if (cooperation.floorTitle.trim() == '#' && cooperation.navTitle.trim() !== '#') {
-                //     self.$message.error('楼层04：标题和导航标题均不能为空，若无请填写"#"');
-                //     self.ajaxController = true
-                //     return
-                // } else if (cooperation.floorTitle.trim() !== '#' && cooperation.navTitle.trim() == '#') {
-                //     self.$message.error('楼层04：标题和导航标题均不能为空，若无请填写"#"');
-                //     self.ajaxController = true
-                //     return
-                // }
             }
 
             var submitData = JSON.parse(JSON.stringify(self.meetingliveForm))
@@ -840,12 +758,19 @@ var vm = new Vue({
             var json64 = $.base64.btoa(jsonString);
             submitData.jsonData = json64
             // console.log(JSON.stringify(submitData))
+            console.log(1234)
             $.ajax({
                 type: "POST",
                 url: reqUrl,
                 contentType: "application/json",
                 data: JSON.stringify(submitData),
                 dataType: "json",
+                beforeSend: function () {
+                    self.load();
+                },
+                complete: function () {
+                   self.disLoad();
+                },
                 success: function(res){
                     if(res.code == 200){
                         self.$message.success('保存成功')
@@ -868,7 +793,6 @@ var vm = new Vue({
                             }
                         }  
                     }else{
-                        self.ajaxController = true
                         mapErrorStatus(res)
                         vm.error = true;
                         vm.errorMsg = res.msg;
@@ -893,13 +817,18 @@ var vm = new Vue({
                 contentType: "application/json",
                 data: JSON.stringify(_data),
                 dataType: "json",
+                beforeSend: function () {
+                    self.load();
+                },
+                complete: function () {
+                   self.disLoad();
+                },
                 success: function(res){
                     if(res.code == 200){
                         self.$message.success('发布成功')
                         setCookie ('createditmeetinglive', '', 1) 
                         window.parent.location.href = '/index.html#modules/meeting/meetinglivepage_list.html'
                     }else{
-                        self.ajaxController = true
                         mapErrorStatus(res)
                         vm.error = true;
                         vm.errorMsg = res.msg;

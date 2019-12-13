@@ -277,6 +277,28 @@ var vm = new Vue({
 
     },
     methods: {
+        // 提交时出现蒙版
+        load() {
+        var bgLayer=$("#meeting_live");
+        console.log(bgLayer.height())
+        $("<div class=\"bg-mask\"></div>").css({
+                position: "absolute",
+                top: "0",
+                left: '0',
+                display: "block",
+                width: "100%",
+                height: "100%",
+                background: "rgba(0, 0, 0, 0.2)",
+            }).appendTo(bgLayer);
+        },
+        //取消加载层
+        disLoad() {
+            $(".bg-mask").remove();
+      
+        },
+
+
+
         // 开始搜索列表
         startSearch(type) {
             var self = this
@@ -443,6 +465,12 @@ var vm = new Vue({
                 contentType: "application/json",
                 data: JSON.stringify(data),
                 dataType: "json",
+                beforeSend: function () {
+                    self.load();
+                },
+                complete: function () {
+                   self.disLoad();
+                },
                 success: function(res) {
                     if(res.code == 200) {
                         self.$message.success('保存成功')
@@ -656,6 +684,12 @@ var vm = new Vue({
                 contentType: "application/json",
                 data: JSON.stringify(data),
                 dataType: "json",
+                beforeSend: function () {
+                    self.load();
+                },
+                complete: function () {
+                   self.disLoad();
+                },
                 success: function(res) {
                     if(res.code == 200) {
                         self.$message.success('保存成功')
@@ -827,6 +861,12 @@ var vm = new Vue({
                 contentType: "application/json",
                 data: JSON.stringify(data),
                 dataType: "json",
+                beforeSend: function () {
+                    self.load();
+                },
+                complete: function () {
+                   self.disLoad();
+                },
                 success: function(res) {
                     if(res.code == 200) {
                         self.$message.success('保存成功')
@@ -995,6 +1035,11 @@ var vm = new Vue({
         submitCreatEdit4 () {
             var self = this
             var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
+            if (self.ifCreatOrEditGuest == 'creat') {
+                var reqUrl = '/speech/save'
+            } else if (self.ifCreatOrEditGuest == 'edit') {
+                var reqUrl = '/speech/update'
+            } 
             if(self.meetingGuestForm.pcLink.trim() !== '#') {
                 if (self.meetingGuestForm.pcLink.trim() == '') {
                     self.$message.error('链接不能为空，暂无链接可填写"#"')
@@ -1015,22 +1060,25 @@ var vm = new Vue({
             }
             self.meetingGuestForm.meetingReportId = self.tempMeetingReportId
             var data = JSON.parse(JSON.stringify(self.meetingGuestForm))
-            if (self.ifCreatOrEditGuest == 'creat') {
-                var reqUrl = '/speech/save'
-            } else if (self.ifCreatOrEditGuest == 'edit') {
-                var reqUrl = '/speech/update'
-            }
+           
             $.ajax({
                 type: "POST",
                 url: reqUrl,
                 contentType: "application/json",
                 data: JSON.stringify(data),
                 dataType: "json",
+                beforeSend: function () {
+                    self.load();
+                },
+                complete: function () {
+                   self.disLoad();
+                },
                 success: function(res) {
                     if(res.code == 200) {
                         self.$message.success('保存成功')
                         self.startSearch2(self.currentSearchMeetingliveId, 0)
                         self.closeCreatOrEditMeetingGuest('meetingGuestForm')
+                        
                     } else {
                         mapErrorStatus(res)
                         vm.error = true;
@@ -1284,7 +1332,6 @@ var vm = new Vue({
                                                 ifHaveBigImg = true  
                                             }  
                                         }  
-
                                         if(ifHaveBigImg) {
                                             self.$message.error('场景大图已经存在，设置新场景大图请删除原来场景大图')
                                             return
@@ -1307,10 +1354,6 @@ var vm = new Vue({
                                     }
                                     
                                 }
-
-
-
-                                
                             }else{
                                 mapErrorStatus(res)
                                 vm.error = true;
@@ -1358,6 +1401,12 @@ var vm = new Vue({
                 contentType: "application/json",
                 data: JSON.stringify(data),
                 dataType: "json",
+                beforeSend: function () {
+                    self.load();
+                },
+                complete: function () {
+                   self.disLoad();
+                },
                 success: function(res) {
                     if(res.code == 200) {
                         self.$message.success('保存成功')

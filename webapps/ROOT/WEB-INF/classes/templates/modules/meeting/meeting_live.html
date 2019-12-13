@@ -726,6 +726,16 @@
                 </div>
             </el-dialog>
             <!--内容图库弹出层结束-->
+
+
+            <!-- <el-dialog :visible.sync="bgLayer" class="bg_layer">123 -->
+                   
+                <!-- <div>正在操作，请等待...</div> -->
+               
+            <!-- </el-dialog> -->
+
+
+
         </div>
     </div>
 
@@ -804,7 +814,25 @@
     height: 100px;
     display: block;
 }
-
+.bg_layer {
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.2);
+}
+/* .bg_layer div {
+    width: 450px;
+    height: 250px;
+    margin: 50px auto;
+    border: 1px solid #fff;
+    color: #000;
+    pointer-events: none;
+} */
+/* .el-dialog {
+    display: none;
+} */
+#meeting_live {
+    position: relative;
+}
 
 
 </style>
