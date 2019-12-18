@@ -248,7 +248,7 @@ var vm = new Vue({
         }
         
     },
-    created(){
+    created () {
         console.log('location',window.location.href)
         if (window.location.href.indexOf('chinaventure.com.cn') !== -1 || window.location.href.indexOf('117.78.28.103') !== -1) {
             console.log('正式环境')
