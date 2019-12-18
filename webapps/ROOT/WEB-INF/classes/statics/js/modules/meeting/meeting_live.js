@@ -296,8 +296,6 @@ var vm = new Vue({
       
         },
 
-
-
         // 开始搜索列表
         startSearch(type) {
             var self = this
