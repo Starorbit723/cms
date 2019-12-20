@@ -51,18 +51,24 @@
                 <!--表格查询结果区-->
                 <div class="cv_content_square">
                     <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
-                        <el-table-column prop="meetingAgendaId" label="日程编号" ></el-table-column>
+                        <el-table-column prop="meetingAgendaId" label="日程编号" width="90"></el-table-column>
                         <el-table-column prop="meetingAgendaMeetingId" width="110" label="所属会议编号" >
                             <template slot-scope="scope">
                                 <div v-if="scope.row.meetingAgendaMeetingId == '-1'"></div>
                                 <div v-else v-text="scope.row.meetingAgendaMeetingId"></div>
                             </template>
                         </el-table-column>
+                        <el-table-column prop="meetingAgendaReportTopicId" width="150" label="所属报道专题编号" >
+                            <template slot-scope="scope">
+                                <div v-if="scope.row.meetingAgendaReportTopicId == '-1'"></div>
+                                <div v-else v-text="scope.row.meetingAgendaReportTopicId"></div>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="meetingAgendaTitle" label="会议日程标题" ></el-table-column>
                         <el-table-column prop="userName" label="创建人" width="90"></el-table-column>
                         <el-table-column prop="modUserName" label="修改人" width="90"></el-table-column>
-                        <el-table-column prop="meetingAgendaCrtTime" label="创建时间" width="200"></el-table-column>
-                        <el-table-column prop="meetingAgendaModTime" label="修改时间" width="200"></el-table-column>
+                        <el-table-column prop="meetingAgendaCrtTime" label="创建时间" width="90"></el-table-column>
+                        <el-table-column prop="meetingAgendaModTime" label="修改时间" width="90"></el-table-column>
                         <el-table-column label="操作" width="100" fixed="right">
                             <template slot-scope="scope">
                                 <el-button type="text" size="small" @click="addOrEditCalendar(1,scope.row)">修改</el-button>
@@ -253,6 +259,7 @@
                                                         <el-input
                                                             clearable
                                                             type="text"
+                                                            :disabled="true"
                                                             placeholder="条目标题"
                                                             v-model="item5.labelText"
                                                             auto-complete="off"></el-input>

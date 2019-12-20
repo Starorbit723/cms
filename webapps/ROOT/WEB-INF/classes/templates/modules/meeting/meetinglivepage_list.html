@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>会议页面列表</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">报道专题管理</div>
+    <div id="meetinglivepage_list" class="cv_page_content">
+        <!--列表搜索区-->
+        <div class="cv_content_square">
+            <el-form :model="searchForm" status-icon class="demo-ruleForm" label-position="right">
+                <el-row class="el-row-h60">
+                    <el-col :span="8">
+                        <el-form-item label="报道专题名称" style="margin:0;" label-width="30%" >
+                            <el-input
+                            clearable
+                            type="text"
+                            maxlength="50"
+                            v-model="searchForm.name"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="创建时间" style="margin:0;" label-width="20%" >
+                            <el-date-picker
+                                clearable
+                                style="width:100%;"
+                                v-model="timeRange"
+                                type="datetimerange"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                                value-format="yyyy-MM-dd HH:mm:ss"
+                                :default-time="['00:00:00', '00:00:00']">
+                            </el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" style="width:100%" @click="startSearch(0)">搜索</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+        </div>
+
+        <!--功能按钮区-->
+        <el-row class="el-row-h50">
+            <el-col :span="4">
+                <el-button type="primary" style="width:100%" icon="el-icon-plus" @click="creatMeeting">新建报道专题</el-button>
+            </el-col>
+        </el-row>
+
+        <!--表格查询结果区-->
+        <div class="cv_content_square">
+            <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
+                <el-table-column prop="id" label="报道专题编号" width="110"></el-table-column>
+                <el-table-column prop="name" label="报道专题名称">
+                    <template v-if="scope.row.name" slot-scope="scope">
+                        <div v-text="scope.row.name" @click="openUrlMeetingDetailPage(scope.row)" class="meetingDeatilStyle"></div>
+                    </template>
+                </el-table-column>
+                <!-- <el-table-column prop="pcUrl" label="PC页面地址" width="140"></el-table-column>
+                <el-table-column prop="mobileUrl" label="H5页面地址" width="140"></el-table-column> -->
+                <el-table-column prop="updateAt" label="更新时间" width="180"></el-table-column>
+                <el-table-column prop="modUserName" label="更新人" width="110"></el-table-column>
+                <el-table-column prop="publishStatus" label="状态"  width="150">
+                    <template slot-scope="scope">
+                        <el-tag v-if="scope.row.publishStatus == 0">未发布</el-tag>
+                        <el-tag v-if="scope.row.publishStatus == 1" type="warning">待发布</el-tag>
+                        <el-tag v-if="scope.row.publishStatus == 2" type="success">已发布</el-tag>
+                        <el-tag v-if="scope.row.publishStatus == 3" type="danger">发布失败 </el-tag>
+                        <el-tag v-if="scope.row.publishStatus == 4" type="warning">待删除</el-tag>
+                        <el-tag v-if="scope.row.publishStatus == 5" type="danger">已删除</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" width="140" fixed="right">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" @click="editThisMeeting(scope.row)">编辑</el-button>
+                        <el-button type="text" size="small" v-if="scope.row.publishStatus == 0" @click="deleteThisMeetingLive(scope.row)">删除</el-button>
+                        <el-button type="text" v-if="scope.row.publishStatus == '0' || scope.row.publishStatus == 3" size="small" @click="onlineThisMeetingLive(scope.row)">发布</el-button>
+                        <el-button type="text" size="small" v-if="scope.row.publishStatus == 2" @click="offlineThisMeetingLive(scope.row)">下线</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+
+        <!--分页器-->
+        <div class="cv_page_zone">
+            <el-pagination
+                @current-change="handleCurrentChange"
+                :current-page="pagination1.currPage"
+                :page-size="10"
+                layout="total, prev, pager, next, jumper"
+                :total="pagination1.totalCount">
+            </el-pagination>
+        </div>
+        
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.min.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.base64.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/meeting/meetinglivepage_list.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+<style>
+    .meetingDeatilStyle {
+        color: #606266
+    }
+    .meetingDeatilStyle:hover {
+        color: #175CE9;
+        cursor: pointer;
+        text-decoration: underline;
+    }
+</style>
+</html>

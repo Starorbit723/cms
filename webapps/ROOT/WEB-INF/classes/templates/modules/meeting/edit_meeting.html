@@ -985,8 +985,7 @@
                                 <el-switch
                                     v-model="meetingForm.meetingJsonData.guestOpinion.isShowDefaultModel"
                                     active-text="显示"
-                                    inactive-text="隐藏"
-                                    @change="guestDefaultChange">
+                                    inactive-text="隐藏">
                                 </el-switch>
                             </el-form-item>
                         </el-col>
@@ -2038,7 +2037,7 @@
             <!--分页器-->
             <div class="cv_page_zone">
                 <el-pagination
-                    @current-change="handleCurrentChange2"
+                    @current-change="handleCurrentChange"
                     :current-page="pagination2.currPage"
                     :page-size="pagination2.pageSize"
                     layout="total, prev, pager, next, jumper"

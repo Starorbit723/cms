@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+
+<title>高清组图管理</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">会场报道管理</div>
+    <div id="meeting_live" class="cv_page_content">
+        <div class="cv_content_square">
+            <!------------------列表开始------------------>
+            <div v-show="showChildPage == 0">
+                <div class="cv_content_square">
+                    <el-form :model="searchForm" status-icon class="demo-ruleForm" style="width: 100%"  @submit.native.prevent>
+                        <el-row class="el-row-h60">
+                            <el-col :span="8">
+                                <el-form-item label="所属报道专题编号" label-width="40%" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    v-model="searchForm.reportTopicId"
+                                    placeholder="输入所属报道专题编号"
+                                    type="text"
+                                    auto-complete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="名称" label-width="25%" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    v-model="searchForm.name"
+                                    placeholder="输入名称"
+                                    type="text"
+                                    auto-complete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="3" :offset="1" class="el-row-h40">
+                                <el-button type="primary" icon="el-icon-search" style="width:100%" @click="startSearch(0)">搜索</el-button>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                </div>
+                <!--功能按钮区-->
+                <el-row class="el-row-h50">
+                    <el-col :span="4">
+                        <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addOrEditMeetinglive(0)">新建会场报道</el-button>
+                    </el-col>
+                </el-row>
+                <!--表格查询结果区-->
+                <div class="cv_content_square">
+                    <el-table :data="tableData" style="width: 100%; margin: 10px auto;" stripe>
+                        <el-table-column prop="id"  label="id"></el-table-column>
+                        <el-table-column prop="name"  label="名称"></el-table-column>
+                        <el-table-column prop="reportTopicId" width="160" label="所属报道专题编号">
+                            <template slot-scope="scope">
+                                <div v-if="scope.row.reportTopicId == '-1'"></div>
+                                <div v-else v-text="scope.row.reportTopicId"></div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="updateAt" width="200" label="更新时间"></el-table-column>
+                        <el-table-column prop="modUserName" label="更新人" width="180"></el-table-column>
+                        <el-table-column label="操作" width="180" fixed="right">
+                            <template slot-scope="scope">
+                                <el-button type="text" size="small" @click="addOrEditMeetinglive(1,scope.row)">属性</el-button>
+                                <el-button type="text" size="small" @click="editMeetingliveDetail(scope.row)">编辑</el-button>
+                                <el-button v-if="scope.row.reportTopicId == '-1' || scope.row.reportTopicId == ''" type="text" size="small" @click="deleteThisMeetinglive(scope.row)">删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+                <!--分页器-->
+                <div class="cv_page_zone">
+                    <el-pagination
+                        @current-change="handleCurrentChange"
+                        :current-page="pagination1.currPage"
+                        :page-size="pagination1.pageSize"
+                        layout="total, prev, pager, next, jumper"
+                        :total="pagination1.totalCount">
+                    </el-pagination>
+                </div>
+            </div>
+            <!------------------列表结束------------------>
+
+            
+            <!------------------新建会场报道开始------------------>
+            <div v-show="showChildPage == 1">
+                <div class="cv_content_square">
+                    <el-form :model="meetingLiveListForm" :rules="meetingLiveListFormRules" ref="meetingLiveListForm" label-position="left" status-icon class="demo-ruleForm" label-width="13%" label-position="right">
+                        <el-row class="el-row-h70">
+                            <el-col :span="18">
+                                <el-form-item label-width="20%" prop="reportTopicId" label="所属报道专题编号" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    type="text"
+                                    v-model="meetingLiveListForm.reportTopicId"
+                                    auto-complete="off"
+                                    :disabled="true"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="18">
+                                <el-form-item label="名称" label-width="20%" prop="name" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="36"
+                                        placeholder="请输入名称"
+                                        v-model="meetingLiveListForm.name"
+                                        auto-complete="off"
+                                        >
+                                        <template slot="append">限制36个字</template>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                    
+                    <el-row style="margin-top: 30px">
+                        <el-col class="el-row-h40" :span="2">
+                            <el-button type="primary" style="width: 100%" @click="testSubmit('meetingLiveListForm')">保存</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="2" :offset="1">
+                            <el-button type="primary" style="width: 100%" @click="closeCreatOrEdit('meetingLiveListForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </div>
+            </div>
+            <!------------------新建会场报道结束------------------>
+
+
+            <!-----------------编辑会场报道列表开始 --------------->
+            <div v-show="showChildPage == 2">
+                <!--功能按钮区-->
+                <el-row class="el-row-h70">
+                    <el-col :span="4">
+                        <el-button type="primary" style="width:100%" icon="el-icon-plus" @click="addOrEditNewPlace(0)">创建会场</el-button>
+                    </el-col>
+                    <el-col :span="4" :offset="16">
+                        <el-button style="width:100%" @click="backToMeetingliveList">返回会场列表</el-button>
+                    </el-col>
+                </el-row>
+                <div class="meetinglive_tree_container">
+                    <div class="meetingPlace" v-for="(item, index) in meetingliveDataTemp">
+                        <div>
+                            <span class="custom-tree-node">
+                                <span style="max-width:700px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 0, 0);font-weight: 700;"  v-text="'会场：'+ item.meetingPlaceTitle"></span>
+                                <div>
+                                    <el-button type="text" size="mini" @click="addOrEditMeetingModel(0,item,index)">添加</el-button>
+                                    <el-button type="text" size="mini" @click="addOrEditNewPlace(item)">属性</el-button>
+                                    <el-button type="text" size="mini" @click="delThisMeetingPlace(item)">删除</el-button>
+                                    <el-button type="text" size="mini" :disabled="index == 0" @click="MeetingPlaceMoveUp(index, item)">上移</el-button>
+                                </div>
+                            </span>
+                            <div v-if="item.children" v-for="(subItem, subIndex) in item.children">
+                                <span class="custom-tree-node2" >
+                                    <span style="width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;" v-text="'主题标题：'+ subItem.themTitle"></span>
+                                    <span style="width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;" v-text="'模块标题：'+ subItem.modelTitle"></span>
+                                    <!-- <span style="width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;">id:{{subItem.id}}&nbsp;&nbsp;&nbsp;&nbsp;weight: {{subItem.weight}}&nbsp;&nbsp;&nbsp;&nbsp;priority：{{subItem.priority}}</span> -->
+                                    <span style="width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;" v-if="subItem.type == 0" v-text="'类型： 嘉宾演讲'"></span>
+                                    <span style="width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;" v-if="subItem.type == 1" v-text="'类型： 圆桌论坛'"></span>
+                                    <div>
+                                        <el-button type="text" size="mini" @click="addOrEditMeetingDetail(subItem)">编辑</el-button>
+                                        <el-button type="text" size="mini" @click="addOrEditMeetingModel(1,item,subIndex)">属性</el-button>
+                                        <el-button type="text" size="mini" @click="delMeetingModel(item, subIndex)">删除</el-button>
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <!--分页器-->
+                    <div style="display: none" class="cv_page_zone">
+                        <el-pagination
+                            :current-page="pagination2.currPage"
+                            :page-size="pagination2.pageSize"
+                            layout="total, prev, pager, next, jumper"
+                            :total="pagination2.totalCount">
+                        </el-pagination>
+                    </div>
+                </div>
+            </div>
+
+            <!-----------------编辑会场报道列表结束 --------------->
+            
+
+            <!---------------- 创建会场开始 ---------------------->
+            <div v-show="showChildPage == 3">
+                <div class="cv_content_square">
+                    <el-form :model="meetinglivePlaceForm" :rules="meetinglivePlaceFormRules" ref="meetinglivePlaceForm" label-position="left" status-icon class="demo-ruleForm" label-width="13%" label-position="right">
+                        <el-row class="el-row-h70">
+                            <el-col :span="18">
+                                <el-form-item label="会场标题" label-width="10%" prop="meetingPlaceTitle" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="36"
+                                        placeholder="会场标题"
+                                        v-model="meetinglivePlaceForm.meetingPlaceTitle"
+                                        auto-complete="off"
+                                        >
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="9">
+                                <el-form-item label="导航标题" label-width="20%" prop="meetingNavTitle" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="10"
+                                        placeholder="导航标题"
+                                        v-model="meetinglivePlaceForm.meetingNavTitle"
+                                        auto-complete="off"
+                                        >
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="9">
+                                <el-form-item label="类型" prop="type" label-width="20%" style="margin:0;">
+                                    <el-select v-model="meetinglivePlaceForm.type" :disabled="ifEdit" style="width:100%;">
+                                        <el-option
+                                        v-for="item in options"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="9">
+                                <el-form-item label="权重" label-width="20%" prop="weight" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="3"
+                                        :disabled = "true"
+                                        v-model="meetinglivePlaceForm.weight"
+                                        auto-complete="off"
+                                        >
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                    
+                    <el-row style="margin-top: 30px">
+                        <el-col class="el-row-h40" :span="2">
+                            <el-button type="primary" style="width: 100%" @click="testSubmit2('meetinglivePlaceForm')">保存</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="2" :offset="1">
+                            <el-button type="primary" style="width: 100%" @click="closeCreatOrEditMeetinglivePlace('meetinglivePlaceForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </div>
+            </div>
+            <!---------------- 创建会场结束 ---------------------->
+
+
+            <!---------------- 创建主题和模块开始 ---------------------->
+            <div v-show="showChildPage == 4">
+                <div class="cv_content_square">
+                    <el-form :model="meetinglivePlaceForm" :rules="meetinglivePlaceFormRules" ref="meetinglivePlaceForm" label-position="left" status-icon class="demo-ruleForm" label-width="13%" label-position="right">
+                        <el-row class="el-row-h70">
+                            <el-col :span="18">
+                                <el-form-item label="主题标题" label-width="10%" prop="themTitle" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="36"
+                                        placeholder="主题标题"
+                                        v-model="meetinglivePlaceForm.themTitle"
+                                        auto-complete="off"
+                                        >
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="18">
+                                <el-form-item label="模块标题" label-width="10%" prop="modelTitle" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="36"
+                                        placeholder="模块标题"
+                                        v-model="meetinglivePlaceForm.modelTitle"
+                                        auto-complete="off"
+                                        >
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="9">
+                                <el-form-item label="类型" prop="type" label-width="20%" style="margin:0;">
+                                    <el-select v-model="meetinglivePlaceForm.type" :disabled="ifEdit" style="width:100%;">
+                                        <el-option
+                                        v-for="item in options"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="9">
+                                <el-form-item label="权重" label-width="20%" prop="priority" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="3"
+                                        v-model="meetinglivePlaceForm.priority"
+                                        auto-complete="off"
+                                        >
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                    
+                    <el-row style="margin-top: 30px">
+                        <el-col class="el-row-h40" :span="2">
+                            <el-button type="primary" style="width: 100%" @click="testSubmit3('meetinglivePlaceForm')">保存</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="2" :offset="1">
+                            <el-button type="primary" style="width: 100%" @click="closeCreatOrEditMeetingliveModel('meetinglivePlaceForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </div>
+            </div>
+            <!---------------- 创建主题和模块结束 ---------------------->
+
+
+            <!------------------ 创建嘉宾演讲模块开始 ----------------------->
+            <div v-show="showChildPage == 5">
+                <div class="cv_content_square">
+                    <el-form :model="meetingGuestForm" :rules="meetingGuestFormRules" ref="meetingGuestForm" label-position="left" status-icon class="demo-ruleForm"  label-position="right">
+                        <el-row class="el-row-h120">
+                            <el-col :span="11">
+                                <el-form-item label="人物头像" prop="img" label-width="20%" style="margin:0;">
+                                    <div class="fengmian_show" @click="chooseContentImg(0)">
+                                        <img v-if="meetingGuestForm.img" :src="meetingGuestForm.img" class="avatar">
+                                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                    </div>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="11" :offset="2">
+                                <el-form-item  prop="position" label-width="15%" label="职位" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    type="text"
+                                    maxlength="50"
+                                    placeholder="请输入职位"
+                                    v-model="meetingGuestForm.position"
+                                    auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="11">
+                                <el-form-item label="名称" label-width="15%" prop="name" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="50"
+                                        placeholder="请输入名称"
+                                        v-model="meetingGuestForm.name"
+                                        auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="11" :offset="2">
+                                <el-form-item label="公司" label-width="15%" prop="company" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="50"
+                                        placeholder="请输入公司"
+                                        v-model="meetingGuestForm.company"
+                                        auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="24">
+                                <el-form-item label="标题" label-width="7%" prop="title" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="36"
+                                        v-model="meetingGuestForm.title"
+                                        auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h110">
+                            <el-col :span="24">
+                                <el-form-item label="摘要" label-width="7%" prop="description" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="textarea"
+                                        :autosize="{ minRows: 3, maxRows: 3}"
+                                        maxlength="100"
+                                        v-model="meetingGuestForm.description"
+                                        auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="24" style="margin-top: 0px;">
+                                <el-form-item label="PC链接" label-width="7%" style="margin:0px;">
+                                    <el-input
+                                        maxlength="300"
+                                        clearable
+                                        type="text"
+                                        placeholder="请输入以Http://开头的链接"
+                                        v-model="meetingGuestForm.pcLink"
+                                        auto-complete="on"
+                                        @change="validateUrl">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="24" style="margin-top: 0px;">
+                                <el-form-item label="H5链接" label-width="7%" style="margin-top: 10px; margin-bottom:0px;">
+                                    <el-input
+                                        maxlength="300"
+                                        clearable
+                                        type="text"
+                                        placeholder="请输入以Http://开头的链接"
+                                        v-model="meetingGuestForm.mlink"
+                                        auto-complete="on"
+                                        @change="validateUrl">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                    
+                    <el-row style="margin-top: 30px">
+                        <el-col class="el-row-h40" :span="2">
+                            <el-button type="primary" style="width: 100%" @click="testSubmit4('meetingGuestForm')">保存</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="2" :offset="1">
+                            <el-button type="primary" style="width: 100%" @click="closeCreatOrEditMeetingGuest('meetingGuestForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </div>
+            </div>
+            <!------------------ 创建嘉宾演讲模块结束 ----------------------->
+
+            <!--------------------- 圆桌论坛模块开始 ---------------------------->
+            <div v-show="showChildPage == 6">
+                <div class="cv_content_square">
+                    <el-row class="el-row-h50" style="font-weight:700; font-size:16px;">
+                        <el-col :span="6">圆桌论坛模块</el-col>
+                    </el-row>
+                </div>
+                <!--功能按钮区-->
+                <el-row class="el-row-h50">
+                        <el-col :span="3">
+                            <el-button type="primary" style="width:100%" icon="el-icon-plus" @click="addNewPanelItem(0)">新建内容</el-button>
+                        </el-col>
+                        <el-col :span="3" :offset="18">
+                            <el-button type="primary" plain style="width:100%" @click="backToMainPage">返回</el-button>
+                        </el-col>
+                    </el-row>
+                <!--表格查询结果区-->
+                <div class="cv_content_square">
+                    <el-table :data="panelContentList" style="width: 100%; margin:10px auto;" stripe>
+                        <!-- <el-table-column prop="id" label="id" width="100"></el-table-column> -->
+                        <el-table-column prop="img" label="图片" width="150">
+                            <template v-if="scope.row.img" slot-scope="scope">
+                                <img style="width:100px;height:70px;" :src="scope.row.img">
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="title" label="标题"></el-table-column>
+                        <el-table-column prop="createAt" width="180"  label="创建时间"></el-table-column>
+                        <el-table-column prop="weight" label="权重" width="150">
+                            <template slot-scope="scope">
+                                <el-input
+                                v-model="scope.row.weight"
+                                class="scaleText"
+                                maxlength="3"
+                                type="text"
+                                auto-complete="off"
+                                :disabled="scope.row.weight == 1000"
+                                @change="scaleChange(scope.row)"></el-input>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="操作" width="150" fixed="right">
+                            <template slot-scope="scope">
+                                <el-button type="text" size="small" @click="addNewPanelItem(scope.row)">编辑</el-button>
+                                <el-button type="text" size="small" @click="deleteThisPanelItem(scope.row)">删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+                <!--分页器-->
+                <div class="cv_page_zone">
+                    <el-pagination
+                        @current-change="handleCurrentChange4"
+                        :current-page="pagination4.currPage"
+                        :page-size="pagination4.pageSize"
+                        layout="total, prev, pager, next, jumper"
+                        :total="pagination4.totalCount">
+                    </el-pagination>
+                </div> 
+            </div>
+            <!--------------------- 圆桌论坛模块结束 ---------------------------->
+
+
+             <!------------------ 创建圆桌论坛模块开始 ----------------------->
+             <div v-show="showChildPage == 7">
+                <div class="cv_content_square">
+                    <el-form :model="meetingPanelForm" :rules="meetingPanelFormRules" ref="meetingPanelForm" label-position="left" status-icon class="demo-ruleForm"  label-position="right">
+                        <el-row class="el-row-h120">
+                            <el-col :span="11">
+                                <el-form-item label="人物头像" prop="img" label-width="20%" style="margin:0;">
+                                    <div class="fengmian_show" @click="chooseContentImg(1)">
+                                        <img v-if="meetingPanelForm.img" :src="meetingPanelForm.img" class="avatar">
+                                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                    </div>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="11" :offset="2">
+                                <el-form-item   class="el-row-h60" prop="weight" label-width="15%" label="权重" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    type="text"
+                                    maxlength="3"
+                                    placeholder="请输入权重"
+                                    v-model="meetingPanelForm.weight"
+                                    :disabled="meetingPanelForm.isBigImg == 1"
+                                    auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+
+                                <el-form-item label="是否为场景大图" prop="isBigImg" style="margin:0;">
+                                    <el-radio-group style="margin-top: 5px;" v-model="meetingPanelForm.isBigImg" @change="ifBigImgChange">
+                                        <el-radio label="1">是</el-radio>
+                                        <el-radio label="0">否</el-radio>
+                                    </el-radio-group>
+                                </el-form-item>
+                                
+                            </el-col>
+                        </el-row>
+
+                        <el-row class="el-row-h70">
+                            <el-col :span="11">
+                                <el-form-item  prop="name" label-width="15%" label="名称" style="margin:0;">
+                                    <el-input
+                                    clearable
+                                    type="text"
+                                    maxlength="50"
+                                    placeholder="请输入名称"
+                                    :disabled="meetingPanelForm.isBigImg == 1"
+                                    v-model="meetingPanelForm.name"
+                                    auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="11">
+                                <el-form-item label="职位" label-width="15%" prop="position" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="50"
+                                        placeholder="请输入职位"
+                                        :disabled="meetingPanelForm.isBigImg == 1"
+                                        v-model="meetingPanelForm.position"
+                                        auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="11" :offset="2">
+                                <el-form-item label="公司" label-width="15%" prop="company" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="50"
+                                        placeholder="请输入公司"
+                                        :disabled="meetingPanelForm.isBigImg == 1"
+                                        v-model="meetingPanelForm.company"
+                                        auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="24">
+                                <el-form-item label="标题" label-width="7%" prop="title" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        maxlength="36"
+                                        v-model="meetingPanelForm.title"
+                                        auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h110">
+                            <el-col :span="24">
+                                <el-form-item label="摘要" label-width="7%" prop="description" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="textarea"
+                                        :autosize="{ minRows: 3, maxRows: 3}"
+                                        maxlength="100"
+                                        :disabled="meetingPanelForm.isBigImg == 1"
+                                        v-model="meetingPanelForm.description"
+                                        auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="24" style="margin-top: 0px;">
+                                <el-form-item label="PC链接" label-width="7%" style="margin:0px;">
+                                    <el-input
+                                        maxlength="300"
+                                        clearable
+                                        type="text"
+                                        placeholder="请输入以Http://开头的链接"
+                                        v-model="meetingPanelForm.pcLink"
+                                        auto-complete="on"
+                                        @change="validateUrl">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="24" style="margin-top: 0px;">
+                                <el-form-item label="H5链接" label-width="7%" style="margin-top: 10px; margin-bottom:0px;">
+                                    <el-input
+                                        maxlength="300"
+                                        clearable
+                                        type="text"
+                                        placeholder="请输入以Http://开头的链接"
+                                        v-model="meetingPanelForm.mlink"
+                                        auto-complete="on"
+                                        @change="validateUrl">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+
+
+                    </el-form>
+                    
+                    <el-row style="margin-top: 30px">
+                        <el-col class="el-row-h40" :span="2">
+                            <el-button type="primary" style="width: 100%" @click="testSubmit5('meetingPanelForm')">保存</el-button>
+                        </el-col>
+                        <el-col class="el-row-h40" :span="2" :offset="1">
+                            <el-button type="primary" style="width: 100%" @click="closeCreatOrEditMeetingPanel('meetingPanelForm')">取消</el-button>
+                        </el-col>
+                    </el-row>
+                </div>
+            </div>
+            <!------------------ 创建圆桌论坛模块结束 ----------------------->
+
+
+            
+            <!--内容图库弹出层开始-->
+            <el-dialog title="内容图库" :visible.sync="showContentImgLib" width="100%" :fullscreen="true" :show-close="false" >
+                <el-form :model="searchContentImgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="16">
+                            <el-form-item label="图片名称" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchContentImgForm.picTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchContentImg(0)">搜索</el-button>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" @click="backToEdit()">返回</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <el-table :data="contentImgTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="contentImgTableData" stripe>
+                    <el-table-column prop="picUrl" label="封面图预览" width="180">
+                        <template v-if="scope.row.picUrl" slot-scope="scope">
+                            <img style="width:80px;height:60px;" :src="scope.row.picUrl">
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="picTitle" label="图片名称" width="250"></el-table-column>
+                    <el-table-column prop="picEditorName" label="修改人" width="120"></el-table-column>
+                    <el-table-column prop="picModTime" label="最后更新时间"></el-table-column>
+                    <el-table-column label="操作" width="100" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="addThisContentImg(scope.row)">添加</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <!--分页器-->
+                <div class="cv_page_zone">
+                    <el-pagination
+                        @current-change="handleCurrentChange3"
+                        :current-page="pagination3.currPage"
+                        :page-size="pagination3.pageSize"
+                        layout="total, prev, pager, next, jumper"
+                        :total="pagination3.totalCount">
+                    </el-pagination>
+                </div>
+            </el-dialog>
+            <!--内容图库弹出层结束-->
+
+
+            <!-- <el-dialog :visible.sync="bgLayer" class="bg_layer">123 -->
+                   
+                <!-- <div>正在操作，请等待...</div> -->
+               
+            <!-- </el-dialog> -->
+
+
+
+        </div>
+    </div>
+
+</body>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.min.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.base64.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/meeting/meeting_live.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+<style>
+.custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    height: 50px;
+    line-height: 50px;
+    cursor: pointer;
+}
+.custom-tree-node2 {
+    flex: 1;
+    display: flex;
+    padding-left: 20px;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    height: 30px;
+    line-height: 30px;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+.custom-tree-node:hover {
+    background: rgb(31, 1, 139);
+   
+}
+.custom-tree-node:hover span {
+    color: #fff !important;
+}
+
+.custom-tree-node2:hover {
+    background: rgb(31, 1, 139);
+}
+.custom-tree-node2:hover span {
+    color: #fff !important;
+}
+
+
+.fengmian_show{
+    width: 100px;
+    height: 100px;
+    border-radius: 5px;
+    border: 1px dashed #d9d9d9;
+    text-align: center;
+    cursor: pointer;
+}
+.avatar-uploader .el-upload {
+    width:100px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+    border-color: #175CE9;
+}
+.avatar-uploader-icon {
+    display: inline-block;
+    font-size: 28px;
+    color: #8c939d;
+    width: 50px;
+    height: 50px;
+    line-height: 100px;
+    text-align: center;
+}
+.fengmian_show:hover{
+    border-color: #175CE9;
+}
+.fengmian_show:hover .avatar-uploader-icon{
+    color: #175CE9;
+}
+.avatar {
+    width: 100px;
+    height: 100px;
+    display: block;
+}
+.bg_layer {
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.2);
+}
+/* .bg_layer div {
+    width: 450px;
+    height: 250px;
+    margin: 50px auto;
+    border: 1px solid #fff;
+    color: #000;
+    pointer-events: none;
+} */
+/* .el-dialog {
+    display: none;
+} */
+#meeting_live {
+    position: relative;
+}
+
+
+</style>
+</html>
