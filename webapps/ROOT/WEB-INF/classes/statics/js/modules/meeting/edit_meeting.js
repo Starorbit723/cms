@@ -521,6 +521,7 @@ var vm = new Vue({
         },
         //选择了某一张封面图片
         addThisCoverImg (item) {
+            console.log(item)
             this.$refs['meetingForm'].clearValidate();
             if (this.chooseImgType == 0) {
                 this.meetingForm.meetingImg = item.picUrl

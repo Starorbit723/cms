@@ -14,7 +14,7 @@ var vm = new Vue({
             id:'',//主键
             name:'',//标题
             description:'',//简介
-            publishStatus:'',//报道专题状态  1：发布(上线) 2：不发布(下线) 3：待发布(草稿) 4删除
+            publishStatus:'',//报道专题状态  0未发布，1是待发布，2是已发布 3是发布失败 4是待删除 5是已删除
             keywords:'', //关键词
             pcImg: '', //pc头图
             pcLink: '', //pc链接
