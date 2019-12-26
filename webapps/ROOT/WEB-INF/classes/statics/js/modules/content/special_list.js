@@ -162,7 +162,6 @@ var vm = new Vue({
             this.searchCoverImg()
         },
         handleCurrentChange4 (val) {
-            console.log(val)
             this.pagination4.currPage = val
             this.startSearchArticle()
         },
@@ -180,7 +179,6 @@ var vm = new Vue({
 			    dataType: "json",
 			    success: function(res){
 					if(res.code == 200){
-                        console.log(res)
                         self.channelOptions = res.channelList
 					}else{
 						mapErrorStatus(res)
@@ -238,7 +236,6 @@ var vm = new Vue({
         // 上线该专题
         onlineThisSpecial(item) {
             var self = this
-            console.log(item)
             var data = {
                 newsSubject: item.subjectId.toString()
             }
@@ -250,7 +247,6 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res) {
                     if(res.code == 200){
-                        console.log(res)
                         if(res.page.list.length == 0) {
                             self.$message.error('请添加新闻后才可以发布')
                         } else {
@@ -270,7 +266,6 @@ var vm = new Vue({
         },
         releaseThisSubject(id) {
             var self = this
-            console.log(id)
             self.$confirm('确实要发布此专题吗?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -449,7 +444,6 @@ var vm = new Vue({
         // },
         //新建修改专题页面切换
         addEditSpecial (item) {
-            console.log(item)
             if(item == 0){
                 this.showChildPage = true
                 this.creatOrEdit = 0
@@ -581,6 +575,7 @@ var vm = new Vue({
         //取消返回添加专题
         cancelAddSpecial () {
             this.clearSpecialInfoForm() //清空表单
+            this.articleData = [] //清空列表
             this.showChildPage = false //关闭页面
             this.creatOrEdit = 0 //还原新增修改判断
         },
@@ -594,7 +589,6 @@ var vm = new Vue({
                 page: self.pagination2.currPage.toString(),
                 limit: self.pagination2.pageSize.toString(),
             })
-            console.log(data)
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
@@ -603,7 +597,6 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res) {
                     if(res.code == 200){
-                        console.log(res)
                         self.articleData = res.page.list
                         for (let i = 0; i < self.articleData.length; i++){
                             self.articleData[i].newsReleaseTime = self.transformTime(self.articleData[i].newsReleaseTime)
