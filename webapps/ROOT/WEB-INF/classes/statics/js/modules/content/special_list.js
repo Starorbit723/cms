@@ -42,6 +42,7 @@ var vm = new Vue({
             subjectId:'',
             subjectTitle:'',
             subjectDesc:'',
+            subjectPriority: '',
             subjectChannel: '',
             subjectHtmlPic:'',//专题图片PC
             subjectAppPic:'',//专题图片PC
@@ -540,7 +541,6 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
-
                     if(self.specialInfoForm.subjectPriority.trim() == '') {
                         self.specialInfoForm.subjectPriority = '-1'
                     } else {
