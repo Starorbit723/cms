@@ -149,6 +149,17 @@ var vm = new Vue({
         this.startSearch()
     },
     methods:{
+        scaleChange (val) {
+            if(val.trim() == '') {
+                this.specialInfoForm.subjectPriority = '-1'
+            } else {
+                var urlReg = /^[0-9]*[1-9][0-9]*$/;
+                var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
+                if(!urlReg.test(val) && !urlReg2.test(val) && val !== '0') {
+                    this.$message.error('权重只能填写整数或0')
+                }
+            }
+        },
         handleCurrentChange (val) {
             this.pagination1.currPage = val
             this.startSearch()
@@ -529,6 +540,17 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
+
+                    if(self.specialInfoForm.subjectPriority.trim() == '') {
+                        self.specialInfoForm.subjectPriority = '-1'
+                    } else {
+                        var urlReg = /^[0-9]*[1-9][0-9]*$/;
+                        var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
+                        if(!urlReg.test(self.specialInfoForm.subjectPriority) && !urlReg2.test(self.specialInfoForm.subjectPriority) && self.specialInfoForm.subjectPriority !== '0') {
+                            this.$message.error('权重只能填写整数或0')
+                            return
+                        }
+                    }
                     if (self.creatOrEdit == 0) {
                         var reqUrl = '/subject/save'
                     } else if (self.creatOrEdit == 1){

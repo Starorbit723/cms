@@ -138,7 +138,8 @@
                                 <el-input
                                 maxlength="5"
                                 v-model="specialInfoForm.subjectPriority"
-                                auto-complete="off">
+                                auto-complete="off"
+                                @change="scaleChange(specialInfoForm.subjectPriority)">
                                 </el-input>
                             </el-form-item>
                         </el-col>
@@ -149,6 +150,7 @@
                                 <div class="avatar-uploader2" @click="openAddCoverImg()">
                                     <img v-if="specialInfoForm.subjectAppPic" :src="specialInfoForm.subjectAppPic" class="avatar2">
                                     <i v-else class="el-icon-plus avatar-uploader-icon2"></i>
+                                    <div v-if="specialInfoForm.subjectAppPic" class="top_layer"></div>
                                 </div>
                             </el-form-item>
                         </el-col>
@@ -365,6 +367,16 @@
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    
+}
+.top_layer {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    height: 105px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
 }
 .avatar-uploader2:hover{
     border-color: #175CE9;
@@ -398,5 +410,6 @@
     cursor: pointer;
     text-decoration: underline;
 }
+
 </style>
 </html>
