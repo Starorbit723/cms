@@ -541,7 +541,7 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
-                    if(self.specialInfoForm.subjectPriority.trim() == '') {
+                    if(self.specialInfoForm.subjectPriority == '') {
                         self.specialInfoForm.subjectPriority = '-1'
                     } else {
                         var urlReg = /^[0-9]*[1-9][0-9]*$/;
@@ -588,6 +588,7 @@ var vm = new Vue({
                 subjectId:'',
                 subjectTitle:'',
                 subjectDesc:'',
+                subjectPriority: '',
                 subjectChannel: '',
                 subjectHtmlPic:'',//专题图片PC
                 subjectAppPic:'',//专题图片PC
