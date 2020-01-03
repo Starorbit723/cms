@@ -89,6 +89,7 @@ updateSignUpUrl: /cms/api/updateCmsSignUp
 updateSignUpInfoUrl: /cms/api/updateCmsSignUpInfo
 updateUserSignInListUrl: /cms/api/updateUserSignInList
 updateMeetingList: /cms/api/updateMeetingList
+updateSubjectList: /cms/api/updateSubjectList
 nginxIp: 119.254.13.83
 nginxCommand: /usr/local/expect/expect_scp
 nginxName: root

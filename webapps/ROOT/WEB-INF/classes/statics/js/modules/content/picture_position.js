@@ -160,6 +160,7 @@ var vm = new Vue({
             showPosimgLib:false,
             searchPosimgForm:{
                 picTitle:'',
+                picTypeId:'-1',
                 picType:'2'//0封面图库 1内容图库 2图为图库 3广告图库
             },
             posimgTableData:[],
@@ -773,6 +774,7 @@ var vm = new Vue({
             this.showPosimgLib = false
             this.searchPosimgForm = {
                 picTitle:'',
+                picTypeId:'-1',
                 picType:'2'//0封面图库 1内容图库 2图为图库 3图为图库
             }
             this.posimgTableData = []
