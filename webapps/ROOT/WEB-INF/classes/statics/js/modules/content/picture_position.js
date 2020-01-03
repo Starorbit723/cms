@@ -708,7 +708,7 @@ var vm = new Vue({
                 picTitle:'',//图片标题
                 picDesc:'',//图片详情
                 picUrl:'',//图片地址
-                picType:'3',//图片分类
+                picType:'2',//图片分类
                 picStatus:'',//图片状态
                 picEditor:'',//图片编辑
                 picTypeId:'',//图位图片编号 type=3 传入
