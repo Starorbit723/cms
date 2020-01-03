@@ -38,7 +38,7 @@ var vm = new Vue({
             picType:'2',//图片分类查询 0封面 1内容  2图位 3广告 4自媒体头像
             starTime:'',
             endTime:'',
-            picTypeId:''//所属图位的id
+            picTypeId:'-1'//所属图位的id
         },
         timeRange:[],
         multipleSelection: [],

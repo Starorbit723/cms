@@ -128,13 +128,13 @@ var vm = new Vue({
                 picColor: "", // 颜色
                 picWeight: '' //图片权重
             }],
-            //新建修改某一个广告条目相关
+            //新建修改某一个条目相关
             posItemForm:{
                 picId:'',//图片编号
                 picTitle:'',//图片标题
                 picDesc:'',//图片详情
                 picUrl:'',//图片地址
-                picType:'3',//图片分类
+                picType:'2',//图片分类
                 picStatus:'',//图片状态
                 picEditor:'',//图片编辑
                 picTypeId:'',//图位图片编号 type=3 传入
