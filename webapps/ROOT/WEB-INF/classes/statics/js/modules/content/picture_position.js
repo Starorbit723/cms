@@ -528,7 +528,7 @@ var vm = new Vue({
         startSearchPoslist (id) {
             var self = this
             var data = {
-                picType:'3',//图位用图
+                picType:'2',//图位用图
                 picTypeId:id.toString(),
                 picStatus: '1',
                 page: '1',
@@ -615,7 +615,6 @@ var vm = new Vue({
                     this.$message.error('权重值为-1到9999之间的整数')
                     return
                 } 
-                
             }
             var modData = {
                 picId: item.picId,
@@ -633,8 +632,6 @@ var vm = new Vue({
                 success: function(res){
                     if(res.code == 200){
                         self.$message.success('保存成功')
-                        // self.closeToContentList('posItemForm')
-                        
                         self.startSearchPoslist(self.saveNowPosId)
                     }else{
                         mapErrorStatus(res)
