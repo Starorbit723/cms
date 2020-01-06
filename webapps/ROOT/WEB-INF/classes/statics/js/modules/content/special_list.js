@@ -792,7 +792,7 @@ var vm = new Vue({
         },
         //打开此专题
         openThisPage(item) {
-            if(item.subjectStatus == 1) {
+            if(item.subjectStatus == 2) {
                 window.open('https://www.chinaventure.com.cn/subject/'+ item.subjectId +'.html', "newwindow")
 
             }

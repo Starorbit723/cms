@@ -44,7 +44,7 @@
                             <img style="width:160px;height:100px;" :src="scope.row.subjectAppPic">
                         </template>
                     </el-table-column>
-                    <el-table-column prop="" label="专题名称">
+                    <el-table-column prop="subjectTitle" label="专题名称">
                         <template slot-scope="scope">
                             <div class="subject_title" v-text="scope.row.subjectTitle" @click="openThisPage(scope.row)"></div>
                         </template>
