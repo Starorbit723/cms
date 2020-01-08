@@ -206,8 +206,8 @@ var vm = new Vue({
         //开始搜索专题列表
         startSearch (type) {
             var self = this
-            var data = self.searchForm
-            data.subjectTitle = data.subjectTitle.toString().trim()
+            var data = JSON.parse(JSON.stringify(self.searchForm))
+            data.subjectTitle = data.subjectTitle.trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -391,7 +391,7 @@ var vm = new Vue({
                         dataType: "json",
                         success: function(res) {
                             if(res.code == 200){
-                                self.startSearch()
+                                self.startSearch(0)
                                 self.$message({
                                     type: 'success',
                                     message: '移除成功!'
@@ -476,7 +476,8 @@ var vm = new Vue({
         //搜索封面图库
         searchCoverImg (type){
             var self = this
-            var data = self.searchCoverimgForm
+            var data = JSON.parse(JSON.stringify(self.searchCoverimgForm))
+            data.picTitle = data.picTitle.trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -496,7 +497,6 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){
-                        self.searchCoverimgForm.picTitle = ''
                         self.coverimgTableData = res.page.list
                         self.pagination3 = {
                             currPage: res.page.currPage,
@@ -565,8 +565,9 @@ var vm = new Vue({
                         success: function(res){
                             if(res.code == 200){
                                 console.log('新增或修改返回：', res)
-                                self.startSearch() //请求列表回显
+                                self.startSearch(0) //请求列表回显
                                 self.clearSpecialInfoForm() //清空表单
+                                self.articleData = [] //清空列表
                                 self.showChildPage = false //关闭页面
                                 self.creatOrEdit = 0 //还原新增修改判断
                             } else {
