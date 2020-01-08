@@ -290,8 +290,6 @@ var vm = new Vue({
             this.showDiagramPage = true
         },
 
-
-
         //新建高清组图列表相关
         // 加载高清组图列表详情
         startSearch2(id, type) {
