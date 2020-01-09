@@ -541,6 +541,7 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
+                    self.specialInfoForm.subjectStatus = ''
                     if(self.specialInfoForm.subjectPriority == '') {
                         self.specialInfoForm.subjectPriority = '-1'
                     } else {
