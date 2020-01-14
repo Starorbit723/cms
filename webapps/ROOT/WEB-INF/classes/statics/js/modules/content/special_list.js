@@ -566,6 +566,10 @@ var vm = new Vue({
                         success: function(res){
                             if(res.code == 200){
                                 console.log('新增或修改返回：', res)
+                                self.$message({
+                                    type: 'success',
+                                    message: '保存成功!'
+                                });
                                 self.startSearch(0) //请求列表回显
                                 self.clearSpecialInfoForm() //清空表单
                                 self.articleData = [] //清空列表
