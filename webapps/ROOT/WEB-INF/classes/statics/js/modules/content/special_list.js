@@ -5,7 +5,8 @@ var vm = new Vue({
         creatOrEdit:0,//0新建  1修改
         //搜索提交
         searchForm:{
-            subjectTitle:''
+            subjectTitle:'',
+            subjectStatus: ['0','1','2','3','4']
         },
         //专题列表查询结果
         tableData: [{
@@ -34,11 +35,15 @@ var vm = new Vue({
             totalPage:0,
             pageSize:10
         },
+        //频道初始化的基本数据
+        channelOptions: [],
         //专题基本信息
         specialInfoForm:{
             subjectId:'',
             subjectTitle:'',
             subjectDesc:'',
+            subjectPriority: '',
+            subjectChannel: '',
             subjectHtmlPic:'',//专题图片PC
             subjectAppPic:'',//专题图片PC
         },
@@ -48,6 +53,9 @@ var vm = new Vue({
             ],
             subjectDesc: [
                 { required: true, message: '请输入专题描述', trigger: 'change' }
+            ],
+            subjectChannel: [
+                { required: true, message: '请输入专题所属频道', trigger: 'change' }
             ],
             subjectAppPic:[
                 { required: true, message: '请上传封面图', trigger: 'change' }
@@ -130,11 +138,29 @@ var vm = new Vue({
             totalPage:0,
             pageSize:20
         },
+        pagination4: {
+            currPage: 1,
+            totalCount:0,
+            totalPage:0,
+            pageSize:20
+        },
     },
     created () {
+        this.getChannelList()
         this.startSearch()
     },
     methods:{
+        scaleChange (val) {
+            if(val.trim() == '') {
+                this.specialInfoForm.subjectPriority = '-1'
+            } else {
+                var urlReg = /^[0-9]*[1-9][0-9]*$/;
+                var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
+                if(!urlReg.test(val) && !urlReg2.test(val) && val !== '0') {
+                    this.$message.error('权重只能填写整数或0')
+                }
+            }
+        },
         handleCurrentChange (val) {
             this.pagination1.currPage = val
             this.startSearch()
@@ -147,11 +173,41 @@ var vm = new Vue({
             this.pagination3.currPage = val
             this.searchCoverImg()
         },
+        handleCurrentChange4 (val) {
+            this.pagination4.currPage = val
+            this.startSearchArticle()
+        },
+         //初始化--获取频道列表
+         getChannelList () {
+            var self = this
+            var data = {
+                channel_status: ['1','2']
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+			    url: "/channel/selectList",
+			    data: JSON.stringify(data),
+			    dataType: "json",
+			    success: function(res){
+					if(res.code == 200){
+                        self.channelOptions = res.channelList
+					}else{
+						mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+			});
+        },
         //开始搜索专题列表
         startSearch (type) {
             var self = this
-            var data = self.searchForm
-            data.subjectTitle = data.subjectTitle.toString().trim()
+            var data = JSON.parse(JSON.stringify(self.searchForm))
+            data.subjectTitle = data.subjectTitle.trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -189,36 +245,59 @@ var vm = new Vue({
                 }
             });
         },
-        //启用或禁用当前专题
-        togglestatusThisSpecial (item){
+        // 上线该专题
+        onlineThisSpecial(item) {
             var self = this
-            self.$confirm('确实要调整该专题状态吗?', '提示', {
+            var data = {
+                newsSubject: item.subjectId.toString()
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/news/newsList",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res) {
+                    if(res.code == 200){
+                        if(res.page.list.length == 0) {
+                            self.$message.error('请添加新闻后才可以发布')
+                        } else {
+                            self.releaseThisSubject(item.subjectId.toString())
+                        }
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+           
+        },
+        releaseThisSubject(id) {
+            var self = this
+            self.$confirm('确实要发布此专题吗?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                if (item.subjectStatus == 1) {
-                    var data = {
-                        subjectId:item.subjectId.toString(),
-                        subjectStatus:'0'
-                    }
-                } else if (item.subjectStatus == 0) {
-                    var data = {
-                        subjectId:item.subjectId.toString(),
-                        subjectStatus:'1'
-                    }
+                var data = {
+                    subjectId: id,
+                    subjectStatus:'1',
+                    subjectReleaseTime: new Date().getTime()
                 }
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: "/subject/update",
+                    url: "/subject/push",
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res){
                         if(res.code == 200){
-                            self.$message.success('状态修改成功');
-                            self.startSearch() //请求列表回显
-                        } else {
+                            self.startSearch()
+                        }else{
                             mapErrorStatus(res)
                             vm.error = true;
                             vm.errorMsg = res.msg;
@@ -227,12 +306,156 @@ var vm = new Vue({
                     error:function(res){
                         mapErrorStatus(res)
                     }
-                })
+                });
+            })
+
+        },
+
+
+        // 下线该专题
+        offlineThisSpecial(item) {
+            var self = this
+            self.$confirm('确实要下线此专题吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = {
+                    subjectId:item.subjectId.toString(),
+                    subjectStatus:'4',
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/subject/offline",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res){
+                        if(res.code == 200){
+                            self.startSearch()
+                        }else{
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
             })
         },
+
+        // 删除该专题
+        deleteThisSubject(item) {
+            var self = this
+            self.$confirm('确实要删除此专题吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                if (item.subjectStatus == 2 ) {
+                    var data = {
+                        subjectId: item.subjectId.toString(),
+                        subjectStatus:'4'
+                    }
+                    $.ajax({
+                        type: "POST",
+                        contentType: "application/json",
+                        url: "/subject/update",
+                        data: JSON.stringify(data),
+                        dataType: "json",
+                        success: function(res){
+                            if(res.code == 200){
+                                self.startSearch()
+                            }else{
+                                mapErrorStatus(res)
+                                vm.error = true;
+                                vm.errorMsg = res.msg;
+                            }
+                        },
+                        error:function(res){
+                            mapErrorStatus(res)
+                        }
+                    });
+                } else {
+                    var data = {
+                        subjectId: item.subjectId.toString(),
+                        subjectStatus:'5'
+                    }
+                    $.ajax({
+                        type: "POST",
+                        contentType: "application/json",
+                        url: "/subject/update",
+                        data: JSON.stringify(data),
+                        dataType: "json",
+                        success: function(res) {
+                            if(res.code == 200){
+                                self.startSearch(0)
+                                self.$message({
+                                    type: 'success',
+                                    message: '移除成功!'
+                                });
+                            }else{
+                                mapErrorStatus(res)
+                                vm.error = true;
+                                vm.errorMsg = res.msg;
+                            }
+                        },
+                        error:function(res){
+                            mapErrorStatus(res)
+                        }
+                    });
+                }
+
+            })
+
+        },
+
+
+        //启用或禁用当前专题
+        // togglestatusThisSpecial (item){
+        //     var self = this
+        //     self.$confirm('确实要调整该专题状态吗?', '提示', {
+        //         confirmButtonText: '确定',
+        //         cancelButtonText: '取消',
+        //         type: 'warning'
+        //     }).then(() => {
+        //         if (item.subjectStatus == 1) {
+        //             var data = {
+        //                 subjectId:item.subjectId.toString(),
+        //                 subjectStatus:'0'
+        //             }
+        //         } else if (item.subjectStatus == 0) {
+        //             var data = {
+        //                 subjectId:item.subjectId.toString(),
+        //                 subjectStatus:'1'
+        //             }
+        //         }
+        //         $.ajax({
+        //             type: "POST",
+        //             contentType: "application/json",
+        //             url: "/subject/update",
+        //             data: JSON.stringify(data),
+        //             dataType: "json",
+        //             success: function(res){
+        //                 if(res.code == 200){
+        //                     self.$message.success('状态修改成功');
+        //                     self.startSearch() //请求列表回显
+        //                 } else {
+        //                     mapErrorStatus(res)
+        //                     vm.error = true;
+        //                     vm.errorMsg = res.msg;
+        //                 }
+        //             },
+        //             error:function(res){
+        //                 mapErrorStatus(res)
+        //             }
+        //         })
+        //     })
+        // },
         //新建修改专题页面切换
         addEditSpecial (item) {
-            console.log(item)
             if(item == 0){
                 this.showChildPage = true
                 this.creatOrEdit = 0
@@ -253,7 +476,8 @@ var vm = new Vue({
         //搜索封面图库
         searchCoverImg (type){
             var self = this
-            var data = self.searchCoverimgForm
+            var data = JSON.parse(JSON.stringify(self.searchCoverimgForm))
+            data.picTitle = data.picTitle.trim()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -273,7 +497,6 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){
-                        self.searchCoverimgForm.picTitle = ''
                         self.coverimgTableData = res.page.list
                         self.pagination3 = {
                             currPage: res.page.currPage,
@@ -318,6 +541,17 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
+                    self.specialInfoForm.subjectStatus = ''
+                    if(self.specialInfoForm.subjectPriority == '') {
+                        self.specialInfoForm.subjectPriority = '-1'
+                    } else {
+                        var urlReg = /^[0-9]*[1-9][0-9]*$/;
+                        var urlReg2 = /^-[0-9]*[1-9][0-9]*$/;
+                        if(!urlReg.test(self.specialInfoForm.subjectPriority) && !urlReg2.test(self.specialInfoForm.subjectPriority) && self.specialInfoForm.subjectPriority !== '0') {
+                            this.$message.error('权重只能填写整数或0')
+                            return
+                        }
+                    }
                     if (self.creatOrEdit == 0) {
                         var reqUrl = '/subject/save'
                     } else if (self.creatOrEdit == 1){
@@ -332,8 +566,13 @@ var vm = new Vue({
                         success: function(res){
                             if(res.code == 200){
                                 console.log('新增或修改返回：', res)
-                                self.startSearch() //请求列表回显
+                                self.$message({
+                                    type: 'success',
+                                    message: '保存成功!'
+                                });
+                                self.startSearch(0) //请求列表回显
                                 self.clearSpecialInfoForm() //清空表单
+                                self.articleData = [] //清空列表
                                 self.showChildPage = false //关闭页面
                                 self.creatOrEdit = 0 //还原新增修改判断
                             } else {
@@ -355,6 +594,8 @@ var vm = new Vue({
                 subjectId:'',
                 subjectTitle:'',
                 subjectDesc:'',
+                subjectPriority: '',
+                subjectChannel: '',
                 subjectHtmlPic:'',//专题图片PC
                 subjectAppPic:'',//专题图片PC
             }
@@ -363,6 +604,7 @@ var vm = new Vue({
         //取消返回添加专题
         cancelAddSpecial () {
             this.clearSpecialInfoForm() //清空表单
+            this.articleData = [] //清空列表
             this.showChildPage = false //关闭页面
             this.creatOrEdit = 0 //还原新增修改判断
         },
@@ -376,7 +618,6 @@ var vm = new Vue({
                 page: self.pagination2.currPage.toString(),
                 limit: self.pagination2.pageSize.toString(),
             })
-            console.log(data)
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
@@ -386,6 +627,9 @@ var vm = new Vue({
                 success: function(res) {
                     if(res.code == 200){
                         self.articleData = res.page.list
+                        for (let i = 0; i < self.articleData.length; i++){
+                            self.articleData[i].newsReleaseTime = self.transformTime(self.articleData[i].newsReleaseTime)
+                        }
                         self.pagination2 = {
                             currPage: res.page.currPage,
                             totalCount:res.page.totalCount,
@@ -447,15 +691,27 @@ var vm = new Vue({
         },
         //打开添加文章搜索弹层
         openAddEditArticle () {
-            this.startSearchArticle()
+            this.startSearchArticle(0)
             this.showAddArticleDialog = true
         },
         //查询文章
-        startSearchArticle () {
+        startSearchArticle (type) {
             var self = this
             var data = {
                 newsTitle: self.searchArticleStr,
-                newsStatus:['2']
+                newsStatus:['2'],
+                newsSubject: '-1'
+            }
+            if (type == 0) {
+                Object.assign(data,{
+                    page: '1',
+                    limit: self.pagination4.pageSize.toString()
+                })
+            } else {
+                Object.assign(data,{
+                    page: self.pagination4.currPage.toString(),
+                    limit: self.pagination4.pageSize.toString()
+                })
             }
             $.ajax({
                 type: "POST",
@@ -467,6 +723,15 @@ var vm = new Vue({
                     if(res.code == 200){
                         console.log('新增或修改返回：', res)
                         self.searchArticleTableData = res.page.list
+                        for (let i = 0; i < self.searchArticleTableData.length; i++){
+                            self.searchArticleTableData[i].newsReleaseTime = self.transformTime(self.searchArticleTableData[i].newsReleaseTime)
+                        }
+                        self.pagination4 = {
+                            currPage: res.page.currPage,
+                            totalCount:res.page.totalCount,
+                            totalPage: res.page.totalPage,
+                            pageSize: res.page.pageSize
+                        }
                     } else {
                         mapErrorStatus(res)
                         vm.error = true;
@@ -512,9 +777,7 @@ var vm = new Vue({
                         });
                         //前一页文章列表回显
                         self.requestArticleList()
-                        self.searchArticleStr = ''
-                        self.multipleSelection = []
-                        self.searchArticleTableData = []
+                        self.backToEditPage()
                     }else{
                         mapErrorStatus(res)
                         vm.error = true;
@@ -535,10 +798,34 @@ var vm = new Vue({
         },
         //打开此专题
         openThisPage(item) {
-            if(item.subjectStatus == 1) {
+            if(item.subjectStatus == 2) {
                 window.open('https://www.chinaventure.com.cn/subject/'+ item.subjectId +'.html', "newwindow")
 
             }
+        },
+        //跳转至新闻详情
+        openUrlArticlePage(item){
+            if(item.newsStatus == 2) {
+                window.open('https://www.chinaventure.com.cn'+item.newsUrl, "newwindow") 
+            }
+        },
+        //时间格式转换工具
+        transformTime (timestamp = +new Date()) {
+            if (timestamp) {
+                var time = new Date(timestamp);
+                var y = time.getFullYear();
+                var M = time.getMonth() + 1;
+                var d = time.getDate();
+                var h = time.getHours();
+                var m = time.getMinutes();
+                var s = time.getSeconds();
+                return y + '-' + this.addZero(M) + '-' + this.addZero(d) + ' ' + this.addZero(h) + ':' + this.addZero(m) + ':' + this.addZero(s);
+              } else {
+                  return '';
+              }
+        },
+        addZero (m) {
+            return m < 10 ? '0' + m : m;
         }
     }
 })

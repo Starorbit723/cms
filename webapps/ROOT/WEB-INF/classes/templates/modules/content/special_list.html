@@ -39,29 +39,36 @@
             <!--表格查询结果区-->
             <div class="cv_content_square">
                 <el-table :data="tableData" style="width: 100%; margin:10px auto;" stripe>
-                    <el-table-column prop="" label="专题名称">
-                        <template slot-scope="scope">
-                            <div class="subject_title" v-text="scope.row.subjectTitle" @click="openThisPage(scope.row)"></div>
-                        </template>
-                    </el-table-column>
                     <el-table-column prop="subjectAppPic" label="专题封面图" width="180">
                         <template v-if="scope.row.subjectAppPic !== ''" slot-scope="scope">
                             <img style="width:160px;height:100px;" :src="scope.row.subjectAppPic">
                         </template>
                     </el-table-column>
-                    <el-table-column prop="subjectStatus" label="状态" width="90">
-                        <template slot-scope="scope" v-if="scope.row.subjectStatus !== ''">
-                            <el-tag v-if="scope.row.subjectStatus == 1" type="success">上线</el-tag>
-                            <el-tag v-if="scope.row.subjectStatus == 0" type="danger">下线</el-tag>
+                    <el-table-column prop="subjectTitle" label="专题名称">
+                        <template slot-scope="scope">
+                            <div class="subject_title" v-text="scope.row.subjectTitle" @click="openThisPage(scope.row)"></div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="subjectPriority" label="专题优先级" width="90"></el-table-column>
+                    <el-table-column prop="subjectStatus" label="状态" width="90">
+                        <template slot-scope="scope" v-if="scope.row.subjectStatus !== ''">
+                            <el-tag v-if="scope.row.subjectStatus == 0">未发布</el-tag>
+                            <el-tag v-if="scope.row.subjectStatus == 1" type="warning">待发布</el-tag>
+                            <el-tag v-if="scope.row.subjectStatus == 2" type="success">已发布</el-tag>
+                            <el-tag v-if="scope.row.subjectStatus == 3" type="danger">发布失败 </el-tag>
+                            <el-tag v-if="scope.row.subjectStatus == 4" type="warning">待删除</el-tag>
+                            <el-tag v-if="scope.row.subjectStatus == 5" type="danger">已删除</el-tag>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="newsCount" label="文章数" width="110"></el-table-column>
-                    <el-table-column label="操作" width="100" fixed="right">
+                    <el-table-column prop="modUserName" label="更新人" width="110"></el-table-column>
+                    <el-table-column prop="subjectModTime" label="更新时间" width="95"></el-table-column>
+                    <el-table-column prop="subjectPriority" label="专题优先级" width="90"></el-table-column>
+                    <el-table-column label="操作" width="150" fixed="right">
                         <template slot-scope="scope">
-                            <el-button type="text" size="small" @click="addEditSpecial(scope.row)">修改</el-button>
-                            <el-button type="text" size="small" v-if="scope.row.subjectStatus == 0" @click="togglestatusThisSpecial(scope.row)">上线</el-button>
-                            <el-button type="text" size="small" v-if="scope.row.subjectStatus == 1" @click="togglestatusThisSpecial(scope.row)">下线</el-button>
+                            <el-button type="text" size="small" @click="addEditSpecial(scope.row)">编辑</el-button>
+                            <el-button type="text" size="small" v-if="scope.row.subjectStatus == 0 || scope.row.subjectStatus == 3"  @click="deleteThisSubject(scope.row)">删除</el-button>
+                            <el-button type="text" size="small" v-if="scope.row.subjectStatus == 0 || scope.row.subjectStatus == 3" @click="onlineThisSpecial(scope.row)">上线</el-button>
+                            <el-button type="text" size="small" v-if="scope.row.subjectStatus == 2" @click="offlineThisSpecial(scope.row)">下线</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -112,24 +119,44 @@
                         </el-col>
                     </el-row>
                     <el-row class="el-row-h80">
+                        <el-col :span="12">
+                            <el-form-item label="频道" style="margin:0;" prop="subjectChannel" label-width="33%">
+                                <el-select v-model="specialInfoForm.subjectChannel" style="width:100%;" clearable>
+                                    <el-option
+                                        v-for="item in channelOptions"
+                                        :key="item.channelId"
+                                        :label="item.channelTitle"
+                                        :value="item.channelId">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h80">
                         <el-col :span="24">
                             <el-form-item label="专题权重" prop="subjectPriority" style="margin:0;">
                                 <el-input
                                 maxlength="5"
                                 v-model="specialInfoForm.subjectPriority"
-                                auto-complete="off">
+                                auto-complete="off"
+                                @change="scaleChange(specialInfoForm.subjectPriority)">
                                 </el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-row class="el-row-h100">
-                        <el-col :span="24">
-                            <el-form-item label="专题封面" prop="subjectAppPic" style="margin:0;">
+                        <el-col :span="12">
+                            <el-form-item label="专题封面" prop="subjectAppPic" style="margin:0;" label-width="33%">
                                 <div class="avatar-uploader2" @click="openAddCoverImg()">
                                     <img v-if="specialInfoForm.subjectAppPic" :src="specialInfoForm.subjectAppPic" class="avatar2">
                                     <i v-else class="el-icon-plus avatar-uploader-icon2"></i>
+                                    <div v-if="specialInfoForm.subjectAppPic" class="top_layer"></div>
                                 </div>
                             </el-form-item>
+                        </el-col>
+                        <el-col :span="8" :offset="2">
+                            <p style="line-height: 30px; margin-top: 65px;">上传尺寸：750*348px（H5用）</p>
+                            <p style="line-height: 30px;">pc端显示：750*210px（居中裁剪）</p>
                         </el-col>
                     </el-row>
                 </el-form>
@@ -143,10 +170,15 @@
             <!--该专题下的文章列表-->
             <div class="cv_content_square" v-if="creatOrEdit == 1">
                 <el-table :data="articleData" style="width: 100%; margin:10px auto;" stripe>
-                    <el-table-column prop="newsTitle" label="文章标题" width="450"></el-table-column>
-                    <el-table-column prop="newsAuthor" label="作者" width=""></el-table-column>
-                    <el-table-column prop="newsCount" label="阅读量" width=""></el-table-column>
-                    <el-table-column label="操作" width="150" fixed="right">
+                    <el-table-column prop="newsTitle" label="文章标题">
+                        <template v-if="scope.row.newsTitle" slot-scope="scope">
+                            <div v-text="scope.row.newsTitle" @click="openUrlArticlePage(scope.row)" class="newsTitleStyle"></div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="newsReleaseTime" label="发布时间" width="180"></el-table-column>
+                    <el-table-column prop="newsAuthor" label="作者" width="95"></el-table-column>
+                    <el-table-column prop="newsCount" label="阅读量" width="95"></el-table-column>
+                    <el-table-column label="操作" width="95" fixed="right">
                         <template slot-scope="scope">
                             <el-button type="text" size="small" @click="deleteThisArticle(scope.row)">移除</el-button>
                         </template>
@@ -187,7 +219,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="3" :offset="1" class="el-row-h40">
-                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchCoverImg()">搜索</el-button>
+                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchCoverImg(0)">搜索</el-button>
                         </el-col>
                         <el-col :span="3" :offset="1" class="el-row-h40">
                             <el-button type="primary" style="width:100%" @click="backToEdit()">返回</el-button>
@@ -234,7 +266,7 @@
                             auto-complete="off"></el-input>
                     </el-col>
                     <el-col :span="3" :offset="1">
-                        <el-button type="primary" style="width:100%" icon="el-icon-search" @click="startSearchArticle()">查询</el-button>
+                        <el-button type="primary" style="width:100%" icon="el-icon-search" @click="startSearchArticle(0)">查询</el-button>
                     </el-col>
                     <el-col :span="3" :offset="1">
                         <el-button type="primary" style="width:100%" icon="el-icon-check" @click="addUserSelect()">添加选中</el-button>
@@ -251,8 +283,25 @@
                         style="width: 100%; margin:10px auto;" 
                         stripe>
                         <el-table-column type="selection" width="55"></el-table-column>
-                        <el-table-column prop="newsTitle" label="文章标题"></el-table-column>
+                        <el-table-column prop="newsTitle" label="文章标题">
+                            <template v-if="scope.row.newsTitle" slot-scope="scope">
+                                <div v-text="scope.row.newsTitle" @click="openUrlArticlePage(scope.row)" class="newsTitleStyle"></div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="newsReleaseTime" label="发布时间"  width="180"></el-table-column>
+                        <el-table-column prop="newsAuthor" label="作者" width="95"></el-table-column>
+                        <el-table-column prop="newsCount" label="阅读量" width="95"></el-table-column>
                     </el-table>
+                </div>
+                <!--分页器-->
+                <div class="cv_page_zone">
+                    <el-pagination
+                        @current-change="handleCurrentChange4"
+                        :current-page="pagination4.currPage"
+                        :page-size="pagination4.pageSize"
+                        layout="total, prev, pager, next, jumper"
+                        :total="pagination4.totalCount">
+                    </el-pagination>
                 </div>
             </el-dialog>
             <!--搜索添加文章弹出层结束-->
@@ -311,13 +360,23 @@
     height: 200px;
 }
 .avatar-uploader2{
-    width:320px;
-    height: 200px;
+    width:350px;
+    height: 174px;
     border-radius: 6px;
     border: 1px dashed #d9d9d9;
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    
+}
+.top_layer {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    height: 105px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
 }
 .avatar-uploader2:hover{
     border-color: #175CE9;
@@ -330,8 +389,8 @@
     font-size: 28px;
     color: #8c939d;
     width: 200px;
-    height: 200px;
-    line-height: 200px;
+    height: 174px;
+    line-height: 174px;
     text-align: center;
     margin: 0 auto;
 }
@@ -340,8 +399,17 @@
 }
 .avatar2{
     position: absolute;
-    width:320px;
-    height: 200px;
+    width:350px;
+    height: 174px;
 }
+.newsTitleStyle {
+    color: #606266
+}
+.newsTitleStyle:hover {
+    color: #175CE9;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 </style>
 </html>

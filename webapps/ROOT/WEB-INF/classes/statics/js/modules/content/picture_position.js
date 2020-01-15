@@ -128,13 +128,13 @@ var vm = new Vue({
                 picColor: "", // 颜色
                 picWeight: '' //图片权重
             }],
-            //新建修改某一个广告条目相关
+            //新建修改某一个条目相关
             posItemForm:{
                 picId:'',//图片编号
                 picTitle:'',//图片标题
                 picDesc:'',//图片详情
                 picUrl:'',//图片地址
-                picType:'3',//图片分类
+                picType:'2',//图片分类
                 picStatus:'',//图片状态
                 picEditor:'',//图片编辑
                 picTypeId:'',//图位图片编号 type=3 传入
@@ -160,6 +160,7 @@ var vm = new Vue({
             showPosimgLib:false,
             searchPosimgForm:{
                 picTitle:'',
+                picTypeId:'-1',
                 picType:'2'//0封面图库 1内容图库 2图为图库 3广告图库
             },
             posimgTableData:[],
@@ -527,7 +528,7 @@ var vm = new Vue({
         startSearchPoslist (id) {
             var self = this
             var data = {
-                picType:'3',//图位用图
+                picType:'2',//图位用图
                 picTypeId:id.toString(),
                 picStatus: '1',
                 page: '1',
@@ -614,7 +615,6 @@ var vm = new Vue({
                     this.$message.error('权重值为-1到9999之间的整数')
                     return
                 } 
-                
             }
             var modData = {
                 picId: item.picId,
@@ -632,8 +632,6 @@ var vm = new Vue({
                 success: function(res){
                     if(res.code == 200){
                         self.$message.success('保存成功')
-                        // self.closeToContentList('posItemForm')
-                        
                         self.startSearchPoslist(self.saveNowPosId)
                     }else{
                         mapErrorStatus(res)
@@ -708,7 +706,7 @@ var vm = new Vue({
                 picTitle:'',//图片标题
                 picDesc:'',//图片详情
                 picUrl:'',//图片地址
-                picType:'3',//图片分类
+                picType:'2',//图片分类
                 picStatus:'',//图片状态
                 picEditor:'',//图片编辑
                 picTypeId:'',//图位图片编号 type=3 传入
@@ -773,6 +771,7 @@ var vm = new Vue({
             this.showPosimgLib = false
             this.searchPosimgForm = {
                 picTitle:'',
+                picTypeId:'-1',
                 picType:'2'//0封面图库 1内容图库 2图为图库 3图为图库
             }
             this.posimgTableData = []
