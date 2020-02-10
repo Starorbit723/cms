@@ -234,12 +234,25 @@
                     </el-row>
                     <el-row class="el-row-h70">
                         <el-col :span="24">
-                            <el-form-item prop="meetingUrl" label="页面地址" style="margin:0;">
+                            <el-form-item prop="meetingUrl" label="PC地址" style="margin:0;">
                                 <el-input
                                     :maxlength="500"
                                     clearable
                                     type="text"
                                     v-model="meetingForm.meetingUrl"
+                                    auto-complete="on">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item prop="meetingHUrl" label="H5地址" style="margin:0;">
+                                <el-input
+                                    :maxlength="500"
+                                    clearable
+                                    type="text"
+                                    v-model="meetingForm.meetingHUrl"
                                     auto-complete="on">
                                 </el-input>
                             </el-form-item>
