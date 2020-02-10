@@ -82,6 +82,7 @@ var vm = new Vue({
                 meetingImg:'',//封面图
                 meetingType:'',//类型
                 meetingUrl:'',//会议链接
+                meetingHUrl: '',//H5链接
                 meetingProvince:'',//省
                 meetingCity:'',//市
                 meetingArea:'',//区
@@ -123,6 +124,7 @@ var vm = new Vue({
                 meetingImg:'',//封面图
                 meetingType:'',//类型
                 meetingUrl:'',//会议链接
+                meetingHUrl: '',//H5链接
                 meetingProvince:'',//省
                 meetingCity:'',//市
                 meetingArea:'',//区
@@ -160,6 +162,9 @@ var vm = new Vue({
                     { type: 'array', required: true, message: '所在区域不能为空', trigger: 'change' }
                 ],
                 meetingUrl:[
+                    { required: true, validator: validateUrl, trigger: 'change' }
+                ],
+                meetingHUrl:[
                     { required: true, validator: validateUrl, trigger: 'change' }
                 ],
                 meetingImg:[
@@ -662,6 +667,7 @@ var vm = new Vue({
                 meetingImg:'',//封面图
                 meetingType:'',//类型
                 meetingUrl:'',//会议链接
+                meetingHUrl: '', //H5链接
                 meetingProvince:'',//省
                 meetingCity:'',//市
                 meetingArea:'',//区

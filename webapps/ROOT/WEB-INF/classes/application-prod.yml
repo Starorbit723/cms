@@ -65,7 +65,7 @@ rocket:
   nameServer: 192.168.0.133:9876;192.168.0.165:9876;192.168.0.40:9876
   basePackage: com.chinaventure
 localUrl: /image/
-esUrl:  https://119.3.241.171/cv-sensitive/api/sensitive/internally/check
+esUrl:  http://192.168.0.41:80/cv-sensitive/api/sensitive/internally/check
 abstractUrl: http://192.168.0.40:8010/cv-tokenizer/lexer
 redisUrl: http://192.168.0.52
 newsUrl: /cms/api/updateNewsDetail
@@ -90,6 +90,7 @@ updateSignUpInfoUrl: /cms/api/updateCmsSignUpInfo
 updateUserSignInListUrl: /cms/api/updateUserSignInList
 updateMeetingList: /cms/api/updateMeetingList
 updateSubjectList: /cms/api/updateSubjectList
+deleteSubjectNewsList: /cms/api/deleteSubjectNewsList
 nginxIp: 192.168.0.228,192.168.0.98,192.168.0.82
 nginxCommand: /mnt/sdc/expect/expect_scp
 nginxName: root
