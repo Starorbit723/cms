@@ -618,7 +618,8 @@ var vm = new Vue({
             }
             var modData = {
                 picId: item.picId,
-                picWeight: item.picWeight
+                picWeight: item.picWeight,
+                picTypeId: item.picTypeId,
             }
             var data = JSON.parse(JSON.stringify(modData))
 
