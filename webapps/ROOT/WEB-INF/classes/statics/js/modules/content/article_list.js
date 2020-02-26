@@ -23,6 +23,7 @@ var vm = new Vue({
         }],
         //搜索文章列表提交
         timeRange:[], //时间需要特殊处理,并且同步到searchForm
+        ifOrignCheck: false, //1：原创 2：非原创, 默认为2非原创
         searchForm:{
             newsId:'',//新闻编号
             newsTitle:'',//新闻标题
@@ -32,6 +33,7 @@ var vm = new Vue({
             newsAuthor:'',//新闻作者
             newsFrom:'',//新闻来源
             recommendStatus:'',//推荐状态：0待推荐  1：推荐 2：非推荐
+            originalStatus:2,//原创状态 1：原创 2：非原创
             startTime:'',//
             endTime:''//
         },
@@ -118,6 +120,15 @@ var vm = new Vue({
             this.pagination1.currPage = val
             this.startSearch() 
         },
+        //切换原创状态
+        changeIfOrign(val){
+            //原创状态 1：原创 2：非原创
+            if (val) {
+                this.searchForm.originalStatus = 1
+            } else {
+                this.searchForm.originalStatus = 2
+            }
+        },
         //开始搜索
         startSearch (type) {
             var self = this
@@ -128,6 +139,7 @@ var vm = new Vue({
             data.newsChannel = data.newsChannel.toString()
             data.recommendStatus = data.recommendStatus.toString()
             data.newsCrtUserId = data.newsCrtUserId.toString()
+            data.originalStatus = data.originalStatus.toString()
             console.log(data)
             if (type == 0) {
                 Object.assign(data,{
@@ -169,6 +181,34 @@ var vm = new Vue({
                     mapErrorStatus(res)
                 }
 			});
+        },
+        //下载数据
+        downloadData(){
+            var self = this
+            self.$confirm('确实要下载数据吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                var data = JSON.parse(JSON.stringify(self.searchForm))
+                data.page = '1'
+                data.limit = '100'
+                data.newsTitle = data.newsTitle.toString().trim()
+                data.newsAuthor = data.newsAuthor.toString().trim()
+                data.newsFrom = data.newsFrom.toString().trim()
+                data.newsChannel = data.newsChannel.toString()
+                data.recommendStatus = data.recommendStatus.toString()
+                data.newsCrtUserId = data.newsCrtUserId.toString()
+                data.originalStatus = data.originalStatus.toString()
+
+                var jsonData = JSON.stringify(data)
+                console.log('jsondata',jsonData)
+                $.base64.utf8encode = true;
+                var jsondata64 = $.base64.btoa(jsonData);
+                console.log('jsondata64',jsondata64)
+                window.open("/news/newsExcel?jsonData="+ jsondata64)
+
+            })
         },
         //新建文章
         creatArticle () {
@@ -274,12 +314,6 @@ var vm = new Vue({
                         }
                     });
                 }
-
-
-                
-
-
-
             })
         },
         //文章下线---将状态改成4：待删除

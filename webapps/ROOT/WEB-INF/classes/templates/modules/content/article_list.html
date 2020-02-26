@@ -94,8 +94,8 @@
                             </el-select>
                         </el-form-item>     
                     </el-col>
-                    <el-col :span="12">
-                        <el-form-item label-width="17%" label="发布状态" style="margin:0;">
+                    <el-col :span="9">
+                        <el-form-item label-width="19%" label="状态" style="margin:0;">
                             <el-checkbox-group v-model="searchForm.newsStatus">
                                 <el-checkbox label="2">已发布</el-checkbox>
                                 <el-checkbox label="1">待发布</el-checkbox>
@@ -103,7 +103,12 @@
                             </el-checkbox-group>
                         </el-form-item>    
                     </el-col>
-                    <el-col :span="3" :offset="3" class="el-row-h50">
+                    <el-col :span="5">
+                        <el-form-item label-width="50%" label="是否原创" style="margin:0;">
+                            <el-checkbox v-model="ifOrignCheck" @change="changeIfOrign"></el-checkbox>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h50">
                         <el-button type="primary" style="width:100%" @click="startSearch(0)">搜索</el-button>
                     </el-col>
                 </el-row>
@@ -114,6 +119,9 @@
         <el-row class="el-row-h50">
             <el-col :span="3">
                 <el-button type="primary" plain style="width:100%" icon="el-icon-plus" @click="creatArticle">新建文章</el-button>
+            </el-col>
+            <el-col :span="3" :offset="1">
+                <el-button type="primary" plain style="width:100%" icon="el-icon-download" @click="downloadData">导出数据</el-button>
             </el-col>
         </el-row>
 
@@ -185,7 +193,8 @@
         
     </div>
 </body>
-
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.min.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.base64.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/modules/content/article_list.js"></script>
 <script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
