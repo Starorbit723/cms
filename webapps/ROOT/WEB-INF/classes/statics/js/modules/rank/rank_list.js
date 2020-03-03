@@ -124,7 +124,7 @@ var vm = new Vue({
     },
     created () {
         console.log('location',window.location.href)
-        if (window.location.href.indexOf('chinaventure.com.cn') !== -1 || window.location.href.indexOf('117.78.28.103') !== -1) {
+        if (window.location.href.indexOf('chinaventure.com.cn') !== -1 || window.location.href.indexOf('cvmedia.com.cn') !== -1 || window.location.href.indexOf('117.78.28.103') !== -1) {
             console.log('正式环境')
             this.picBaseUrl = 'https://chinaventure-static.obs.cn-north-1.myhuaweicloud.com'
         } else {
@@ -136,8 +136,13 @@ var vm = new Vue({
     methods:{
         openUrlRankPage(item) {
             if(item.publishStatus == 2) {
-                window.open('https://www.chinaventure.com.cn' + item.rankUrl, "newwindow")
+                if (window.location.href.indexOf('chinaventure.com.cn') !== -1|| window.location.href.indexOf('117.78.28.103') !== -1) {
+                    window.open('https://www.chinaventure.com.cn' + item.rankUrl, "newwindow")
+                } else if (window.location.href.indexOf('cvmedia.com.cn') !== -1 || window.location.href.indexOf('117.78.28.103') !== -1) {
+                    window.open('https://www.cvmedia.com.cn' + item.rankUrl, "newwindow") 
+                }
             }
+
         },
         handleCurrentChange (val) {
             this.pagination1.currPage = val

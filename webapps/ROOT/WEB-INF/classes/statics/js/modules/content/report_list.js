@@ -125,8 +125,12 @@ var vm = new Vue({
     methods:{
         openUrlReportPage(item) {
             if(item.reportStatus == 2) {
-                window.open('https://www.chinaventure.com.cn'+item.reportUrl, "newwindow")
-            }
+                if (window.location.href.indexOf('chinaventure.com.cn') !== -1|| window.location.href.indexOf('117.78.28.103') !== -1) {
+                    window.open('https://www.chinaventure.com.cn'+item.reportUrl, "newwindow") 
+                } else if (window.location.href.indexOf('cvmedia.com.cn') !== -1 || window.location.href.indexOf('117.78.28.103') !== -1) {
+                    window.open('https://www.cvmedia.com.cn'+item.reportUrl, "newwindow") 
+                }
+            } 
         },
         handleCurrentChange (val) {
             this.pagination1.currPage = val
