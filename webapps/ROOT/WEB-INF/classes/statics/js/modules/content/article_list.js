@@ -99,10 +99,9 @@ var vm = new Vue({
     },
     watch: {
         timeRange (val) {
-            console.log(val)
             if (val) {
-                this.searchForm.startTime = val[0]
-                this.searchForm.endTime = val[1]
+                this.searchForm.startTime = new Date(val[0]).getTime().toString()
+                this.searchForm.endTime = new Date(val[1]).getTime().toString()
             } else {
                 this.searchForm.startTime = ''
                 this.searchForm.endTime = ''
