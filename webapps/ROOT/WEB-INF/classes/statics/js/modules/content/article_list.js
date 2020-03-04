@@ -21,9 +21,18 @@ var vm = new Vue({
             label: '不推荐',
             value: 2
         }],
+        orignOptions:[{
+            label: '全部',
+            value: ''
+        },{
+            label: '原创',
+            value: 1
+        },{
+            label: '非原创',
+            value: 2
+        }],
         //搜索文章列表提交
         timeRange:[], //时间需要特殊处理,并且同步到searchForm
-        ifOrignCheck: false, //1：原创 2：非原创, 默认为2非原创
         searchForm:{
             newsId:'',//新闻编号
             newsTitle:'',//新闻标题
@@ -33,7 +42,7 @@ var vm = new Vue({
             newsAuthor:'',//新闻作者
             newsFrom:'',//新闻来源
             recommendStatus:'',//推荐状态：0待推荐  1：推荐 2：非推荐
-            originalStatus:2,//原创状态 1：原创 2：非原创
+            originalStatus:'',//原创状态：空：全部 1：原创 2：非原创
             startTime:'',//
             endTime:''//
         },
@@ -118,15 +127,6 @@ var vm = new Vue({
         handleCurrentChange (val) {
             this.pagination1.currPage = val
             this.startSearch() 
-        },
-        //切换原创状态
-        changeIfOrign(val){
-            //原创状态 1：原创 2：非原创
-            if (val) {
-                this.searchForm.originalStatus = 1
-            } else {
-                this.searchForm.originalStatus = 2
-            }
         },
         //开始搜索
         startSearch (type) {

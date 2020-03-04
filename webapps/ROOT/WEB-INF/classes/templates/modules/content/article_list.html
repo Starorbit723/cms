@@ -10,7 +10,7 @@
     <div id="article_list" class="cv_page_content">
         <!--列表搜索区-->
         <div class="cv_content_square">
-            <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
+            <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="35%" label-position="right">
                 <el-row class="el-row-h60">
                     <el-col :span="6">
                         <el-form-item label="标题" style="margin:0;">
@@ -69,16 +69,13 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="推荐状态" label-width="20%" style="margin:0;">
-                            <el-select style="width:100%;" v-model="searchForm.recommendStatus" clearable>
-                                <el-option
-                                    v-for="item in recommendOptions"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
+                        <el-form-item label-width="20%" label="文章状态" style="margin:0;">
+                            <el-checkbox-group v-model="searchForm.newsStatus">
+                                <el-checkbox label="2">已发布</el-checkbox>
+                                <el-checkbox label="1">待发布</el-checkbox>
+                                <el-checkbox label="0">未发布</el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>    
                     </el-col>
                 </el-row>
                 <el-row class="el-row-h60">
@@ -94,21 +91,36 @@
                             </el-select>
                         </el-form-item>     
                     </el-col>
-                    <el-col :span="9">
-                        <el-form-item label-width="19%" label="状态" style="margin:0;">
-                            <el-checkbox-group v-model="searchForm.newsStatus">
-                                <el-checkbox label="2">已发布</el-checkbox>
-                                <el-checkbox label="1">待发布</el-checkbox>
-                                <el-checkbox label="0">未发布</el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>    
-                    </el-col>
-                    <el-col :span="5">
-                        <el-form-item label-width="50%" label="是否原创" style="margin:0;">
-                            <el-checkbox v-model="ifOrignCheck" @change="changeIfOrign"></el-checkbox>
+                    <el-col :span="6">
+                        <el-form-item label="推荐状态" style="margin:0;">
+                            <el-select style="width:100%;" v-model="searchForm.recommendStatus" clearable>
+                                <el-option
+                                    v-for="item in recommendOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="3" :offset="1" class="el-row-h50">
+                    <!-- <el-col :span="8">
+                        <el-form-item label-width="30%" label="是否原创" style="margin:0;">
+                            <el-checkbox v-model="ifOrignCheck" @change="changeIfOrign"></el-checkbox>
+                        </el-form-item>
+                    </el-col> -->
+                    <el-col :span="6">
+                        <el-form-item label-width="40%" label="是否原创" style="margin:0;">
+                            <el-select style="width:100%;" v-model="searchForm.originalStatus" clearable>
+                                <el-option
+                                    v-for="item in orignOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" :offset="3" class="el-row-h40">
                         <el-button type="primary" style="width:100%" @click="startSearch(0)">搜索</el-button>
                     </el-col>
                 </el-row>
