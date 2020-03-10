@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/icon.css">
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>人物专访</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">人物专访列表</div>
+    <div id="interview_list" class="cv_page_content">
+        <!-------主页面-------列表开始------->
+        <div v-show="!showChildPage">
+            <!--列表搜索区-->
+            <div class="cv_content_square">
+                <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h50">
+                        <el-col :span="7">
+                            <el-form-item label-width="35%" label="人物姓名" style="margin:0;">
+                                <el-input
+                                clearable
+                                :maxlength="30"
+                                type="text"
+                                v-model="searchForm.visitName"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="13">
+                            <el-form-item label="专访标题" style="margin:0;">
+                                <el-input
+                                clearable
+                                :maxlength="40"
+                                type="text"
+                                v-model="searchForm.visitTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" icon="el-icon-search" @click="startSearch(0)">搜索</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--功能按钮区-->
+            <el-row class="el-row-h50">
+                <el-col :span="4">
+                    <el-button type="primary" plain style="width:100%" icon="el-icon-plus" @click="creatOrEditInterview(0)">新建专访</el-button>
+                </el-col>
+            </el-row>
+            <!--表格查询结果区-->
+            <div class="cv_content_square">
+                <el-table :data="interviewData" style="width: 100%; margin:10px auto;" stripe>
+                    <el-table-column prop="visitImg" label="图片" width="130">
+                        <template v-if="scope.row.visitImg" slot-scope="scope">
+                            <img style="width:100px;height:70px;" :src="scope.row.visitImg">
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="visitName" label="姓名" width="100"></el-table-column>
+                    <el-table-column prop="visitCompany" label="公司/职位" width="170"></el-table-column>
+                    <el-table-column prop="visitTitle" label="标题" width="300"></el-table-column>
+                    <el-table-column prop="visitTime" label="显示时间" width="200"></el-table-column>
+                    <el-table-column label="操作" width="150" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="creatOrEditInterview(scope.row)">修改</el-button>
+                            <el-button type="text" size="small" @click="deleteThisInterview(scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page="pagination1.currPage"
+                    :page-size="pagination1.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination1.totalCount">
+                </el-pagination>
+            </div>
+
+        </div>
+        <!-------主页面-------专访列表结束------->
+        
+
+        <!-------子页面-------新建修改专访开始------->
+        <div v-show="showChildPage">
+            <!--表单信息-->
+            <div class="cv_content_square">
+                <el-form :model="interviewForm" :rules="interviewFormRules"  ref="interviewForm" status-icon class="demo-ruleForm" label-width="30%" label-position="right">
+                    <el-row class="el-row-h70">
+                        <el-col :span="12">
+                            <el-form-item label="人物姓名" prop="visitName" style="margin:0;">
+                                <el-input
+                                maxlength="30"
+                                placeholder="限30字"
+                                type="text"
+                                v-model="interviewForm.visitName"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="公司/职位" prop="visitCompany" style="margin:0;">
+                                <el-input
+                                maxlength="30"
+                                placeholder="限30字"
+                                type="text"
+                                v-model="interviewForm.visitCompany"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="12">
+                            <el-form-item label="权重排序" prop="visitWeight" style="margin:0;">
+                                <el-input
+                                maxlength="9"
+                                placeholder="仅限整数"
+                                type="text"
+                                v-model="interviewForm.visitWeight"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="显示时间" prop="visitTime" style="margin:0;">
+                                <el-date-picker
+                                    style="width:100%;"
+                                    v-model="interviewForm.visitTime"
+                                    type="datetime"
+                                    value-format="timestamp"
+                                    :picker-options="pickerOptions"
+                                    placeholder="选择日期时间">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item label-width="15%" label="专访标题" prop="visitTitle" style="margin:0;">
+                                <el-input
+                                maxlength="36"
+                                placeholder="限36字"
+                                type="text"
+                                v-model="interviewForm.visitTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item label-width="15%" label="跳转地址" prop="visitUrl" style="margin:0;">
+                                <el-input
+                                maxlength="300"
+                                type="text"
+                                v-model="interviewForm.visitUrl"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h150">
+                        <el-col :span="12">
+                            <el-form-item label="封面图片" prop="visitImg" label-width="30%" style="margin:0;">
+                                <div class="fengmian_show" @click="openAddCoverImg">
+                                    <img v-if="interviewForm.visitImg" :src="interviewForm.visitImg" class="avatar">
+                                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                </div>
+                                <div>图片建议尺寸480*300(px)</div>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+            <!--新建保存修改-->
+            <el-row class="el-row-h60" style="margin-top:20px;">
+                <el-col :span="3" :offset="8">
+                    <el-button type="primary" style="width:100%" @click="submitCreatEdit('interviewForm')">保存</el-button>
+                </el-col>
+                <el-col :span="3" :offset="2">
+                    <el-button type="primary" style="width:100%" @click="backToList('interviewForm')">取消</el-button>
+                </el-col>
+            </el-row>
+
+            <!--封面图库弹出层开始-->
+            <el-dialog title="封面图库" :visible.sync="showCoverimgLib" width="100%" :fullscreen="true" :show-close="false" >
+                <el-form :model="searchCoverimgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                    <el-row class="el-row-h60">
+                        <el-col :span="16">
+                            <el-form-item label="图片名称" style="margin:0;">
+                                <el-input
+                                clearable
+                                type="text"
+                                v-model="searchCoverimgForm.picTitle"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchCoverImg(0)">搜索</el-button>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" @click="backToEdit()">返回</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <el-table :data="coverimgTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="coverimgTableData" stripe>
+                    <el-table-column prop="picUrl" label="封面图预览" width="180">
+                        <template v-if="scope.row.picUrl" slot-scope="scope">
+                            <img style="width:80px;height:60px;" :src="scope.row.picUrl">
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="picTitle" label="图片名称" width="250"></el-table-column>
+                    <el-table-column prop="picEditorName" label="修改人" width="120"></el-table-column>
+                    <el-table-column prop="picModTime" label="最后更新时间"></el-table-column>
+                    <el-table-column label="操作" width="100" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="addThisCoverImg(scope.row)">添加</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <!--分页器-->
+                <div class="cv_page_zone">
+                    <el-pagination
+                        @current-change="handleCurrentChange2"
+                        :current-page="pagination2.currPage"
+                        :page-size="pagination2.pageSize"
+                        layout="total, prev, pager, next, jumper"
+                        :total="pagination2.totalCount">
+                    </el-pagination>
+                </div>
+            </el-dialog>
+            <!--封面图库弹出层结束-->
+
+
+
+        </div>
+        <!-------子页面-------新建修改专访结束------->
+
+
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/content/interview_list.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+<style>
+.fengmian_show{
+    width: 240px;
+    height: 150px;
+    border-radius: 5px;
+    border: 1px dashed #d9d9d9;
+    text-align: center;
+    cursor: pointer;
+}
+.avatar-uploader .el-upload {
+    width:240px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+    border-color: #175CE9;
+}
+.avatar-uploader-icon {
+    display: inline-block;
+    font-size: 28px;
+    color: #8c939d;
+    width: 150px;
+    height: 150px;
+    line-height: 150px;
+    text-align: center;
+}
+.fengmian_show:hover{
+    border-color: #175CE9;
+}
+.fengmian_show:hover .avatar-uploader-icon{
+    color: #175CE9;
+}
+.avatar {
+    width: 240px;
+    height: 150px;
+    display: block;
+}
+</style>
+</html>
