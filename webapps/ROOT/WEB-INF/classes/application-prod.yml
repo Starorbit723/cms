@@ -91,6 +91,7 @@ updateUserSignInListUrl: /cms/api/updateUserSignInList
 updateMeetingList: /cms/api/updateMeetingList
 updateSubjectList: /cms/api/updateSubjectList
 deleteSubjectNewsList: /cms/api/deleteSubjectNewsList
+updateVisitList: /cms/api/updateVisitList
 nginxIp: 192.168.0.228,192.168.0.98,192.168.0.82
 nginxCommand: /mnt/sdc/expect/expect_scp
 nginxName: root
