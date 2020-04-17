@@ -225,6 +225,7 @@
                                             <el-col class="el-row-h40" :span="5">
                                                 <el-form-item label-width="5%" label="" prop="timeRange" style="margin:0;">
                                                     <el-time-picker
+                                                        clearable
                                                         style="width: 100%;"
                                                         is-range
                                                         v-model="item4.timeRange"
@@ -233,7 +234,7 @@
                                                         start-placeholder="开始时间"
                                                         end-placeholder="结束时间"
                                                         placeholder="选择时间范围"
-                                                        :clearable="true">
+                                                        >
                                                     </el-time-picker>
                                                 </el-form-item>
                                             </el-col>
@@ -257,7 +258,7 @@
                                                 <el-col :span="4" :offset="3">
                                                     <el-form-item label-width="6%" label="" prop="labelText" style="margin:0;">
                                                         <el-input
-                                                            clearable
+                                                            :clearable="true"
                                                             type="text"
                                                             :disabled="false"
                                                             placeholder="条目标题"
@@ -268,7 +269,7 @@
                                                 <el-col :span="8">
                                                     <el-form-item label-width="3%" label="" prop="labelContent" style="margin:0;">
                                                         <el-input
-                                                            clearable
+                                                            :clearable="true"
                                                             type="text"
                                                             placeholder="条目内容"
                                                             v-model="item5.labelContent"
