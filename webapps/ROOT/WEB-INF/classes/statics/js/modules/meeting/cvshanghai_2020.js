@@ -118,9 +118,9 @@ var vm = new Vue({
             console.log('正式环境')
             this.meetingForm.meetingBaseInfoId = '59'//基础信息ID,写死
             this.meetingForm.meetingAgendaId = '46'//日程ID,写死
-            this.meetingForm.meetingGuestId = ''//嘉宾ID,写死
-            this.meetingForm.meetingCooperationId = ''//合作机构ID,写死
-            this.meetingForm.meetingRankId = ''//榜单ID,写死
+            this.meetingForm.meetingGuestId = '32'//嘉宾ID,写死
+            this.meetingForm.meetingCooperationId = '28'//合作机构ID,写死
+            this.meetingForm.meetingRankId = '18'//榜单ID,写死
         } else {
             console.log('测试环境')
             this.meetingForm.meetingBaseInfoId = '42'//基础信息ID,写死
