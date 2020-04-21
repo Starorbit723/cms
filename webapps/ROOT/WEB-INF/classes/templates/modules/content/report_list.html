@@ -52,7 +52,7 @@
                 <el-row class="el-row-h60">
                     <el-col :span="5">
                         <el-form-item label="频道" style="margin:0;">
-                            <el-select v-model="searchForm.reportChannel" placeholder="请选择频道" clearable @change="getChannelListLevel2">
+                            <el-select style="width: 100%;" v-model="searchForm.reportChannel" placeholder="请选择频道" clearable @change="getChannelListLevel2">
                                 <el-option
                                     v-for="item in channelOptions"
                                     :key="item.channelId"
@@ -64,7 +64,7 @@
                     </el-col>
                     <el-col :span="5">
                         <el-form-item label="类型" style="margin:0;">
-                            <el-select v-model="searchForm.reportType" placeholder="请选择类型" clearable>
+                            <el-select style="width: 100%;" v-model="searchForm.reportType" placeholder="请选择类型" clearable>
                                 <el-option
                                     v-for="item in reportTypeOptions"
                                     :key="item.channelId"
