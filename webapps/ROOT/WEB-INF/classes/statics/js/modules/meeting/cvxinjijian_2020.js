@@ -152,7 +152,7 @@ var vm = new Vue({
         //内容图页面变化
         handleCurrentChange2 (val) {
             this.pagination2.currPage = val
-            this.searchContentImg()
+            this.searchContentImg ()
         },
         //修改某一张内容图片
         chooseContentImg(objName,index){
