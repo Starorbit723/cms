@@ -176,6 +176,25 @@
                     </el-row>
                 </el-collapse-item>
 
+                <!--直播地址-->
+                <el-collapse-item title="直播地址" name="7">
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item prop="meetingJson.onlineShowLabelText" label-width="14.5%" label="按钮文案" style="margin:0;">
+                                <el-input clearable v-model="meetingForm.meetingJson.onlineShowLabelText" auto-complete="on" placeholder="请填写按钮的文案字段，建议文案不要超过按钮宽度"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h70">
+                        <el-col :span="24">
+                            <el-form-item prop="meetingJson.onlineShowUrl" label-width="14.5%" label="直播链接" style="margin:0;">
+                                <el-input clearable v-model="meetingForm.meetingJson.onlineShowUrl" auto-complete="on" placeholder="请填写直播页面链接"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-collapse-item>
+
+
             </el-collapse>
             <!--折叠面板结束-->
 

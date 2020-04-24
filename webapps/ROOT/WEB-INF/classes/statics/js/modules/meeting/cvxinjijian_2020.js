@@ -27,6 +27,20 @@ var vm = new Vue({
                 callback();
             }
         }
+        var validateUrl3 = (rule, value, callback) => {
+            var urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
+            if (value) {
+                if (value.trim() == '#') {
+                    callback();
+                } else if (!urlReg.test(value)) {
+                    callback(new Error('链接格式不正确'));
+                } else {
+                    callback();
+                }
+            } else {
+                callback(new Error('链接不能为空'));
+            }
+        }
         return {
             //新建或修改
             typeOfPage:'creat',
@@ -35,7 +49,7 @@ var vm = new Vue({
             //切换展示内容图库
             showContentImgLib:false,
             //折叠面板组件实例
-            activeNames: ['1','2','3','5','6'],
+            activeNames: ['1','2','3','5','6','7'],
             //文章基本信息
             meetingForm:{
                 meetingId:'6',//会议编号
@@ -58,6 +72,8 @@ var vm = new Vue({
                     }],
                     signUpLink:'',
                     signUpCodeImg:'',
+                    onlineShowLabelText:'',
+                    onlineShowUrl:''
                 },
             },
             meetingFormRules:{
@@ -73,8 +89,11 @@ var vm = new Vue({
                 "meetingJson.signUpCodeImg":[
                     { required: true, message: "报名二维码为必填项", trigger: 'change' }
                 ],
+                "meetingJson.onlineShowLabelText":[
+                    { required: true, message: '请填写按钮文案', trigger: 'change' }
+                ],
                 "meetingJson.onlineShowUrl": [
-                    { validator: validateUrl2, trigger: 'change' }
+                    { required: true, validator: validateUrl3, trigger: 'change' }
                 ],
             },
             //封面图库相关
