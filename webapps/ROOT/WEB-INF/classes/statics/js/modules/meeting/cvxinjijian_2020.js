@@ -131,9 +131,9 @@ var vm = new Vue({
         //根据环境判断绑定的id
         if (window.location.href.indexOf('chinaventure.com.cn') !== -1 || window.location.href.indexOf('cvmedia.com.cn') !== -1 || window.location.href.indexOf('117.78.28.103') !== -1) {
             console.log('正式环境')
-            this.meetingForm.meetingBaseInfoId = ''//基础信息ID,写死
-            this.meetingForm.meetingAgendaId = ''//日程ID,写死
-            this.meetingForm.meetingGuestId = ''//嘉宾ID,写死
+            this.meetingForm.meetingBaseInfoId = '60'//基础信息ID,写死
+            this.meetingForm.meetingAgendaId = '48'//日程ID,写死
+            this.meetingForm.meetingGuestId = '33'//嘉宾ID,写死
             this.meetingForm.meetingCooperationId = ''//合作机构ID,写死
         } else {
             console.log('测试环境')
