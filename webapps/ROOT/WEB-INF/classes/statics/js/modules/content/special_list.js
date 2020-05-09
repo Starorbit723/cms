@@ -818,21 +818,19 @@ var vm = new Vue({
         },
         //打开此专题
         openThisPage(item) {
-            if(item.subjectStatus == 2) {
-                if (window.location.href.indexOf('chinaventure.com.cn') !== -1|| window.location.href.indexOf('117.78.28.103') !== -1) {
+            if ((window.location.href.indexOf('chinaventure.com.cn') !== -1|| window.location.href.indexOf('117.78.28.103') !== -1) && item.subjectStatus == 2) {
+                if(item.subjectType == 0) {
                     window.open('https://www.chinaventure.com.cn/subject/'+ item.subjectId +'.html', "newwindow")
-                } else if (window.location.href.indexOf('cvmedia.com.cn') !== -1 || window.location.href.indexOf('117.78.28.103') !== -1) {
-                    window.open('https://www.cvmedia.com.cn/subject/'+ item.subjectId +'.html', "newwindow")
+                } else if (item.subjectType == 1) {
+                    window.open('https://m.chinaventure.com.cn/subject/'+ item.subjectId +'.html', "newwindow")
                 }
-            } 
+            }   
         },
         //跳转至新闻详情
         openUrlArticlePage(item){
             if(item.newsStatus == 2) {
                 if (window.location.href.indexOf('chinaventure.com.cn') !== -1|| window.location.href.indexOf('117.78.28.103') !== -1) {
                     window.open('https://www.chinaventure.com.cn'+item.newsUrl, "newwindow") 
-                } else if (window.location.href.indexOf('cvmedia.com.cn') !== -1 || window.location.href.indexOf('117.78.28.103') !== -1) {
-                    window.open('https://www.cvmedia.com.cn'+item.newsUrl, "newwindow") 
                 }
             } 
         },
