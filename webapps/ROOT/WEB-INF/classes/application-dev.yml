@@ -92,6 +92,7 @@ updateMeetingList: /cms/api/updateMeetingList
 updateSubjectList: /cms/api/updateSubjectList
 deleteSubjectNewsList: /cms/api/deleteSubjectNewsList
 updateVisitList: /cms/api/updateVisitList
+updateFirstClassList: /cms/api/updateFirstClassList
 nginxIp: 119.254.13.83
 nginxCommand: /usr/local/expect/expect_scp
 nginxName: root
