@@ -24,6 +24,18 @@
                                 auto-complete="off"></el-input>
                             </el-form-item>
                         </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="模板类型" style="margin:0;" label-width="40%">
+                                <el-select v-model="searchForm.subjectType" style="width:100%;" clearable>
+                                    <el-option
+                                        v-for="item in subjectModalType"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
                         <el-col :span="3" :offset="1" class="el-row-h40">
                             <el-button type="primary" icon="el-icon-search" style="width:100%" @click="startSearch(0)">搜索</el-button>
                         </el-col>
@@ -32,7 +44,7 @@
             </div>
             <!--功能按钮区-->
             <el-row class="el-row-h50">
-                <el-col :span="3">
+                <el-col :span="4">
                     <el-button type="primary" plain icon="el-icon-plus" style="width:100%" @click="addEditSpecial(0)">新建专题</el-button>
                 </el-col>
             </el-row>
@@ -57,6 +69,12 @@
                             <el-tag v-if="scope.row.subjectStatus == 3" type="danger">发布失败 </el-tag>
                             <el-tag v-if="scope.row.subjectStatus == 4" type="warning">待删除</el-tag>
                             <el-tag v-if="scope.row.subjectStatus == 5" type="danger">已删除</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="subjectType" label="模板类型" width="110">
+                        <template slot-scope="scope" v-if="scope.row.subjectType !== ''">
+                            <el-tag v-if="scope.row.subjectType == 0">标准模板</el-tag>
+                            <el-tag v-if="scope.row.subjectType == 1" type="warning">投等舱模板</el-tag>
                         </template>
                     </el-table-column>
                     <el-table-column prop="newsCount" label="文章数" width="110"></el-table-column>
@@ -121,12 +139,26 @@
                     <el-row class="el-row-h80">
                         <el-col :span="12">
                             <el-form-item label="频道" style="margin:0;" prop="subjectChannel" label-width="33%">
-                                <el-select v-model="specialInfoForm.subjectChannel" style="width:100%;" clearable>
+                                <el-select v-model="specialInfoForm.subjectChannel" style="width:100%;" clearable :disabled="specialInfoForm.subjectType == 1">
                                     <el-option
                                         v-for="item in channelOptions"
                                         :key="item.channelId"
                                         :label="item.channelTitle"
                                         :value="item.channelId">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h80">
+                        <el-col :span="12">
+                            <el-form-item label="专题模板类型" style="margin:0;" prop="subjectType" label-width="33%">
+                                <el-select @change="subjectTypeChange" v-model="specialInfoForm.subjectType" style="width:100%;" clearable :disabled="creatOrEdit !== 0">
+                                    <el-option
+                                        v-for="item in subjectModalType"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
@@ -196,7 +228,7 @@
                 </el-pagination>
             </div>
             <!--按钮区-->
-            <el-row class="el-row-h60">
+            <el-row class="el-row-h60" style="margin-top: 30px;">
                 <el-col :span="3" :offset="4">
                     <el-button type="primary" style="width:100%" @click="saveThisSpecial('specialInfoForm')">保存</el-button>
                 </el-col>

@@ -6,6 +6,7 @@ var vm = new Vue({
         //搜索提交
         searchForm:{
             subjectTitle:'',
+            subjectType:'',
             subjectStatus: ['0','1','2','3','4']
         },
         //专题列表查询结果
@@ -37,6 +38,14 @@ var vm = new Vue({
         },
         //频道初始化的基本数据
         channelOptions: [],
+        //专题模板类型，写死
+        subjectModalType:[{
+            label:'标准模板',
+            value: 0
+        },{
+            label:'投等舱模板',
+            value: 1
+        }],
         //专题基本信息
         specialInfoForm:{
             subjectId:'',
@@ -44,6 +53,7 @@ var vm = new Vue({
             subjectDesc:'',
             subjectPriority: '',
             subjectChannel: '',
+            subjectType:'',//模板类型
             subjectHtmlPic:'',//专题图片PC
             subjectAppPic:'',//专题图片PC
         },
@@ -56,6 +66,9 @@ var vm = new Vue({
             ],
             subjectChannel: [
                 { required: true, message: '请输入专题所属频道', trigger: 'change' }
+            ],
+            subjectType:[
+                {required: true, message: '请选择模板类型', trigger: 'change'}
             ],
             subjectAppPic:[
                 { required: true, message: '请上传封面图', trigger: 'change' }
@@ -161,6 +174,12 @@ var vm = new Vue({
                 }
             }
         },
+        //当模板类型为投等舱类型，所属频道是其他
+        subjectTypeChange(val){
+            if (val == 1) {
+                this.specialInfoForm.subjectChannel = 64
+            }
+        },
         handleCurrentChange (val) {
             this.pagination1.currPage = val
             this.startSearch()
@@ -208,6 +227,7 @@ var vm = new Vue({
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.subjectTitle = data.subjectTitle.trim()
+            data.subjectType = data.subjectType.toString()
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
