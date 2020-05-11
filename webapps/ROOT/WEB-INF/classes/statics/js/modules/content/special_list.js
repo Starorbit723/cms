@@ -282,7 +282,7 @@ var vm = new Vue({
                         if(res.page.list.length == 0) {
                             self.$message.error('请添加新闻后才可以发布')
                         } else {
-                            self.releaseThisSubject(item.subjectId.toString())
+                            self.releaseThisSubject(item.subjectId.toString(),item.subjectType)
                         }
                     }else{
                         mapErrorStatus(res)
@@ -296,7 +296,7 @@ var vm = new Vue({
             });
            
         },
-        releaseThisSubject(id) {
+        releaseThisSubject(id,modelType) {
             var self = this
             self.$confirm('确实要发布此专题吗?', '提示', {
                 confirmButtonText: '确定',
@@ -308,10 +308,16 @@ var vm = new Vue({
                     subjectStatus:'1',
                     subjectReleaseTime: new Date().getTime()
                 }
+                //根据不同的专题模板，走不同接口  0:普通模板  1：投等舱模板
+                if (modelType == 0) {
+                    var reqUrl = '/subject/push'
+                } else if (modelType == 1) {
+                    var reqUrl = '/subject/firstPush'
+                }
                 $.ajax({
                     type: "POST",
                     contentType: "application/json",
-                    url: "/subject/push",
+                    url: reqUrl,
                     data: JSON.stringify(data),
                     dataType: "json",
                     success: function(res){
