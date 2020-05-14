@@ -93,6 +93,11 @@ var vm = new Vue({
                     { required: true, message: '发布时间不能为空', trigger: 'change' }
                 ]
             },
+            pickerOptions:{
+                disabledDate(time) {
+                    return time.getTime() > Date.now();
+                }
+            },  
             //封面图库相关
             searchCoverimgForm:{
                 picTitle:'',
