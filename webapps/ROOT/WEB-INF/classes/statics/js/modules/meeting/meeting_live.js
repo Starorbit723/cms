@@ -63,6 +63,7 @@ var vm = new Vue({
                 updateAt: '',
                 createAt: '',
                 modUserName: '',
+                
             },
             meetingLiveListFormRules: {
                 name: [
@@ -92,21 +93,37 @@ var vm = new Vue({
             ifCreatOrEditPlace: 'creat',
             ifCreatOrEditModel: 'creat',
             maxWeight: '',
+            obvPlaceOptions:[{
+                label: '显示',
+                value: '1'
+            },{
+                label: '隐藏',
+                value: '0'
+            }],
+            obvModelOptions:[{
+                label: '显示',
+                value: '1'
+            },{
+                label: '隐藏',
+                value: '0'
+            }],
             meetinglivePlaceForm: {
                 id: '',
                 meetingPlaceTitle: '', //会议标题
                 meetingNavTitle: '', //导航标题
-                weight: '', //会议权重
+                weight: '', //会场权重
                 themTitle: '', //主题标题
                 modelTitle: '', //模块标题
                 type: '0', //类型
-                priority: '-1', //权重
+                priority: '-1', //模块权重
                 delStatus: '1', //删除状态 0已删除1未删除
                 createUserId: '',
                 updateUserId: '',
                 updateAt: '',
                 createAt: '',
                 meetingReportListId: '', // 所属报道id
+                isShow:'1',//是否显示会场 0 隐藏  1显示
+                isFlag:'1',//是否显示模块 0 隐藏  1显示
             },
             meetinglivePlaceFormRules: {
                 // weight:[
@@ -582,17 +599,21 @@ var vm = new Vue({
                                     result[obj[item.weight]].children.push(item)
                                 } else {
                                     obj[item.weight] = index++;
-                                    var list = {
+                                    let list = {
                                         weight: '',
                                         meetingPlaceTitle: '',
                                         meetingNavTitle: '',
                                         type: '',
-                                        children: []
+                                        isShow: '',
+                                        //isFlag : '',
+                                        children: [],
                                     }
                                     list.meetingPlaceTitle = item.meetingPlaceTitle
                                     list.meetingNavTitle = item.meetingNavTitle
                                     list.type = item.type
                                     list.weight = item.weight
+                                    list.isShow = item.isShow
+                                    //list.isFlag = item.isFlag
                                     list.children.push(item)
                                     result.push(list)
                                 }
@@ -623,10 +644,11 @@ var vm = new Vue({
                 self.tempObj = type
                 self.ifCreatOrEditPlace = 'edit'
                 self.ifEdit = true
-                self. meetinglivePlaceForm.meetingPlaceTitle = type.meetingPlaceTitle
-                self. meetinglivePlaceForm.meetingNavTitle = type.meetingNavTitle
-                self. meetinglivePlaceForm.type = type.type
-                self. meetinglivePlaceForm.weight = type.weight
+                self.meetinglivePlaceForm.meetingPlaceTitle = type.meetingPlaceTitle
+                self.meetinglivePlaceForm.meetingNavTitle = type.meetingNavTitle
+                self.meetinglivePlaceForm.type = type.type
+                self.meetinglivePlaceForm.weight = type.weight
+                self.meetinglivePlaceForm.isShow = type.isShow
                 self.showChildPage = '3'
             }
         },
@@ -660,6 +682,7 @@ var vm = new Vue({
                 for(var i = 0; i < arr.length; i++) {
                     arr[i].meetingPlaceTitle = self.meetinglivePlaceForm.meetingPlaceTitle
                     arr[i].meetingNavTitle = self.meetinglivePlaceForm.meetingNavTitle
+                    arr[i].isShow = self.meetinglivePlaceForm.isShow
                 }
                 var data = arr
                 var reqUrl = '/meetingReport/updateByList'
@@ -710,6 +733,8 @@ var vm = new Vue({
                 updateAt: '',
                 createAt: '',
                 meetingReportListId: '', // 所属报道id
+                isShow:'1',//是否显示会场 0 隐藏  1显示
+                isFlag:'1',//是否显示模块 0 隐藏  1显示
             },
             this.ifEdit = false
             this.showChildPage = '2'
@@ -884,6 +909,8 @@ var vm = new Vue({
                 updateAt: '',
                 createAt: '',
                 meetingReportListId: '', // 所属报道id
+                isShow:'1',//是否显示会场 0 隐藏  1显示
+                isFlag:'1',//是否显示模块 0 隐藏  1显示
             },
             this.ifEdit = false
             this.showChildPage = '2'

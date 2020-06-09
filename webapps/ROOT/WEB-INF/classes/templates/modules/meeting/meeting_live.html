@@ -145,25 +145,29 @@
                     <div class="meetingPlace" v-for="(item, index) in meetingliveDataTemp">
                         <div>
                             <span class="custom-tree-node">
-                                <span style="max-width:700px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 0, 0);font-weight: 700;"  v-text="'会场：'+ item.meetingPlaceTitle"></span>
+                                <span style="flex:0 0 600px;max-width:600px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 0, 0);font-weight: 700;"  v-text="'会场：'+ item.meetingPlaceTitle"></span>
                                 <div>
                                     <el-button type="text" size="mini" @click="addOrEditMeetingModel(0,item,index)">添加</el-button>
                                     <el-button type="text" size="mini" @click="addOrEditNewPlace(item)">属性</el-button>
                                     <el-button type="text" size="mini" @click="delThisMeetingPlace(item)">删除</el-button>
                                     <el-button type="text" size="mini" :disabled="index == 0" @click="MeetingPlaceMoveUp(index, item)">上移</el-button>
+                                    <el-tag style="margin-left: 10px;" v-if="item.isShow == 1" type="success">显示</el-tag>
+                                    <el-tag style="margin-left: 10px;" v-if="item.isShow == 0">隐藏</el-tag>
                                 </div>
                             </span>
                             <div v-if="item.children" v-for="(subItem, subIndex) in item.children">
                                 <span class="custom-tree-node2" >
-                                    <span style="width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;" v-text="'主题标题：'+ subItem.themTitle"></span>
-                                    <span style="width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;" v-text="'模块标题：'+ subItem.modelTitle"></span>
+                                    <span style="width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;" v-text="'主题标题：'+ subItem.themTitle"></span>
+                                    <span style="width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;" v-text="'模块标题：'+ subItem.modelTitle"></span>
                                     <!-- <span style="width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;">id:{{subItem.id}}&nbsp;&nbsp;&nbsp;&nbsp;weight: {{subItem.weight}}&nbsp;&nbsp;&nbsp;&nbsp;priority：{{subItem.priority}}</span> -->
-                                    <span style="width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;" v-if="subItem.type == 0" v-text="'类型： 嘉宾演讲'"></span>
-                                    <span style="width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;" v-if="subItem.type == 1" v-text="'类型： 圆桌论坛'"></span>
+                                    <span style="width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;" v-if="subItem.type == 0" v-text="'类型： 嘉宾演讲'"></span>
+                                    <span style="width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size: 15px; color: rgb(0, 57, 170);font-weight: 700;" v-if="subItem.type == 1" v-text="'类型： 圆桌论坛'"></span>
                                     <div>
                                         <el-button type="text" size="mini" @click="addOrEditMeetingDetail(subItem)">编辑</el-button>
                                         <el-button type="text" size="mini" @click="addOrEditMeetingModel(1,item,subIndex)">属性</el-button>
                                         <el-button type="text" size="mini" @click="delMeetingModel(item, subIndex)">删除</el-button>
+                                        <el-tag style="margin-left: 10px;" v-if="subItem.isFlag == 1" type="success">显示</el-tag>
+                                        <el-tag style="margin-left: 10px;" v-if="subItem.isFlag == 0">隐藏</el-tag>
                                     </div>
                                 </span>
                             </div>
@@ -247,11 +251,25 @@
                                 </el-form-item>
                             </el-col>
                         </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="9">
+                                <el-form-item label="显示会场" label-width="20%" prop="weight" style="margin:0;">
+                                    <el-select style="width:100%;" v-model="meetinglivePlaceForm.isShow">
+                                        <el-option
+                                            v-for="item in obvPlaceOptions"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
                     </el-form>
                     
                     <el-row style="margin-top: 30px">
-                        <el-col class="el-row-h40" :span="2">
-                            <el-button type="primary" style="width: 100%" @click="testSubmit2('meetinglivePlaceForm')">保存</el-button>
+                        <el-col class="el-row-h40" :span="3">
+                            <el-button type="primary" style="width: 100%" @click="testSubmit2('meetinglivePlaceForm')">保存会场</el-button>
                         </el-col>
                         <el-col class="el-row-h40" :span="2" :offset="1">
                             <el-button type="primary" style="width: 100%" @click="closeCreatOrEditMeetinglivePlace('meetinglivePlaceForm')">取消</el-button>
@@ -321,6 +339,20 @@
                                         auto-complete="off"
                                         >
                                     </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h70">
+                            <el-col :span="9">
+                                <el-form-item label="显示模块" label-width="20%" prop="weight" style="margin:0;">
+                                    <el-select style="width:100%;" v-model="meetinglivePlaceForm.isFlag">
+                                        <el-option
+                                            v-for="item in obvModelOptions"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -763,8 +795,8 @@
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
-    height: 30px;
-    line-height: 30px;
+    height: 40px;
+    line-height: 40px;
     cursor: pointer;
     box-sizing: border-box;
 }

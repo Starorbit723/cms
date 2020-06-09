@@ -120,8 +120,8 @@
                     <!--一级机构列表数据开始-->
                     <div v-for="(item,index) in meetingCopForm.meetingCooperationJson">
                         <el-row class="el-row-h60">
-                            <el-col :span="17">
-                                <el-form-item label="一级标题" style="margin:0;">
+                            <el-col :span="11">
+                                <el-form-item  label-width="25%" label="一级标题" style="margin:0;">
                                     <el-input
                                     clearable
                                     type="text"
@@ -135,13 +135,19 @@
                             <el-col class="el-row-h40" :span="2" :offset="1">
                                 <el-button style="width:100%" icon="el-icon-circle-close" @click="delCopLv1(index)"></el-button>
                             </el-col>
+                            <el-col :span="2" :offset="1" class="el-row-h40" v-if="index !== 0">
+                                <el-button type="primary" icon="el-icon-caret-top" style="width:100%" @click="moveUpLv1(index)"></el-button>
+                            </el-col>
+                            <el-col :span="2" :offset="1" class="el-row-h40" v-if="index !== (meetingCopForm.meetingCooperationJson.length - 1)">
+                                <el-button type="primary" icon="el-icon-caret-bottom" style="width:100%" @click="moveDownLv1(index)"></el-button>
+                            </el-col>
                         </el-row>
 
                         <!--二级标题开始-->
                         <div v-for="(item2,index2) in item.children">
                             <el-row class="el-row-h60">
-                                <el-col :span="15" :offset="2">
-                                    <el-form-item label="二级标题" style="margin:0;">
+                                <el-col :span="9" :offset="2">
+                                    <el-form-item label-width="25%" label="二级标题" style="margin:0;">
                                         <el-input
                                         clearable
                                         type="text"
@@ -154,6 +160,12 @@
                                 </el-col>
                                 <el-col class="el-row-h40" :span="2" :offset="1">
                                     <el-button style="width:100%" icon="el-icon-circle-close" @click="delCopLv2(index,index2)"></el-button>
+                                </el-col>
+                                <el-col :span="2" :offset="1" class="el-row-h40" v-if="index2 !== 0">
+                                    <el-button type="primary" icon="el-icon-caret-top" style="width:100%" @click="moveUpLv2(index,index2)"></el-button>
+                                </el-col>
+                                <el-col :span="2" :offset="1" class="el-row-h40" v-if="index2 !== (item.children.length - 1)">
+                                    <el-button type="primary" icon="el-icon-caret-bottom" style="width:100%" @click="moveDownLv2(index,index2)"></el-button>
                                 </el-col>
                             </el-row>
 

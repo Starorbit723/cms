@@ -97,6 +97,7 @@ var vm = new Vue({
             newsReleaseTime:'',//发布时间
             newsFlashStatus:'',//是否快讯 0否 1 是
             newsOrderCount:'',//手工点击量
+            modUserName:'',//修改人
         }],
         //分页器相关
         pagination1: {

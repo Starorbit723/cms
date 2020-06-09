@@ -101,6 +101,40 @@ var vm = new Vue({
             this.pagination3.currPage = val
             this.searchCoper()
         },
+        //移动一级
+        moveUpLv1 (index) {
+            var moveArr = JSON.parse(JSON.stringify(this.meetingCopForm.meetingCooperationJson))
+            let temp = moveArr[index - 1]
+            let temp2 = moveArr[index]
+            moveArr[index - 1] = temp2
+            moveArr[index] = temp
+            this.meetingCopForm.meetingCooperationJson = moveArr
+        },
+        moveDownLv1(index) {
+            var moveArr = JSON.parse(JSON.stringify(this.meetingCopForm.meetingCooperationJson))
+            let temp = moveArr[index]
+            let temp2 = moveArr[index + 1]
+            moveArr[index + 1] = temp
+            moveArr[index] = temp2
+            this.meetingCopForm.meetingCooperationJson = moveArr
+        },
+        //移动二级
+        moveUpLv2(index,index2) {
+            var moveArr = JSON.parse(JSON.stringify(this.meetingCopForm.meetingCooperationJson[index].children))
+            let temp = moveArr[index2 - 1]
+            let temp2 = moveArr[index2]
+            moveArr[index2 - 1] = temp2
+            moveArr[index2] = temp
+            this.meetingCopForm.meetingCooperationJson[index].children = moveArr
+        },
+        moveDownLv2(index,index2) {
+            var moveArr = JSON.parse(JSON.stringify(this.meetingCopForm.meetingCooperationJson[index].children))
+            let temp = moveArr[index2]
+            let temp2 = moveArr[index2 + 1]
+            moveArr[index2 + 1] = temp
+            moveArr[index2] = temp2
+            this.meetingCopForm.meetingCooperationJson[index].children = moveArr
+        },
         //开始搜索专题列表
         startSearch (type) {
             var self = this
