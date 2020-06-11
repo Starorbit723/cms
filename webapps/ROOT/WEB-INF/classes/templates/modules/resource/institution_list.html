@@ -39,7 +39,11 @@
             <!--表格查询结果区-->
             <div class="cv_content_square">
                 <el-table :data="tableData" style="width: 100%; margin:10px auto;" ref="multipleTable" stripe>
-                    <el-table-column prop="cooperationName" label="机构名称" width=""></el-table-column>
+                    <el-table-column prop="cooperationName" label="机构名称" width="">
+                        <template v-if="scope.row.cooperationName" slot-scope="scope">
+                            <div v-html="scope.row.cooperationName"></div>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="cooperationImg" label="机构Logo" width="170">
                         <template v-if="scope.row.cooperationImg" slot-scope="scope">
                             <div class="imgcontainer">

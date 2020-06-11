@@ -237,7 +237,11 @@
                                     </div>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="cooperationName" label="机构名称" width=""></el-table-column>
+                            <el-table-column prop="cooperationName" label="机构名称" width="">
+                                <template v-if="scope.row.cooperationName" slot-scope="scope">
+                                    <div v-html="scope.row.cooperationName"></div>
+                                </template>
+                            </el-table-column>
                             <el-table-column prop="cooperationModUserName" label="更新人" width="90"></el-table-column>
                             <el-table-column label="操作" width="100" fixed="right">
                                 <template slot-scope="scope">
@@ -565,7 +569,11 @@
                                     </div>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="cooperationName" label="机构名称" width=""></el-table-column>
+                            <el-table-column prop="cooperationName" label="机构名称" width="">
+                                <template v-if="scope.row.cooperationName" slot-scope="scope">
+                                    <div v-html="scope.row.cooperationName"></div>
+                                </template>
+                            </el-table-column>
                             <el-table-column prop="cooperationModUserName" label="更新人" width="90"></el-table-column>
                             <el-table-column label="操作" width="100" fixed="right">
                                 <template slot-scope="scope">
