@@ -89,8 +89,8 @@
                             <el-form-item label="图位名称" prop="name" style="margin:0;">
                                 <el-input
                                 clearable
-                                maxlength="36"
-                                placeholder="限36字"
+                                maxlength="50"
+                                placeholder="限50字"
                                 type="text"
                                 v-model="creatNewPicPosForm.name"
                                 auto-complete="off"></el-input>
@@ -340,11 +340,11 @@
                         <el-col :span="24">
                             <el-form-item prop="picTitle" label="标题" style="margin:0;">
                                 <el-input
-                                    maxlength="36"
+                                    maxlength="50"
                                     type="text"
                                     v-model="posItemForm.picTitle"
                                     auto-complete="off">
-                                    <template slot="append">最多36字</template>
+                                    <template slot="append">最多50字</template>
                                 </el-input>
                             </el-form-item>
                         </el-col>

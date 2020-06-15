@@ -229,8 +229,8 @@ var vm = new Vue({
             console.log(file)
             var self = this
             //开始图片验证
-            if (file.size / 1024 / 1024 > 2 ) {
-                self.$message.error('上传图片大小不能超过2MB');
+            if (file.size / 1024 / 1024 > 0.5 ) {
+                self.$message.error('上传图片大小不能超过512KB');
                 return
             }
             if (file.raw.type !== 'image/jpeg' && file.raw.type !== 'image/png') {
@@ -252,6 +252,13 @@ var vm = new Vue({
         //新建或编辑保存--优先上传图片，再提交保存
         submitCreatEdit(formName) {
             var self = this 
+            //验证图片真实尺寸
+            var w = document.getElementById('oImg').naturalWidth
+            var h = document.getElementById('oImg').naturalHeight
+            if (w > 1100) {
+                self.$message.error('图片宽高超过尺寸限制，宽度限定1100px')
+                return
+            }
             self.$refs['contentImgForm'].validate((valid) => {
                 if (valid) {
                     //新建,图片新上传

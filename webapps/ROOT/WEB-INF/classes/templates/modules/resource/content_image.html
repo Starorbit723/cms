@@ -152,7 +152,7 @@
                                 :show-file-list="false"
                                 :auto-upload="false"
                                 :on-change="coverImgFileChange">
-                                <img v-if="contentImgForm.picUrl" :src="contentImgForm.picUrl" class="avatar">
+                                <img id="oImg" v-if="contentImgForm.picUrl" :src="contentImgForm.picUrl" class="avatar">
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                             </el-upload>
                         </el-form-item>

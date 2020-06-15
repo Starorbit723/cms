@@ -235,6 +235,15 @@ var vm = new Vue({
         coverImgFileChange (file,fileList) {
             console.log(file)
             var self = this
+            //开始图片验证
+            if (file.size / 1024  > 300 ) {
+                self.$message.error('上传图片大小不能超过300KB');
+                return
+            }
+            if (file.raw.type !== 'image/jpeg' && file.raw.type !== 'image/png') {
+                self.$message.error('上传图片只能是 JPG 或 png 格式');
+                return
+            }
             //创建临时的路径来展示图片
             var fr = new FileReader()//创建new FileReader()对象
             fr.onload = function() {
@@ -263,6 +272,13 @@ var vm = new Vue({
         //新建或编辑保存--优先上传图片，再提交保存
         submitCreatEdit(formName) {
             var self = this
+            //验证图片真实尺寸
+            var w = document.getElementById('oImg').naturalWidth
+            var h = document.getElementById('oImg').naturalHeight
+            if (w > 1120) {
+                self.$message.error('图片宽高超过尺寸限制，宽度限定1100px')
+                return
+            }
             self.$refs[formName].validate((valid) => {
                 if (valid) {
                     //新建,图片新上传

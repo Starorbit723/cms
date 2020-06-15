@@ -151,9 +151,8 @@
                                 action="https://jsonplaceholder.typicode.com/posts/"
                                 :show-file-list="false"
                                 :auto-upload="false"
-                                :on-change="coverImgFileChange"
-                                :before-upload="beforeAvatarUpload">
-                                <img v-if="advImgForm.picUrl" :src="advImgForm.picUrl" class="avatar">
+                                :on-change="coverImgFileChange">
+                                <img id="oImg" v-if="advImgForm.picUrl" :src="advImgForm.picUrl" class="avatar">
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                             </el-upload>
                         </el-form-item>
