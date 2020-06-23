@@ -236,8 +236,8 @@ var vm = new Vue({
             console.log(file)
             var self = this
             //开始图片验证
-            if (file.size / 1024  > 300 ) {
-                self.$message.error('上传图片大小不能超过300KB');
+            if (file.size / 1024  > 500 ) {
+                self.$message.error('上传图片大小不能超过500KB');
                 return
             }
             if (file.raw.type !== 'image/jpeg' && file.raw.type !== 'image/png') {

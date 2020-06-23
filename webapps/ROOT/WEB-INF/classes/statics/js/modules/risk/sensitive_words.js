@@ -4,14 +4,20 @@ var vm = new Vue({
         //主页子页切换
         showChildPage:false,
         showAddBox:false,
+        //敏感词类型
+        typeOptions:[],
         //搜索提交
         searchForm:{
             keyword:'',
+            type:'',//类型creatForm
         },
+        typeArr:['0','1','2','3'],
         //表格结果
         sensitiveWordTableData: [{
             id:'',//主键编号
             keyword:'',//敏感词
+            type:'',//类型
+            source:'',//来源备注
             crtUserId:'',//创建人编号
             crtTime:'',//创建时间
         }],
@@ -27,29 +33,74 @@ var vm = new Vue({
         //新增弹框
         creatForm:{
             id:'',//主键编号
-            keyword:'',//敏感词
+            keywords:'',//敏感词
+            type:'',//类型
+            source:'',//来源备注
             crtUserId:'',//创建人编号
             crtTime:'',//创建时间
         },
         creatFormRules: {
-            keyword: [
+            keywords: [
                 { required: true, message: '敏感词不能为空', trigger: 'change' }
-            ]
+            ],
+            type:[
+                { required: true, message: '类型为必选项', trigger: 'change' }
+            ],
+            source:[
+                { required: true, message: '来源为必选项', trigger: 'change' }
+            ],
         },
     },
     created() {
+        this.getTypeOptions()
         this.startSearch()
     },
     methods:{
+        //获取敏感词类型
+        getTypeOptions () {
+            var self = this
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/sys/dict/list?type=sensitiveType",
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                       console.log(res.page.list)
+                       self.typeOptions = res.page.list
+                    }else{
+                        mapErrorStatus(res)
+						vm.error = true;
+						vm.errorMsg = res.msg;
+					}
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
         handleCurrentChange (val) {
             pagination1.currPage = val.toString()
             this.startSearch()
+        },
+        //下拉搜索类型改变
+        selectTypeChange (val) {
+            console.log('type===>',val)
+            var tempArr = []
+            if (val == null || val == '') {
+                this.typeArr = ['0','1','2','3']
+            } else {
+                tempArr.push(val)
+                this.typeArr = tempArr
+            }
+            console.log(this.typeArr)
         },
         //开始搜索专栏列表
         startSearch (type) {
             var self = this
             var data = JSON.parse(JSON.stringify(self.searchForm))
             data.keyword = data.keyword.toString().trim()
+            data.type = this.typeArr
             if (type == 0) {
                 Object.assign(data,{
                     page: '1',
@@ -99,8 +150,11 @@ var vm = new Vue({
             var self = this
             self.$refs[formName].validate((valid) => {
                 if (valid) {
+                    //console.log(self.creatForm.keyword.replace(/[(^*\n*)|(^*\r*)]/g,',').replace(' ',','))
                     var data = {
-                        keyword: self.creatForm.keyword,
+                        keywords: self.creatForm.keywords.replace(/[(^*\n*)|(^*\r*)]/g,',').replace(' ',','),
+                        type: self.creatForm.type,
+                        source:self.creatForm.source,
                         crtUserId: self.getCookie('userId')
                     }
                     $.ajax({

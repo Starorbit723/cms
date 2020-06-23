@@ -297,8 +297,8 @@ var vm = new Vue({
             //验证图片真实尺寸
             var w = document.getElementById('oImg').naturalWidth
             var h = document.getElementById('oImg').naturalHeight
-            if (w > 1920 || h > 310) {
-                self.$message.error('图片宽高超过尺寸限制，宽度限定1920px，高度限制310px')
+            if (w > 1920 || h > 450) {
+                self.$message.error('图片宽高超过尺寸限制，宽度限定1920px，高度限制450px')
                 return
             }
             self.$refs[formName].validate((valid) => {

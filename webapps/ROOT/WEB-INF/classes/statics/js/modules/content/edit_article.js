@@ -603,14 +603,32 @@ var vm = new Vue({
                                 self.reqSaveArticle(type)
                             } else {
                                 self.ajaxController = true
-                                self.$confirm('文章包含敏感词"'+ res.sensitiveList.join(',') +'",是否继续?', '提示', {
-                                    confirmButtonText: '确定',
-                                    cancelButtonText: '取消',
-                                    type: 'warning'
-                                }).then(() => {
-                                    self.reqSaveArticle(type)
-                                    self.ajaxController = false
-                                })
+                                var type023 = ''
+                                var type1 = ''
+                                //根据敏感词种类不同来做出不同提示和行为判断
+                                for (let i = 0; i < res.sensitiveList.length; i++) {
+                                    if (res.sensitiveList[i].type == 0 || res.sensitiveList[i].type == 2 || res.sensitiveList[i].type == 3) {
+                                        type023 += res.sensitiveList[i].keyword + ','
+                                    } else if (res.sensitiveList[i].type == 1 ) {
+                                        type1 += res.sensitiveList[i].keyword + '  '
+                                    }
+                                }
+                                if (type1.length !== 0) {
+                                    self.$confirm('文章包含政治敏感词" '+ type1 +'",请删除', '提示', {
+                                        confirmButtonText: '确定',
+                                        type: 'warning'
+                                    })
+                                } else if (type1.length == 0 && type023.length !== 0) {
+                                    self.$confirm('文章包含敏感词" '+ type023 +'",是否继续?', '提示', {
+                                        confirmButtonText: '确定',
+                                        cancelButtonText: '取消',
+                                        type: 'warning'
+                                    }).then(() => {
+                                        self.reqSaveArticle(type)
+                                        self.ajaxController = false
+                                    })
+                                }
+                                
                             }
                         } else {
                             self.ajaxController = true
