@@ -188,7 +188,9 @@ var vm = new Vue({
             this.$refs[formName].resetFields();
             this.creatForm={
                 id:'',//主键编号
-                keyword:'',//敏感词
+                keywords:'',//敏感词
+                type:'',//类型
+                source:'',//来源备注
                 crtUserId:'',//创建人编号
                 crtTime:'',//创建时间
             }

@@ -87,7 +87,7 @@
             </div>
 
             <!--新增敏感词弹框-->
-            <el-dialog title="新增敏感词" :visible.sync="showAddBox" width="70%">
+            <el-dialog title="新增敏感词" :visible.sync="showAddBox" width="70%" close="closeCreat('creatForm')" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
                 <el-form :model="creatForm" :rules="creatFormRules" ref="creatForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right">
                     <el-row class="el-row-h120">
                         <el-col :span="24">
