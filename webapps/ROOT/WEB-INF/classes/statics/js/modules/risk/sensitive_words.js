@@ -80,7 +80,7 @@ var vm = new Vue({
             });
         },
         handleCurrentChange (val) {
-            pagination1.currPage = val.toString()
+            this.pagination1.currPage = val
             this.startSearch()
         },
         //下拉搜索类型改变
