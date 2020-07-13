@@ -132,7 +132,7 @@ var vm = new Vue({
             })
         },
         //返回清空表单
-        closeCreat (formName){
+        closeCreat (formName) {
             this.showAddBox = false
             this.$refs[formName].resetFields();
             this.creatForm={
