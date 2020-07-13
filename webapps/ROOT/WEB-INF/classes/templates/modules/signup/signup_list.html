@@ -342,6 +342,8 @@
                                         <el-checkbox v-model="signupForm.signUpPosition">职位</el-checkbox>
                                         <el-checkbox v-model="signupForm.signUpCompany">公司</el-checkbox>
                                         <el-checkbox v-model="signupForm.signUpEmail">邮箱</el-checkbox>
+                                        <el-checkbox v-model="signupForm.signUpRecommendation">推荐单位</el-checkbox>
+                                        <el-checkbox v-model="signupForm.signUpIndustry">行业</el-checkbox>
                                     </template>
                                 </el-form-item>
                             </el-col>
@@ -650,6 +652,8 @@
                     <el-table-column prop="signUpInfoMobile" label="手机号" width="110"></el-table-column>
                     <el-table-column prop="signUpInfoInvitationCode" label="邀请码" width="110"></el-table-column>
                     <el-table-column prop="signUpInfoEmail" label="邮箱" width="140"></el-table-column>
+                    <el-table-column prop="signUpInfoRecommendation" label="推荐单位" width="140"></el-table-column>
+                    <el-table-column prop="signUpInfoIndustry" label="行业" width="140"></el-table-column>
                     <el-table-column prop="signUpInfoStatus" label="审核状态" >
                         <template slot-scope="scope">
                             <el-tag v-if="scope.row.signUpInfoStatus == '0'" type='warning'>待审核</el-tag>

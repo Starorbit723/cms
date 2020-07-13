@@ -63,6 +63,8 @@ var vm = new Vue({
             signUpPosition: false, //职位
             signUpCompany: false, //公司
             signUpEmail: false, //邮箱
+            signUpRecommendation: false,//推荐单位
+            signUpIndustry:false,//行业
             signUpCustom: false,
             signUpStatus: '0', //0正常1删除
             signUpOldMeetingId: '', //0 定制会议  1 通用会议
@@ -181,6 +183,8 @@ var vm = new Vue({
                 // signUpInfoMobile: 'ali',
                 // signUpInfoInvitationCode: 'uudfY6',
                 // signUpInfoEmail: '10e8je@qq.com',
+                // signUpInfoRecommendation:'',
+                // signUpInfoIndustry:'',
                 // signUpInfoStatus: '0'
             }
         ],
@@ -385,6 +389,8 @@ var vm = new Vue({
                             self.signupForm.signUpName = JSON.parse(self.signupForm.signUpName)
                             self.signupForm.signUpCompany = JSON.parse(self.signupForm.signUpCompany)
                             self.signupForm.signUpPosition = JSON.parse(self.signupForm.signUpPosition)
+                            self.signupForm.signUpRecommendation = JSON.parse(self.signupForm.signUpRecommendation)
+                            self.signupForm.signUpIndustry = JSON.parse(self.signupForm.signUpIndustry)
                             self.signupForm.signUpCustom = JSON.parse(self.signupForm.signUpCustom)
                             self.showSignupList = false
                             self.showAddorEditPage = true
@@ -1074,6 +1080,8 @@ var vm = new Vue({
                 signUpPosition: false, //职位
                 signUpCompany: false, //公司
                 signUpEmail: false, //邮箱
+                signUpRecommendation: false,//推荐单位
+                signUpIndustry:false,//行业
                 signUpCustom: false,
                 signUpJson: [{
                     sectionId:0,
@@ -1579,7 +1587,7 @@ var vm = new Vue({
                     window.open("/meetingInvitationCode/excels?meetingInvitationCodeSignUpId="+self.searchInfoForm.signUpId)
             //     }
             // })
-           
+            
         },
         closeSingupInfoPage(formName){
             this.showSingupInfoPage = false

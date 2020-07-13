@@ -105,7 +105,9 @@ ak: 2FBSHRRFZ5YLE3VPBMDK
 sk: vqYIdh3xmKfjlhcM0qEwCeuY8QfRKHYnGYHWoDBx
 local: cn-north-1
 bucketName: cvinfo-test
-obsUrl: testpic.chinaventure.com.cn
+obsUrl: https://cvinfo-test.obs.cn-north-1.myhuaweicloud.com/
+picUrl: https://testpic.chinaventure.com.cn/
+picDomain: testpic.chinaventure.com.cn
 baiduUrl: http://data.zz.baidu.com/urls?site=https://www.chinaventure.com.cn&token=EAN4cqLpc6TbSSFO
 cvinfoUrl: https://www.chinaventure.com.cn
 cvinfoMUrl: https://m.chinaventure.com.cn
