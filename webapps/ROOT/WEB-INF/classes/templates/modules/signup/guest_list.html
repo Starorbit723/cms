@@ -169,6 +169,21 @@
                     </el-row>
                     <el-row class="el-row-h120">
                         <el-col :span="24">
+                            <el-form-item prop="customerDesc" label-width="10%" label="业务描述" style="margin:0;">
+                                <el-input
+                                maxlength="600"
+                                :disabled="true"
+                                type="textarea"
+                                :autosize="{ minRows: 4, maxRows: 4}"
+                                placeholder=""
+                                v-model="guestForm.customerDesc"
+                                auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h120">
+                        <el-col :span="24">
                             <el-form-item prop="customerStatus" label-width="10%" label="跟踪状态" style="margin:0;">
                                 <el-input
                                 maxlength="200"

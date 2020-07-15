@@ -22,6 +22,7 @@ var vm = new Vue({
             customerPhone:'', //手机号
             customerSale:'', //所属销售
             customerStatus:'', //跟踪状态
+            customerDesc:'',//业务描述
             customerActivity:'', //
             customerCrtUserId:'', //
             customerModUserId:'', //
@@ -49,6 +50,7 @@ var vm = new Vue({
             customerPhone:'', //手机号
             customerSale:'', //所属销售
             customerStatus:'', //跟踪状态
+            customerDesc:'',//业务描述
             customerActivity:'', //
             customerCrtUserId:'', //
             customerModUserId:'', //
@@ -161,6 +163,7 @@ var vm = new Vue({
                 customerPhone:'', //手机号
                 customerSale:'', //所属销售
                 customerStatus:'', //跟踪状态
+                customerDesc:'',//业务描述
                 customerActivity:'', //
                 customerCrtUserId:'', //
                 customerModUserId:'', //
