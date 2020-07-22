@@ -61,7 +61,7 @@
 
             <!--折叠面板开始-->
             <el-collapse v-model="activeNames" @change="handleChangeCollapse">
-
+                
                 <!--会议介绍-->
                 <el-collapse-item title="会议介绍" name="1">
                     <div v-for="(item,index) in meetingForm.meetingJson.introduce">
@@ -93,7 +93,7 @@
                 <el-collapse-item title="奖项设置" name="2">
                     <el-row class="el-row-h50">
                         <el-col :span="24">
-                            <el-form-item label="备注文字" prop="" label-width="15%" style="margin:0;">
+                            <el-form-item label="备注文字" prop="" label-width="13%" style="margin:0;">
                                 <el-input
                                     v-model="meetingForm.meetingJson.settingMarkText"
                                     auto-complete="off">
@@ -103,8 +103,27 @@
                     </el-row>
                 </el-collapse-item>
 
+                <!--活动亮点-->
+                <el-collapse-item title="活动亮点" name="3">
+                    <div v-for="(item,index) in meetingForm.meetingJson.activityLight">
+                        <el-row class="el-row-h90">
+                            <el-col :span="24">
+                                <el-form-item prop="" label-width="13%" label="段落" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="textarea"
+                                        :autosize="{ minRows: 3, maxRows: 3}"
+                                        v-model="item.paragraphText"
+                                        auto-complete="on">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row> 
+                    </div>
+                </el-collapse-item>
+
                 <!--嘉宾管理-->
-                <el-collapse-item title="嘉宾管理" name="3">
+                <el-collapse-item title="大赛导师" name="4">
                     <el-row class="el-row-h50">
                         <el-col :span="10">
                             <el-form-item label="嘉宾编号" prop="" label-width="30%" style="margin:0;">
@@ -119,40 +138,76 @@
                     </el-row>
                 </el-collapse-item>
 
-                <!--榜单管理-->
-                <!-- <el-collapse-item title="榜单管理" name="4">
-                    <el-row class="el-row-h50">
-                        <el-col :span="10">
-                            <el-form-item label="榜单编号" prop="" label-width="30%" style="margin:0;">
-                                <el-input
-                                    :disabled="true"
-                                    v-model="meetingForm.meetingRankId"
-                                    auto-complete="off">
-                                </el-input>
-                            </el-form-item>
+                <!--报名方式-->
+                <el-collapse-item title="报名方式" name="5">
+                    <div v-for="(item,index) in meetingForm.meetingJson.signUpWayList">
+                        <el-row class="el-row-h90">
+                            <el-col :span="21">
+                                <el-form-item prop="" label-width="14.5%" label="条目" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="textarea"
+                                        :autosize="{ minRows: 3, maxRows: 3}"
+                                        v-model="item.paragraphText"
+                                        auto-complete="on">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col class="el-row-h40" :span="2" :offset="1">
+                                <el-button style="width:100%" icon="el-icon-circle-close" @click="delSignUpParagraph(index)"></el-button>
+                            </el-col>
+                        </el-row> 
+                    </div>
+                    <el-row>
+                        <el-col :span="21" :offset="3" style="margin-top:10px;margin-bottom:10px;">
+                            <el-button type="primary" icon="el-icon-plus" style="width:100%" @click="addSignUpParagraph">新增条目</el-button>
                         </el-col>
-                        <el-col class="el-row-h40" :offset="1" :span="13">请到<b style="color: #175CE9;">会议榜单</b>中配置相关内容，本次会议的会议编号为：<b style="color: #175CE9;">2</b></el-col>
                     </el-row>
-                </el-collapse-item> -->
+                </el-collapse-item>
 
-                <!--合作伙伴-->
-                <!-- <el-collapse-item title="合作机构" name="5">
-                    <el-row class="el-row-h50">
-                        <el-col :span="10">
-                            <el-form-item label="合作机构编号" prop="" label-width="30%" style="margin:0;">
-                                <el-input
-                                    :disabled="true"
-                                    v-model="meetingForm.meetingCooperationId"
-                                    auto-complete="off">
-                                </el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col class="el-row-h40" :offset="1" :span="13">请到<b style="color: #175CE9;">会议机构</b>中配置相关内容，本次会议的会议编号为：<b style="color: #175CE9;">2</b></el-col>
-                    </el-row>
-                </el-collapse-item> -->
+                <!--关于海选-->
+                <el-collapse-item title="关于海选" name="6">
+                    <div v-for="(item,index) in meetingForm.meetingJson.seaChoiceList">
+                        <el-row class="el-row-h50">
+                            <el-col :span="12">
+                                <el-form-item prop="" label-width="26%" label="城市" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        v-model="item.city"
+                                        auto-complete="on">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item prop="" label-width="26%" label="时间" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        v-model="item.time"
+                                        auto-complete="on">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row> 
+                        <el-row class="el-row-h70">
+                            <el-col :span="24">
+                                <el-form-item prop="" label-width="13%" label="地点" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="text"
+                                        v-model="item.address"
+                                        auto-complete="on">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row> 
+                    </div>
+                    
+                </el-collapse-item>
 
                 <!--活动报名-->
-                <el-collapse-item title="活动报名" name="6">
+                <el-collapse-item title="活动报名" name="7">
                     <el-row class="el-row-h60">
                         <el-col :span="24">
                             <el-form-item prop="meetingJson.signUpLink" label-width="14.5%" label="报名链接" style="margin:0;">

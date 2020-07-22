@@ -35,7 +35,7 @@ var vm = new Vue({
             //切换展示内容图库
             showContentImgLib:false,
             //折叠面板组件实例
-            activeNames: ['1','2','3','4','5','6'],
+            activeNames: ['1','2','3','4','5','6','7','8'],
             //文章基本信息
             meetingForm:{
                 meetingId:'7',//会议编号
@@ -57,6 +57,37 @@ var vm = new Vue({
                         paragraphText:''
                     }],
                     settingMarkText:'',//奖项设置备注文字
+                    activityLight:[{
+                        paragraphText:''
+                    },{
+                        paragraphText:''
+                    },{
+                        paragraphText:''
+                    }], //活动亮点
+                    signUpWayList:[{
+                        paragraphText:''
+                    }],//报名方式
+                    seaChoiceList:[{
+                        city:'',
+                        time:'',
+                        address:''
+                    },{
+                        city:'',
+                        time:'',
+                        address:''
+                    },{
+                        city:'',
+                        time:'',
+                        address:''
+                    },{
+                        city:'',
+                        time:'',
+                        address:''
+                    },{
+                        city:'',
+                        time:'',
+                        address:''
+                    }],//关于海选
                     signUpLink:'',
                     signUpCodeImg:'',
                 },
@@ -126,6 +157,26 @@ var vm = new Vue({
     },
     methods:{
         handleChangeCollapse () {
+        },
+        //添加报名方式条目
+        addSignUpParagraph () {
+            let Lv1Length = this.meetingForm.meetingJson.signUpWayList.length
+            if (this.meetingForm.meetingJson.signUpWayList[Lv1Length - 1].paragraphText.trim() !== '') {
+                this.meetingForm.meetingJson.signUpWayList.push({
+                    paragraphText:''
+                })
+            } else {
+                this.$message.error('请完成上一个条目的内容')
+            }
+        },
+        //删除段落
+        delSignUpParagraph(index){
+            let Lv1Length = this.meetingForm.meetingJson.signUpWayList.length
+            if (Lv1Length >= 2) {
+                this.meetingForm.meetingJson.signUpWayList.splice(index, 1); 
+            } else {
+                this.$message.error('至少保留一个条目')
+            }
         },
         //添加会议介绍段落
         addParagraph () {
