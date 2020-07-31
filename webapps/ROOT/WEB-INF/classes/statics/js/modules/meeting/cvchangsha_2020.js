@@ -146,10 +146,12 @@ var vm = new Vue({
             console.log('正式环境')
             this.meetingBaseInfoId = '63'//基础信息ID,写死
             this.meetingGuestId = '34'//嘉宾ID,写死
+            this.meetingCooperationId = '30'//机构媒体
         } else {
             console.log('测试环境')
             this.meetingBaseInfoId = '46'//基础信息ID,写死
             this.meetingGuestId = '43'//嘉宾ID,写死
+            this.meetingCooperationId = '42'//机构媒体
         }
     },
     mounted () {

@@ -228,6 +228,22 @@
                     </el-row>
                 </el-collapse-item>
 
+                <!--合作媒体-->
+                <el-collapse-item title="合作媒体" name="8">
+                    <el-row class="el-row-h50">
+                        <el-col :span="10">
+                            <el-form-item label="合作媒体" prop="" label-width="30%" style="margin:0;">
+                                <el-input
+                                    :disabled="true"
+                                    v-model="meetingForm.meetingCooperationId"
+                                    auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col class="el-row-h40" :offset="1" :span="13">请到<b style="color: #175CE9;">会议机构</b>中配置相关内容，本次会议的会议编号为：<b style="color: #175CE9;">{{meetingForm.meetingId}}</b></el-col>
+                    </el-row>
+                </el-collapse-item>
+
             </el-collapse>
             <!--折叠面板结束-->
 
