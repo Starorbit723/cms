@@ -966,8 +966,197 @@
                     </el-row>
                 </el-collapse-item>
 
+                <!--会议视频-->
+                <el-collapse-item title="会议视频" name="7">
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="【楼层开关】" prop="meetingJsonData.videoSetting.isShowFloor" label-width="15%" style="margin:0;">
+                                <el-switch
+                                    v-model="meetingForm.meetingJsonData.videoSetting.isShowFloor"
+                                    active-text="显示"
+                                    inactive-text="隐藏">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="默认样式" prop="meetingJsonData.videoSetting.isShowDefaultModel" label-width="15%" style="margin:0;">
+                                <el-switch
+                                    v-model="meetingForm.meetingJsonData.videoSetting.isShowDefaultModel"
+                                    active-text="显示"
+                                    inactive-text="隐藏">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <div v-if="meetingForm.meetingJsonData.videoSetting.isShowDefaultModel">
+                        <el-row class="el-row-h60">
+                            <el-col :span="24">
+                                <el-form-item label="展现方式" prop="meetingJsonData.videoSetting.showWay" style="margin:0;" label-width="15%">
+                                    <el-radio-group v-model="meetingForm.meetingJsonData.videoSetting.showWay">
+                                        <el-radio label="0">外部链接</el-radio>
+                                        <el-radio label="1">内嵌播放器</el-radio>
+                                    </el-radio-group>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h60" v-if="meetingForm.meetingJsonData.videoSetting.showWay == '0'">
+                            <el-col :span="24">
+                                <el-form-item label="跳转按钮文本" prop="meetingJsonData.videoSetting.btnText" style="margin:0;" label-width="15%">
+                                    <el-input
+                                        maxlength="8"
+                                        clearable
+                                        placeholder="请填写按钮上的文字"
+                                        v-model="meetingForm.meetingJsonData.videoSetting.btnText"
+                                        auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h60" v-if="meetingForm.meetingJsonData.videoSetting.showWay == '0'">
+                            <el-col :span="24">
+                                <el-form-item label="外部链接地址" prop="meetingJsonData.videoSetting.linkUrl" style="margin:0;" label-width="15%">
+                                    <el-input
+                                        maxlength="500"
+                                        clearable
+                                        placeholder="请添加跳转观看链接地址"
+                                        v-model="meetingForm.meetingJsonData.videoSetting.linkUrl"
+                                        auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row class="el-row-h60" v-if="meetingForm.meetingJsonData.videoSetting.showWay == '1'">
+                            <el-col :span="24">
+                                <el-form-item label="视频资源地址" prop="meetingJsonData.videoSetting.resourceUrl" style="margin:0;" label-width="15%">
+                                    <el-input
+                                        maxlength="1000"
+                                        clearable
+                                        placeholder="请添加视频资源地址"
+                                        v-model="meetingForm.meetingJsonData.videoSetting.resourceUrl"
+                                        auto-complete="off">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item label="是否显示自定义" prop="meetingJsonData.videoSetting.isShowSelfConfig" label-width="15%" style="margin:0;">
+                                <el-switch
+                                    v-model="meetingForm.meetingJsonData.videoSetting.isShowSelfConfig"
+                                    active-text="显示"
+                                    inactive-text="隐藏">
+                                </el-switch>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row v-if="meetingForm.meetingJsonData.videoSetting.isShowSelfConfig">
+                        <div v-for="(item,index) in meetingForm.meetingJsonData.videoSetting.selfConfigZone">
+                            <!--图片型-->
+                            <el-row v-if="item.type == 'img'" :span="24">
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="自定义内容图" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength="500"
+                                                clearable
+                                                placeholder="请输入中文标题"
+                                                v-model="item.titleCn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="5" :offset="1" class="el-row-h40">
+                                        <el-button @click="removeSelfConfigItem('videoSetting',index)">移除</el-button>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength="500"
+                                                clearable
+                                                placeholder="请输入英文标题"
+                                                v-model="item.titleEn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h220">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <div class="fengmian_show2" @click="chooseContentImg('videoSetting',index)">
+                                                <img v-if="item.imgUrl" :src="item.imgUrl" class="avatar2">
+                                                <i v-else class="el-icon-plus avatar-uploader-icon iconadd"></i>
+                                            </div>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                            </el-row>
+                            <!--文字型-->
+                            <el-row v-else-if="item.type == 'text'" :span="24">
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="自定义文案" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength="500"
+                                                clearable
+                                                placeholder="请输入中文标题"
+                                                v-model="item.titleCn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="5" :offset="1" class="el-row-h40">
+                                        <el-button @click="removeSelfConfigItem('videoSetting',index)">移除</el-button>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h60">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength="500"
+                                                clearable
+                                                placeholder="请输入英文标题"
+                                                v-model="item.titleEn"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row :span="24" class="el-row-h120">
+                                    <el-col :span="18">
+                                        <el-form-item label="" label-width="20%" style="margin:0;">
+                                            <el-input
+                                                maxlength="500"
+                                                clearable
+                                                type="textarea"
+                                                :autosize="{ minRows: 4, maxRows: 4}"
+                                                placeholder="请输入自定义文案"
+                                                v-model="item.innerText"
+                                                auto-complete="off">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                            </el-row>
+                        </div>
+                        <el-row :span="24" class="el-row-h60">
+                            <el-col :span="5" style="margin-left:15%;">
+                                <el-button style="width: 100%;" @click="addNewSelfConfigFloor('videoSetting','text')">新增文案</el-button>
+                            </el-col>
+                            <el-col :span="5" :offset="2">
+                                <el-button style="width: 100%;" @click="addNewSelfConfigFloor('videoSetting','img')">新增图片</el-button>
+                            </el-col>
+                        </el-row>
+                    </el-row>
+                </el-collapse-item>
+
                 <!--嘉宾观点-->
-                <el-collapse-item title="嘉宾观点" name="7">
+                <el-collapse-item title="嘉宾观点" name="8">
                     <el-row class="el-row-h60">
                         <el-col :span="24">
                             <el-form-item label="【楼层开关】" prop="meetingJsonData.guestOpinion.isShowFloor" label-width="15%" style="margin:0;">
@@ -1151,7 +1340,7 @@
                 </el-collapse-item>
 
                 <!--投票环节-->
-                <el-collapse-item title="投票环节" name="8">
+                <el-collapse-item title="投票环节" name="9">
                     <el-row class="el-row-h60">
                         <el-col :span="24">
                             <el-form-item label="【楼层开关】" prop="meetingJsonData.vote.isShowFloor" label-width="15%" style="margin:0;">
@@ -1315,7 +1504,7 @@
                 </el-collapse-item>
                 
                 <!--文章问答-->
-                <el-collapse-item title="文章问答" name="9">
+                <el-collapse-item title="文章问答" name="10">
                     <el-row class="el-row-h60">
                         <el-col :span="24">
                             <el-form-item label="【楼层开关】" prop="" label-width="15%" style="margin:0;">
@@ -1470,7 +1659,7 @@
                 </el-collapse-item>
 
                 <!--高清组图-->
-                <el-collapse-item title="高清组图" name="10">
+                <el-collapse-item title="高清组图" name="11">
                     <el-row class="el-row-h60">
                         <el-col :span="24">
                             <el-form-item label="【楼层开关】" prop="" label-width="15%" style="margin:0;">
@@ -1625,7 +1814,7 @@
                 </el-collapse-item>
 
                 <!--会议地点-->
-                <el-collapse-item title="会议地点" name="11">
+                <el-collapse-item title="会议地点" name="12">
                     <el-row class="el-row-h60">
                         <el-col :span="24">
                             <el-form-item label="【楼层开关】" prop="meetingJsonData.location.isShowFloor" label-width="15%" style="margin:0;">
@@ -1776,7 +1965,7 @@
                 </el-collapse-item>
 
                 <!--合作伙伴-->
-                <el-collapse-item title="合作伙伴" name="12">
+                <el-collapse-item title="合作伙伴" name="13">
                     <el-row class="el-row-h60">
                         <el-col :span="24">
                             <el-form-item label="【楼层开关】" prop="" label-width="15%" style="margin:0;">

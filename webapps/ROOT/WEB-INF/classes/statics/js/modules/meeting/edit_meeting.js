@@ -27,7 +27,7 @@ var vm = new Vue({
             //按钮请求开关
             ajaxController:true,
             //折叠面板组件实例
-            activeNames: ['1','2','3','4','5','6','7','8','9','10','11','12'],
+            activeNames: ['1','2','3','4','5','6','7','8','9','10','11','12','13'],
             //会议关键词数组
             meetingTagArray:[],
             labelOptions:[],
@@ -75,6 +75,7 @@ var vm = new Vue({
                         picUrlPc: '',
                         picUrlMobile: '',
                         picLink:'',
+                        aaa:'',
                         selfConfigZone:[
                         // {
                         //     type:'text',
@@ -122,6 +123,18 @@ var vm = new Vue({
                         isShowDefaultModel: false,
                         isShowSelfConfig: false,
                         selfConfigZone:[]
+                    },
+                    videoSetting:{
+                        floorTitleCn:'视频观看',
+                        floorTitleEn:'VIDEO VIEW',
+                        isShowFloor:false,
+                        isShowDefaultModel: false,
+                        isShowSelfConfig: false,
+                        selfConfigZone:[],
+                        showWay:'0',
+                        btnText:'',
+                        linkUrl:'',
+                        resourceUrl:''
                     },
                     guestOpinion:{
                         floorTitleCn:'嘉宾观点',
