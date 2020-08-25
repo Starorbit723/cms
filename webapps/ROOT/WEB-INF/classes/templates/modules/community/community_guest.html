@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+<title>LP/GP列表</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">LP/GP列表</div>
+    <div id="community_guest" class="cv_page_content">
+
+        <!------------------筛选列表开始------------------>
+        <div v-show="showChildPage == 0">
+            <!--列表搜索区-->
+            <div class="cv_content_square">
+                <el-form :model="searchForm" status-icon class="demo-ruleForm" label-width="25%" label-position="right">
+                    <el-row class="el-row-h60">
+                        <el-col :span="9">
+                            <el-form-item label="嘉宾类型" prop="subjectGuestType">
+                                <el-radio-group style="margin: 5px 0 0 20px;" v-model="searchForm.subjectGuestType">
+                                    <el-radio label="1">LP</el-radio>
+                                    <el-radio label="2">GP</el-radio>
+                                </el-radio-group>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" @click="startSearch()">查询</el-button>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" @click="addGuest">添加</el-button>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+
+            <!--表格查询结果区-->
+            <div class="cv_content_square">
+                <div class="guestList">
+                    <ul class="clearfix">
+                        <li v-for="(item,index) in tableData">
+                            <img :src="item.subjectGuestImg" />
+                            <div class="name">
+                                <span class="t1" v-text="item.subjectGuestName"></span>
+                                <span class="t2">删除</span>
+                            </div>
+                            <div class="type">全部排序：</div>
+                            <input class="t3" v-model="item.subjectGuestTotalWeight" maxlength="5" auto-complete="off"
+                            @change="allWeightChange(index)"/>
+                            <div class="type">分类排序：</div>
+                            <input class="t4" v-model="item.subjectGuestWeight" maxlength="5" auto-complete="off"
+                            @change="weightChange(index)"/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!------------------筛选列表结束------------------>
+
+        <!------------------新增修改开始------------------>
+        <div v-show="showChildPage == 1">
+            <!--表单信息-->
+            <div class="cv_content_square">
+                <el-form :model="singleGuestForm" :rules="singleGuestFormRules"  ref="singleGuestForm" status-icon class="demo-ruleForm" label-width="25%" label-position="right">
+                    <el-row class="el-row-h60">
+                        <el-col :span="12">
+                            <el-form-item label-width="25%" prop="subjectGuestName" label="嘉宾姓名" style="margin:0;">
+                                <el-input
+                                disabled
+                                type="text"
+                                v-model="singleGuestForm.subjectGuestName"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label-width="25%" prop="subjectGuestCompany" label="嘉宾公司" style="margin:0;">
+                                <el-input
+                                type="text"
+                                disabled
+                                v-model="singleGuestForm.subjectGuestCompany"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h60">
+                        <el-col :span="12">
+                            <el-form-item label-width="25%" prop="subjectGuestCompany" label="嘉宾职位" style="margin:0;">
+                                <el-input
+                                type="text"
+                                disabled
+                                v-model="singleGuestForm.subjectGuestCompany"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="嘉宾类型" prop="subjectGuestType">
+                                <el-radio-group style="margin: 5px 0 0 20px;" v-model="singleGuestForm.subjectGuestType">
+                                    <el-radio label="1">LP</el-radio>
+                                    <el-radio label="2">GP</el-radio>
+                                </el-radio-group>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h60">
+                        <el-col :span="12">
+                            <el-form-item label-width="25%" prop="subjectGuestTotalWeight" label="总权重" style="margin:0;">
+                                <el-input
+                                type="text"
+                                v-model="singleGuestForm.subjectGuestTotalWeight"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label-width="25%" prop="subjectGuestWeight" label="单类权重" style="margin:0;">
+                                <el-input
+                                type="text"
+                                v-model="singleGuestForm.subjectGuestWeight"
+                                auto-complete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h110">
+                        <el-col :span="12">
+                            <el-form-item label-width="25%" prop="subjectGuestImg" label="嘉宾头像" style="margin:0;">
+                               <img style="width:110px; height:110px;" :src="singleGuestForm.subjectGuestImg" />
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+
+                </el-form>
+            </div>
+            <!--新建保存修改-->
+            <el-row class="el-row-h60" style="margin-top:20px;">
+                <el-col :span="3" :offset="8">
+                    <el-button type="primary" style="width:100%" @click="testSubmit('singleGuestForm')">添加</el-button>
+                </el-col>
+                <el-col :span="3" :offset="2">
+                    <el-button type="primary" style="width:100%" @click="closeCreatOrEdit('singleGuestForm')">取消</el-button>
+                </el-col>
+            </el-row>
+
+        </div>
+        <!------------------新增修改结束------------------>
+
+        <!--嘉宾库弹出层开始-->
+        <el-dialog title="嘉宾列表" :visible.sync="showGuestLibDialog" width="100%" :fullscreen="true" :show-close="false">
+            <el-form :model="searchGuestForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                <el-row class="el-row-h60">
+                    <el-col :span="12">
+                        <el-form-item label="嘉宾名称" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="searchGuestForm.guestName"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchGuest(0)">搜索</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary"  style="width:100%" @click="backToEdit()">返回</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <el-table :data="guestTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="multipleTable" stripe>
+                <el-table-column prop="guestImg" label="嘉宾头像" width="180">
+                    <template v-if="scope.row.guestImg" slot-scope="scope">
+                        <img style="width:60px;height:60px;" :src="scope.row.guestImg">
+                    </template>
+                </el-table-column>
+                <el-table-column prop="guestName" label="嘉宾姓名"></el-table-column>
+                <el-table-column label="操作" width="100" fixed="right">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" @click="addThisImg(scope.row)">添加</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange3"
+                    :current-page="pagination3.currPage"
+                    :page-size="pagination3.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination3.totalCount">
+                </el-pagination>
+            </div>
+        </el-dialog>
+        <!--嘉宾库弹出层结束-->
+
+
+
+        
+    </div>
+</body>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/community/community_guest.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+<style>
+.guestList{
+    width: 100%;
+}
+.guestList ul{
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+.guestList ul li{
+    float: left;
+    display: block;
+    position: relative;
+    list-style: none;
+    width: 130px;
+    height: 221px;
+    margin: 0 20px 20px 0;
+    border: 1px solid #f0f0f0;
+    box-sizing: border-box;
+}
+.guestList ul li img{
+    display: block;
+    width: 130px;
+    height: 130px;
+}
+.guestList ul li .name{
+    height: 30px;
+    border-bottom: 1px solid #f0f0f0;
+}
+.guestList ul li .name span{
+    display: block;
+    margin: 0;
+    padding: 0;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+}
+.guestList ul li .name span.t1{
+    width: 90px;
+    float: left;
+}
+.guestList ul li .name span.t2{
+    width: 38px;
+    float: right;
+    background:#175CE9!important;
+    color:#FFF;
+    cursor: pointer;
+}
+.guestList ul li input{
+    display: block!important;
+    outline: none!important;
+    width: 40%!important;
+    height: 30px;
+    border: none;
+    margin: 0;
+    padding: 0;
+    float: left;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: center;
+}
+.guestList ul li .type{
+    width: 60%;
+    height: 30px;
+    line-height: 30px;
+    float: left;
+    text-align: center;
+    font-size: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+.clearfix{overflow:hidden;_zoom:1;}
+.clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden;font-size:0;}
+</style>
+</html>

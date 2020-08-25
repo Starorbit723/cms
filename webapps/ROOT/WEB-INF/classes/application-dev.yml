@@ -71,6 +71,7 @@ redisUrl: http://119.254.13.82:8080
 newsUrl: /cms/api/updateNewsDetail
 channelUrl: /cms/api/updateChannelList
 subjectUrl: /cms/api/updateSubject
+subjectGuestUrl: /cms/api/updateSubjectGuestList
 columnUrl: /cms/api/updateColumn
 mediaUrl: /cms/api/updateSsoMedia
 pictureUrl: /cms/api/updatePictureList

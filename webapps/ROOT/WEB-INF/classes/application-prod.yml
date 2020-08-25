@@ -71,6 +71,7 @@ redisUrl: http://192.168.0.52
 newsUrl: /cms/api/updateNewsDetail
 channelUrl: /cms/api/updateChannelList
 subjectUrl: /cms/api/updateSubject
+subjectGuestUrl: /cms/api/updateSubjectGuestList
 columnUrl: /cms/api/updateColumn
 mediaUrl: /cms/api/updateSsoMedia
 pictureUrl: /cms/api/updatePictureList
