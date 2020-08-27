@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chinaventure.modules.sys.dao.SubjectGuestDao">
+
+    <select id="getValidDataCountList" resultType="com.chinaventure.modules.sys.dto.SubjectGuestDto">
+		select COUNT(1) sum from cms_subject_guest where subject_guest_status = 1  GROUP BY subject_guest_type ORDER BY subject_guest_type 
+    </select>
+</mapper>

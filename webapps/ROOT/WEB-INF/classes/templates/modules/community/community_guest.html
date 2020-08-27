@@ -27,7 +27,10 @@
                             <el-button type="primary" style="width:100%" @click="startSearch()">查询</el-button>
                         </el-col>
                         <el-col :span="3" :offset="1" class="el-row-h40">
-                            <el-button type="primary" style="width:100%" @click="addGuest">添加</el-button>
+                            <el-button type="primary" style="width:100%" @click="addGuest">添加嘉宾</el-button>
+                        </el-col>
+                        <el-col :span="3" :offset="1" class="el-row-h40">
+                            <el-button type="primary" style="width:100%" @click="pushGuest">发布上线</el-button>
                         </el-col>
                     </el-row>
                 </el-form>
@@ -41,7 +44,7 @@
                             <img :src="item.subjectGuestImg" />
                             <div class="name">
                                 <span class="t1" v-text="item.subjectGuestName"></span>
-                                <span class="t2">删除</span>
+                                <span class="t2" @click="delItem(index)">删除</span>
                             </div>
                             <div class="type">全部排序：</div>
                             <input class="t3" v-model="item.subjectGuestTotalWeight" maxlength="5" auto-complete="off"
@@ -104,6 +107,7 @@
                         <el-col :span="12">
                             <el-form-item label-width="25%" prop="subjectGuestTotalWeight" label="总权重" style="margin:0;">
                                 <el-input
+                                maxlength="5"
                                 type="text"
                                 v-model="singleGuestForm.subjectGuestTotalWeight"
                                 auto-complete="off"></el-input>
@@ -112,6 +116,7 @@
                         <el-col :span="12">
                             <el-form-item label-width="25%" prop="subjectGuestWeight" label="单类权重" style="margin:0;">
                                 <el-input
+                                maxlength="5"
                                 type="text"
                                 v-model="singleGuestForm.subjectGuestWeight"
                                 auto-complete="off"></el-input>
@@ -134,7 +139,7 @@
                     <el-button type="primary" style="width:100%" @click="testSubmit('singleGuestForm')">添加</el-button>
                 </el-col>
                 <el-col :span="3" :offset="2">
-                    <el-button type="primary" style="width:100%" @click="closeCreatOrEdit('singleGuestForm')">取消</el-button>
+                    <el-button type="primary" style="width:100%" @click="closeCreat('singleGuestForm')">取消</el-button>
                 </el-col>
             </el-row>
 

@@ -20,7 +20,7 @@ var vm = new Vue({
             subjectKeyword:'',//专题关键字
             subjectChannel:'',//专题属于频道
             subjectPid:'',//专题属于副专题
-            subjectType:'',//专题类型
+            subjectType:'',//专题类型  0：普通模板  1：投等舱模板  2：十问模板
             subjectPriority:'',//专题优先级
             subjectStatus:'',//专题状态0是下线，1是在线
             subjectIndustry:'',//专题属于行业
@@ -45,6 +45,9 @@ var vm = new Vue({
         },{
             label:'投等舱模板',
             value: 1
+        },{
+            label:'投中十问模板',
+            value: 2
         }],
         //专题基本信息
         specialInfoForm:{
@@ -176,7 +179,7 @@ var vm = new Vue({
         },
         //当模板类型为投等舱类型，所属频道是其他
         subjectTypeChange(val){
-            if (val == 1) {
+            if (val == 1 || val == 2) {
                 this.specialInfoForm.subjectChannel = 64
             }
         },
@@ -308,11 +311,13 @@ var vm = new Vue({
                     subjectStatus:'1',
                     subjectReleaseTime: new Date().getTime()
                 }
-                //根据不同的专题模板，走不同接口  0:普通模板  1：投等舱模板
+                //根据不同的专题模板，走不同接口  0:普通模板  1：投等舱模板  2:十问模板
                 if (modelType == 0) {
                     var reqUrl = '/subject/push'
                 } else if (modelType == 1) {
                     var reqUrl = '/subject/firstPush'
+                } else if  (modelType == 2) {
+                    var reqUrl = '/subject/communityPush'
                 }
                 $.ajax({
                     type: "POST",
@@ -825,7 +830,7 @@ var vm = new Vue({
         //打开此专题
         openThisPage(item) {
             if ((window.location.href.indexOf('chinaventure.com.cn') !== -1|| window.location.href.indexOf('117.78.28.103') !== -1) && item.subjectStatus == 2) {
-                if(item.subjectType == 0) {
+                if(item.subjectType == 0 || item.subjectType == 2) {
                     window.open('https://www.chinaventure.com.cn/subject/'+ item.subjectId +'.html', "newwindow")
                 } else if (item.subjectType == 1) {
                     window.open('https://m.chinaventure.com.cn/subject/'+ item.subjectId +'.html', "newwindow")

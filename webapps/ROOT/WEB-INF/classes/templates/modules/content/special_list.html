@@ -139,7 +139,7 @@
                     <el-row class="el-row-h80">
                         <el-col :span="12">
                             <el-form-item label="频道" style="margin:0;" prop="subjectChannel" label-width="33%">
-                                <el-select v-model="specialInfoForm.subjectChannel" style="width:100%;" clearable :disabled="specialInfoForm.subjectType == 1">
+                                <el-select v-model="specialInfoForm.subjectChannel" style="width:100%;" clearable :disabled="specialInfoForm.subjectType == 1 || specialInfoForm.subjectType == 2">
                                     <el-option
                                         v-for="item in channelOptions"
                                         :key="item.channelId"

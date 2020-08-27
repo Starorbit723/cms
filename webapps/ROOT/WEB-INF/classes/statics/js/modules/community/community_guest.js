@@ -24,6 +24,7 @@ var vm = new Vue({
             searchForm:{
                 subjectGuestTitle:'',
                 subjectGuestType:'1',
+                subjectGuestStatus:'1'
             },
             //分页器相关
             pagination1: {
@@ -199,7 +200,19 @@ var vm = new Vue({
             this.singleGuestForm.subjectGuestPosition = item.guestPosition
             this.singleGuestForm.subjectGuestCompany = item.guestCompany
             this.singleGuestForm.subjectGuestImg = item.guestImg
-            this.backToEdit()
+            this.showGuestLibDialog = false
+            this.searchGuestForm = {
+                guestName:'',
+                guestStatus:'0'
+            }
+            this.guestTableData = []
+            this.pagination3 = {
+                currPage: 1,
+                totalCount:0,
+                totalPage:0,
+                pageSize:10
+            }
+            this.showChildPage = '1'
         },
         handleCurrentChange3 (val) {
             this.pagination3.currPage = val
@@ -219,7 +232,23 @@ var vm = new Vue({
                 totalPage:0,
                 pageSize:10
             }
-            this.showChildPage = '1'
+            this.singleGuestForm = {
+                subjectGuestId:'',
+                subjectGuestName:'',
+                subjectGuestPosition:'',
+                subjectGuestImg:'',
+                subjectGuestStatus:'1',
+                subjectGuestType:'1',
+                subjectGuestsubjectId:'',
+                subjectGuestCompany:'',
+                subjectGuestTotalWeight:'-1',
+                subjectGuestWeight:'-1',
+                subjectGuestCrtUserId:'',
+                subjectGuestModUserId:'',
+                subjectGuestCrtTime:'',
+                subjectGuestModTime:'',
+            }
+            this.showChildPage = '0'
         },
         //提交前检测添加嘉宾
         testSubmit(formName) {
@@ -309,7 +338,62 @@ var vm = new Vue({
                 dataType: "json",
                 success: function(res){
                     if(res.code == 200){
-                        
+                        self.startSearch()
+                    }else{
+                        mapErrorStatus(res)
+                        vm.error = true;
+                        vm.errorMsg = res.msg;
+                    }
+                },
+                error:function(res){
+                    mapErrorStatus(res)
+                }
+            });
+        },
+        //删除数据
+        delItem (index) {
+            var self = this
+            if (self.tableData.length > 1) {
+                var data = {
+                    subjectGuestId: this.tableData[index].subjectGuestId.toString()
+                }
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/subjectGuest/delete",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    success: function(res){
+                        if(res.code == 200){
+                            self.startSearch()
+                        }else{
+                            mapErrorStatus(res)
+                            vm.error = true;
+                            vm.errorMsg = res.msg;
+                        }
+                    },
+                    error:function(res){
+                        mapErrorStatus(res)
+                    }
+                });
+            } else {
+                self.$message.error('至少保留一个嘉宾')
+            }
+            
+        },
+        //发布
+        pushGuest () {
+            var self = this
+            var data = {}
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/subjectGuest/push",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        self.$message.success('发布成功')
                     }else{
                         mapErrorStatus(res)
                         vm.error = true;
