@@ -309,7 +309,8 @@ var vm = new Vue({
                 var data = {
                     subjectId: id,
                     subjectStatus:'1',
-                    subjectReleaseTime: new Date().getTime()
+                    subjectReleaseTime: new Date().getTime(),
+                    subjectType: modelType
                 }
                 //根据不同的专题模板，走不同接口  0:普通模板  1：投等舱模板  2:十问模板
                 if (modelType == 0) {
