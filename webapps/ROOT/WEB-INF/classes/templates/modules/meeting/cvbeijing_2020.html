@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="${request.contextPath}/statics/css/element.css">
+
+<title>2020北京年会</title>
+</head>
+<body>
+    <#include "/header.html">
+    <div class="cvpage_title_common">2020北京年会</div>
+    <div id="beijing2020" class="cv_page_content">
+
+        <el-form :model="meetingForm" :rules="meetingFormRules" ref="meetingForm" status-icon class="demo-ruleForm" label-width="15%" label-position="right">
+            <el-row class="el-row-h60">
+                <el-col :span="24">
+                    <el-form-item prop="meetingId" label="会议编号" style="margin:0;">
+                        <el-input
+                        type="text"
+                        v-model="meetingForm.meetingId"
+                        auto-complete="on"
+                        :disabled="true">
+                    </el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row class="el-row-h60">
+                <el-col :span="10">
+                    <el-form-item label="基本信息编号" prop="" label-width="36%" style="margin:0;">
+                        <el-input
+                            :disabled="true"
+                            v-model="meetingForm.meetingBaseInfoId"
+                            auto-complete="off">
+                        </el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col class="el-row-h40" :offset="1" :span="13">请到<b style="color: #175CE9;">基本信息</b>中配置相关内容，本次会议的会议编号为：<b style="color: #175CE9;">{{meetingForm.meetingId}}</b></el-col>
+            </el-row>
+            <!-- <el-row class="el-row-h70">
+                <el-col :span="24">
+                    <el-form-item prop="meetingTitle" label="会议标题" style="margin:0;">
+                        <el-input
+                        clearable
+                        type="text"
+                        v-model="meetingForm.meetingTitle"
+                        auto-complete="on">
+                        </el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row> -->
+            <el-row class="el-row-h220">
+                <el-col :span="12">
+                    <el-form-item label="封面图" prop="meetingImg" label-width="30%" style="margin:0;">
+                        <div class="fengmian_show" @click="openAddCoverImg">
+                            <img v-if="meetingForm.meetingImg" :src="meetingForm.meetingImg" class="avatar">
+                            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                        </div>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12" style="line-height: 30px;">请从封面图库选择<br>建议格式：Png JPG JPEG</el-col>
+            </el-row>
+
+            <!--折叠面板开始-->
+            <el-collapse v-model="activeNames" @change="handleChangeCollapse">
+                
+                <!--会议介绍-->
+                <el-collapse-item title="会议介绍" name="1">
+                    <div v-for="(item,index) in meetingForm.meetingJson.introduce">
+                        <el-row class="el-row-h90">
+                            <el-col :span="21">
+                                <el-form-item prop="" label-width="14.5%" label="段落" style="margin:0;">
+                                    <el-input
+                                        clearable
+                                        type="textarea"
+                                        :autosize="{ minRows: 3, maxRows: 3}"
+                                        v-model="item.paragraphText"
+                                        auto-complete="on">
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col class="el-row-h40" :span="2" :offset="1">
+                                <el-button style="width:100%" icon="el-icon-circle-close" @click="delParagraph(index)"></el-button>
+                            </el-col>
+                        </el-row> 
+                    </div>
+                    <el-row>
+                        <el-col :span="21" :offset="3" style="margin-top:10px;margin-bottom:10px;">
+                            <el-button type="primary" icon="el-icon-plus" style="width:100%" @click="addParagraph">新增段落</el-button>
+                        </el-col>
+                    </el-row>
+                </el-collapse-item>
+
+                <!--会议议程-->
+                <el-collapse-item title="会议日程" name="2">
+                    <el-row class="el-row-h50">
+                        <el-col :span="10">
+                            <el-form-item label="日程编号" prop="" label-width="30%" style="margin:0;">
+                                <el-input
+                                    :disabled="true"
+                                    v-model="meetingForm.meetingAgendaId"
+                                    auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col class="el-row-h40" :offset="1" :span="13">请到<b style="color: #175CE9;">日程管理</b>中配置相关内容，本次会议的会议编号为：<b style="color: #175CE9;">{{meetingForm.meetingId}}</b></el-col>
+                    </el-row>
+                </el-collapse-item>
+
+                <!--嘉宾管理-->
+                <el-collapse-item title="会议嘉宾" name="3">
+                    <el-row class="el-row-h50">
+                        <el-col :span="10">
+                            <el-form-item label="嘉宾编号" prop="" label-width="30%" style="margin:0;">
+                                <el-input
+                                    :disabled="true"
+                                    v-model="meetingForm.meetingGuestId"
+                                    auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col class="el-row-h40" :offset="1" :span="13">请到<b style="color: #175CE9;">参会嘉宾</b>中配置相关内容，本次会议的会议编号为：<b style="color: #175CE9;">{{meetingForm.meetingId}}</b></el-col>
+                    </el-row>
+                </el-collapse-item>
+
+                <!--会议榜单-->
+                <el-collapse-item title="会议榜单" name="4">
+                    <el-row class="el-row-h50">
+                        <el-col :span="10">
+                            <el-form-item label="榜单编号" prop="" label-width="30%" style="margin:0;">
+                                <el-input
+                                    :disabled="true"
+                                    v-model="meetingForm.meetingRankId"
+                                    auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col class="el-row-h40" :offset="1" :span="13">请到<b style="color: #175CE9;">会议榜单</b>中配置相关内容，本次会议的会议编号为：<b style="color: #175CE9;">{{meetingForm.meetingId}}</b></el-col>
+                    </el-row>
+                </el-collapse-item>
+
+                <!--合作媒体-->
+                <el-collapse-item title="合作媒体" name="5">
+                    <el-row class="el-row-h50">
+                        <el-col :span="10">
+                            <el-form-item label="合作媒体" prop="" label-width="30%" style="margin:0;">
+                                <el-input
+                                    :disabled="true"
+                                    v-model="meetingForm.meetingCooperationId"
+                                    auto-complete="off">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col class="el-row-h40" :offset="1" :span="13">请到<b style="color: #175CE9;">会议机构</b>中配置相关内容，本次会议的会议编号为：<b style="color: #175CE9;">{{meetingForm.meetingId}}</b></el-col>
+                    </el-row>
+                </el-collapse-item>
+
+                <!--活动报名-->
+                <el-collapse-item title="活动报名" name="6">
+                    <el-row class="el-row-h60">
+                        <el-col :span="24">
+                            <el-form-item prop="meetingJson.signUpLink" label-width="14.5%" label="报名链接" style="margin:0;">
+                                <el-input clearable v-model="meetingForm.meetingJson.signUpLink" auto-complete="on" placeholder="请填写报名页面链接"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row class="el-row-h200">
+                        <el-col :span="15">
+                            <el-form-item label="报名二维码" prop="meetingJson.signUpCodeImg" label-width="23%" style="margin:0;">
+                                <div class="fengmian_show4" @click="chooseContentImg('signUp',0)">
+                                    <img v-if="meetingForm.meetingJson.signUpCodeImg" :src="meetingForm.meetingJson.signUpCodeImg" class="avatar4">
+                                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                </div>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="9" style="line-height: 30px;">请从内容图库选择<br>建议格式：Png JPG JPEG</el-col>
+                    </el-row>
+                </el-collapse-item>
+
+                
+
+            </el-collapse>
+            <!--折叠面板结束-->
+
+        </el-form>
+            
+        <!--按钮区-->
+        <el-row class="el-row-h60" style="margin-top:20px;">
+            <el-col :span="4":offset="10">
+                <el-button type="primary" style="width:100%" @click="saveMeeting('meetingForm')">保存</el-button>
+            </el-col>
+            <!-- <el-col :span="4" :offset="1">
+                <el-button type="primary" plain style="width:100%" @click="closeAndBack()">取消</el-button>
+            </el-col> -->
+        </el-row>
+
+        <!--封面图库弹出层开始-->
+        <el-dialog title="封面图库" :visible.sync="showCoverimgLib" width="100%" :fullscreen="true" :show-close="false" >
+            <el-form :model="searchCoverimgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                <el-row class="el-row-h60">
+                    <el-col :span="16">
+                        <el-form-item label="图片名称" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="searchCoverimgForm.picTitle"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchCoverImg(0)">搜索</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" style="width:100%" @click="backToEdit()">返回</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <el-table :data="coverimgTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="coverimgTableData" stripe>
+                <el-table-column prop="picUrl" label="封面图预览" width="180">
+                    <template v-if="scope.row.picUrl" slot-scope="scope">
+                        <img style="width:80px;height:60px;" :src="scope.row.picUrl">
+                    </template>
+                </el-table-column>
+                <el-table-column prop="picTitle" label="图片名称" width="250"></el-table-column>
+                <el-table-column prop="picEditorName" label="修改人" width="120"></el-table-column>
+                <el-table-column prop="picModTime" label="最后更新时间"></el-table-column>
+                <el-table-column label="操作" width="100" fixed="right">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" @click="addThisCoverImg(scope.row)">添加</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page="pagination1.currPage"
+                    :page-size="pagination1.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination1.totalCount">
+                </el-pagination>
+            </div>
+        </el-dialog>
+        <!--封面图库弹出层结束-->
+        
+        <!--内容图库弹出层开始-->
+        <el-dialog title="内容图库" :visible.sync="showContentImgLib" width="100%" :fullscreen="true" :show-close="false" >
+            <el-form :model="searchContentImgForm" status-icon class="demo-ruleForm" label-width="20%" label-position="right" @submit.native.prevent>
+                <el-row class="el-row-h60">
+                    <el-col :span="16">
+                        <el-form-item label="图片名称" style="margin:0;">
+                            <el-input
+                            clearable
+                            type="text"
+                            v-model="searchContentImgForm.picTitle"
+                            auto-complete="off"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" icon="el-icon-search" style="width:100%" @click="searchContentImg(0)">搜索</el-button>
+                    </el-col>
+                    <el-col :span="3" :offset="1" class="el-row-h40">
+                        <el-button type="primary" style="width:100%" @click="backToEdit2()">返回</el-button>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <el-table :data="contentImgTableData" max-height="450" style="width: 100%; margin:10px auto;" ref="contentImgTableData" stripe>
+                <el-table-column prop="picUrl" label="封面图预览" width="180">
+                    <template v-if="scope.row.picUrl" slot-scope="scope">
+                        <img style="width:80px;height:60px;" :src="scope.row.picUrl">
+                    </template>
+                </el-table-column>
+                <el-table-column prop="picTitle" label="图片名称" width="250"></el-table-column>
+                <el-table-column prop="picEditorName" label="修改人" width="120"></el-table-column>
+                <el-table-column prop="picModTime" label="最后更新时间"></el-table-column>
+                <el-table-column label="操作" width="100" fixed="right">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" @click="addThisContentImg(scope.row)">添加</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--分页器-->
+            <div class="cv_page_zone">
+                <el-pagination
+                    @current-change="handleCurrentChange2"
+                    :current-page="pagination2.currPage"
+                    :page-size="pagination2.pageSize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="pagination2.totalCount">
+                </el-pagination>
+            </div>
+        </el-dialog>
+        <!--封面图库弹出层结束-->
+
+
+    </div>
+</body>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.min.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/libs/jquery.base64.js"></script>
+
+<script type="text/javascript" src="${request.contextPath}/statics/js/element.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/modules/meeting/cvbeijing_2020.js"></script>
+<script type="text/javascript" src="${request.contextPath}/statics/js/clockToast.js"></script>
+
+
+<style>
+.clearfix{overflow:hidden;_zoom:1;}
+.clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden;font-size:0;}
+.el-icon-circle-close{
+    font-size: 16px!important;
+    color: rgb(214, 32, 8)!important;
+}
+
+.el-collapse-item__header{
+    background:rgb(248, 248, 248)!important;
+}
+.el-collapse-item__content{
+    padding: 15px 0 10px 0!important;
+}
+.fengmian_show{
+    width: 240px;
+    height: 180px;
+    border-radius: 5px;
+    border: 1px dashed #d9d9d9;
+    text-align: center;
+    cursor: pointer;
+}
+.avatar-uploader .el-upload {
+    width:240px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+    border-color: #175CE9;
+}
+.avatar-uploader-icon {
+    display: inline-block;
+    font-size: 28px;
+    color: #8c939d;
+    width: 110px;
+    height: 110px;
+    line-height: 180px;
+    text-align: center;
+}
+.fengmian_show:hover{
+    border-color: #175CE9;
+}
+.fengmian_show:hover .avatar-uploader-icon{
+    color: #175CE9;
+}
+.avatar {
+    width: 240px;
+    height: 180px;
+    display: block;
+}
+
+.fengmian_show2{
+    width: 125px;
+    height: 180px;
+    border-radius: 5px;
+    border: 1px dashed #d9d9d9;
+    text-align: center;
+    cursor: pointer;
+}
+.avatar-uploader2 .el-upload {
+    width:125px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+    border-color: #175CE9;
+}
+.avatar-uploader-icon2 {
+    display: inline-block;
+    font-size: 28px;
+    color: #8c939d;
+    width: 110px;
+    height: 110px;
+    line-height: 180px;
+    text-align: center;
+}
+.fengmian_show2:hover{
+    border-color: #175CE9;
+}
+.fengmian_show2:hover .avatar-uploader-icon{
+    color: #175CE9;
+}
+.avatar2 {
+    width: 125px;
+    height: 180px;
+    display: block;
+}
+.iconadd{
+    display: inline-block;
+    font-size: 28px;
+    color: #8c939d;
+    width: 125px!important;
+    height: 180px!important;
+    line-height: 180px!important;
+    text-align: center;
+}
+
+
+.fengmian_show3{
+    width: 360px;
+    height: 180px;
+    border-radius: 5px;
+    border: 1px dashed #d9d9d9;
+    text-align: center;
+    cursor: pointer;
+}
+.avatar-uploader2 .el-upload {
+    width:360px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+    border-color: #175CE9;
+}
+.avatar-uploader-icon2 {
+    display: inline-block;
+    font-size: 28px;
+    color: #8c939d;
+    width: 110px;
+    height: 110px;
+    line-height: 150px;
+    text-align: center;
+}
+.fengmian_show3:hover{
+    border-color: #175CE9;
+}
+.fengmian_show3:hover .avatar-uploader-icon{
+    color: #175CE9;
+}
+.avatar3 {
+    width: 360px;
+    height: 180px;
+    display: block;
+}
+
+.iconadd{
+    display: inline-block;
+    font-size: 28px;
+    color: #8c939d;
+    width: 360px!important;
+    height: 180px!important;
+    line-height: 180px!important;
+    text-align: center;
+}
+
+.fengmian_show4{
+    width: 180px;
+    height: 180px;
+    border-radius: 5px;
+    border: 1px dashed #d9d9d9;
+    text-align: center;
+    cursor: pointer;
+}
+.avatar-uploader2 .el-upload {
+    width:280px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+    border-color: #175CE9;
+}
+.avatar-uploader-icon2 {
+    display: inline-block;
+    font-size: 28px;
+    color: #8c939d;
+    width: 110px;
+    height: 110px;
+    line-height: 150px;
+    text-align: center;
+}
+.fengmian_show4:hover{
+    border-color: #175CE9;
+}
+.fengmian_show4:hover .avatar-uploader-icon{
+    color: #175CE9;
+}
+.avatar4 {
+    width: 180px;
+    height: 180px;
+    display: block;
+}
+</style>
+</html>
